@@ -1,0 +1,132 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Schools · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Schools</h1>
+            <p>Schools in this division and their principal for each school year. Deactivate a school instead of deleting it so its records are kept.</p>
+        </div>
+        <a class="btn btn--primary" href="{{ path('admin_schools_new') }}">+ New school</a>
+    </div>
+
+    {% if school_year %}
+        <div class="filters">
+            <form class="filters__group" method="get" action="{{ path('admin_schools') }}">
+                <select name="sy" aria-label="School year">
+                    {% for sy in school_years %}
+                        <option value="{{ sy.id }}" {{ sy.id == school_year.id ? 'selected' }}>S.Y. {{ sy.name }}{{ sy.current ? ' (current)' }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn--ghost btn--sm" type="submit">Show</button>
+            </form>
+
+            {% if previous_year %}
+                <form method="post" action="{{ path('admin_schools_copy_principals', {sy: school_year.id}) }}"
+                      data-turbo-confirm="Copy every principal from S.Y. {{ previous_year.name }} to S.Y. {{ school_year.name }}?">
+                    <input type="hidden" name="_token" value="{{ csrf_token('copy-principals') }}">
+                    <button class="btn btn--ghost btn--sm" type="submit">Copy principals from SY {{ previous_year.name }}</button>
+                </form>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="alert alert--warning" role="status">
+            Create a school year first, then you can assign principals.
+            <a href="{{ path('admin_school_year_new') }}">New school year</a>
+        </div>
+    {% endif %}
+
+    <div class="card table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>School ID</th>
+                    <th>Name</th>
+                    <th>District / Division</th>
+                    <th>Plan</th>
+                    <th>Valid until</th>
+                    {% if school_year %}
+                        <th>Teachers</th>
+                        <th>Principal (S.Y. {{ school_year.name }})</th>
+                    {% endif %}
+                    <th>Status</th>
+                    <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for school in schools %}
+                    {% set assignment = principals[school.id] ?? null %}
+                    <tr>
+                        <td>{{ school.schoolId }}</td>
+                        <td>
+                            {{ school.name }}
+                            <small class="muted cell-note">{{ school.type.label }}</small>
+                        </td>
+                        <td>{{ school.district ? school.district ~ ' · ' }}{{ school.division }}</td>
+                        <td>{{ school.planLabel }}</td>
+                        <td>
+                            {% if school.planValidUntil %}
+                                {{ school.planValidUntil|date('M j, Y') }}
+                                {% if school.planExpired(today) %}
+                                    <span class="badge badge--rose">Expired</span>
+                                {% elseif school.planValidUntil|date('Y-m-d') <= today|date_modify('+30 days')|date('Y-m-d') %}
+                                    <span class="badge badge--amber">Expires soon</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="muted">—</span>
+                            {% endif %}
+                        </td>
+                        {% if school_year %}
+                            <td>{{ teacher_counts[school.id] ?? 0 }} / {{ school.teacherLimit }}</td>
+                            <td>
+                                {% if not school.plan.includesPrincipal and not assignment %}
+                                    <span class="muted">No principal on this plan</span>
+                                {% elseif assignment %}
+                                    {{ assignment.user.fullName }}{% if not assignment.user.active %} <span class="muted">(inactive)</span>{% endif %}
+                                    {# Remove stays available on an inactive school so the principal can be moved elsewhere #}
+                                    <div class="row-actions">
+                                        {% if school.active %}
+                                            <a class="btn btn--ghost btn--sm" href="{{ path('admin_schools_principal', {id: school.id, sy: school_year.id}) }}">Change</a>
+                                        {% endif %}
+                                        <form method="post" action="{{ path('admin_schools_principal_remove', {id: school.id, sy: school_year.id}) }}"
+                                              data-turbo-confirm="Remove {{ assignment.user.fullName }} as principal of {{ school.name }}?">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('school-principal-' ~ school.id) }}">
+                                            <button class="btn btn--ghost btn--sm" type="submit">Remove</button>
+                                        </form>
+                                    </div>
+                                {% elseif school.active %}
+                                    <a class="btn btn--primary btn--sm" href="{{ path('admin_schools_principal', {id: school.id, sy: school_year.id}) }}">Assign principal</a>
+                                {% else %}
+                                    <span class="muted">—</span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                        <td>
+                            {% if school.active %}
+                                <span class="badge badge--green">Active</span>
+                            {% else %}
+                                <span class="badge badge--rose">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="table__actions">
+                            <a class="btn btn--ghost btn--sm" href="{{ path('school_teachers', {id: school.id}) }}">Teachers</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_sections', {id: school.id}) }}">Sections</a>
+                            <a class="btn btn--ghost btn--sm" href="{{ path('admin_schools_edit', {id: school.id}) }}">Edit</a>
+                            <form method="post" action="{{ path('admin_schools_toggle', {id: school.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('school-' ~ school.id) }}">
+                                <button class="btn btn--ghost btn--sm" type="submit">{{ school.active ? 'Deactivate' : 'Activate' }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="{{ school_year ? 9 : 7 }}" class="empty">
+                            No schools yet. <a href="{{ path('admin_schools_new') }}">Create the first one</a>.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

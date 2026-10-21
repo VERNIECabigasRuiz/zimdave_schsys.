@@ -1,0 +1,34 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}School of {{ account.fullName }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ current ? 'Change school' : 'Assign to school' }}</h1>
+            <p>
+                {{ account.fullName }} ({{ account.username }}) · S.Y. {{ school_year.name }}
+                <br>{{ current ? 'Currently teaching at ' ~ current.name ~ '. Moving frees that seat.' : 'Not assigned to a school yet.' }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_row(form.school, {help: "The school's plan limit applies."}) }}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save school</button>
+                <a class="link-muted" href="{{ path('admin_accounts_by_role', {slug: 'teachers'}) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+
+        {% if current %}
+            <form method="post" action="{{ path('admin_account_school_remove', {id: account.id}) }}"
+                  data-turbo-confirm="Remove {{ account.fullName }} from {{ current.name }}?">
+                <input type="hidden" name="_token" value="{{ csrf_token('account-school-' ~ account.id) }}">
+                <button class="btn btn--ghost btn--sm" type="submit">Remove from school</button>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

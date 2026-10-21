@@ -1,0 +1,32 @@
+{# A page loaded in the background (link prefetch) must not use up messages the user hasn't seen #}
+{% if app.request.headers.get('X-Sec-Purpose') != 'prefetch' %}
+{% for message in app.flashes('success') %}
+    <div class="alert alert--success" role="status">{{ message }}</div>
+{% endfor %}
+
+{% for message in app.flashes('warning') %}
+    <div class="alert alert--warning" role="status">{{ message }}</div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+    <div class="alert alert--error" role="alert">{{ message }}</div>
+{% endfor %}
+
+{# Shown once, right after an account is created or its password is reset #}
+{% for cred in app.flashes('credentials') %}
+    <div class="credentials" role="status">
+        <div>
+            <strong>{{ cred.title }}: {{ cred.fullName }}</strong>
+            <p>Give these sign-in details to the user. The password is shown only once; they must change it when they first sign in.</p>
+        </div>
+        <dl>
+            <dt>Username</dt>
+            <dd><code>{{ cred.username }}</code></dd>
+            <dt>Temporary password</dt>
+            <dd>
+                <code data-controller="clipboard" data-clipboard-text-value="{{ cred.password }}">{{ cred.password }}</code>
+            </dd>
+        </dl>
+    </div>
+{% endfor %}
+{% endif %}

@@ -1,0 +1,47 @@
+{% extends 'profile/_layout.html.twig' %}
+
+{% set tab = 'references' %}
+
+{% block title %}References & ID · My Profile · ZIM School{% endblock %}
+
+{% block profile_content %}
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <fieldset class="periods">
+                <legend>41. References</legend>
+                <p class="muted">Three persons not related to you by consanguinity or affinity. Leave all three empty if you are not ready yet.</p>
+                {{ form_errors(form.references) }}
+                {% for reference in form.references %}
+                    <div class="list-card">
+                        <div class="list-card__head"><strong>Reference {{ loop.index }}</strong></div>
+                        <div class="form-grid">
+                            {{ form_row(reference.name) }}
+                            {{ form_row(reference.contact) }}
+                            {{ form_row(reference.address, {row_attr: {class: 'field--wide'}}) }}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% do form.references.setRendered %}
+            </fieldset>
+
+            <fieldset class="periods">
+                <legend>Government-issued ID</legend>
+                <p class="muted">i.e. Passport, GSIS, SSS, PRC, Driver's License, etc. Indicate the ID number and date of issuance.</p>
+                <div class="form-grid">
+                    {{ form_row(form.govIdType) }}
+                    {{ form_row(form.govIdNumber) }}
+                </div>
+                {{ form_row(form.govIdIssued) }}
+            </fieldset>
+
+            <datalist id="gov-id-types">
+                {% for type in gov_id_types %}<option value="{{ type }}"></option>{% endfor %}
+            </datalist>
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save references and ID</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

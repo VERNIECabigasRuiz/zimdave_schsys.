@@ -1,0 +1,93 @@
+{% extends 'profile/_layout.html.twig' %}
+
+{% set tab = 'personal' %}
+
+{% block title %}Personal Information · My Profile · ZIM School{% endblock %}
+
+{% block profile_content %}
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <fieldset class="periods">
+                <legend>I. Personal Information</legend>
+                <div class="form-grid">
+                    {{ form_row(form.surname) }}
+                    {{ form_row(form.firstName) }}
+                    {{ form_row(form.middleName) }}
+                    {{ form_row(form.nameExtension) }}
+                    {{ form_row(form.dateOfBirth) }}
+                    {{ form_row(form.placeOfBirth) }}
+                </div>
+                {{ form_row(form.sexAtBirth, {attr: {class: 'choice-chips'}}) }}
+                {{ form_row(form.civilStatus, {attr: {class: 'choice-chips'}}) }}
+                {{ form_row(form.civilStatusOther) }}
+                <div class="form-grid">
+                    {{ form_row(form.height) }}
+                    {{ form_row(form.weight) }}
+                    {{ form_row(form.bloodType) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="periods">
+                <legend>Government ID numbers</legend>
+                <div class="form-grid">
+                    {{ form_row(form.umidNo) }}
+                    {{ form_row(form.pagibigNo) }}
+                    {{ form_row(form.philhealthNo) }}
+                    {{ form_row(form.philsysPcn) }}
+                    {{ form_row(form.tin) }}
+                    {{ form_row(form.agencyEmployeeNo) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="periods">
+                <legend>16. Citizenship</legend>
+                {{ form_row(form.citizenship, {label: false, attr: {class: 'choice-chips'}}) }}
+                <div class="form-grid">
+                    {{ form_row(form.dualCitizenshipBy, {attr: {class: 'choice-chips'}}) }}
+                    {{ form_row(form.dualCitizenshipCountry) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="periods">
+                <legend>17. Residential address</legend>
+                <div class="form-grid">
+                    {{ form_row(form.resHouseNo) }}
+                    {{ form_row(form.resStreet) }}
+                    {{ form_row(form.resSubdivision) }}
+                    {{ form_row(form.resBarangay) }}
+                    {{ form_row(form.resCity) }}
+                    {{ form_row(form.resProvince) }}
+                    {{ form_row(form.resZip) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="periods">
+                <legend>18. Permanent address</legend>
+                <div class="checkbox-row">{{ form_widget(form.permSameAsResidential) }} {{ form_label(form.permSameAsResidential) }}</div>
+                <div class="form-grid">
+                    {{ form_row(form.permHouseNo) }}
+                    {{ form_row(form.permStreet) }}
+                    {{ form_row(form.permSubdivision) }}
+                    {{ form_row(form.permBarangay) }}
+                    {{ form_row(form.permCity) }}
+                    {{ form_row(form.permProvince) }}
+                    {{ form_row(form.permZip) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="periods">
+                <legend>Contact</legend>
+                <div class="form-grid">
+                    {{ form_row(form.telephoneNo) }}
+                    {{ form_row(form.mobileNo) }}
+                </div>
+                {{ form_row(form.email) }}
+            </fieldset>
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save personal information</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

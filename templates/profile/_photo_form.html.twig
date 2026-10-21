@@ -1,0 +1,6 @@
+{{ form_start(form, {attr: {class: 'form photo-form', 'data-controller': 'image-preview'}}) }}
+    {{ form_row(form.image, {help: 'JPG, PNG or WebP up to 5 MB. Cropped to passport size (3.5 × 4.5 cm).'}) }}
+    <img class="preview-image preview-image--photo" data-image-preview-target="image" alt="Preview of the chosen photo" hidden>
+    <p class="preview-hint" data-image-preview-target="hint" role="status" hidden>Not uploaded yet. Click "Upload photo" to save it.</p>
+    <button class="btn btn--primary btn--sm" type="submit">Upload photo</button>
+{{ form_end(form) }}

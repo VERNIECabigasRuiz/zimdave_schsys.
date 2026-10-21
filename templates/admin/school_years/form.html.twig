@@ -1,0 +1,59 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% macro period_row(period_form, label) %}
+    <div class="periods__row">
+        <strong class="periods__name">{{ label }}</strong>
+        <div class="form-grid">
+            {{ form_row(period_form.startDate) }}
+            {{ form_row(period_form.endDate) }}
+        </div>
+    </div>
+{% endmacro %}
+
+{% set heading = school_year ? 'Edit school year' : 'New school year' %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ school_year ? 'S.Y. ' ~ school_year.name : 'The grading periods are created automatically with grading closed. You can adjust their dates afterwards.' }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {# ~ '' turns the macro's safe markup into a plain string, so it is escaped as an attribute #}
+        {% set periods_attr = form.gradingPeriods is defined ? {
+            'data-controller': 'grading-periods',
+            'data-action': 'change->grading-periods#refresh',
+            'data-grading-periods-prototype-value': _self.period_row(form.gradingPeriods.vars.prototype, '__label__') ~ '',
+        } : {} %}
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}|merge(periods_attr)}) }}
+            {{ form_row(form.name) }}
+            <div class="form-grid">
+                {{ form_row(form.startDate, {attr: {'data-grading-periods-target': 'start'}}) }}
+                {{ form_row(form.endDate, {attr: {'data-grading-periods-target': 'end'}}) }}
+            </div>
+            {{ form_row(form.gradingSystem, {help: school_year
+                ? 'DepEd uses three terms from S.Y. 2026-2027 (DO 9, s. 2026). Switching needs grading closed; the dates below are split evenly so you can adjust them before saving.'
+                : 'DepEd uses three terms from S.Y. 2026-2027 (DO 9, s. 2026).'}) }}
+
+            {% if form.gradingPeriods is defined %}
+                <fieldset class="periods">
+                    <legend data-grading-periods-target="legend">Dates of each {{ school_year.gradingSystem.periodName|lower }}</legend>
+                    <div data-grading-periods-target="rows">
+                        {% for period_form in form.gradingPeriods %}
+                            {{ _self.period_row(period_form, period_form.vars.data.label ?? '') }}
+                        {% endfor %}
+                    </div>
+                </fieldset>
+            {% endif %}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">{{ school_year ? 'Save changes' : 'Create school year' }}</button>
+                <a class="link-muted" href="{{ path('admin_school_years') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

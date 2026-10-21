@@ -1,0 +1,77 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% macro stat_card(stat) %}
+    <a class="stat card" href="{{ stat.url }}">
+        <span class="avatar avatar--{{ stat.color }}">{{ stat.label|first }}</span>
+        <span>
+            <strong>{{ stat.value|number_format }}</strong>
+            <small>{{ stat.label }}</small>
+        </span>
+    </a>
+{% endmacro %}
+
+{% block title %}Dashboard · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Dashboard</h1>
+            <p>System overview</p>
+        </div>
+    </div>
+
+    <section class="stats stats--totals" aria-label="Totals">
+        {% for stat in [
+            {label: 'Accounts', value: stats.accounts, color: 'blue', url: path('admin_accounts')},
+            {label: 'Principals', value: stats.principals, color: 'blue', url: path('admin_accounts_by_role', {slug: 'principals'})},
+            {label: 'Teachers', value: stats.teachers, color: 'green', url: path('admin_accounts_by_role', {slug: 'teachers'})},
+            {label: 'Students', value: stats.students, color: 'amber', url: path('admin_accounts_by_role', {slug: 'students'})},
+            {label: 'Inactive', value: stats.inactive, color: 'rose', url: path('admin_accounts', {status: 'inactive'})},
+        ] %}
+            {{ _self.stat_card(stat) }}
+        {% endfor %}
+    </section>
+
+    {% if year_stats %}
+        <h2 class="section-title stats-heading">S.Y. {{ school_year.name }}</h2>
+        <section class="stats stats--year" aria-label="Current school year">
+            {% for stat in [
+                {label: 'Schools', value: year_stats.schools, color: 'blue', url: path('admin_schools')},
+                {label: 'Principals assigned', value: year_stats.assigned, color: 'green', url: path('admin_schools')},
+                {label: 'Principals unassigned', value: year_stats.unassigned, color: 'amber', url: path('admin_accounts_by_role', {slug: 'principals'})},
+                {label: 'Schools without a principal', value: year_stats.without_principal, color: 'rose', url: path('admin_schools')},
+            ] %}
+                {{ _self.stat_card(stat) }}
+            {% endfor %}
+        </section>
+    {% endif %}
+
+    <h2 class="section-title">Plans</h2>
+    <section class="stats stats--plans" aria-label="Plans">
+        {{ _self.stat_card({label: 'Plans expired or expiring in 30 days', value: plans_expiring, color: 'rose', url: path('admin_schools')}) }}
+    </section>
+
+    <h2 class="section-title">Recent activity</h2>
+    <div class="card table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in activity %}
+                    <tr>
+                        <td title="{{ entry.createdAt|date('M j, Y g:i A') }}">{{ entry.createdAt|activity_time }}</td>
+                        <td>{{ entry.username }}</td>
+                        <td>{{ entry.action }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3" class="muted">No activity yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

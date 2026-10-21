@@ -1,0 +1,23 @@
+{% extends is_granted('ROLE_ADMIN') ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig' %}
+
+{% block title %}Add existing teacher · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Add existing teacher</h1>
+            <p>{{ school.name }} · For a teacher who already has a ZIM School account, e.g. one transferring from another school.</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_row(form.username) }}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Add teacher</button>
+                <a class="link-muted" href="{{ path('school_teachers', {id: school.id}) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

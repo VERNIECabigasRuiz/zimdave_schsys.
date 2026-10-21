@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {# Turbo would load hovered links in the background, using up one-time messages such as new passwords #}
+        <meta name="turbo-prefetch" content="false">
+        <title>{% block title %}ZIM School{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%233d5afe%22/><text x=%2232%22 y=%2243%22 font-family=%22Segoe UI,Arial%22 font-size=%2230%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>Z</text></svg>">
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body class="{% block body_class %}{% endblock %}">
+        {% block body %}{% endblock %}
+    </body>
+</html>

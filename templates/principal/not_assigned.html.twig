@@ -1,0 +1,19 @@
+{% extends 'principal/_layout.html.twig' %}
+
+{% block title %}Dashboard · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Welcome, {{ app.user.fullName }}</h1>
+        </div>
+    </div>
+
+    <div class="card empty">
+        {% if school_year %}
+            You are not assigned to a school for S.Y. {{ school_year.name }}. Contact the administrator.
+        {% else %}
+            No current school year. Contact the administrator.
+        {% endif %}
+    </div>
+{% endblock %}

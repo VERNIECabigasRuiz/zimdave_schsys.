@@ -1,0 +1,98 @@
+{% extends is_granted('ROLE_ADMIN') ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig' %}
+
+{% block title %}Teachers · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Teachers</h1>
+            <p>
+                {{ school.name }}{% if school_year %} · S.Y. {{ school_year.name }}{% endif %}
+                {% if school_year %}
+                    <br><strong>Teachers {{ used }} / {{ school.teacherLimit }}</strong>
+                    · {{ school.planLabel }} plan
+                    {% if school.planValidUntil %}· valid until {{ school.planValidUntil|date('M j, Y') }}{% endif %}
+                {% endif %}
+            </p>
+        </div>
+        {% if school_year and not add_refusal %}
+            <div class="row-actions">
+                <a class="btn btn--ghost" href="{{ path('school_teachers_add_existing', {id: school.id}) }}">Add existing teacher</a>
+                <a class="btn btn--primary" href="{{ path('school_teachers_new', {id: school.id}) }}">+ New teacher</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not school_year %}
+        <div class="card empty">No current school year. Teachers are added per school year.</div>
+    {% else %}
+        {% if add_refusal %}
+            <div class="alert alert--warning plan-notice" role="status">{{ add_refusal }}</div>
+        {% endif %}
+
+        {% if bring_back_from %}
+            <div class="filters">
+                <form method="post" action="{{ path('school_teachers_bring_back', {id: school.id}) }}"
+                      data-turbo-confirm="Add last school year's teachers to S.Y. {{ school_year.name }}?">
+                    <input type="hidden" name="_token" value="{{ csrf_token('bring-back-' ~ school.id) }}">
+                    <button class="btn btn--ghost btn--sm" type="submit"{{ add_refusal ? ' disabled' }}>Bring back teachers from S.Y. {{ bring_back_from.name }}</button>
+                </form>
+            </div>
+        {% endif %}
+
+        <div class="card table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                        <th>Last sign-in</th>
+                        <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                        {% set teacher = assignment.user %}
+                        <tr>
+                            <td>
+                                <span class="person">
+                                    <span class="avatar avatar--sm">{{ teacher.initials }}</span>
+                                    {{ teacher.fullName }}
+                                </span>
+                            </td>
+                            <td>{{ teacher.username }}</td>
+                            <td>
+                                {% if not teacher.active %}
+                                    <span class="badge badge--rose">Inactive</span>
+                                {% elseif teacher.mustChangePassword %}
+                                    <span class="badge badge--amber" title="Has not set their own password yet">Pending first sign-in</span>
+                                {% else %}
+                                    <span class="badge badge--green">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ teacher.lastLoginAt ? teacher.lastLoginAt|activity_time : '—' }}</td>
+                            <td class="table__actions">
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_teachers_edit', {id: school.id, teacher: teacher.id}) }}">Edit</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_teacher_pds', {id: school.id, teacher: teacher.id}) }}" title="Download {{ teacher.fullName }}'s Personal Data Sheet" data-turbo="false">PDS</a>
+                                <form method="post" action="{{ path('school_teachers_reset_password', {id: school.id, teacher: teacher.id}) }}"
+                                      data-turbo-confirm="Reset the password for {{ teacher.username }}?">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('teacher-' ~ teacher.id) }}">
+                                    <button class="btn btn--ghost btn--sm" type="submit">Reset password</button>
+                                </form>
+                                <form method="post" action="{{ path('school_teachers_toggle', {id: school.id, teacher: teacher.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('teacher-' ~ teacher.id) }}">
+                                    <button class="btn btn--ghost btn--sm" type="submit">{{ teacher.active ? 'Deactivate' : 'Activate' }}</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty">No teachers for S.Y. {{ school_year.name }} yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

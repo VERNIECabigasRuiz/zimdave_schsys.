@@ -1,0 +1,75 @@
+{% extends 'profile/_layout.html.twig' %}
+
+{% set tab = 'family' %}
+
+{% block title %}Family Background · My Profile · ZIM School{% endblock %}
+
+{% macro child_row(child) %}
+    <div class="child-row" data-collection-row>
+        {{ form_row(child.fullName) }}
+        {{ form_row(child.dateOfBirth) }}
+        <div>
+            <button class="btn btn--sm btn--danger" type="button" data-action="collection#remove">Remove</button>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block profile_content %}
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <fieldset class="periods">
+                <legend>22. Spouse</legend>
+                <div class="form-grid">
+                    {{ form_row(form.spouseSurname) }}
+                    {{ form_row(form.spouseFirstName) }}
+                    {{ form_row(form.spouseMiddleName) }}
+                    {{ form_row(form.spouseNameExtension) }}
+                    {{ form_row(form.spouseOccupation) }}
+                    {{ form_row(form.spouseEmployer) }}
+                    {{ form_row(form.spouseBusinessAddress) }}
+                    {{ form_row(form.spouseTelephone) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="periods"
+                      data-controller="collection"
+                      data-collection-prototype-value="{{ _self.child_row(form.children.vars.prototype)|e('html_attr') }}"
+                      data-collection-index-value="{{ form.children|length > 0 ? max(form.children|keys) + 1 : 0 }}">
+                <legend>23. Children</legend>
+                {{ form_errors(form.children) }}
+                <p class="muted" data-collection-target="empty"{{ form.children|length ? ' hidden' }}>No children listed.</p>
+                <div data-collection-target="rows">
+                    {% for child in form.children %}
+                        {{ _self.child_row(child) }}
+                    {% endfor %}
+                </div>
+                <button class="btn btn--sm" type="button" data-action="collection#add">+ Add child</button>
+            </fieldset>
+            {% do form.children.setRendered %}
+
+            <fieldset class="periods">
+                <legend>24. Father</legend>
+                <div class="form-grid">
+                    {{ form_row(form.fatherSurname) }}
+                    {{ form_row(form.fatherFirstName) }}
+                    {{ form_row(form.fatherMiddleName) }}
+                    {{ form_row(form.fatherNameExtension) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="periods">
+                <legend>25. Mother's maiden name</legend>
+                <div class="form-grid">
+                    {{ form_row(form.motherMaidenSurname) }}
+                    {{ form_row(form.motherFirstName) }}
+                    {{ form_row(form.motherMiddleName) }}
+                </div>
+            </fieldset>
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save family background</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

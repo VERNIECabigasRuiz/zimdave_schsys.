@@ -1,0 +1,51 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Plans · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Plans</h1>
+            <p>What each school can have. A school's limits are the plan's numbers times the seats it bought.</p>
+        </div>
+        <a class="btn btn--primary" href="{{ path('admin_plans_new') }}">+ New plan</a>
+    </div>
+
+    <div class="card table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Plan</th>
+                    <th>Teachers per seat</th>
+                    <th>Students per seat</th>
+                    <th>Includes principal</th>
+                    <th>Schools</th>
+                    <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                    <tr>
+                        <td><strong>{{ plan.name }}</strong></td>
+                        <td>{{ plan.teachersPerSeat|number_format }}</td>
+                        <td>{{ plan.studentsPerSeat|number_format }}</td>
+                        <td>{{ plan.includesPrincipal ? 'Yes' : 'No' }}</td>
+                        <td>{{ school_counts[plan.id] ?? 0 }}</td>
+                        <td class="table__actions">
+                            <a class="btn btn--ghost btn--sm" href="{{ path('admin_plans_edit', {id: plan.id}) }}">Edit</a>
+                            <form method="post" action="{{ path('admin_plans_delete', {id: plan.id}) }}"
+                                  data-turbo-confirm="Delete the {{ plan.name }} plan?">
+                                <input type="hidden" name="_token" value="{{ csrf_token('plan-' ~ plan.id) }}">
+                                <button class="btn btn--ghost btn--sm" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="empty">No plans yet. <a href="{{ path('admin_plans_new') }}">Create one</a>.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends is_granted('ROLE_TEACHER') ? 'teacher/_layout.html.twig' : 'principal/_layout.html.twig' %}
+
+{#
+ # My Profile shell: photo card on the left, PDS section tabs on the right.
+ # Pages set `tab` and fill `profile_content`.
+ #}
+
+{% macro tab(label, url, active) %}
+    {% if url %}
+        <a class="tabs__tab{{ active ? ' is-active' }}" href="{{ url }}"{{ active ? ' aria-current="page"' }}>{{ label }}</a>
+    {% else %}
+        <span class="tabs__tab tabs__tab--soon" title="Coming soon">{{ label }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>My Profile</h1>
+            <p>Personal Data Sheet · CS Form No. 212 (Revised 2026)</p>
+        </div>
+        <a class="btn btn--primary" href="{{ path('profile_pdf') }}">Download PDF</a>
+    </div>
+
+    <div class="profile-grid">
+        <section class="card profile-card" aria-label="Photo">
+            {% if app.user.photoPath %}
+                <img class="profile-card__photo" src="{{ asset(app.user.photoPath) }}" alt="Photo of {{ app.user.fullName }}">
+            {% else %}
+                <span class="profile-card__photo profile-card__photo--empty" aria-hidden="true">{{ app.user.initials }}</span>
+            {% endif %}
+            <h2>{{ app.user.fullName }}</h2>
+            <dl class="info-list">
+                <div><dt>Role</dt><dd>{{ app.user.roleLabel }}</dd></div>
+                <div><dt>Last updated</dt><dd>{{ sheet.updatedAt ? sheet.updatedAt|date('M j, Y') : 'Never' }}</dd></div>
+            </dl>
+            {{ render(controller('App\\Controller\\ProfileController::photoForm')) }}
+            {% if app.user.photoPath %}
+                <form method="post" action="{{ path('profile_photo_remove') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('remove-photo') }}">
+                    <button class="btn btn--sm btn--danger" type="submit">Remove photo</button>
+                </form>
+            {% endif %}
+        </section>
+
+        <div>
+            <nav class="tabs" aria-label="PDS sections">
+                {{ _self.tab('Personal Information', path('profile_personal'), tab == 'personal') }}
+                {{ _self.tab('Family Background', path('profile_family'), tab == 'family') }}
+                {{ _self.tab('Education', path('profile_education'), tab == 'education') }}
+                {{ _self.tab('Eligibility', path('profile_eligibility'), tab == 'eligibility') }}
+                {{ _self.tab('Work Experience', path('profile_work'), tab == 'work') }}
+                {{ _self.tab('Learning & Development', path('profile_training'), tab == 'training') }}
+                {{ _self.tab('Voluntary Work', path('profile_voluntary'), tab == 'voluntary') }}
+                {{ _self.tab('Other Information', path('profile_other'), tab == 'other') }}
+                {{ _self.tab('Questions 34–40', path('profile_questions'), tab == 'questions') }}
+                {{ _self.tab('References & ID', path('profile_references'), tab == 'references') }}
+            </nav>
+
+            {% block profile_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

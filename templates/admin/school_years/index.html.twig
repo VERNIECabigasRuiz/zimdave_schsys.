@@ -1,0 +1,62 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}School Year · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>School Year</h1>
+            <p>School years and their grading periods (terms or quarters). Teachers can only enter grades for an open period.</p>
+        </div>
+        <a class="btn btn--primary" href="{{ path('admin_school_year_new') }}">+ New school year</a>
+    </div>
+
+    {% for sy in school_years %}
+        <section class="card sy-card{{ sy.current ? ' is-current' }}">
+            <div class="sy-card__head">
+                <div>
+                    <h2>
+                        S.Y. {{ sy.name }}
+                        {% if sy.current %}<span class="badge badge--green">Current</span>{% endif %}
+                    </h2>
+                    <p class="muted">{{ sy.startDate|date('M j, Y') }} – {{ sy.endDate|date('M j, Y') }} · {{ sy.gradingSystem.label }}</p>
+                </div>
+                <div class="sy-card__actions">
+                    {% if not sy.current %}
+                        <form method="post" action="{{ path('admin_school_year_make_current', {id: sy.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('school-year-' ~ sy.id) }}">
+                            <button class="btn btn--ghost btn--sm" type="submit">Make current</button>
+                        </form>
+                    {% endif %}
+                    <a class="btn btn--ghost btn--sm" href="{{ path('admin_school_year_edit', {id: sy.id}) }}">Edit</a>
+                </div>
+            </div>
+
+            <div class="quarters">
+                {% for period in sy.gradingPeriods %}
+                    <div class="quarter{{ period.open ? ' is-open' }}">
+                        <span class="quarter__name">{{ period.label }}</span>
+                        <span class="quarter__dates muted">
+                            {%- if period.startDate and period.endDate -%}
+                                {{ period.startDate|date(period.startDate|date('Y') == period.endDate|date('Y') ? 'M j' : 'M j, Y') }} – {{ period.endDate|date('M j, Y') }}
+                            {%- else -%}
+                                Dates not set
+                            {%- endif -%}
+                        </span>
+                        <span class="badge {{ period.open ? 'badge--green' : '' }}">{{ period.open ? 'Grading open' : 'Closed' }}</span>
+                        <form method="post" action="{{ path('admin_grading_period_toggle', {id: period.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('grading-period-' ~ period.id) }}">
+                            <button class="btn btn--sm {{ period.open ? 'btn--ghost' : 'btn--primary' }}" type="submit">
+                                {{ period.open ? 'Close grading' : 'Open grading' }}
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% else %}
+        <div class="card empty">
+            No school years yet. <a href="{{ path('admin_school_year_new') }}">Create the first one</a>.
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% set heading = current ? 'Change principal' : 'Assign principal' %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ school.name }} · S.Y. {{ school_year.name }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_row(form.principal, {help: 'Only active Principal accounts not yet assigned to another school this school year are listed.'}) }}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save principal</button>
+                <a class="link-muted" href="{{ path('admin_schools', {sy: school_year.id}) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

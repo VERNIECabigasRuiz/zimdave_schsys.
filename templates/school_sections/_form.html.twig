@@ -1,0 +1,24 @@
+{# Section form, shared by the Sections page and the teacher's "Create my section". #}
+<div class="card form-card">
+    {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate', 'data-controller': 'section-form'}}) }}
+        {{ form_errors(form) }}
+        <div class="form-grid">
+            {{ form_row(form.gradeLevel) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.track) }}
+            {{ form_row(form.strand) }}
+        </div>
+        {% if form.adviser is defined %}
+            {{ form_row(form.adviser, {help: 'Teachers of this school for the school year. A teacher advises only one section.'}) }}
+        {% endif %}
+
+        <datalist id="shs-strands">
+            {% for strand in strands %}<option value="{{ strand }}"></option>{% endfor %}
+        </datalist>
+
+        <div class="form-actions">
+            <button class="btn btn--primary" type="submit">{{ button }}</button>
+            <a class="link-muted" href="{{ cancel }}">Cancel</a>
+        </div>
+    {{ form_end(form) }}
+</div>

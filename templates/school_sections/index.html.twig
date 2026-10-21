@@ -1,0 +1,82 @@
+{% extends is_granted('ROLE_ADMIN') ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig' %}
+
+{% block title %}Sections · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Sections</h1>
+            <p>{{ school.name }}{% if school_year %} · S.Y. {{ school_year.name }}{% endif %}</p>
+        </div>
+        {% if school_year and not refusal %}
+            <div class="row-actions">
+                <a class="btn btn--primary" href="{{ path('school_sections_new', {id: school.id}) }}">+ New section</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not school_year %}
+        <div class="card empty">No current school year. Sections are made per school year.</div>
+    {% else %}
+        {% if refusal %}
+            <div class="alert alert--warning plan-notice" role="status">{{ refusal }}</div>
+        {% endif %}
+
+        {% if bring_back_from and not refusal %}
+            <div class="filters">
+                <form method="post" action="{{ path('school_sections_bring_back', {id: school.id}) }}"
+                      data-turbo-confirm="Copy last school year's sections to S.Y. {{ school_year.name }}? Advisers are not copied.">
+                    <input type="hidden" name="_token" value="{{ csrf_token('bring-back-sections') }}">
+                    <button class="btn btn--ghost btn--sm" type="submit">Bring back sections from S.Y. {{ bring_back_from.name }}</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% for grade, sections in groups %}
+            <section class="card table-card section-group">
+                <h2>{{ grade }}</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Class adviser</th>
+                            <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for section in sections %}
+                            <tr>
+                                <td>
+                                    <strong>{{ section.name }}</strong>
+                                    {% if section.track %}<br><span class="muted">{{ section.track.label }}{{ section.strand ? ' – ' ~ section.strand }}</span>{% endif %}
+                                </td>
+                                <td>
+                                    {% if section.adviser %}
+                                        <span class="person">
+                                            <span class="avatar avatar--sm">{{ section.adviser.initials }}</span>
+                                            {{ section.adviser.fullName }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge--amber">No adviser yet</span>
+                                    {% endif %}
+                                </td>
+                                <td class="table__actions">
+                                    {% if not refusal %}
+                                        <a class="btn btn--ghost btn--sm" href="{{ path('school_sections_edit', {id: school.id, section: section.id}) }}">Edit</a>
+                                        <form method="post" action="{{ path('school_sections_delete', {id: school.id, section: section.id}) }}"
+                                              data-turbo-confirm="Delete {{ section.label }}?">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('section-' ~ section.id) }}">
+                                            <button class="btn btn--ghost btn--sm" type="submit">Delete</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% else %}
+            <div class="card empty">No sections for S.Y. {{ school_year.name }} yet.</div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

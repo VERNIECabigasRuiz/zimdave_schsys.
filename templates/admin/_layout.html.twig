@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %}admin-page{% endblock %}
+
+{% set route = app.request.attributes.get('_route') %}
+{% set slug = app.request.attributes.get('slug') %}
+
+{% macro nav_link(label, url, active) %}
+    <a class="sidebar__link{{ active ? ' is-active' }}" href="{{ url }}"{{ active ? ' aria-current="page"' }}>{{ label }}</a>
+{% endmacro %}
+
+{% block body %}
+    <div class="admin">
+        <aside class="sidebar">
+            <a class="sidebar__brand" href="{{ path('admin_dashboard') }}">
+                <span class="avatar avatar--brand">Z</span>
+                <span>
+                    <strong>ZIM School</strong>
+                    <small>Grading platform</small>
+                </span>
+            </a>
+
+            <nav class="sidebar__nav" aria-label="Admin">
+                {{ _self.nav_link('Dashboard', path('admin_dashboard'), route == 'admin_dashboard') }}
+                {{ _self.nav_link('User Accounts', path('admin_accounts'), route starts with 'admin_account' and slug is null) }}
+                {{ _self.nav_link('School Year', path('admin_school_years'), route starts with 'admin_school_year' or route starts with 'admin_grading') }}
+                {{ _self.nav_link('Schools', path('admin_schools'), route starts with 'admin_schools') }}
+                {{ _self.nav_link('Plans', path('admin_plans'), route starts with 'admin_plans') }}
+                {{ _self.nav_link('PRINCIPAL', path('admin_accounts_by_role', {slug: 'principals'}), slug == 'principals') }}
+                {{ _self.nav_link('TEACHER', path('admin_accounts_by_role', {slug: 'teachers'}), slug == 'teachers') }}
+                {{ _self.nav_link('STUDENT', path('admin_accounts_by_role', {slug: 'students'}), slug == 'students') }}
+                {{ _self.nav_link('ANNOUNCEMENTS', path('admin_announcements'), route starts with 'admin_announcement') }}
+            </nav>
+
+            <a class="sidebar__me" href="{{ path('app_change_password') }}" title="Change password">
+                <span class="avatar avatar--green">{{ app.user.initials }}</span>
+                <span>
+                    <strong>{{ app.user.fullName }}</strong>
+                    <small>{{ app.user.roleLabel }}</small>
+                </span>
+            </a>
+        </aside>
+
+        <div class="admin__main">
+            <header class="topbar">
+                <form class="topbar__search" action="{{ path('admin_accounts') }}" method="get" role="search">
+                    <input type="search" name="q" value="{{ app.request.query.get('q') }}"
+                           placeholder="Search learners, teachers, forms" aria-label="Search">
+                </form>
+
+                <div class="topbar__actions">
+                    <details class="dropdown">
+                        <summary class="icon-btn" aria-label="Notifications">!</summary>
+                        <div class="dropdown__panel">
+                            <p class="dropdown__title">Latest activity</p>
+                            {% for entry in latest_activity() %}
+                                <div class="dropdown__item">
+                                    <span><strong>{{ entry.username }}</strong> {{ entry.action }}</span>
+                                    <small>{{ entry.createdAt|activity_time }}</small>
+                                </div>
+                            {% else %}
+                                <p class="muted">Nothing yet.</p>
+                            {% endfor %}
+                            <a class="dropdown__footer" href="{{ path('admin_dashboard') }}">View dashboard</a>
+                        </div>
+                    </details>
+
+                    <span class="avatar" title="{{ app.user.fullName }}">{{ app.user.initials }}</span>
+                    <a class="topbar__logout" href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            </header>
+
+            <main class="content">
+                {% include 'admin/_flashes.html.twig' %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+{% endblock %}

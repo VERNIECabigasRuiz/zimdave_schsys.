@@ -1,0 +1,4 @@
+# The app is served by its own virtual host at http://localhost:8081/
+# (see C:/xampp/apache/conf/extra/httpd-vhosts.conf). Never expose the
+# project root (source, config, .env) through http://localhost/zimdave_schsys/.
+Require all denied

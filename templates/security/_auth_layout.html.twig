@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %}auth-page{% endblock %}
+
+{% block body %}
+    <main class="auth">
+        <div class="auth__circle" aria-hidden="true"></div>
+
+        <section class="auth__intro">
+            <h1 class="auth__title">Welcome to<br>ZIM School</h1>
+            <p class="auth__lead">{% block lead %}Sign in with the account your administrator gave you.{% endblock %}</p>
+        </section>
+
+        <section class="auth-card">
+            {% block card %}{% endblock %}
+        </section>
+    </main>
+{% endblock %}

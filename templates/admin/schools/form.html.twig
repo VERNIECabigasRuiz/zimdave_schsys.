@@ -1,0 +1,44 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% set heading = school ? 'Edit school' : 'New school' %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ school ? school.schoolId ~ ' · ' ~ school.name : 'Use the 6-digit School ID assigned by DepEd.' }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            <div class="form-grid">
+                {{ form_row(form.schoolId) }}
+                {{ form_row(form.type) }}
+            </div>
+            {{ form_row(form.name) }}
+            <div class="form-grid">
+                {{ form_row(form.region) }}
+                {{ form_row(form.division) }}
+            </div>
+            {{ form_row(form.district) }}
+            {{ form_row(form.address) }}
+
+            <fieldset class="periods">
+                <legend>Plan</legend>
+                {{ form_row(form.plan) }}
+                <div class="form-grid">
+                    {{ form_row(form.seats) }}
+                    {{ form_row(form.planValidUntil) }}
+                </div>
+            </fieldset>
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">{{ school ? 'Save school' : 'Create school' }}</button>
+                <a class="link-muted" href="{{ path('admin_schools') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

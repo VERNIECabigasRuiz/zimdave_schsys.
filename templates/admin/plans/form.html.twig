@@ -1,0 +1,30 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% set heading = plan ? 'Edit plan' : 'New plan' %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ plan ? 'Changes apply to every school on the ' ~ plan.name ~ ' plan.' : 'Limits are per seat; a school with 2 seats gets twice the numbers.' }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_row(form.name) }}
+            <div class="form-grid">
+                {{ form_row(form.teachersPerSeat) }}
+                {{ form_row(form.studentsPerSeat) }}
+            </div>
+            {{ form_row(form.includesPrincipal) }}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">{{ plan ? 'Save plan' : 'Create plan' }}</button>
+                <a class="link-muted" href="{{ path('admin_plans') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

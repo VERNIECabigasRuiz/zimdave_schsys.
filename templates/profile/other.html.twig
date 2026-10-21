@@ -1,0 +1,45 @@
+{% extends 'profile/_layout.html.twig' %}
+
+{% set tab = 'other' %}
+
+{% block title %}Other Information · My Profile · ZIM School{% endblock %}
+
+{% macro line_row(entry) %}
+    <div class="line-row" data-collection-row>
+        {{ form_widget(entry) }}
+        <button class="btn btn--sm btn--danger" type="button" data-action="collection#remove">Remove</button>
+        {{ form_errors(entry) }}
+    </div>
+{% endmacro %}
+
+{% block profile_content %}
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <p class="muted">VIII. Other Information. One entry per line; each list prints in its own column of the PDS.</p>
+
+            {% for field, info in lists %}
+                {% set list = form[field] %}
+                <fieldset class="periods"
+                          data-controller="collection"
+                          data-collection-prototype-value="{{ _self.line_row(list.vars.prototype)|e('html_attr') }}"
+                          data-collection-index-value="{{ list|length > 0 ? max(list|keys) + 1 : 0 }}">
+                    <legend>{{ info[0] }}</legend>
+                    {{ form_errors(list) }}
+                    <p class="muted" data-collection-target="empty"{{ list|length ? ' hidden' }}>Nothing listed yet.</p>
+                    <div data-collection-target="rows">
+                        {% for entry in list %}
+                            {{ _self.line_row(entry) }}
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn--sm" type="button" data-action="collection#add">{{ info[1] }}</button>
+                </fieldset>
+                {% do list.setRendered %}
+            {% endfor %}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save other information</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

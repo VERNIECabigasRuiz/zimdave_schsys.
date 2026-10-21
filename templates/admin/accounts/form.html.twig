@@ -1,0 +1,39 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% set heading = account ? 'Edit account' : 'Create account' %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ account ? account.fullName ~ ' · ' ~ account.username : 'Add a principal, teacher, student or administrator' }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_row(form.role) }}
+            {% if account and form.role.vars.disabled %}
+                <p class="help-text form-note">You can't change your own role or deactivate your own account.</p>
+            {% endif %}
+            {{ form_row(form.fullName) }}
+            {{ form_row(form.username) }}
+            {% if form.temporaryPassword is defined %}
+                {{ form_row(form.temporaryPassword) }}
+            {% endif %}
+            {% if form.active is defined %}
+                <div class="checkbox-row">{{ form_widget(form.active) }} {{ form_label(form.active) }}</div>
+            {% endif %}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">{{ account ? 'Save changes' : 'Create account' }}</button>
+                {% if not account %}
+                    <button class="btn btn--ghost" type="submit" name="save_and_new" value="1">Create and add another</button>
+                {% endif %}
+                <a class="link-muted" href="{{ path('admin_accounts') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

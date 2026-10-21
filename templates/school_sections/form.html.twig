@@ -1,0 +1,16 @@
+{% extends is_granted('ROLE_ADMIN') ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig' %}
+
+{% set heading = section.id ? 'Edit section' : 'New section' %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ school.name }} · S.Y. {{ section.schoolYear.name }}</p>
+        </div>
+    </div>
+
+    {{ include('school_sections/_form.html.twig', {button: section.id ? 'Save section' : 'Create section', cancel: path('school_sections', {id: school.id})}) }}
+{% endblock %}

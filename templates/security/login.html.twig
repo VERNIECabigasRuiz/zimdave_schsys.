@@ -1,0 +1,32 @@
+{% extends 'security/_auth_layout.html.twig' %}
+
+{% block title %}Sign in · ZIM School{% endblock %}
+
+{% block card %}
+    <h2 class="auth-card__title">Sign in</h2>
+
+    {% if error %}
+        <div class="alert alert--error" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ path('app_login') }}" class="form">
+        <div class="field">
+            <label class="field__label" for="username">Username</label>
+            <input class="field__input" type="text" id="username" name="_username" value="{{ last_username }}"
+                   autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
+        </div>
+
+        <div class="field">
+            <label class="field__label" for="password">Password</label>
+            <input class="field__input" type="password" id="password" name="_password"
+                   autocomplete="current-password" required>
+        </div>
+
+        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+        <button class="btn btn--primary btn--block" type="submit">Sign in</button>
+    </form>
+
+    <p class="auth-card__link"><a href="{{ path('app_forgot_password') }}">Forgot password?</a></p>
+    <p class="auth-card__hint">First time? You will be asked to set a new password.</p>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'profile/_layout.html.twig' %}
+
+{% set tab = 'overview' %}
+
+{% block title %}My Profile · ZIM School{% endblock %}
+
+{% block profile_content %}
+    <div class="card form-card">
+        <h2 class="section-title section-title--flush">Your Personal Data Sheet</h2>
+        <p class="muted">
+            Fill in each section the way you would fill in CS Form No. 212 (Revised 2026).
+            Write in full and do not abbreviate. Leave a field empty if it does not apply; it prints as N/A.
+        </p>
+        <dl class="info-list">
+            <div><dt>I. Personal Information</dt><dd>{{ sheet.surname ? 'Started' : 'Not started' }}</dd></div>
+        </dl>
+        <div class="form-actions">
+            <a class="btn btn--primary" href="{{ path('profile_personal') }}">Fill in personal information</a>
+        </div>
+    </div>
+{% endblock %}

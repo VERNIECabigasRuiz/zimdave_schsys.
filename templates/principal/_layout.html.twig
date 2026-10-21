@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %}admin-page{% endblock %}
+
+{% set route = app.request.attributes.get('_route') %}
+
+{% macro nav_link(label, url, active) %}
+    <a class="sidebar__link{{ active ? ' is-active' }}" href="{{ url }}"{{ active ? ' aria-current="page"' }}>{{ label }}</a>
+{% endmacro %}
+
+{% block body %}
+    <div class="admin">
+        <aside class="sidebar">
+            <a class="sidebar__brand" href="{{ path('principal_dashboard') }}">
+                <span class="avatar avatar--brand">Z</span>
+                <span>
+                    <strong>ZIM School</strong>
+                    <small>Principal</small>
+                </span>
+            </a>
+
+            <nav class="sidebar__nav" aria-label="Principal">
+                {{ _self.nav_link('Dashboard', path('principal_dashboard'), route == 'principal_dashboard') }}
+                {{ _self.nav_link('Teachers', path('principal_teachers'), route starts with 'school_teachers' or route == 'principal_teachers') }}
+                {{ _self.nav_link('Sections', path('principal_sections'), route starts with 'school_sections') }}
+                {{ _self.nav_link('School Profile', path('principal_school'), route == 'principal_school') }}
+                {{ _self.nav_link('My Profile', path('profile_show'), route starts with 'profile_') }}
+            </nav>
+
+            <a class="sidebar__me" href="{{ path('app_change_password') }}" title="Change password">
+                {% if app.user.photoPath %}<img class="avatar avatar--photo" src="{{ asset(app.user.photoPath) }}" alt="">{% else %}<span class="avatar avatar--green">{{ app.user.initials }}</span>{% endif %}
+                <span>
+                    <strong>{{ app.user.fullName }}</strong>
+                    <small>{{ app.user.roleLabel }}</small>
+                </span>
+            </a>
+        </aside>
+
+        <div class="admin__main">
+            <header class="topbar">
+                <span></span>
+                <div class="topbar__actions">
+                    {% if app.user.photoPath %}<img class="avatar avatar--photo" src="{{ asset(app.user.photoPath) }}" alt="" title="{{ app.user.fullName }}">{% else %}<span class="avatar" title="{{ app.user.fullName }}">{{ app.user.initials }}</span>{% endif %}
+                    <a class="topbar__logout" href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            </header>
+
+            <main class="content">
+                {% include 'admin/_flashes.html.twig' %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,342 @@
+{#
+ # CS Form No. 212 (Revised 2026) Personal Data Sheet, rendered by Dompdf on A4.
+ # Mirrors sheets C1–C4 of the official workbook. Sections not yet in ZIM School
+ # print their empty grids so the sheet can be completed by hand.
+ #}
+{% macro v(value) %}{{ value is same as(null) or value is same as('') ? 'N/A' : value }}{% endmacro %}
+{% macro up(value) %}{{ value is same as(null) or value is same as('') ? 'N/A' : value|upper }}{% endmacro %}
+{% macro d(date) %}{{ date ? date|date('d/m/Y') : 'N/A' }}{% endmacro %}
+{% macro box(checked, label) %}<span class="box">{{ checked ? '☒' : '☐' }} {{ label }}</span>{% endmacro %}
+{% macro blank_rows(count, cols) %}{% for i in 1..count %}<tr class="blank">{% for c in 1..cols %}<td>&nbsp;</td>{% endfor %}</tr>{% endfor %}{% endmacro %}
+{# A list grid: rows of text cells padded with blank rows; an empty list prints N/A in its first row. #}
+{% macro grid_rows(rows, count, cols, numbered = true) %}{% for i in 0..(count - 1) %}{% set row = rows[i] ?? null %}<tr class="blank">{% if numbered %}<td></td>{% endif %}{% if row %}{% for cell in row %}<td>{{ cell }}</td>{% endfor %}{% elseif i == 0 %}<td class="na">N/A</td>{% for c in 2..cols %}<td></td>{% endfor %}{% else %}{% for c in 1..cols %}<td></td>{% endfor %}{% endif %}</tr>{% endfor %}{% endmacro %}
+{% macro footer(page) %}<div class="footer">CS FORM 212 (Revised 2026), Page {{ page }} of 4</div>{% endmacro %}
+{% macro signature_row() %}
+    <table class="grid sign"><tr>
+        <td class="lbl" style="width:18%">SIGNATURE</td>
+        <td style="width:40%"><span class="hint">(e-signature/digital certificate)</span></td>
+        <td class="lbl" style="width:12%">DATE</td>
+        <td></td>
+    </tr></table>
+{% endmacro %}
+{% macro continuation(c) %}
+    <div class="page">
+        <div class="section">{{ c.title }}</div>
+        <table>
+            <tr class="sizer">{% for width in c.columns %}<td style="width:{{ width }}%"></td>{% endfor %}</tr>
+            <tr>{% for heading in c.columns|keys %}<th>{{ heading }}</th>{% endfor %}</tr>
+            {% for row in c.rows %}<tr class="blank">{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>{% endfor %}
+        </table>
+        {{ _self.signature_row() }}
+        <div class="footer">CS FORM 212 (Revised 2026) · Sheet {{ c.sheet }}</div>
+    </div>
+{% endmacro %}
+{# Page 4: a Yes/No answer as ☒/☐ boxes (both empty when not answered), and a filled-in blank. #}
+{% macro yn(key, value, prefix = '') %}{{ prefix ? prefix ~ ' ' }}<span data-q="{{ key }}">{{ value is same as(true) ? '☒' : '☐' }} YES {{ value is same as(false) ? '☒' : '☐' }} NO</span>{% endmacro %}
+{% macro detail(value) %}{% if value is same as(null) or value is same as('') %}________{% else %}<b>{{ value }}</b>{% endif %}{% endmacro %}
+{% import _self as f %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Personal Data Sheet</title>
+<style>
+    @page { size: A4 portrait; margin: 7mm 8mm 7mm; }
+    * { box-sizing: border-box; }
+    body { font-family: 'DejaVu Sans', sans-serif; font-size: 6pt; color: #000; margin: 0; }
+    .page { page-break-before: always; position: relative; }
+    .page.first { page-break-before: auto; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    td, th { border: .6pt solid #000; padding: 1.2pt 2.5pt; vertical-align: middle; word-wrap: break-word; }
+    th { font-weight: normal; background: #d9d9d9; text-align: center; font-size: 5.3pt; line-height: 1.05; }
+    .lbl { background: #eaeaea; font-size: 5.6pt; }
+    .num { width: 3%; }
+    .val { font-weight: bold; }
+    .section { background: #808080; color: #fff; font-weight: bold; font-style: italic; font-size: 7pt; padding: 1.2pt 3pt; border: .6pt solid #000; }
+    .head { text-align: center; margin-bottom: 2pt; }
+    .head .form-no { text-align: left; font-weight: bold; font-style: italic; font-size: 7pt; }
+    .head h1 { font-size: 14pt; margin: 1pt 0; letter-spacing: 1pt; }
+    .warn { font-weight: bold; font-style: italic; font-size: 6.4pt; text-align: center; }
+    .note { font-size: 6pt; font-style: italic; }
+    .hint { font-size: 5.6pt; color: #444; font-style: italic; }
+    .box { white-space: nowrap; margin-right: 5pt; }
+    .center { text-align: center; }
+    .blank td { height: 10pt; font-size: 5.7pt; }
+    .na { font-weight: bold; }
+    .grid.sign td { height: 16pt; }
+    .continue { font-size: 5.8pt; font-style: italic; color: #c00; text-align: center; border: .6pt solid #000; border-top: 0; padding: 1pt; }
+    .footer { text-align: right; font-size: 5.8pt; font-style: italic; margin-top: 3pt; }
+    .photo-box { width: 3.5cm; height: 4.5cm; border: .6pt solid #000; text-align: center; vertical-align: middle; font-size: 5.6pt; }
+    .photo-box img { width: 3.5cm; height: 4.5cm; }
+    .q { vertical-align: top; }
+    .ext { font-size: 4.8pt; white-space: nowrap; }
+    tr.sizer td { border: 0; padding: 0; height: 0; line-height: 0; font-size: 0; }
+    .addr td { border: 0; border-bottom: .4pt solid #999; text-align: center; padding: .6pt 1pt; line-height: 1; }
+    .addr tr:last-child td { border-bottom: 0; }
+    .addr .hint { font-size: 5pt; }
+</style>
+</head>
+<body>
+
+{# ---------------------------------------------------------------- Page 1 #}
+<div class="page first">
+    <div class="head">
+        <div class="form-no">CS Form No. 212<br>Revised 2026</div>
+        <h1>PERSONAL DATA SHEET</h1>
+        <div class="warn">WARNING: Any misrepresentation made in the Personal Data Sheet and the Work Experience Sheet shall cause the filing of administrative/criminal case/s against the person concerned.</div>
+        <div class="warn">READ THE ATTACHED GUIDE TO FILLING OUT THE PERSONAL DATA SHEET (PDS) BEFORE ACCOMPLISHING THE PDS FORM.</div>
+        <div class="note">Tick appropriate boxes (☐) and use separate sheet if necessary. Indicate N/A if not applicable. DO NOT ABBREVIATE.</div>
+    </div>
+
+    <div class="section">I. PERSONAL INFORMATION</div>
+    <table>
+        <tr class="sizer"><td style="width:3%"></td><td style="width:17%"></td><td style="width:30%"></td><td style="width:20%"></td><td style="width:30%"></td></tr>
+        <tr><td class="lbl">1.</td><td class="lbl">SURNAME</td><td class="val" colspan="3">{{ f.up(sheet.surname) }}</td></tr>
+        <tr><td class="lbl">2.</td><td class="lbl">FIRST NAME</td><td class="val" colspan="2">{{ f.up(sheet.firstName) }}</td><td><span class="lbl ext">NAME EXTENSION (JR., SR)</span> <span class="val">{{ f.up(sheet.nameExtension) }}</span></td></tr>
+        <tr><td class="lbl"></td><td class="lbl">MIDDLE NAME</td><td class="val" colspan="3">{{ f.up(sheet.middleName) }}</td></tr>
+        <tr>
+            <td class="lbl">3.</td><td class="lbl">DATE OF BIRTH (dd/mm/yyyy)</td><td class="val">{{ f.d(sheet.dateOfBirth) }}</td>
+            <td class="lbl" rowspan="2">16. CITIZENSHIP<br><span class="hint">If holder of dual citizenship, please indicate the details.</span></td>
+            <td rowspan="2">
+                {{ f.box(sheet.citizenship and sheet.citizenship.value == 'filipino', 'Filipino') }}
+                {{ f.box(sheet.citizenship and sheet.citizenship.value == 'dual', 'Dual Citizenship') }}<br>
+                {{ f.box(sheet.dualCitizenshipBy and sheet.dualCitizenshipBy.value == 'birth', 'by birth') }}
+                {{ f.box(sheet.dualCitizenshipBy and sheet.dualCitizenshipBy.value == 'naturalization', 'by naturalization') }}<br>
+                Pls. indicate country: <span class="val">{{ sheet.citizenship and sheet.citizenship.value == 'dual' ? f.v(sheet.dualCitizenshipCountry) : 'N/A' }}</span>
+            </td>
+        </tr>
+        <tr><td class="lbl">4.</td><td class="lbl">PLACE OF BIRTH</td><td class="val">{{ f.v(sheet.placeOfBirth) }}</td></tr>
+        <tr>
+            <td class="lbl">5.</td><td class="lbl">SEX AT BIRTH</td>
+            <td>{{ f.box(sheet.sexAtBirth and sheet.sexAtBirth.value == 'male', 'Male') }} {{ f.box(sheet.sexAtBirth and sheet.sexAtBirth.value == 'female', 'Female') }}</td>
+            <td class="lbl" rowspan="4">17. RESIDENTIAL ADDRESS</td>
+            <td rowspan="4">
+                <table class="addr">
+                    <tr><td><b>{{ f.v(sheet.resHouseNo) }}</b><br><span class="hint">House/Block/Lot No.</span></td><td><b>{{ f.v(sheet.resStreet) }}</b><br><span class="hint">Street</span></td></tr>
+                    <tr><td><b>{{ f.v(sheet.resSubdivision) }}</b><br><span class="hint">Subdivision/Village</span></td><td><b>{{ f.v(sheet.resBarangay) }}</b><br><span class="hint">Barangay</span></td></tr>
+                    <tr><td><b>{{ f.v(sheet.resCity) }}</b><br><span class="hint">City/Municipality</span></td><td><b>{{ f.v(sheet.resProvince) }}</b><br><span class="hint">Province</span></td></tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="lbl">6.</td><td class="lbl">CIVIL STATUS</td>
+            <td>
+                {% for status, label in {single: 'Single', married: 'Married', widowed: 'Widowed', separated: 'Separated'} %}{{ f.box(sheet.civilStatus and sheet.civilStatus.value == status, label) }} {% endfor %}<br>
+                {{ f.box(sheet.civilStatus and sheet.civilStatus.value == 'others', 'Other/s:') }} {{ sheet.civilStatus and sheet.civilStatus.value == 'others' ? sheet.civilStatusOther }}
+            </td>
+        </tr>
+        <tr><td class="lbl">7.</td><td class="lbl">HEIGHT (m)</td><td class="val">{{ f.v(sheet.height) }}</td></tr>
+        <tr><td class="lbl">8.</td><td class="lbl">WEIGHT (kg)</td><td class="val">{{ f.v(sheet.weight) }}</td></tr>
+        <tr><td class="lbl">9.</td><td class="lbl">BLOOD TYPE</td><td class="val">{{ f.v(sheet.bloodType) }}</td><td class="lbl">ZIP CODE</td><td class="val">{{ f.v(sheet.resZip) }}</td></tr>
+        <tr>
+            <td class="lbl">10.</td><td class="lbl">UMID ID NO.</td><td class="val">{{ f.v(sheet.umidNo) }}</td>
+            <td class="lbl" rowspan="4">18. PERMANENT ADDRESS</td>
+            <td rowspan="4">
+                <table class="addr">
+                    <tr><td><b>{{ f.v(sheet.permHouseNo) }}</b><br><span class="hint">House/Block/Lot No.</span></td><td><b>{{ f.v(sheet.permStreet) }}</b><br><span class="hint">Street</span></td></tr>
+                    <tr><td><b>{{ f.v(sheet.permSubdivision) }}</b><br><span class="hint">Subdivision/Village</span></td><td><b>{{ f.v(sheet.permBarangay) }}</b><br><span class="hint">Barangay</span></td></tr>
+                    <tr><td><b>{{ f.v(sheet.permCity) }}</b><br><span class="hint">City/Municipality</span></td><td><b>{{ f.v(sheet.permProvince) }}</b><br><span class="hint">Province</span></td></tr>
+                </table>
+            </td>
+        </tr>
+        <tr><td class="lbl">11.</td><td class="lbl">PAG-IBIG ID NO.</td><td class="val">{{ f.v(sheet.pagibigNo) }}</td></tr>
+        <tr><td class="lbl">12.</td><td class="lbl">PHILHEALTH NO.</td><td class="val">{{ f.v(sheet.philhealthNo) }}</td></tr>
+        <tr><td class="lbl">13.</td><td class="lbl">PhilSys Card Number (PCN):</td><td class="val">{{ f.v(sheet.philsysPcn) }}</td></tr>
+        <tr><td class="lbl">14.</td><td class="lbl">TIN NO.</td><td class="val">{{ f.v(sheet.tin) }}</td><td class="lbl">ZIP CODE</td><td class="val">{{ f.v(sheet.permZip) }}</td></tr>
+        <tr><td class="lbl">15.</td><td class="lbl">AGENCY EMPLOYEE NO.</td><td class="val">{{ f.v(sheet.agencyEmployeeNo) }}</td><td class="lbl">19. TELEPHONE NO.</td><td class="val">{{ f.v(sheet.telephoneNo) }}</td></tr>
+        <tr><td class="lbl" colspan="3"></td><td class="lbl">20. MOBILE NO.</td><td class="val">{{ f.v(sheet.mobileNo) }}</td></tr>
+        <tr><td class="lbl" colspan="3"></td><td class="lbl">21. E-MAIL ADDRESS (if any)</td><td class="val">{{ f.v(sheet.email) }}</td></tr>
+    </table>
+
+    <div class="section">II. FAMILY BACKGROUND</div>
+    <table>
+        <tr class="sizer"><td style="width:3%"></td><td style="width:17%"></td><td style="width:24%"></td><td style="width:16%"></td><td style="width:26%"></td><td style="width:14%"></td></tr>
+        <tr>
+            <td class="lbl">22.</td><td class="lbl">SPOUSE'S SURNAME</td><td class="val" colspan="2">{{ f.up(sheet.spouseSurname) }}</td>
+            <th>23. NAME of CHILDREN (Write full name and list all)</th><th>DATE OF BIRTH (dd/mm/yyyy)</th>
+        </tr>
+        {% set spouse_rows = [
+            ['FIRST NAME', f.up(sheet.spouseFirstName), 'NAME EXTENSION (JR., SR)', f.up(sheet.spouseNameExtension)],
+            ['MIDDLE NAME', f.up(sheet.spouseMiddleName)],
+            ['OCCUPATION', f.v(sheet.spouseOccupation)],
+            ['EMPLOYER/BUSINESS NAME', f.v(sheet.spouseEmployer)],
+            ['BUSINESS ADDRESS', f.v(sheet.spouseBusinessAddress)],
+            ['TELEPHONE NO.', f.v(sheet.spouseTelephone)],
+            ['FATHER\'S SURNAME', f.up(sheet.fatherSurname), '24.'],
+            ['FIRST NAME', f.up(sheet.fatherFirstName), 'NAME EXTENSION (JR., SR)', f.up(sheet.fatherNameExtension)],
+            ['MIDDLE NAME', f.up(sheet.fatherMiddleName)],
+            ['MOTHER\'S MAIDEN NAME', '', '25.'],
+            ['SURNAME', f.up(sheet.motherMaidenSurname)],
+        ] %}
+        {% for i in 0..(child_rows - 1) %}
+            {% set row = spouse_rows[i] ?? null %}
+            {% set child = children[i] ?? null %}
+            <tr>
+                {% if row %}
+                    <td class="lbl">{{ row[2] is defined and row|length == 3 ? row[2] }}</td>
+                    <td class="lbl">{{ row[0] }}</td>
+                    {% if row|length == 4 %}
+                        <td class="val">{{ row[1] }}</td><td><span class="lbl ext">{{ row[2] }}</span> <span class="val">{{ row[3] }}</span></td>
+                    {% else %}
+                        <td class="val" colspan="2">{{ row[1] }}</td>
+                    {% endif %}
+                {% else %}
+                    <td class="lbl"></td><td class="lbl">FIRST NAME</td><td class="val" colspan="2">{{ f.up(sheet.motherFirstName) }}</td>
+                {% endif %}
+                <td class="val">{{ child ? child.fullName : (i == 0 and children is empty ? 'N/A') }}</td>
+                <td class="val center">{{ child and child.dateOfBirth ? child.dateOfBirth|date('d/m/Y') }}</td>
+            </tr>
+        {% endfor %}
+        <tr><td class="lbl"></td><td class="lbl">MIDDLE NAME</td><td class="val" colspan="2">{{ f.up(sheet.motherMiddleName) }}</td><td colspan="2" class="note center">(Continue on sheet C7 if necessary)</td></tr>
+    </table>
+
+    <div class="section">III. EDUCATIONAL BACKGROUND</div>
+    <table>
+        <tr class="sizer"><td style="width:3%"></td><td style="width:13%"></td><td style="width:20%"></td><td style="width:20%"></td><td style="width:7%"></td><td style="width:7%"></td><td style="width:10%"></td><td style="width:8%"></td><td style="width:12%"></td></tr>
+        <tr><th rowspan="2">26.</th><th rowspan="2">LEVEL</th><th rowspan="2">NAME OF SCHOOL (Write in full)</th><th rowspan="2">BASIC EDUCATION/DEGREE/COURSE (Write in full)</th><th colspan="2">PERIOD OF ATTENDANCE</th><th rowspan="2">HIGHEST LEVEL/ UNITS EARNED (if not graduated)</th><th rowspan="2">YEAR GRADUATED</th><th rowspan="2">SCHOLARSHIP/ ACADEMIC HONORS RECEIVED</th></tr>
+        <tr><th>From</th><th>To</th></tr>
+        {% for row in lists.main.education %}
+            <tr class="blank"><td></td><td class="lbl">{{ row[0] }}</td>{% for cell in row|slice(1) %}<td{{ cell == 'N/A' ? ' class="na"' }}>{{ cell }}</td>{% endfor %}</tr>
+        {% endfor %}
+    </table>
+    <div class="continue">(Continue on sheet C8 if necessary)</div>
+    {{ f.signature_row() }}
+    {{ f.footer(1) }}
+</div>
+
+{# ---------------------------------------------------------------- Page 2 #}
+<div class="page">
+    <div class="section">IV. CIVIL SERVICE ELIGIBILITY</div>
+    <table>
+        <tr class="sizer"><td style="width:3%"></td><td style="width:29%"></td><td style="width:9%"></td><td style="width:14%"></td><td style="width:23%"></td><td style="width:11%"></td><td style="width:11%"></td></tr>
+        <tr><th rowspan="2">27.</th><th rowspan="2">CAREER SERVICE/ RA 1080 (BOARD/ BAR) UNDER SPECIAL LAWS/ CES/ CSEE BARANGAY ELIGIBILITY / DRIVER'S LICENSE</th><th rowspan="2">RATING (If Applicable)</th><th rowspan="2">DATE OF EXAMINATION / CONFERMENT</th><th rowspan="2">PLACE OF EXAMINATION / CONFERMENT</th><th colspan="2">LICENSE (if applicable)</th></tr>
+        <tr><th>NUMBER</th><th>Date of Validity</th></tr>
+        {{ f.grid_rows(lists.main.eligibility, lists.slots.eligibility, 6) }}
+    </table>
+    <div class="continue">(Continue on sheet C9 if necessary)</div>
+
+    <div class="section">V. WORK EXPERIENCE</div>
+    <div class="note">(Include private employment. Start from your recent work) Description of duties should be indicated in the attached Work Experience sheet.</div>
+    <table>
+        <tr class="sizer"><td style="width:3%"></td><td style="width:9%"></td><td style="width:9%"></td><td style="width:20%"></td><td style="width:24%"></td><td style="width:9%"></td><td style="width:10%"></td><td style="width:10%"></td><td style="width:6%"></td></tr>
+        <tr><th rowspan="2">28.</th><th colspan="2">INCLUSIVE DATES (dd/mm/yyyy)</th><th rowspan="2">POSITION TITLE (Write in full/Do not abbreviate)</th><th rowspan="2">DEPARTMENT / AGENCY / OFFICE / COMPANY (Write in full/Do not abbreviate)</th><th rowspan="2">MONTHLY SALARY</th><th rowspan="2">SALARY/ JOB/ PAY GRADE (if applicable) &amp; STEP INCREMENT (Format "00-0")</th><th rowspan="2">STATUS OF APPOINTMENT</th><th rowspan="2">GOV'T SERVICE (Y/ N)</th></tr>
+        <tr><th>From</th><th>To</th></tr>
+        {{ f.grid_rows(lists.main.work, lists.slots.work, 8) }}
+    </table>
+    <div class="continue">(Continue on sheet C6 if necessary)</div>
+    {{ f.signature_row() }}
+    {{ f.footer(2) }}
+</div>
+
+{# ---------------------------------------------------------------- Page 3 #}
+<div class="page">
+    <div class="section">VI. LEARNING AND DEVELOPMENT (L&amp;D) INTERVENTIONS/TRAINING PROGRAMS ATTENDED</div>
+    <table>
+        <tr class="sizer"><td style="width:3%"></td><td style="width:35%"></td><td style="width:9%"></td><td style="width:9%"></td><td style="width:8%"></td><td style="width:13%"></td><td style="width:23%"></td></tr>
+        <tr><th rowspan="2">29.</th><th rowspan="2">TITLE OF LEARNING AND DEVELOPMENT INTERVENTIONS/TRAINING PROGRAMS (Write in full)</th><th colspan="2">INCLUSIVE DATES OF ATTENDANCE (dd/mm/yyyy)</th><th rowspan="2">NUMBER OF HOURS</th><th rowspan="2">Type of L&amp;D (Managerial/ Supervisory/ Technical/etc)</th><th rowspan="2">CONDUCTED/ SPONSORED BY (Write in full)</th></tr>
+        <tr><th>From</th><th>To</th></tr>
+        {{ f.grid_rows(lists.main.training, lists.slots.training, 6) }}
+    </table>
+    <div class="continue">(Continue on sheet C5 if necessary)</div>
+
+    <div class="section">VII. VOLUNTARY WORK OR INVOLVEMENT IN CIVIC / NON-GOVERNMENT / PEOPLE / VOLUNTARY ORGANIZATION/S</div>
+    <table>
+        <tr class="sizer"><td style="width:3%"></td><td style="width:40%"></td><td style="width:10%"></td><td style="width:10%"></td><td style="width:9%"></td><td style="width:28%"></td></tr>
+        <tr><th rowspan="2">30.</th><th rowspan="2">NAME &amp; ADDRESS OF ORGANIZATION (Write in full)</th><th colspan="2">INCLUSIVE DATES (dd/mm/yyyy)</th><th rowspan="2">NUMBER OF HOURS</th><th rowspan="2">POSITION / NATURE OF WORK</th></tr>
+        <tr><th>From</th><th>To</th></tr>
+        {{ f.grid_rows(lists.main.voluntary, lists.slots.voluntary, 5) }}
+    </table>
+    <div class="continue">(Continue on sheet C10 if necessary)</div>
+
+    <div class="section">VIII. OTHER INFORMATION</div>
+    <table>
+        <tr class="sizer"><td style="width:30%"></td><td style="width:37%"></td><td style="width:33%"></td></tr>
+        <tr><th>31. SPECIAL SKILLS and HOBBIES</th><th>32. NON-ACADEMIC DISTINCTIONS / RECOGNITION (Write in full)</th><th>33. MEMBERSHIP IN ASSOCIATION/ORGANIZATION (Write in full)</th></tr>
+        {{ f.grid_rows(lists.main.other, lists.slots.other, 3, false) }}
+    </table>
+    <div class="continue">(Continue on sheet C11 if necessary)</div>
+    {{ f.signature_row() }}
+    {{ f.footer(3) }}
+</div>
+
+{# ---------------------------------------------------------------- Page 4 #}
+<div class="page">
+    <table>
+        <tr class="sizer"><td style="width:4%"></td><td style="width:56%"></td><td style="width:40%"></td></tr>
+        {% set questions = [
+            ['34.', 'Are you related by consanguinity or affinity to the appointing or recommending authority, or to the chief of bureau or office or to the person who has immediate supervision over you in the Office, Bureau or Department where you will be appointed,<br>a. within the third degree?<br>b. within the fourth degree (for Local Government Unit - Career Employees)?'],
+            ['35.', 'a. Have you ever been found guilty of any administrative offense?<br><br>b. Have you been criminally charged before any court?'],
+            ['36.', 'Have you ever been convicted of any crime or violation of any law, decree, ordinance or regulation by any court or tribunal?'],
+            ['37.', 'Have you ever been separated from the service in any of the following modes: resignation, retirement, dropped from the rolls, dismissal, termination, end of term, finished contract or phased out (abolition) in the public or private sector?'],
+            ['38.', 'a. Have you ever been a candidate in a national or local election held within the last year (except Barangay election)?<br>b. Have you resigned from the government service during the three (3)-month period before the last election to promote/actively campaign for a national or local candidate?'],
+            ['39.', 'Have you acquired the status of an immigrant or permanent resident of another country?'],
+            ['40.', 'Pursuant to: (a) Indigenous People\'s Act (RA 8371); (b) Magna Carta for Disabled Persons (RA 7277, as amended); and (c) Expanded Solo Parents Welfare Act (RA 11861), please answer the following items:<br>a. Are you a member of any indigenous group?<br>b. Are you a person with disability?<br>c. Are you a solo parent?'],
+        ] %}
+        {% set s = sheet %}
+        {% set answers = {
+            '34.': f.yn('34a', s.q34a, 'a.') ~ '<br>' ~ f.yn('34b', s.q34b, 'b.') ~ '<br>If YES, give details: ' ~ f.detail(s.q34Details),
+            '35.': f.yn('35a', s.q35a, 'a.') ~ ' &nbsp; If YES, give details: ' ~ f.detail(s.q35aDetails) ~ '<br>' ~ f.yn('35b', s.q35b, 'b.') ~ ' &nbsp; If YES, give details: ' ~ f.detail(s.q35bDetails) ~ '<br>Date Filed: ' ~ f.detail(s.q35bDateFiled ? s.q35bDateFiled|date('d/m/Y') : null) ~ ' Status of Case/s: ' ~ f.detail(s.q35bStatus),
+            '36.': f.yn('36', s.q36) ~ ' &nbsp; If YES, give details: ' ~ f.detail(s.q36Details),
+            '37.': f.yn('37', s.q37) ~ ' &nbsp; If YES, give details: ' ~ f.detail(s.q37Details),
+            '38.': f.yn('38a', s.q38a, 'a.') ~ ' &nbsp; If YES, give details: ' ~ f.detail(s.q38aDetails) ~ '<br>' ~ f.yn('38b', s.q38b, 'b.') ~ ' &nbsp; If YES, give details: ' ~ f.detail(s.q38bDetails),
+            '39.': f.yn('39', s.q39) ~ ' &nbsp; If YES, give details (country): ' ~ f.detail(s.q39Details),
+            '40.': '<br><br>' ~ f.yn('40a', s.q40a, 'a.') ~ ' &nbsp; If YES, please specify: ' ~ f.detail(s.q40aDetails) ~ '<br>' ~ f.yn('40b', s.q40b, 'b.') ~ ' &nbsp; If YES, please specify ID No: ' ~ f.detail(s.q40bDetails) ~ '<br>' ~ f.yn('40c', s.q40c, 'c.') ~ ' &nbsp; If YES, please specify ID No: ' ~ f.detail(s.q40cDetails),
+        } %}
+        {% for q in questions %}
+            <tr><td class="lbl q">{{ q[0] }}</td><td class="lbl q">{{ q[1]|raw }}</td><td class="q">{# user values were escaped inside f.yn / f.detail #}{{ answers[q[0]]|raw }}</td></tr>
+        {% endfor %}
+    </table>
+
+    <table style="margin-top:4pt">
+        <tr class="sizer"><td style="width:4%"></td><td style="width:30%"></td><td style="width:30%"></td><td style="width:16%"></td><td style="width:20%"></td></tr>
+        <tr><td class="lbl">41.</td><td class="lbl" colspan="3">REFERENCES <span class="hint">(Person not related by consanguinity or affinity to applicant /appointee)</span></td>
+            <td rowspan="5" class="photo-box">{% if photo %}<img src="{{ photo }}" alt="">{% else %}PHOTO<br><br><span class="hint">Passport-sized unfiltered digital picture taken within the last 6 months<br>4.5 cm. X 3.5 cm</span>{% endif %}</td></tr>
+        <tr><th></th><th>NAME</th><th>OFFICE / RESIDENTIAL ADDRESS</th><th>CONTACT NO. AND/OR EMAIL</th></tr>
+        {% set refs = sheet.references|filter(r => not r.empty)|slice(0, 3) %}
+        {% for i in 0..2 %}{% set ref = refs[i] ?? null %}<tr class="blank"><td></td><td>{{ ref ? ref.name }}</td><td>{{ ref ? ref.address }}</td><td>{{ ref ? ref.contact }}</td></tr>{% endfor %}
+    </table>
+
+    <table style="margin-top:4pt">
+        <tr><td class="lbl q" style="width:4%">42.</td><td colspan="2">I declare under oath that I have personally accomplished this Personal Data Sheet which is a true, correct, and complete statement pursuant to the provisions of pertinent laws, rules, and regulations of the Republic of the Philippines. I authorize the agency head/authorized representative to verify/validate the contents stated herein. I agree that any misrepresentation made in this document and its attachments shall cause the filing of administrative/criminal case/s against me.</td></tr>
+    </table>
+
+    <table style="margin-top:4pt">
+        <tr class="sizer"><td style="width:38%"></td><td style="width:40%"></td><td style="width:22%"></td></tr>
+        <tr>
+            <td class="q">
+                <div class="lbl">Government Issued ID (i.e.Passport, GSIS, SSS, PRC, Driver's License, etc.) PLEASE INDICATE ID Number and Date of Issuance</div>
+                <br>Government Issued ID: {{ f.detail(sheet.govIdType) }}<br><br>ID/License/Passport No.: {{ f.detail(sheet.govIdNumber) }}<br><br>Date/Place of Issuance: {{ f.detail(sheet.govIdIssued) }}
+            </td>
+            <td class="center" style="height:70pt; vertical-align:bottom"><span class="hint">(e-signature/digital certificate)</span><br>Signature (Sign inside the box)<br><br>______________________<br>Date Accomplished</td>
+            <td class="center" style="vertical-align:bottom">Right Thumbmark</td>
+        </tr>
+    </table>
+
+    <table style="margin-top:4pt">
+        <tr><td class="center" style="height:48pt; vertical-align:bottom">SUBSCRIBED AND SWORN to before me this ______________, affiant exhibiting his/her validly issued government ID as indicated above.<br><br><span class="hint">(e-signature/digital certificate except for notary public)</span><br>Person Administering Oath</td></tr>
+    </table>
+    {{ f.footer(4) }}
+</div>
+
+{# ------------------------------------- Continuation sheets, in order C5–C11 #}
+{% for c in lists.continuations|filter(c => c.sheet in ['C5', 'C6']) %}{{ _self.continuation(c) }}{% endfor %}
+
+{# C7: children #}
+{% if more_children is not empty %}
+    <div class="page">
+        <div class="section">II. FAMILY BACKGROUND (continuation)</div>
+        <table>
+            <tr class="sizer"><td style="width:70%"></td><td style="width:30%"></td></tr>
+            <tr><th>23. NAME of CHILDREN (Write full name and list all)</th><th>DATE OF BIRTH (dd/mm/yyyy)</th></tr>
+            {% for child in more_children %}
+                <tr><td class="val">{{ child.fullName }}</td><td class="val center">{{ child.dateOfBirth ? child.dateOfBirth|date('d/m/Y') }}</td></tr>
+            {% endfor %}
+        </table>
+        {{ f.signature_row() }}
+    </div>
+{% endif %}
+
+{% for c in lists.continuations|filter(c => c.sheet not in ['C5', 'C6']) %}{{ _self.continuation(c) }}{% endfor %}
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home · ZIM School{% endblock %}
+
+{% block body %}
+    <main class="placeholder">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert--success" role="status">{{ message }}</div>
+        {% endfor %}
+
+        <h1>Hello, {{ app.user.fullName }}</h1>
+        <p>You are signed in as <strong>{{ app.user.username }}</strong>. This page will be replaced once your dashboard is designed.</p>
+        <p>
+            <a class="btn btn--primary" href="{{ path('app_change_password') }}">Change password</a>
+            <a class="btn btn--ghost" href="{{ path('app_logout') }}">Sign out</a>
+        </p>
+    </main>
+{% endblock %}

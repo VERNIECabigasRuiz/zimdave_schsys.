@@ -1,0 +1,50 @@
+{% extends 'principal/_layout.html.twig' %}
+
+{% block title %}School Profile · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>School Profile</h1>
+            <p>Your school's logo and contact details.</p>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+        <section class="card profile-card" aria-label="School">
+            {% if school.logoPath %}
+                <img class="profile-card__logo" src="{{ asset(school.logoPath) }}" alt="{{ school.name }} logo">
+            {% else %}
+                <span class="profile-card__logo profile-card__logo--empty" aria-hidden="true">{{ school.name|slice(0, 1) }}</span>
+            {% endif %}
+            <h2>{{ school.name }}</h2>
+            <dl class="info-list">
+                <div><dt>School ID</dt><dd>{{ school.schoolId }}</dd></div>
+                <div><dt>Type</dt><dd>{{ school.type ? school.type.label : '—' }}</dd></div>
+                <div><dt>Region</dt><dd>{{ school.region }}</dd></div>
+                <div><dt>Division</dt><dd>{{ school.division }}</dd></div>
+                <div><dt>District</dt><dd>{{ school.district ?? '—' }}</dd></div>
+            </dl>
+            <p class="form-note">Only the administrator can change these. Contact them if something is wrong.</p>
+        </section>
+
+        <div class="card form-card">
+            {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate', 'data-controller': 'image-preview'}}) }}
+            {{ form_errors(form) }}
+                {{ form_row(form.logo) }}
+                <img class="preview-image" data-image-preview-target="image" alt="Preview of the chosen logo" hidden>
+                <p class="preview-hint" data-image-preview-target="hint" role="status" hidden>Not saved yet. Click "Save school profile" below to upload it.</p>
+                {{ form_row(form.address) }}
+                <div class="form-grid">
+                    {{ form_row(form.contactNumber) }}
+                    {{ form_row(form.email) }}
+                </div>
+                {{ form_row(form.facebookUrl) }}
+
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Save school profile</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

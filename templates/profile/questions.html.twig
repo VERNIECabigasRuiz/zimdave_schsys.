@@ -1,0 +1,33 @@
+{% extends 'profile/_layout.html.twig' %}
+
+{% set tab = 'questions' %}
+
+{% block title %}Questions 34–40 · My Profile · ZIM School{% endblock %}
+
+{% block profile_content %}
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <p class="muted">Answer YES or NO. If you answer YES, give the details asked below the question.</p>
+
+            {% for key, fields in questions %}
+                {% if key == '40a' %}<p class="question-preamble">{{ item_40 }}</p>{% endif %}
+                <fieldset class="question">
+                    <legend>{{ wording[key] }}</legend>
+                    {% for answer in fields[0] %}
+                        {{ form_row(form[answer]) }}
+                    {% endfor %}
+                    <div class="form-grid">
+                        {% for detail in fields[1] %}
+                            {{ form_row(form[detail]) }}
+                        {% endfor %}
+                    </div>
+                </fieldset>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save answers</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

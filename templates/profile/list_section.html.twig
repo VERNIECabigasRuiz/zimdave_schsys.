@@ -1,0 +1,65 @@
+{% extends 'profile/_layout.html.twig' %}
+
+{#
+ # One PDS list tab (III–VII). Each row is a card; rows are added and removed with
+ # the "collection" Stimulus controller. Wording comes from App\Form\PdsListSections.
+ #}
+
+{% block title %}{{ section.heading|split('. ')|last }} · My Profile · ZIM School{% endblock %}
+
+{% macro row_card(row, section) %}
+    <div class="list-card" data-collection-row>
+        <div class="list-card__head">
+            <strong>{{ section.row }}</strong>
+            <button class="btn btn--sm btn--danger" type="button" data-action="collection#remove">Remove</button>
+        </div>
+        {{ form_errors(row) }}
+        <div class="form-grid">
+            {% for field in row %}
+                {% if 'checkbox' in field.vars.block_prefixes %}
+                    <div class="checkbox-row">{{ form_widget(field) }} {{ form_label(field) }}</div>
+                {% else %}
+                    {{ form_row(field) }}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endmacro %}
+
+{% block profile_content %}
+    {% set rows = form[section.field] %}
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <fieldset class="periods"
+                      data-controller="collection"
+                      data-collection-prototype-value="{{ _self.row_card(rows.vars.prototype, section)|e('html_attr') }}"
+                      data-collection-index-value="{{ rows|length > 0 ? max(rows|keys) + 1 : 0 }}">
+                <legend>{{ section.heading }}</legend>
+                <p class="muted">{{ section.intro }}</p>
+                {% if tab == 'training' and sheet.trainings|length %}
+                    <p class="list-total">Total: {{ sheet.trainingHours }} hours</p>
+                {% endif %}
+                {{ form_errors(rows) }}
+                <p class="muted" data-collection-target="empty"{{ rows|length ? ' hidden' }}>{{ section.empty }}</p>
+                <div data-collection-target="rows">
+                    {% for row in rows %}
+                        {{ _self.row_card(row, section) }}
+                    {% endfor %}
+                </div>
+                <button class="btn btn--sm" type="button" data-action="collection#add">{{ section.add }}</button>
+            </fieldset>
+            {% do rows.setRendered %}
+
+            {% for id, options in section.datalists ?? {} %}
+                <datalist id="{{ id }}">
+                    {% for option in options %}<option value="{{ option }}"></option>{% endfor %}
+                </datalist>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">{{ section.save }}</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

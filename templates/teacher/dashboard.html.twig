@@ -1,0 +1,42 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{% block title %}Dashboard · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Welcome, {{ app.user.fullName }}</h1>
+            {% if school %}
+                <p>{{ school.name }} · S.Y. {{ school_year.name }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not school_year %}
+        <div class="card form-card"><p>No current school year.</p></div>
+    {% elseif not school %}
+        <div class="card form-card"><p>You are not assigned to a school for S.Y. {{ school_year.name }}. Contact your principal.</p></div>
+    {% else %}
+        <div class="card form-card advisory-card">
+            {% if advisory %}
+                <p class="muted">Advisory class</p>
+                <h2>Adviser of {{ advisory.label }}</h2>
+            {% else %}
+                <p>No advisory class this S.Y.</p>
+                {% if can_create_section %}
+                    <a class="btn btn--primary" href="{{ path('teacher_section_new') }}">Create my section</a>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <section class="stats" aria-label="Shortcuts">
+            <a class="stat card" href="{{ path('profile_show') }}">
+                <span class="avatar avatar--green">P</span>
+                <span>
+                    <strong>My Profile</strong>
+                    <small>Personal Data Sheet (CS Form 212)</small>
+                </span>
+            </a>
+        </section>
+    {% endif %}
+{% endblock %}

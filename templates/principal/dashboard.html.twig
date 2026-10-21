@@ -1,0 +1,37 @@
+{% extends 'principal/_layout.html.twig' %}
+
+{% block title %}Dashboard · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ school.name }}</h1>
+            <p>
+                S.Y. {{ school_year.name }} · {{ school.planLabel }} plan
+                {% if school.planValidUntil %}· valid until {{ school.planValidUntil|date('M j, Y') }}{% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if blocked_reason %}
+        <div class="alert alert--error" role="alert">{{ blocked_reason }}</div>
+    {% endif %}
+
+    <section class="stats" aria-label="Plan usage">
+        <a class="stat card" href="{{ path('principal_teachers') }}">
+            <span class="avatar avatar--green">T</span>
+            <span>
+                <strong>{{ teachers|number_format }} / {{ school.teacherLimit|number_format }}</strong>
+                <small>Teachers</small>
+            </span>
+        </a>
+        {# Students are counted once student accounts exist #}
+        <div class="stat card">
+            <span class="avatar avatar--amber">S</span>
+            <span>
+                <strong>0 / {{ school.studentLimit|number_format }}</strong>
+                <small>Students</small>
+            </span>
+        </div>
+    </section>
+{% endblock %}

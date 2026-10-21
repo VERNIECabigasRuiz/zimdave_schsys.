@@ -1,0 +1,14 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{% block title %}Create my section · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Create my section</h1>
+            <p>{{ school.name }} · You will be the class adviser.</p>
+        </div>
+    </div>
+
+    {{ include('school_sections/_form.html.twig', {button: 'Create my section', cancel: path('teacher_dashboard')}) }}
+{% endblock %}

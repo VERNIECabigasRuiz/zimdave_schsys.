@@ -1,0 +1,138 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% set titles = {
+    admins: ['Administrators', 'Accounts with full access to the system'],
+    principals: ['Principals', 'Principal accounts'],
+    teachers: ['Teachers', 'Teacher accounts'],
+    students: ['Students', 'Student accounts'],
+} %}
+{% set heading = slug ? titles[slug][0] : 'User Accounts' %}
+{% set subheading = slug ? titles[slug][1] : 'Every account that can sign in' %}
+{% set list_route = slug ? 'admin_accounts_by_role' : 'admin_accounts' %}
+{% set list_params = slug ? {slug: slug} : {} %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ subheading }}</p>
+        </div>
+        <a class="btn btn--primary" href="{{ path('admin_account_new', slug ? {role: slug} : {}) }}">+ Create account</a>
+    </div>
+
+    {% if not slug %}
+        <nav class="tabs" aria-label="Filter by role">
+            <a class="tabs__tab is-active" href="{{ path('admin_accounts') }}">All</a>
+            {% for tab_slug, tab in titles %}
+                <a class="tabs__tab" href="{{ path('admin_accounts_by_role', {slug: tab_slug}) }}">{{ tab[0] }}</a>
+            {% endfor %}
+        </nav>
+    {% endif %}
+
+    <form class="filters" method="get" action="{{ path(list_route, list_params) }}">
+        <input type="search" name="q" value="{{ q }}" placeholder="Search by name or username" aria-label="Search by name or username">
+        <select name="status" aria-label="Status">
+            <option value="">All statuses</option>
+            <option value="active" {{ status == 'active' ? 'selected' }}>Active</option>
+            <option value="inactive" {{ status == 'inactive' ? 'selected' }}>Inactive</option>
+        </select>
+        <button class="btn btn--ghost btn--sm" type="submit">Filter</button>
+        {% if q or status %}
+            <a class="link-muted" href="{{ path(list_route, list_params) }}">Clear</a>
+        {% endif %}
+    </form>
+
+    <div class="card table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    {% if not slug %}<th>Role</th>{% endif %}
+                    <th>Status</th>
+                    <th>Last sign-in</th>
+                    <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in accounts %}
+                    {% set is_me = account.username == app.user.username %}
+                    <tr>
+                        <td>
+                            <span class="person">
+                                <span class="avatar avatar--sm">{{ account.initials }}</span>
+                                {{ account.fullName }}{% if is_me %} <span class="muted">(you)</span>{% endif %}
+                                {% if account.role in [constant('App\\Entity\\User::ROLE_PRINCIPAL'), constant('App\\Entity\\User::ROLE_TEACHER')] %}
+                                    <span class="muted">· {{ school_names[account.id] ?? 'Unassigned' }}</span>
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ account.username }}</td>
+                        {% if not slug %}<td><span class="badge">{{ account.roleLabel }}</span></td>{% endif %}
+                        <td>
+                            {% if not account.active %}
+                                <span class="badge badge--rose">Inactive</span>
+                            {% elseif account.mustChangePassword %}
+                                <span class="badge badge--amber" title="Has not set their own password yet">Pending first sign-in</span>
+                            {% else %}
+                                <span class="badge badge--green">Active</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ account.lastLoginAt ? account.lastLoginAt|activity_time : '—' }}</td>
+                        <td class="table__actions">
+                            {% if account.role == constant('App\\Entity\\User::ROLE_TEACHER') %}
+                                <a class="btn btn--ghost btn--sm" href="{{ path('admin_account_school', {id: account.id}) }}">School</a>
+                            {% endif %}
+                            <a class="btn btn--ghost btn--sm" href="{{ path('admin_account_edit', {id: account.id}) }}">Edit</a>
+                            {% if not is_me %}
+                                <details class="dropdown dropdown--right">
+                                    <summary class="btn btn--ghost btn--sm" aria-label="More actions for {{ account.username }}">⋯</summary>
+                                    <div class="dropdown__panel dropdown__panel--menu">
+                                        <form method="post" action="{{ path('admin_account_reset_password', {id: account.id}) }}"
+                                              data-turbo-confirm="Reset the password for {{ account.username }}? They will need the new temporary password to sign in.">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('account-' ~ account.id) }}">
+                                            <input type="hidden" name="_back" value="{{ app.request.requestUri }}">
+                                            <button type="submit" class="menu-item">Reset password</button>
+                                        </form>
+                                        <form method="post" action="{{ path('admin_account_toggle_active', {id: account.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('account-' ~ account.id) }}">
+                                            <input type="hidden" name="_back" value="{{ app.request.requestUri }}">
+                                            <button type="submit" class="menu-item{{ account.active ? ' menu-item--danger' }}">
+                                                {{ account.active ? 'Deactivate' : 'Activate' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </details>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="empty">
+                            {% if q or status %}
+                                No accounts match your search.
+                            {% else %}
+                                No {{ slug ? heading|lower : 'accounts' }} yet.
+                                <a href="{{ path('admin_account_new', slug ? {role: slug} : {}) }}">Create one</a>.
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if pages > 1 %}
+        <nav class="pager" aria-label="Pages">
+            <span class="muted">{{ total|number_format }} accounts · page {{ page }} of {{ pages }}</span>
+            {% if page > 1 %}
+                <a class="btn btn--ghost btn--sm" href="{{ path(list_route, list_params|merge({q: q, status: status, page: page - 1})) }}">Previous</a>
+            {% endif %}
+            {% if page < pages %}
+                <a class="btn btn--ghost btn--sm" href="{{ path(list_route, list_params|merge({q: q, status: status, page: page + 1})) }}">Next</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

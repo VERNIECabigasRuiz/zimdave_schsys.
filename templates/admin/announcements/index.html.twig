@@ -1,0 +1,40 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Announcements · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Announcements</h1>
+            <p>Messages shown to principals, teachers and students when they sign in</p>
+        </div>
+        <a class="btn btn--primary" href="{{ path('admin_announcement_new') }}">+ New announcement</a>
+    </div>
+
+    {% for a in announcements %}
+        <article class="card announcement">
+            <header class="announcement__head">
+                <div>
+                    <h2>{{ a.title }}</h2>
+                    <p class="muted">
+                        <span class="badge">{{ a.audienceLabel }}</span>
+                        {{ a.createdAt|date('M j, Y g:i A') }}{% if a.author %} · {{ a.author.fullName }}{% endif %}
+                    </p>
+                </div>
+                <div class="sy-card__actions">
+                    <a class="btn btn--ghost btn--sm" href="{{ path('admin_announcement_edit', {id: a.id}) }}">Edit</a>
+                    <form method="post" action="{{ path('admin_announcement_delete', {id: a.id}) }}"
+                          data-turbo-confirm="Delete this announcement?">
+                        <input type="hidden" name="_token" value="{{ csrf_token('announcement-' ~ a.id) }}">
+                        <button class="btn btn--ghost btn--sm btn--danger" type="submit">Delete</button>
+                    </form>
+                </div>
+            </header>
+            <div class="announcement__body">{{ a.body|nl2br }}</div>
+        </article>
+    {% else %}
+        <div class="card empty">
+            No announcements yet. <a href="{{ path('admin_announcement_new') }}">Post the first one</a>.
+        </div>
+    {% endfor %}
+{% endblock %}
