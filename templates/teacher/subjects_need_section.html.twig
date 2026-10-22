@@ -1,0 +1,21 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{% block title %}My subjects · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>My subjects</h1>
+            <p>{{ school ? school.name }}{% if school_year %} · S.Y. {{ school_year.name }}{% endif %}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {% if school %}
+            <p>Create your section first. Your subjects are set up for its grade level.</p>
+            <a class="btn btn--primary" href="{{ path('teacher_section_new') }}">Create my section</a>
+        {% else %}
+            <p>You are not assigned to a school this school year. Contact your administrator.</p>
+        {% endif %}
+    </div>
+{% endblock %}

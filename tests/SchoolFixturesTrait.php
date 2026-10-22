@@ -10,6 +10,7 @@ use App\Entity\SchoolAssignment;
 use App\Entity\Section;
 use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
+use App\Entity\Subject;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -22,7 +23,7 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
+        foreach ([Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
             $this->em->createQuery('DELETE FROM '.$class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test

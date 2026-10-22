@@ -1,0 +1,93 @@
+{% extends layout %}
+
+{% macro row(subject, refusal, routes, route_params) %}
+    {% set components = subject.components|length %}
+    <tr class="{{ subject.component ? 'subject-row--component' }}">
+        <td>{% if subject.component %}<span class="muted" aria-hidden="true">↳ </span>{% endif %}<code>{{ subject.code }}</code></td>
+        <td>
+            <strong>{{ subject.name }}</strong>
+            {% if subject.track or subject.strand %}
+                <br><span class="muted">Only {{ subject.track ? subject.track.label }}{{ subject.track and subject.strand ? ' – ' }}{{ subject.strand }}</span>
+            {% endif %}
+        </td>
+        <td class="table__actions">
+            {% if not refusal %}
+                <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_edit', route_params|merge({subject: subject.id})) }}">Edit</a>
+                <form method="post" action="{{ path(routes ~ '_delete', route_params|merge({subject: subject.id})) }}"
+                      data-turbo-confirm="Delete {{ subject.label }}?{{ components ? ' This also deletes its ' ~ components ~ ' components.' }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('subject-' ~ subject.id) }}">
+                    <button class="btn btn--ghost btn--sm" type="submit">Delete</button>
+                </form>
+            {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% block title %}Subjects · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Subjects</h1>
+            <p>{{ school.name }}{% if school_year %} · S.Y. {{ school_year.name }}{% endif %}</p>
+        </div>
+        {% if school_year and not refusal %}
+            <div class="row-actions">
+                <a class="btn btn--primary" href="{{ path(routes ~ '_new', route_params) }}">+ New subject</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not school_year %}
+        <div class="card empty">No current school year. Subjects are offered per school year.</div>
+    {% else %}
+        {% if refusal %}
+            <div class="alert alert--warning plan-notice" role="status">{{ refusal }}</div>
+        {% endif %}
+
+        {% if not refusal and (deped_grades or bring_back_from) %}
+            <div class="filters deped-actions">
+                {% for grade in deped_grades %}
+                    <form method="post" action="{{ path(routes ~ '_deped', route_params) }}"
+                          data-turbo-confirm="Add DepEd's standard subjects for {{ grade.label }}? You can edit or remove them afterwards.">
+                        <input type="hidden" name="_token" value="{{ csrf_token('deped-subjects') }}">
+                        <input type="hidden" name="grade" value="{{ grade.value }}">
+                        <button class="btn btn--ghost btn--sm" type="submit">Add DepEd subjects for {{ grade.label }}</button>
+                    </form>
+                {% endfor %}
+                {% if bring_back_from %}
+                    <form method="post" action="{{ path(routes ~ '_bring_back', route_params) }}"
+                          data-turbo-confirm="Copy last school year's subjects to S.Y. {{ school_year.name }}? Subjects already here are skipped.">
+                        <input type="hidden" name="_token" value="{{ csrf_token('bring-back-subjects') }}">
+                        <button class="btn btn--ghost btn--sm" type="submit">Bring back subjects from S.Y. {{ bring_back_from.name }}</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% for group, subjects in groups %}
+            <section class="card table-card subject-group">
+                <h2>{{ group }}</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Subject</th>
+                            <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                            {{ _self.row(subject, refusal, routes, route_params) }}
+                            {% for component in subject.components %}
+                                {{ _self.row(component, refusal, routes, route_params) }}
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% else %}
+            <div class="card empty">No subjects for S.Y. {{ school_year.name }} yet. Add DepEd's standard subjects or create your own.</div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

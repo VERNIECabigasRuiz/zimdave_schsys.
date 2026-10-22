@@ -37,6 +37,15 @@
                     <small>Personal Data Sheet (CS Form 212)</small>
                 </span>
             </a>
+            {% if can_manage_subjects %}
+                <a class="stat card" href="{{ path('teacher_subjects') }}">
+                    <span class="avatar avatar--green">S</span>
+                    <span>
+                        <strong>My subjects</strong>
+                        <small>Subjects of your section's grade level</small>
+                    </span>
+                </a>
+            {% endif %}
         </section>
     {% endif %}
 {% endblock %}

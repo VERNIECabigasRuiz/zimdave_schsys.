@@ -1,0 +1,41 @@
+{% extends layout %}
+
+{% set heading = subject.id ? 'Edit subject' : 'New subject' %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ school.name }} · S.Y. {{ school_year.name }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate', 'data-controller': 'subject-form'}}) }}
+            {{ form_errors(form) }}
+            <div class="form-grid">
+                {{ form_row(form.gradeLevel) }}
+                {{ form_row(form.position) }}
+                {{ form_row(form.code) }}
+                {{ form_row(form.name) }}
+            </div>
+            {{ form_row(form.parent) }}
+            <div class="form-grid">
+                {{ form_row(form.semester) }}
+                {{ form_row(form.track) }}
+                {{ form_row(form.strand, {help: 'Leave track and strand empty when every Senior High section of the grade takes it.'}) }}
+            </div>
+
+            <datalist id="shs-strands">
+                {% for strand in strands %}<option value="{{ strand }}"></option>{% endfor %}
+            </datalist>
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">{{ subject.id ? 'Save subject' : 'Create subject' }}</button>
+                <a class="link-muted" href="{{ path(routes, route_params) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
