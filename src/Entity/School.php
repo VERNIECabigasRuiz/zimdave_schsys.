@@ -135,9 +135,10 @@ class School
         return $this->region;
     }
 
-    public function setRegion(string $region): static
+    /** Null (nothing chosen in the form) is kept as blank so NotBlank reports it. */
+    public function setRegion(?string $region): static
     {
-        $this->region = trim($region);
+        $this->region = trim($region ?? '');
 
         return $this;
     }
@@ -147,9 +148,9 @@ class School
         return $this->division;
     }
 
-    public function setDivision(string $division): static
+    public function setDivision(?string $division): static
     {
-        $this->division = trim($division);
+        $this->division = trim($division ?? '');
 
         return $this;
     }

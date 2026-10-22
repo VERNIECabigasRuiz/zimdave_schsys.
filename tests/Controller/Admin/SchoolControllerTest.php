@@ -209,6 +209,115 @@ class SchoolControllerTest extends AdminTestCase
         self::assertSame('Basic', $this->findSchool('303456')->getPlan()->getName());
     }
 
+    public function testRegionAndDivisionAreDropdowns(): void
+    {
+        $crawler = $this->client->request('GET', '/admin/schools/new');
+
+        self::assertSame('Region VII – Central Visayas', $crawler->filter('select#school_form_region option[value="Region VII"]')->text());
+        self::assertCount(18, $crawler->filter('select#school_form_region option[value!=""]'));
+        self::assertCount(1, $crawler->filter('select#school_form_division option[value="Mandaue City"]'));
+
+        // The browser narrows the divisions to the chosen region using this map
+        $map = json_decode($crawler->filter('[data-controller="region-division"]')->attr('data-region-division-map-value'), true);
+        self::assertContains('Mandaue City', $map['Region VII']);
+        self::assertNotContains('Mandaue City', $map['NCR']);
+    }
+
+    public function testDivisionMustBelongToTheRegion(): void
+    {
+        $this->client->request('GET', '/admin/schools/new');
+        $this->client->submitForm('Create school', [
+            'school_form[schoolId]' => '303456',
+            'school_form[name]' => 'Pagsabungan NHS',
+            'school_form[type]' => 'junior_high',
+            'school_form[region]' => 'NCR',
+            'school_form[division]' => 'Mandaue City',
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Choose a division in the selected region.');
+        self::assertNull($this->findSchool('303456'));
+    }
+
+    public function testSharedDivisionNameIsSavedWithItsRegion(): void
+    {
+        $this->client->request('GET', '/admin/schools/new');
+        $this->client->submitForm('Create school', [
+            'school_form[schoolId]' => '303456',
+            'school_form[name]' => 'San Fernando Pilot School',
+            'school_form[type]' => 'elementary',
+            'school_form[region]' => 'Region III',
+            'school_form[division]' => 'San Fernando City',
+        ]);
+        self::assertResponseRedirects('/admin/schools');
+
+        $school = $this->findSchool('303456');
+        self::assertSame('Region III', $school->getRegion());
+        self::assertSame('San Fernando City', $school->getDivision());
+    }
+
+    public function testDivisionNotOnTheListRejected(): void
+    {
+        $crawler = $this->client->request('GET', '/admin/schools/new');
+        $form = $crawler->selectButton('Create school')->form()->disableValidation();
+        $this->client->submit($form, [
+            'school_form[schoolId]' => '303456',
+            'school_form[name]' => 'Pagsabungan NHS',
+            'school_form[type]' => 'junior_high',
+            'school_form[region]' => 'Region VII',
+            'school_form[division]' => 'Atlantis City',
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Choose a division from the list.');
+        self::assertNull($this->findSchool('303456'));
+    }
+
+    public function testRegionAndDivisionAreRequired(): void
+    {
+        $this->client->request('GET', '/admin/schools/new');
+        $this->client->submitForm('Create school', [
+            'school_form[schoolId]' => '303456',
+            'school_form[name]' => 'Pagsabungan NHS',
+            'school_form[type]' => 'junior_high',
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSame(2, substr_count($this->client->getCrawler()->filter('.form-card')->text(), 'This value should not be blank.'));
+        self::assertNull($this->findSchool('303456'));
+    }
+
+    public function testOldTypedRegionAndDivisionKeptOnEdit(): void
+    {
+        $school = $this->school('303456', 'Pagsabungan NHS')->setRegion('Region 7')->setDivision('Mandaue');
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', '/admin/schools/'.$school->getId().'/edit');
+        self::assertSame('Region 7 (not on the list)', $crawler->filter('select#school_form_region option[selected]')->text());
+        self::assertSame('Mandaue (not on the list)', $crawler->filter('select#school_form_division option[selected]')->text());
+
+        $this->client->submitForm('Save school', ['school_form[name]' => 'Pagsabungan National High School']);
+        self::assertResponseRedirects('/admin/schools');
+
+        $school = $this->findSchool('303456');
+        self::assertSame('Pagsabungan National High School', $school->getName());
+        self::assertSame('Region 7', $school->getRegion());
+        self::assertSame('Mandaue', $school->getDivision());
+    }
+
+    public function testOldTypedDivisionMustBeReplacedWhenRegionChanges(): void
+    {
+        $school = $this->school('303456', 'Pagsabungan NHS')->setRegion('Region 7')->setDivision('Mandaue');
+        $this->em->flush();
+
+        $this->client->request('GET', '/admin/schools/'.$school->getId().'/edit');
+        $this->client->submitForm('Save school', ['school_form[region]' => 'Region VII']);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Choose a division in the selected region.');
+        self::assertSame('Region 7', $this->findSchool('303456')->getRegion());
+    }
+
     public function testNonAdminsAreDenied(): void
     {
         foreach ([User::ROLE_PRINCIPAL, User::ROLE_TEACHER] as $i => $role) {
