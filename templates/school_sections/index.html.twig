@@ -61,6 +61,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="table__actions">
+                                    <a class="btn btn--ghost btn--sm" href="{{ path('school_timetable', {id: school.id, section: section.id}) }}">Timetable</a>
                                     {% if not refusal %}
                                         <a class="btn btn--ghost btn--sm" href="{{ path('school_sections_edit', {id: school.id, section: section.id}) }}">Edit</a>
                                         <form method="post" action="{{ path('school_sections_delete', {id: school.id, section: section.id}) }}"

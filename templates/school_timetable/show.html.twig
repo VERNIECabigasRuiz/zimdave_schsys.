@@ -1,0 +1,94 @@
+{% extends layout %}
+
+{% block title %}Timetable · {{ section.label }} · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    {% set params = {id: school.id, section: section.id} %}
+    <div class="page-head">
+        <div>
+            <h1>{{ section.label }}</h1>
+            <p>{{ school.name }} · S.Y. {{ section.schoolYear.name }} · Timetable</p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--ghost" href="{{ path('school_sections', {id: school.id}) }}">Back to sections</a>
+        </div>
+    </div>
+
+    {% if state.periods is empty %}
+        <div class="card empty">
+            <a href="{{ path('school_class_periods', {id: school.id}) }}">Set up your class periods first</a>
+            so classes can be placed in the timetable.
+        </div>
+    {% else %}
+        <div data-controller="timetable"
+             data-timetable-state-url-value="{{ path('school_timetable_state', params) }}"
+             data-timetable-plot-url-value="{{ path('school_timetable_plot', params) }}"
+             data-timetable-load-url-value="{{ path('school_timetable_load', params|merge({subject: 0}))|slice(0, -1) ~ '__SUBJECT__' }}"
+             data-timetable-remove-url-value="{{ path('school_timetable_remove', params|merge({entry: 0}))|slice(0, -1) ~ '__ENTRY__' }}"
+             data-timetable-csrf-value="{{ csrf_token('timetable-' ~ section.id) }}"
+             data-timetable-term-value="{{ state.term }}">
+
+            {% if state.terms|length > 1 %}
+                <nav class="filters" aria-label="Semester">
+                    {% for term in state.terms %}
+                        <a class="btn btn--sm {{ term == state.term ? 'btn--primary' : 'btn--ghost' }}"
+                           href="{{ path('school_timetable', params|merge({term: term})) }}">Semester {{ term }}</a>
+                    {% endfor %}
+                </nav>
+            {% endif %}
+
+            <p class="alert alert--warning" role="alert" data-timetable-target="message" hidden></p>
+
+            <div class="timetable-layout">
+                <section class="card timetable-cards" aria-label="Subjects">
+                    <h2>Subjects</h2>
+                    {% for card in state.cards %}
+                        <div class="timetable-card" data-subject-id="{{ card.subjectId }}">
+                            <strong>{{ card.name }}</strong>
+                            <span class="muted">{{ card.teacherName ?? 'No teacher yet' }}</span>
+                            <span class="badge">{{ card.used }}/{{ card.perWeek ?? '?' }}</span>
+                        </div>
+                    {% else %}
+                        <p class="muted">No subjects to place for this section.</p>
+                    {% endfor %}
+                </section>
+
+                <section class="card table-card" aria-label="Weekly timetable">
+                    <table class="table timetable-grid">
+                        <thead>
+                            <tr>
+                                <th><span class="visually-hidden">Period</span></th>
+                                {% for day in state.days %}<th>{{ day.label }}</th>{% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for period in state.periods %}
+                                <tr data-period-id="{{ period.id }}"{% if period.isBreak %} class="timetable-break"{% endif %}>
+                                    <th scope="row">
+                                        {{ period.label }}
+                                        {% if period.startsAt %}<br><span class="muted">{{ period.startsAt }}–{{ period.endsAt }}</span>{% endif %}
+                                    </th>
+                                    {% if period.isBreak %}
+                                        <td colspan="{{ state.days|length }}" class="muted">{{ period.label }}</td>
+                                    {% else %}
+                                        {% for day in state.days %}
+                                            {% set found = null %}
+                                            {% for cell in state.cells|filter(c => c.day == day.value and c.periodId == period.id) %}{% set found = cell %}{% endfor %}
+                                            {% if found %}
+                                                <td class="timetable-cell timetable-cell--filled" data-day="{{ day.value }}" data-period-id="{{ period.id }}" data-entry-id="{{ found.entryId }}">
+                                                    <strong>{{ found.name }}</strong><br><span class="muted">{{ found.teacherName }}</span>
+                                                </td>
+                                            {% else %}
+                                                <td class="timetable-cell" data-day="{{ day.value }}" data-period-id="{{ period.id }}"></td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
