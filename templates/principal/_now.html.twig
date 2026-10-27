@@ -1,0 +1,44 @@
+<turbo-frame id="now">
+    <section class="card now-card" aria-label="Classes right now">
+        <h2>Classes right now</h2>
+        {% if now is null or now.state == 'no_periods' %}
+            <p class="muted">Class periods are not set up yet.</p>
+        {% elseif now.state == 'weekend' %}
+            <p class="muted">No classes today.</p>
+        {% elseif now.state == 'class' %}
+            <p class="muted">{{ now.period.label }} · {{ now.period.timeRange }}</p>
+            {% if now.classes %}
+                <table class="table">
+                    <thead>
+                        <tr><th>Teacher</th><th>Subject</th><th>Section</th><th>Period</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for class in now.classes %}
+                            <tr>
+                                <td>{{ class.teacherName }}</td>
+                                <td>{{ class.subjectName }}</td>
+                                <td>{{ class.sectionLabel }}</td>
+                                <td>{{ now.period.label }}, {{ now.period.timeRange }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="muted">No classes are running in this period.</p>
+            {% endif %}
+            <h3>Free this period</h3>
+            {% if now.free %}
+                <p>{{ now.free|join(', ') }}</p>
+            {% else %}
+                <p class="muted">Every teacher has a class.</p>
+            {% endif %}
+        {% elseif now.state == 'break' %}
+            <p>{% if now.period %}{{ now.period.label }} ({{ now.period.timeRange }}){% else %}Between periods{% endif %}.</p>
+            {% if now.next %}<p class="muted">Next: {{ now.next.label }} at {{ now.next.startsAt }}</p>{% endif %}
+        {% elseif now.state == 'before' %}
+            <p class="muted">Classes have not started.{% if now.next %} Next: {{ now.next.label }} at {{ now.next.startsAt }}{% endif %}</p>
+        {% else %}
+            <p class="muted">No more classes today.</p>
+        {% endif %}
+    </section>
+</turbo-frame>

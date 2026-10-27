@@ -1495,3 +1495,19 @@ body.admin-page {
     margin: .2rem 0 0;
     font-size: 1.2rem;
 }
+
+/* "Now" cards on the dashboards */
+.now-card {
+    padding: 1rem 1.2rem;
+    margin-top: 1.2rem;
+}
+
+.now-card h2 {
+    margin: 0 0 .4rem;
+    font-size: 1.1rem;
+}
+
+.now-card h3 {
+    margin: 1rem 0 .3rem;
+    font-size: .95rem;
+}

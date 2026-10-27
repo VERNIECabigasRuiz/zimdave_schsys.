@@ -34,4 +34,8 @@
             </span>
         </div>
     </section>
+
+    <turbo-frame id="now" src="{{ path('principal_now') }}" data-controller="refresh">
+        <div class="card now-card"><p class="muted">Loading classes…</p></div>
+    </turbo-frame>
 {% endblock %}

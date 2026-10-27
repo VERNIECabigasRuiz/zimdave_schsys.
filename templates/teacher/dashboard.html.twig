@@ -29,6 +29,10 @@
             {% endif %}
         </div>
 
+        <turbo-frame id="now" src="{{ path('teacher_now') }}" data-controller="refresh">
+            <div class="card now-card"><p class="muted">Loading your classes…</p></div>
+        </turbo-frame>
+
         <section class="stats" aria-label="Shortcuts">
             <a class="stat card" href="{{ path('profile_show') }}">
                 <span class="avatar avatar--green">P</span>

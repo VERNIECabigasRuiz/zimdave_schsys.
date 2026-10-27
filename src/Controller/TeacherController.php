@@ -9,7 +9,9 @@ use App\Form\SectionFormType;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
+use App\Service\SchoolClock;
 use App\Service\SectionManager;
+use App\Service\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +29,8 @@ class TeacherController extends AbstractController
         private readonly SchoolAssignmentRepository $assignments,
         private readonly SectionRepository $sections,
         private readonly SectionManager $sectionManager,
+        private readonly TimetableQuery $timetable,
+        private readonly SchoolClock $clock,
     ) {
     }
 
@@ -44,6 +48,17 @@ class TeacherController extends AbstractController
             'can_create_section' => null !== $school && null === $advisory && $this->ownsSections($school)
                 && null === $this->sectionManager->refusal($school),
             'can_manage_subjects' => null !== $school && $this->ownsSections($school),
+        ]);
+    }
+
+    /** The "Your class now" card: only the turbo-frame, so the dashboard can reload it in place. */
+    #[Route('/now', name: 'teacher_now', methods: ['GET'])]
+    public function now(#[CurrentUser] User $user): Response
+    {
+        $schoolYear = $this->schoolYears->findCurrent();
+
+        return $this->render('teacher/_now.html.twig', [
+            'now' => $schoolYear ? $this->timetable->nowForTeacher($user, $schoolYear, $this->clock->now()) : null,
         ]);
     }
 

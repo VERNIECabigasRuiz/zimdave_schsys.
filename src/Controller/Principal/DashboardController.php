@@ -7,6 +7,8 @@ use App\Entity\User;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Service\PlanLimits;
+use App\Service\SchoolClock;
+use App\Service\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,6 +23,8 @@ class DashboardController extends AbstractController
         private readonly SchoolYearRepository $schoolYears,
         private readonly SchoolAssignmentRepository $assignments,
         private readonly PlanLimits $planLimits,
+        private readonly TimetableQuery $timetable,
+        private readonly SchoolClock $clock,
     ) {
     }
 
@@ -38,6 +42,21 @@ class DashboardController extends AbstractController
             'school_year' => $schoolYear,
             'teachers' => $this->planLimits->countTeachers($school, $schoolYear),
             'blocked_reason' => $this->planLimits->blockedReason($school),
+        ]);
+    }
+
+    /** The "Classes right now" card: only the turbo-frame, so the dashboard can reload it in place. */
+    #[Route('/now', name: 'principal_now', methods: ['GET'])]
+    public function now(#[CurrentUser] User $user): Response
+    {
+        $schoolYear = $this->schoolYears->findCurrent();
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->render('principal/_now.html.twig', ['now' => null]);
+        }
+
+        return $this->render('principal/_now.html.twig', [
+            'now' => $this->timetable->now($school, $schoolYear, $this->clock->now()),
         ]);
     }
 

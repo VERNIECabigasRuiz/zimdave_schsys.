@@ -1,0 +1,19 @@
+<turbo-frame id="now">
+    <section class="card now-card" aria-label="Your class now">
+        <h2>Your class now</h2>
+        {% if now is null or now.state == 'no_periods' %}
+            <p class="muted">Class periods are not set up yet.</p>
+        {% elseif now.state == 'weekend' %}
+            <p class="muted">No classes today.</p>
+        {% elseif now.state == 'class' %}
+            <p><strong>Now: {{ now.current.subjectName }} · {{ now.current.sectionLabel }} · until {{ now.current.endsAt }}</strong></p>
+            {% if now.next %}
+                <p class="muted">Next: {{ now.next.subjectName }} · {{ now.next.sectionLabel }} · {{ now.next.startsAt }}</p>
+            {% endif %}
+        {% elseif now.state == 'done' %}
+            <p class="muted">No more classes today.</p>
+        {% else %}
+            <p>Free period.{% if now.next %} Next class: {{ now.next.subjectName }} · {{ now.next.sectionLabel }} · {{ now.next.startsAt }}{% endif %}</p>
+        {% endif %}
+    </section>
+</turbo-frame>
