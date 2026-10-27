@@ -8,6 +8,7 @@ use App\Entity\ScheduleEntry;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
+use App\Entity\ShsTrack;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
 use App\Entity\User;
@@ -115,6 +116,84 @@ class InUseProtectionTest extends KernelTestCase
         $this->refused(InUseException::class, 'MAPEH is loaded in 1 section.', fn () => $manager->delete($mapeh));
         $this->refused(InUseException::class, 'Music and Arts is loaded in 1 section.', fn () => $manager->delete($ma));
         self::assertNotNull($this->em->getRepository(Subject::class)->find($mapeh->getId()));
+    }
+
+    public function testLoadedSubjectKeepsGradeSemesterAndParent(): void
+    {
+        $manager = static::getContainer()->get(SubjectManager::class);
+        $math = $this->subject('MATH7', 'Mathematics');
+        $mapeh = $this->subject('MAPEH7', 'MAPEH');
+        $this->subject('MA7', 'Music and Arts', $mapeh);
+        $this->load($this->rizal, $math);
+        $copy = 'Mathematics is loaded in 1 section. Clear its teachers first.';
+
+        $math->setGradeLevel(GradeLevel::Grade8);
+        $this->refused(InUseException::class, $copy, fn () => $manager->save($math));
+        self::assertSame(GradeLevel::Grade7, $math->getGradeLevel());
+
+        $math->setSemester(1);
+        $this->refused(InUseException::class, $copy, fn () => $manager->save($math));
+        self::assertNull($math->getSemester());
+
+        $math->setParent($mapeh);
+        $this->refused(InUseException::class, $copy, fn () => $manager->save($math));
+        self::assertNull($math->getParent());
+
+        // Other changes to a loaded subject still save
+        $math->setName('Math')->setMeetingsPerWeek(4);
+        $manager->save($math);
+        $this->em->clear();
+        self::assertSame('Math', $this->em->getRepository(Subject::class)->find($math->getId())->getName());
+    }
+
+    public function testNoNewComponentUnderLoadedSubject(): void
+    {
+        $manager = static::getContainer()->get(SubjectManager::class);
+        $science = $this->subject('SCI7', 'Science');
+        $this->load($this->rizal, $science);
+        $bonifacio = (new Section($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade7)->setName('Bonifacio');
+        $this->em->persist($bonifacio);
+        $this->load($bonifacio, $science);
+
+        $component = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade7)->setCode('BIO7')->setName('Biology')->setPosition(1)->setMeetingsPerWeek(5)->setParent($science);
+        $this->refused(InUseException::class, 'Science is loaded in 2 sections. Clear its teachers first.', fn () => $manager->save($component));
+        $this->em->clear();
+        self::assertNull($this->em->getRepository(Subject::class)->findOneBy(['code' => 'BIO7']));
+    }
+
+    public function testComponentCanBeAddedWhenOnlySiblingsAreLoaded(): void
+    {
+        $manager = static::getContainer()->get(SubjectManager::class);
+        $mapeh = $this->subject('MAPEH7', 'MAPEH');
+        $this->load($this->rizal, $this->subject('MA7', 'Music and Arts', $mapeh));
+
+        $manager->save((new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade7)->setCode('H7')->setName('Health')->setPosition(2)->setMeetingsPerWeek(5)->setParent($mapeh));
+        self::assertNotNull($this->em->getRepository(Subject::class)->findOneBy(['code' => 'H7']));
+    }
+
+    public function testSectionWithTimetableKeepsGradeTrackAndStrand(): void
+    {
+        $manager = static::getContainer()->get(SectionManager::class);
+        $this->load($this->rizal, $this->subject('MATH7', 'Mathematics'));
+        $copy = 'Grade 7 – Rizal has a timetable. Remove its classes and teachers first.';
+
+        $this->rizal->setGradeLevel(GradeLevel::Grade8);
+        $this->refused(InUseException::class, $copy, fn () => $manager->save($this->rizal));
+        self::assertSame(GradeLevel::Grade7, $this->rizal->getGradeLevel());
+
+        $this->rizal->setStrand('STEM');
+        $this->refused(InUseException::class, $copy, fn () => $manager->save($this->rizal));
+        self::assertNull($this->rizal->getStrand());
+
+        $this->rizal->setTrack(ShsTrack::Academic);
+        $this->refused(InUseException::class, $copy, fn () => $manager->save($this->rizal));
+        self::assertNull($this->rizal->getTrack());
+
+        // Renaming or changing the adviser still saves
+        $this->rizal->setName('Jose Rizal')->setAdviser($this->santos);
+        $manager->save($this->rizal);
+        $this->em->clear();
+        self::assertSame('Jose Rizal', $this->em->getRepository(Section::class)->find($this->rizal->getId())->getName());
     }
 
     public function testSubjectNotLoadedCanBeDeleted(): void

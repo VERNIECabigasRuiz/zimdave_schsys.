@@ -40,6 +40,7 @@ class SubjectManager
     {
         $this->assertWritable($subject->getSchool());
         $subject->inheritFromParent();
+        $this->assertLoadsKept($subject);
         foreach ($subject->getComponents() as $component) {
             $component->inheritFromParent();
         }
@@ -157,6 +158,40 @@ class SubjectManager
     private function copyShs(Subject $from, Subject $to): Subject
     {
         return $to->setSemester($from->getSemester())->setTrack($from->getTrack())->setStrand($from->getStrand());
+    }
+
+    /**
+     * A loaded subject keeps its grade level, semester and parent, and a loaded subject gets
+     * no components: either change would leave its loads in a timetable they no longer fit.
+     * On refusal the unsaved edit is dropped, so nothing of it is flushed later.
+     */
+    private function assertLoadsKept(Subject $subject): void
+    {
+        $original = null === $subject->getId() ? [] : $this->entityManager->getUnitOfWork()->getOriginalEntityData($subject);
+        $parent = $subject->getParent();
+        if (null !== $parent && $parent !== ($original['parent'] ?? null) && 0 < $loaded = $this->loads->countOwnForSubject($parent)) {
+            $this->refuseLoaded($subject, $parent, $loaded);
+        }
+        if ([] === $original) {
+            return;
+        }
+        $changed = $subject->getGradeLevel() !== $original['gradeLevel']
+            || $subject->getSemester() !== $original['semester']
+            || $parent !== $original['parent'];
+        if ($changed && 0 < $loaded = $this->loads->countForSubject($subject)) {
+            $this->refuseLoaded($subject, $subject, $loaded);
+        }
+    }
+
+    private function refuseLoaded(Subject $subject, Subject $loadedSubject, int $loaded): never
+    {
+        if (null !== $subject->getId()) {
+            $this->entityManager->refresh($subject);
+        } else {
+            $subject->setParent(null);
+        }
+
+        throw new InUseException(\sprintf('%s is loaded in %d %s. Clear its teachers first.', $loadedSubject->getName(), $loaded, 1 === $loaded ? 'section' : 'sections'));
     }
 
     private function assertWritable(School $school): void

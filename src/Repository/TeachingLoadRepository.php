@@ -44,6 +44,12 @@ class TeachingLoadRepository extends ServiceEntityRepository
             ->getQuery()->getSingleScalarResult();
     }
 
+    /** Loads of the subject itself, not of its components. */
+    public function countOwnForSubject(Subject $subject): int
+    {
+        return $this->count(['subject' => $subject]);
+    }
+
     public function countForTeacher(User $teacher, SchoolYear $schoolYear): int
     {
         return (int) $this->forTeacher($teacher, $schoolYear)->select('COUNT(l.id)')

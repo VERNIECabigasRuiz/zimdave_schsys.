@@ -40,6 +40,9 @@ class SectionManager
     {
         $this->assertWritable($section->getSchool());
         $isNew = null === $section->getId();
+        if (!$isNew) {
+            $this->assertTimetableKept($section);
+        }
         if ($isNew) {
             $this->entityManager->persist($section);
         }
@@ -56,7 +59,7 @@ class SectionManager
     {
         $this->assertWritable($section->getSchool());
         if ([] !== $this->loads->findForSection($section)) {
-            throw new InUseException(\sprintf('%s has a timetable. Remove its classes and teachers first.', $section->getLabel()));
+            throw $this->hasTimetable($section);
         }
         $this->activityLogger->log('Deleted section '.$section->getLabel());
         $this->entityManager->remove($section);
@@ -81,6 +84,28 @@ class SectionManager
         }
 
         return \count($candidates);
+    }
+
+    /**
+     * A section with loads keeps its grade level, track and strand: its subjects come from them.
+     * On refusal the unsaved edit is dropped, so nothing of it is flushed later.
+     */
+    private function assertTimetableKept(Section $section): void
+    {
+        $original = $this->entityManager->getUnitOfWork()->getOriginalEntityData($section);
+        $changed = $section->getGradeLevel() !== ($original['gradeLevel'] ?? null)
+            || $section->getTrack() !== ($original['track'] ?? null)
+            || $section->getStrand() !== ($original['strand'] ?? null);
+        if ($changed && [] !== $this->loads->findForSection($section)) {
+            $this->entityManager->refresh($section);
+
+            throw $this->hasTimetable($section);
+        }
+    }
+
+    private function hasTimetable(Section $section): InUseException
+    {
+        return new InUseException(\sprintf('%s has a timetable. Remove its classes and teachers first.', $section->getLabel()));
     }
 
     private function assertWritable(School $school): void

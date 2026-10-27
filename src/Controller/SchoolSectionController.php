@@ -116,8 +116,12 @@ class SchoolSectionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $isNew = null === $section->getId();
-            $this->manager->save($section, $previousAdviser);
-            $this->addFlash('success', \sprintf($isNew ? 'Created %s.' : 'Saved %s.', $section->getLabel()));
+            try {
+                $this->manager->save($section, $previousAdviser);
+                $this->addFlash('success', \sprintf($isNew ? 'Created %s.' : 'Saved %s.', $section->getLabel()));
+            } catch (PlanLimitException|InUseException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
 
             return $this->redirectToList($school);
         }

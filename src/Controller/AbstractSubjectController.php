@@ -88,8 +88,12 @@ abstract class AbstractSubjectController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $isNew = null === $subject->getId();
-            $this->manager->save($subject);
-            $this->addFlash('success', \sprintf($isNew ? 'Created %s.' : 'Saved %s.', $subject->getLabel()));
+            try {
+                $this->manager->save($subject);
+                $this->addFlash('success', \sprintf($isNew ? 'Created %s.' : 'Saved %s.', $subject->getLabel()));
+            } catch (PlanLimitException|InUseException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
 
             return $this->redirectToList($scope);
         }

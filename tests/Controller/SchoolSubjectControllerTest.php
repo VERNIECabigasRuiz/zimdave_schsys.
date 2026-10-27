@@ -245,6 +245,23 @@ class SchoolSubjectControllerTest extends AdminTestCase
         self::assertNotNull($this->find('MATH7'));
     }
 
+    public function testGradeOfLoadedSubjectCannotChange(): void
+    {
+        $math = $this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics');
+        $section = (new Section($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade7)->setName('Rizal');
+        $this->em->persist($section);
+        $this->em->persist(new TeachingLoad($section, $math, $this->createUser('santos', User::ROLE_TEACHER, 'Ana Santos')));
+        $this->em->flush();
+
+        $this->client->request('GET', $this->url($this->school, '/'.$math->getId().'/edit'));
+        $this->client->submitForm('Save subject', ['subject_form[gradeLevel]' => '8']);
+
+        self::assertResponseRedirects($this->url($this->school));
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('body', 'Mathematics is loaded in 1 section. Clear its teachers first.');
+        self::assertSame(GradeLevel::Grade7, $this->find('MATH7')->getGradeLevel());
+    }
+
     public function testDeleteParentWithComponents(): void
     {
         $this->addDepEd(GradeLevel::Grade7);
