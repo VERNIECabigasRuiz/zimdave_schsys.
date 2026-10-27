@@ -36,6 +36,25 @@ class ScheduleEntryRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+    /**
+     * Entries of the school's other sections that run in a term (a full-year entry runs in both),
+     * for the "teacher is busy" map.
+     *
+     * @return list<ScheduleEntry>
+     */
+    public function findBusy(School $school, SchoolYear $schoolYear, int $term, Section $exceptSection): array
+    {
+        return $this->createQueryBuilder('e')
+            ->addSelect('l', 'sub', 'sec')
+            ->join('e.load', 'l')->join('l.subject', 'sub')->join('e.section', 'sec')
+            ->andWhere('sec.school = :school')->setParameter('school', $school)
+            ->andWhere('e.schoolYear = :sy')->setParameter('sy', $schoolYear)
+            ->andWhere('e.term IN (:terms)')->setParameter('terms', self::overlappingTerms($term))
+            ->andWhere('e.section != :section')->setParameter('section', $exceptSection)
+            ->addOrderBy('e.id', 'ASC')
+            ->getQuery()->getResult();
+    }
+
     /** @return list<ScheduleEntry> */
     public function findForTeacher(User $teacher, SchoolYear $schoolYear): array
     {
