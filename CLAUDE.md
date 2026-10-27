@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 @AGENTS.md
 
+Team rules both developers follow live in `.claude/rules/team-notes.md` (loaded automatically). They apply to every change and commit, together with this file and `AGENTS.md`.
+
 ## What this is
 
 ZIM School: a Symfony 8.1 / PHP 8.4 school grading platform (Doctrine ORM on MySQL, Twig, AssetMapper + Stimulus + Turbo, plain CSS in `assets/styles/`, no Node build).
