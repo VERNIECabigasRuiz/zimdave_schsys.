@@ -114,13 +114,13 @@ class SubjectManager
             if (!\in_array($old->getGradeLevel(), $offered, true)) {
                 continue;
             }
-            $copy = $this->add($taken, $this->copyShs($old, new Subject($school, $to)), $old->getGradeLevel(), $old->getCode(), $old->getName(), $old->getPosition());
+            $copy = $this->add($taken, $this->copyShs($old, new Subject($school, $to))->setMeetingsPerWeek($old->getMeetingsPerWeek()), $old->getGradeLevel(), $old->getCode(), $old->getName(), $old->getPosition());
             if (null === $copy) {
                 continue;
             }
             ++$count;
             foreach ($old->getComponents() as $component) {
-                if (null !== $this->add($taken, $this->copyShs($old, (new Subject($school, $to))->setParent($copy)), $old->getGradeLevel(), $component->getCode(), $component->getName(), $component->getPosition())) {
+                if (null !== $this->add($taken, $this->copyShs($old, (new Subject($school, $to))->setParent($copy))->setMeetingsPerWeek($component->getMeetingsPerWeek()), $old->getGradeLevel(), $component->getCode(), $component->getName(), $component->getPosition())) {
                     ++$count;
                 }
             }

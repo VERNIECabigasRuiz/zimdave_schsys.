@@ -175,6 +175,22 @@ class SubjectManagerTest extends KernelTestCase
         self::assertSame(['MAPEH7', 'MAPEH7>MA7', 'MAPEH7>PEH7', 'PC11'], $this->codes($this->last), 'Last year is untouched');
     }
 
+    public function testBringBackCopiesMeetingsPerWeek(): void
+    {
+        $mapeh = $this->subject(GradeLevel::Grade7, 'MAPEH7', 'MAPEH', sy: $this->last, position: 8);
+        $this->subject(GradeLevel::Grade7, 'MA7', 'Music and Arts', $mapeh, $this->last, 1)->setMeetingsPerWeek(3);
+        $this->subject(GradeLevel::Grade7, 'PEH7', 'Physical Education and Health', $mapeh, $this->last, 2)->setMeetingsPerWeek(2);
+        $this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics', sy: $this->last)->setMeetingsPerWeek(4);
+        $mapeh->setMeetingsPerWeek(null);
+        $this->em->flush();
+
+        $this->manager->bringBack($this->school, $this->last, $this->sy);
+        $this->em->clear();
+
+        $meetings = fn (string $code) => $this->em->getRepository(Subject::class)->findOneBy(['code' => $code, 'schoolYear' => $this->sy->getId()])->getMeetingsPerWeek();
+        self::assertSame([4, null, 3, 2], [$meetings('MATH7'), $meetings('MAPEH7'), $meetings('MA7'), $meetings('PEH7')]);
+    }
+
     public function testBringBackAndDepEdSkipDuplicateNames(): void
     {
         $this->subject(GradeLevel::Grade7, 'M7', 'Mathematics');
