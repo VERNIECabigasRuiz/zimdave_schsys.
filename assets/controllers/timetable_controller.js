@@ -24,6 +24,8 @@ export default class extends Controller {
         this.state = null;
         this.dragging = null;
         this.slot = null;
+        this.sequence = 0; // number of the latest request; an older response is never drawn
+        this.pending = 0;
         this.load();
     }
 
@@ -35,12 +37,13 @@ export default class extends Controller {
 
     // ---------- Actions ----------
 
-    switchTerm({ params: { term } }) {
-        this.termValue = term;
-        const url = new URL(window.location.href);
-        url.searchParams.set('term', term);
-        window.history.replaceState(window.history.state, '', url);
-        this.load();
+    // The term (and the address) changes only once its timetable has loaded
+    async switchTerm({ params: { term } }) {
+        if (await this.load(term)) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('term', this.termValue);
+            window.history.replaceState(window.history.state, '', url);
+        }
     }
 
     setTeacher(event) {
@@ -132,39 +135,63 @@ export default class extends Controller {
         this.save('POST', this.plotUrlValue, { subjectId, day, periodId });
     }
 
-    async load() {
-        const result = await this.request('GET', this.stateUrlValue);
+    /* Resolves to true when the timetable of the term was drawn. */
+    async load(term = this.termValue) {
+        const result = await this.request('GET', this.stateUrlValue, null, term);
+        if (result.stale) {
+            return false;
+        }
         if (result.ok) {
             this.draw(result.data);
-        } else {
-            this.showMessage(result.expired ? result.message : 'Could not load the timetable. Reload the page.');
+            return true;
         }
+        this.showMessage(result.expired ? result.message : 'Could not load the timetable. Reload the page.');
+        return false;
     }
 
     async save(method, url, body = null) {
-        this.element.setAttribute('aria-busy', 'true');
         const result = await this.request(method, url, body);
-        this.element.removeAttribute('aria-busy');
-
         if (result.ok) {
-            this.hideMessage();
-            this.draw(result.data);
+            if (!result.stale) {
+                this.hideMessage();
+                this.draw(result.data);
+            }
             return;
         }
         this.showMessage(result.message, result.clashes);
-        if (!result.expired) {
+        if (!result.expired && !result.stale) {
             // Undo what the page shows (a changed dropdown) by redrawing from the server
             const reload = await this.request('GET', this.stateUrlValue);
-            if (reload.ok) {
+            if (reload.ok && !reload.stale) {
                 this.draw(reload.data);
             }
         }
     }
 
+    /*
+     * Sends one request; the result's `stale` is true when a newer request was sent
+     * meanwhile, so its state must not be drawn over the newer one. The page stays
+     * aria-busy until every pending request has settled.
+     */
+    async request(method, url, body = null, term = this.termValue) {
+        const number = ++this.sequence;
+        this.pending += 1;
+        this.element.setAttribute('aria-busy', 'true');
+        try {
+            const result = await this.send(method, url, body, term);
+            return { ...result, stale: number !== this.sequence };
+        } finally {
+            this.pending -= 1;
+            if (this.pending === 0) {
+                this.element.removeAttribute('aria-busy');
+            }
+        }
+    }
+
     /* Resolves to {ok, data} or {ok: false, message, clashes, expired}; never throws. */
-    async request(method, url, body = null) {
+    async send(method, url, body, term) {
         const withTerm = new URL(url, window.location.origin);
-        withTerm.searchParams.set('term', this.termValue);
+        withTerm.searchParams.set('term', term);
         const headers = { Accept: 'application/json', 'X-CSRF-Token': this.csrfValue };
         if (body !== null) {
             headers['Content-Type'] = 'application/json';
@@ -327,7 +354,7 @@ export default class extends Controller {
 
     // The message of a clash refusal is its clashes joined, so they are listed instead of repeated
     showMessage(message, clashes = []) {
-        const lines = clashes.length > 0
+        const lines = clashes?.length > 0
             ? [h('ul', {}, ...clashes.map((clash) => h('li', {}, clash)))]
             : [message];
         this.messageTarget.replaceChildren(...lines);
