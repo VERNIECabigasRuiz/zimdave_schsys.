@@ -1,0 +1,53 @@
+FROM php:8.4-fpm
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# System tools, web server and process manager
+RUN apt-get update && apt-get install -y \
+    git \
+    zip \
+    unzip \
+    curl \
+    libicu-dev \
+    libonig-dev \
+    libzip-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    libxml2-dev \
+    nginx \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+# PHP extensions (gd and mbstring are also needed by dompdf, exif for photo orientation)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install \
+    pdo_mysql \
+    intl \
+    mbstring \
+    xml \
+    zip \
+    gd \
+    exif \
+    opcache
+
+# Custom PHP settings
+COPY config/php.ini /usr/local/etc/php/conf.d/zz-custom.ini
+
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
+WORKDIR /app
+
+# Nginx: SSL cert/key + site config
+COPY config/ssl/cert.pem /etc/nginx/ssl/cert.pem
+COPY config/ssl/key.pem /etc/nginx/ssl/key.pem
+COPY config/nginx.conf /etc/nginx/sites-available/default
+
+# Supervisord: runs nginx, php-fpm and the messenger worker
+COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE 443
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

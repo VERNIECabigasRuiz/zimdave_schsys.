@@ -1,0 +1,93 @@
+installs:
+  host:
+    yq: choco install yq
+  docker:
+    yq: curl -L -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && chmod +x /usr/local/bin/yq
+
+docker:
+  base:
+    image:
+      run:
+        name: vernie/zimdave-schsys:1.0
+        path: docker/Dockerfile.base
+  db:
+    name: zimdave-schsys-db
+    reload: []
+  run:
+    compose: docker-compose.yml
+    before_up: []
+
+cert:
+  domain: docker.vernie.com
+  path: docker/config/ssl
+
+assets:
+  watch: php bin/console importmap:install
+  build: php bin/console importmap:install
+
+tests:
+  phpunit:
+    from:
+    path:
+    image:
+    test_suite:
+    test_options:
+    test_target:
+
+  metrics:
+    from:
+    path:
+    image:
+
+  feature:
+    test_suite:
+    test_options: '--testdox --colors=always'
+    test_target:
+    test:
+      - make bash-exec CMD='php bin/phpunit $(TEST_OPTIONS) $(TEST_TARGET)'
+
+  regression:
+    test_suite:
+    test_options:
+    test_target:
+    run:
+    rebuild:
+    test:
+
+clear:
+  vars:
+    - var/cache
+    - var/log
+  others:
+    - vendor
+  volumes: []
+  scripts: []
+
+bash:
+  service: web
+
+logs:
+  path: var/log/dev.log
+  date_format: "%Y-%m-%d"
+  date_timezone: UTC
+
+migrations:
+  clear:
+    - make bash-exec CMD='php bin/console cache:clear'
+    - make bash-exec CMD='php bin/console doctrine:migrations:status'
+    - make bash-exec CMD='php bin/console doctrine:schema:validate'
+  sync:
+    - make bash-exec CMD='php bin/console doctrine:migrations:migrate -n'
+  diff:
+    - make bash-exec CMD='php bin/console doctrine:migrations:diff'
+  generate:
+    - make bash-exec CMD='php bin/console doctrine:migrations:generate'
+
+fixtures:
+  load:
+    - make bash-exec CMD='php bin/console doctrine:database:drop -f --if-exists'
+    - make bash-exec CMD='php bin/console doctrine:database:create --if-not-exists'
+    - make bash-exec CMD='php bin/console doctrine:migrations:migrate -n'
+  seed:
+    default:
+    scripts: []

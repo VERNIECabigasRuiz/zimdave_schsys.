@@ -1,0 +1,40 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: zimdave_schsys
+    ports:
+      - "3395:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-s", "-ppassword" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - zimdave-schsys-db:/var/lib/mysql
+
+  web:
+    depends_on:
+      mysql:
+        condition: service_healthy
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: 'mysql://root:password@mysql:3306/zimdave_schsys?serverVersion=8.4.0&charset=utf8mb4'
+      DEFAULT_URI: 'https://docker.vernie.com:8095'
+    volumes:
+      - .:/app/
+    ports:
+      - "8095:443"
+    healthcheck:
+      test: [ "CMD", "curl", "-fsk", "-o", "/dev/null", "https://localhost/login" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 600s
+
+volumes:
+  zimdave-schsys-db:
+    name: zimdave-schsys-db
