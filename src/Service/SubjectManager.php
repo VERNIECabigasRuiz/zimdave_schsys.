@@ -8,6 +8,7 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Subject;
 use App\Repository\SubjectRepository;
+use App\Repository\TeachingLoadRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -24,6 +25,7 @@ class SubjectManager
         private readonly SubjectRepository $subjects,
         private readonly PlanLimits $planLimits,
         private readonly ActivityLogger $activityLogger,
+        private readonly TeachingLoadRepository $loads,
     ) {
     }
 
@@ -56,6 +58,9 @@ class SubjectManager
     public function delete(Subject $subject): void
     {
         $this->assertWritable($subject->getSchool());
+        if (0 < $loaded = $this->loads->countForSubject($subject)) {
+            throw new InUseException(\sprintf('%s is loaded in %d %s.', $subject->getName(), $loaded, 1 === $loaded ? 'section' : 'sections'));
+        }
         $count = $subject->getComponents()->count();
         $this->activityLogger->log('Deleted subject '.$subject->getLabel().($count > 0 ? \sprintf(' with %d components', $count) : ''));
         $this->entityManager->remove($subject);

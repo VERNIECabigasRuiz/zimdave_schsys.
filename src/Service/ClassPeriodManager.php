@@ -6,6 +6,7 @@ use App\Entity\ClassPeriod;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Repository\ClassPeriodRepository;
+use App\Repository\ScheduleEntryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -19,6 +20,7 @@ class ClassPeriodManager
         private readonly ClassPeriodRepository $periods,
         private readonly PlanLimits $planLimits,
         private readonly ActivityLogger $activityLogger,
+        private readonly ScheduleEntryRepository $entries,
     ) {
     }
 
@@ -33,6 +35,10 @@ class ClassPeriodManager
     {
         $this->assertWritable($period->getSchool());
         $isNew = null === $period->getId();
+        // Turning a period into a break would strand its classes
+        if (!$isNew && $period->isBreak() && null === ($this->entityManager->getUnitOfWork()->getOriginalEntityData($period)['breakLabel'] ?? null)) {
+            $this->assertNotInUse($period, true);
+        }
         if ($isNew) {
             $this->entityManager->persist($period);
         }
@@ -46,6 +52,7 @@ class ClassPeriodManager
     public function delete(ClassPeriod $period): void
     {
         $this->assertWritable($period->getSchool());
+        $this->assertNotInUse($period, false);
         $this->activityLogger->log('Deleted class period '.$this->periods->label($period));
         $school = $period->getSchool();
         $schoolYear = $period->getSchoolYear();
@@ -62,6 +69,18 @@ class ClassPeriodManager
         foreach ($this->periods->findForSchool($school, $schoolYear) as $i => $period) {
             $period->setPosition($i + 1);
         }
+    }
+
+    /** @param bool $discardEdit drop the unsaved edit when refusing, so the entity shows what is stored */
+    private function assertNotInUse(ClassPeriod $period, bool $discardEdit): void
+    {
+        if (0 === $sections = $this->entries->countForPeriod($period)) {
+            return;
+        }
+        if ($discardEdit) {
+            $this->entityManager->refresh($period);
+        }
+        throw new InUseException(\sprintf('%s has classes in %d %s. Remove them first.', $this->periods->label($period), $sections, 1 === $sections ? 'section' : 'sections'));
     }
 
     private function assertWritable(School $school): void

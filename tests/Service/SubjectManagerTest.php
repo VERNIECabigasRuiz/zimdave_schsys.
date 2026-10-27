@@ -41,6 +41,7 @@ class SubjectManagerTest extends KernelTestCase
             $container->get(SubjectRepository::class),
             $container->get(PlanLimits::class),
             $container->get(ActivityLogger::class),
+            $container->get(\App\Repository\TeachingLoadRepository::class),
         );
         $this->clearSchoolData();
         $this->last = $this->schoolYear(2025, current: false);

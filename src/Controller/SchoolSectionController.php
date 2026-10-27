@@ -9,6 +9,7 @@ use App\Form\SectionFormType;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Security\Voter\SchoolVoter;
+use App\Service\InUseException;
 use App\Service\PlanLimitException;
 use App\Service\SectionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -74,7 +75,7 @@ class SchoolSectionController extends AbstractController
         try {
             $this->manager->delete($section);
             $this->addFlash('success', \sprintf('Deleted %s.', $section->getLabel()));
-        } catch (PlanLimitException $e) {
+        } catch (PlanLimitException|InUseException $e) {
             $this->addFlash('error', $e->getMessage());
         }
 

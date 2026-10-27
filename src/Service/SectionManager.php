@@ -7,6 +7,7 @@ use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\User;
 use App\Repository\SectionRepository;
+use App\Repository\TeachingLoadRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -20,6 +21,7 @@ class SectionManager
         private readonly SectionRepository $sections,
         private readonly PlanLimits $planLimits,
         private readonly ActivityLogger $activityLogger,
+        private readonly TeachingLoadRepository $loads,
     ) {
     }
 
@@ -53,6 +55,9 @@ class SectionManager
     public function delete(Section $section): void
     {
         $this->assertWritable($section->getSchool());
+        if ([] !== $this->loads->findForSection($section)) {
+            throw new InUseException(\sprintf('%s has a timetable. Remove its classes and teachers first.', $section->getLabel()));
+        }
         $this->activityLogger->log('Deleted section '.$section->getLabel());
         $this->entityManager->remove($section);
         $this->entityManager->flush();

@@ -10,6 +10,7 @@ use App\Repository\ClassPeriodRepository;
 use App\Repository\SchoolYearRepository;
 use App\Security\Voter\SchoolVoter;
 use App\Service\ClassPeriodManager;
+use App\Service\InUseException;
 use App\Service\PlanLimitException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -68,7 +69,7 @@ class SchoolClassPeriodController extends AbstractController
             $label = $this->periods->label($period);
             $this->manager->delete($period);
             $this->addFlash('success', \sprintf('Deleted %s.', $label));
-        } catch (PlanLimitException $e) {
+        } catch (PlanLimitException|InUseException $e) {
             $this->addFlash('error', $e->getMessage());
         }
 
@@ -91,7 +92,7 @@ class SchoolClassPeriodController extends AbstractController
             try {
                 $this->manager->save($period);
                 $this->addFlash('success', \sprintf($isNew ? 'Added %s.' : 'Saved %s.', $this->periods->label($period)));
-            } catch (PlanLimitException $e) {
+            } catch (PlanLimitException|InUseException $e) {
                 $this->addFlash('error', $e->getMessage());
             }
 

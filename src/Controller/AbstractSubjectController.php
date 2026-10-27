@@ -9,6 +9,7 @@ use App\Form\SectionFormType;
 use App\Form\SubjectFormType;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SubjectRepository;
+use App\Service\InUseException;
 use App\Service\PlanLimitException;
 use App\Service\SubjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -105,7 +106,7 @@ abstract class AbstractSubjectController extends AbstractController
         try {
             $this->manager->delete($subject);
             $this->addFlash('success', \sprintf('Deleted %s.', $subject->getLabel()));
-        } catch (PlanLimitException $e) {
+        } catch (PlanLimitException|InUseException $e) {
             $this->addFlash('error', $e->getMessage());
         }
 

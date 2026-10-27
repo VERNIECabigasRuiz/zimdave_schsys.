@@ -5,7 +5,9 @@ namespace App\Tests\Controller;
 use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;
+use App\Entity\Section;
 use App\Entity\Subject;
+use App\Entity\TeachingLoad;
 use App\Entity\User;
 use App\Service\SubjectManager;
 use App\Tests\Controller\Admin\AdminTestCase;
@@ -223,6 +225,24 @@ class SchoolSubjectControllerTest extends AdminTestCase
         $this->client->request('GET', $this->url($this->school, '/'.$mapeh->getId().'/edit'));
         $this->client->submitForm('Save subject', ['subject_form[name]' => 'Music, Arts, PE and Health']);
         self::assertResponseRedirects($this->url($this->school));
+    }
+
+    public function testDeleteLoadedSubjectShowsError(): void
+    {
+        $math = $this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics');
+        $section = (new Section($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade7)->setName('Rizal');
+        $teacher = $this->createUser('santos', User::ROLE_TEACHER, 'Ana Santos');
+        $this->em->persist($section);
+        $this->em->persist(new TeachingLoad($section, $math, $teacher));
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', $this->url($this->school));
+        $this->client->submit($crawler->filter('tr:contains("MATH7")')->first()->filter('form')->selectButton('Delete')->form());
+
+        self::assertResponseRedirects($this->url($this->school));
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('body', 'Mathematics is loaded in 1 section.');
+        self::assertNotNull($this->find('MATH7'));
     }
 
     public function testDeleteParentWithComponents(): void

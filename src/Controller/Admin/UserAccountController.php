@@ -216,9 +216,13 @@ class UserAccountController extends AbstractController
     {
         $schoolYear = $this->requireTeacherAndYear($account);
 
-        $teachers->removeFromSchool($schoolYear, $account);
-        $this->entityManager->flush();
-        $this->addFlash('success', \sprintf('%s no longer has a school for %s.', $account->getFullName(), $schoolYear->getName()));
+        try {
+            $teachers->removeFromSchool($schoolYear, $account);
+            $this->entityManager->flush();
+            $this->addFlash('success', \sprintf('%s no longer has a school for %s.', $account->getFullName(), $schoolYear->getName()));
+        } catch (AssignmentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
 
         return $this->redirectToRoute('admin_accounts_by_role', ['slug' => 'teachers']);
     }
