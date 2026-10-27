@@ -237,8 +237,8 @@ class TimetableQuery
         $term = $this->termAt($schoolYear, $at);
         $time = $at->format('H:i:s');
         $today = array_values(array_filter(
-            $this->entries->findForTeacher($teacher, $schoolYear),
-            fn (ScheduleEntry $e) => $e->getDay() === $day && $this->countsIn($e, $term),
+            $this->entries->findForTeacherOn($teacher, $schoolYear, $day),
+            fn (ScheduleEntry $e) => $this->countsIn($e, $term),
         ));
         usort($today, static fn (ScheduleEntry $a, ScheduleEntry $b) => $a->getPeriod()->getStartsAt() <=> $b->getPeriod()->getStartsAt());
 

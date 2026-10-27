@@ -215,5 +215,37 @@ class TimetableNowTest extends KernelTestCase
     {
         self::assertSame('weekend', $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-24 08:00'))['state']);
     }
-}
 
+    public function testEntryQueriesLoadTheirRelationsInOneGo(): void
+    {
+        $this->manager->plot($this->rizal, $this->math7, Weekday::Tuesday, $this->p2);
+        $repository = static::getContainer()->get(ScheduleEntryRepository::class);
+        $em = $this->em;
+        // Each query runs on an empty entity manager, so nothing is already loaded by an earlier one
+        $check = function (string $method, callable $query) use ($em): array {
+            $em->clear();
+            $entries = $query(
+                $em->getReference(User::class, $this->santos->getId()),
+                $em->getReference(Section::class, $this->rizal->getId()),
+                $em->getReference(School::class, $this->school->getId()),
+                $em->getReference(SchoolYear::class, $this->sy->getId()),
+                $em->getReference(ClassPeriod::class, $this->p1->getId()),
+            );
+            self::assertNotEmpty($entries, $method);
+            foreach ($entries as $entry) {
+                foreach (['load' => $entry->getLoad(), 'section' => $entry->getSection(), 'period' => $entry->getPeriod()] as $name => $related) {
+                    self::assertFalse($em->isUninitializedObject($related), $method.' leaves the '.$name.' to a later query');
+                }
+                self::assertFalse($em->isUninitializedObject($entry->getLoad()->getSubject()), $method.' leaves the subject to a later query');
+            }
+
+            return array_map(static fn ($e) => $e->getDay(), $entries);
+        };
+
+        $check('findForSection', static fn ($santos, $rizal) => $repository->findForSection($rizal, 0));
+        self::assertCount(3, $check('findForTeacher', static fn ($santos, $rizal, $school, $sy) => $repository->findForTeacher($santos, $sy)));
+        $check('findAt', static fn ($santos, $rizal, $school, $sy, $p1) => $repository->findAt($school, $sy, Weekday::Monday, $p1));
+        // Only the asked day
+        self::assertSame([Weekday::Monday, Weekday::Monday], $check('findForTeacherOn', static fn ($santos, $rizal, $school, $sy) => $repository->findForTeacherOn($santos, $sy, Weekday::Monday)));
+    }
+}

@@ -10,6 +10,7 @@ use App\Entity\Section;
 use App\Entity\User;
 use App\Entity\Weekday;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -29,7 +30,7 @@ class ScheduleEntryRepository extends ServiceEntityRepository
      */
     public function findForSection(Section $section, int $term): array
     {
-        return $this->createQueryBuilder('e')
+        return $this->withRelations()
             ->andWhere('e.section = :section')->setParameter('section', $section)
             ->andWhere('e.term IN (:terms)')->setParameter('terms', self::overlappingTerms($term))
             ->addOrderBy('e.day', 'ASC')->addOrderBy('e.id', 'ASC')
@@ -58,10 +59,21 @@ class ScheduleEntryRepository extends ServiceEntityRepository
     /** @return list<ScheduleEntry> */
     public function findForTeacher(User $teacher, SchoolYear $schoolYear): array
     {
-        return $this->createQueryBuilder('e')
+        return $this->withRelations()
             ->andWhere('e.teacher = :teacher')->setParameter('teacher', $teacher)
             ->andWhere('e.schoolYear = :sy')->setParameter('sy', $schoolYear)
             ->addOrderBy('e.day', 'ASC')->addOrderBy('e.id', 'ASC')
+            ->getQuery()->getResult();
+    }
+
+    /** @return list<ScheduleEntry> */
+    public function findForTeacherOn(User $teacher, SchoolYear $schoolYear, Weekday $day): array
+    {
+        return $this->withRelations()
+            ->andWhere('e.teacher = :teacher')->setParameter('teacher', $teacher)
+            ->andWhere('e.schoolYear = :sy')->setParameter('sy', $schoolYear)
+            ->andWhere('e.day = :day')->setParameter('day', $day)
+            ->addOrderBy('e.id', 'ASC')
             ->getQuery()->getResult();
     }
 
@@ -101,14 +113,22 @@ class ScheduleEntryRepository extends ServiceEntityRepository
     /** @return list<ScheduleEntry> */
     public function findAt(School $school, SchoolYear $schoolYear, Weekday $day, ClassPeriod $period): array
     {
-        return $this->createQueryBuilder('e')
-            ->join('e.section', 'sec')
+        return $this->withRelations()
             ->andWhere('sec.school = :school')->setParameter('school', $school)
             ->andWhere('e.schoolYear = :sy')->setParameter('sy', $schoolYear)
             ->andWhere('e.day = :day')->setParameter('day', $day)
             ->andWhere('e.period = :period')->setParameter('period', $period)
             ->addOrderBy('e.id', 'ASC')
             ->getQuery()->getResult();
+    }
+
+    /** Entries with their load, subject, section, period and teacher, read in the same query. */
+    private function withRelations(): QueryBuilder
+    {
+        return $this->createQueryBuilder('e')
+            ->addSelect('l', 'sub', 'sec', 'p', 't')
+            ->join('e.load', 'l')->join('l.subject', 'sub')->join('e.section', 'sec')
+            ->join('e.period', 'p')->join('e.teacher', 't');
     }
 
     /**
