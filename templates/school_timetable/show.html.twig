@@ -29,31 +29,33 @@
              data-timetable-term-value="{{ state.term }}">
 
             {% if state.terms|length > 1 %}
-                <nav class="filters" aria-label="Semester">
+                <nav class="filters" aria-label="Semester" data-timetable-target="terms">
                     {% for term in state.terms %}
                         <a class="btn btn--sm {{ term == state.term ? 'btn--primary' : 'btn--ghost' }}"
-                           href="{{ path('school_timetable', params|merge({term: term})) }}">Semester {{ term }}</a>
+                           href="{{ path('school_timetable', params|merge({term: term})) }}">{{ term == 1 ? '1st' : '2nd' }} sem</a>
                     {% endfor %}
                 </nav>
             {% endif %}
 
-            <p class="alert alert--warning" role="alert" data-timetable-target="message" hidden></p>
+            <div class="alert alert--error" role="alert" data-timetable-target="message" hidden></div>
 
             <div class="timetable-layout">
                 <section class="card timetable-cards" aria-label="Subjects">
                     <h2>Subjects</h2>
-                    {% for card in state.cards %}
-                        <div class="timetable-card" data-subject-id="{{ card.subjectId }}">
-                            <strong>{{ card.name }}</strong>
-                            <span class="muted">{{ card.teacherName ?? 'No teacher yet' }}</span>
-                            <span class="badge">{{ card.used }}/{{ card.perWeek ?? '?' }}</span>
-                        </div>
-                    {% else %}
-                        <p class="muted">No subjects to place for this section.</p>
-                    {% endfor %}
+                    <div data-timetable-target="cards">
+                        {% for card in state.cards %}
+                            <div class="timetable-card" data-subject-id="{{ card.subjectId }}">
+                                <strong>{{ card.name }}</strong>
+                                <span class="muted">{{ card.teacherName ?? 'No teacher yet' }}</span>
+                                <span class="badge">{{ card.used }}/{{ card.perWeek ?? '?' }}</span>
+                            </div>
+                        {% else %}
+                            <p class="muted">No subjects to place for this section.</p>
+                        {% endfor %}
+                    </div>
                 </section>
 
-                <section class="card table-card" aria-label="Weekly timetable">
+                <section class="card table-card" aria-label="Weekly timetable" data-timetable-target="grid">
                     <table class="table timetable-grid">
                         <thead>
                             <tr>
@@ -89,6 +91,14 @@
                     </table>
                 </section>
             </div>
+
+            <dialog class="card timetable-dialog" aria-labelledby="timetable-dialog-title" data-timetable-target="dialog">
+                <h2 id="timetable-dialog-title" data-timetable-target="dialogTitle">Plot a class</h2>
+                <ul class="timetable-choices" data-timetable-target="choices"></ul>
+                <div class="row-actions">
+                    <button type="button" class="btn btn--ghost btn--sm" data-action="timetable#closeDialog">Cancel</button>
+                </div>
+            </dialog>
         </div>
     {% endif %}
 {% endblock %}

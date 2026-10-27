@@ -131,6 +131,9 @@ class SchoolTimetableControllerTest extends AdminTestCase
         self::assertCount(2, $crawler->filter('.timetable-grid tbody tr'));
         self::assertStringContainsString('Mathematics', $crawler->filter('.timetable-cell--filled')->text());
         self::assertStringContainsString('Ana Santos', $crawler->filter('.timetable-cell--filled')->text());
+        foreach (['message', 'cards', 'grid', 'dialog', 'dialogTitle', 'choices'] as $target) {
+            self::assertCount(1, $root->filter(\sprintf('[data-timetable-target="%s"]', $target)), $target);
+        }
     }
 
     public function testNoPeriodsShowsSetupLink(): void
@@ -311,5 +314,6 @@ class SchoolTimetableControllerTest extends AdminTestCase
         self::assertCount(1, $cards);
         self::assertStringContainsString('Reading and Writing', $cards[0]);
         self::assertStringNotContainsString('Oral Communication', $crawler->filter('main, body')->first()->html());
+        self::assertSame(['1st sem', '2nd sem'], $crawler->filter('[data-timetable-target="terms"] a')->each(static fn ($a) => trim($a->text())));
     }
 }
