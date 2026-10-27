@@ -32,7 +32,8 @@
 /public/uploads/logos/*
 /public/uploads/photos/*
 !/public/uploads/**/.gitkeep
-# Local tool settings
+# Shared assistant setup is committed; only personal settings stay local
+!/.claude/
 /.claude/settings.local.json
 /.superpowers/
 ###< local / personal data ###
