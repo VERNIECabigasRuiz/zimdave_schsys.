@@ -79,6 +79,7 @@ class TeacherLoadControllerTest extends AdminTestCase
         self::assertSelectorTextContains('body', 'Total: 10 periods per week');
         self::assertStringContainsString('Mathematics', $crawler->filter('.timetable-grid')->text());
         self::assertStringContainsString('Grade 8 – Mabini', $crawler->filter('.timetable-grid')->text());
+        self::assertSelectorTextContains('.sidebar__link.is-active', 'Teachers');
     }
 
     public function testTeacherOfOtherSchoolIs404(): void

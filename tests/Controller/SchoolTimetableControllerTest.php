@@ -134,6 +134,7 @@ class SchoolTimetableControllerTest extends AdminTestCase
         foreach (['message', 'cards', 'grid', 'dialog', 'dialogTitle', 'choices'] as $target) {
             self::assertCount(1, $root->filter(\sprintf('[data-timetable-target="%s"]', $target)), $target);
         }
+        self::assertSelectorTextContains('.sidebar__link.is-active', 'Sections');
     }
 
     public function testNoPeriodsShowsSetupLink(): void
