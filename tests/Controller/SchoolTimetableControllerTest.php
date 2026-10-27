@@ -259,14 +259,14 @@ class SchoolTimetableControllerTest extends AdminTestCase
         self::assertSame(0, $this->em->getRepository(TeachingLoad::class)->count([]));
     }
 
-    public function testSetTeacherOfAnotherSchoolIs422(): void
+    public function testSetTeacherOfAnotherSchoolIs404(): void
     {
         $outsider = $this->createUser('outsider', User::ROLE_TEACHER, 'Out Sider');
         $token = $this->token();
 
         $this->json('PUT', $this->url($this->mabini, '/loads/'.$this->math8->getId()), ['teacherId' => $outsider->getId()], $token);
 
-        self::assertResponseStatusCodeSame(422);
+        self::assertResponseStatusCodeSame(404);
     }
 
     public function testRemoveEntry(): void

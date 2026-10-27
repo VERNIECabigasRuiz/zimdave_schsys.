@@ -9,9 +9,11 @@ use App\Entity\ScheduleEntry;
 use App\Entity\School;
 use App\Entity\Section;
 use App\Entity\Subject;
+use App\Entity\User;
 use App\Entity\Weekday;
 use App\Repository\ClassPeriodRepository;
 use App\Repository\ScheduleEntryRepository;
+use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
@@ -45,6 +47,7 @@ class SchoolTimetableController extends AbstractController
         private readonly ClassPeriodRepository $periods,
         private readonly ScheduleEntryRepository $entries,
         private readonly UserRepository $users,
+        private readonly SchoolAssignmentRepository $assignments,
         private readonly SchoolYearRepository $schoolYears,
         private readonly TimetableManager $manager,
         private readonly TimetableQuery $query,
@@ -79,7 +82,7 @@ class SchoolTimetableController extends AbstractController
     {
         $section = $this->requireSection($school, $section);
         $subject = $this->requireSubject($school, $subject);
-        $teacher = null === $input->teacherId ? null : ($this->users->find($input->teacherId) ?? throw $this->createNotFoundException('No such teacher.'));
+        $teacher = null === $input->teacherId ? null : $this->requireTeacher($school, $section, $input->teacherId);
 
         try {
             $this->manager->setTeacher($section, $subject, $teacher);
@@ -174,5 +177,16 @@ class SchoolTimetableController extends AbstractController
         }
 
         return $subject;
+    }
+
+    /** A teacher of this school this school year. */
+    private function requireTeacher(School $school, Section $section, int $id): User
+    {
+        $teacher = $this->users->find($id);
+        if (null === $teacher || $this->assignments->findSchoolOf($teacher, $section->getSchoolYear(), User::ROLE_TEACHER) !== $school) {
+            throw $this->createNotFoundException('This teacher is not in the school this school year.');
+        }
+
+        return $teacher;
     }
 }
