@@ -23,6 +23,7 @@ use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\Lock\LockFactory;
 
 class InUseProtectionTest extends KernelTestCase
 {
@@ -104,6 +105,30 @@ class InUseProtectionTest extends KernelTestCase
         $manager->save($this->p1);
         $this->em->clear();
         self::assertSame('07:00', $this->em->getRepository(ClassPeriod::class)->find($this->p1->getId())->getStartsAt()->format('H:i'));
+    }
+
+    public function testPeriodWaitsForTimetableChanges(): void
+    {
+        $manager = static::getContainer()->get(ClassPeriodManager::class);
+        $lock = static::getContainer()->get(LockFactory::class)->createLock('school-timetable-'.$this->school->getId());
+        self::assertTrue($lock->acquire());
+        $copy = 'Another change is being saved. Please try again.';
+
+        try {
+            $this->p1->setBreakLabel('Recess');
+            $this->refused(InUseException::class, $copy, fn () => $manager->save($this->p1));
+            self::assertNull($this->p1->getBreakLabel());
+            $this->refused(InUseException::class, $copy, fn () => $manager->delete($this->p1));
+            $this->refused(InUseException::class, $copy, fn () => $manager->save(new ClassPeriod($this->school, $this->sy)));
+        } finally {
+            $lock->release();
+        }
+        $this->em->clear();
+        self::assertSame(1, $this->em->getRepository(ClassPeriod::class)->count([]));
+
+        // Free again once the other change is saved
+        $manager->delete($this->em->find(ClassPeriod::class, $this->p1->getId()));
+        self::assertSame(0, $this->em->getRepository(ClassPeriod::class)->count([]));
     }
 
     public function testSubjectInUse(): void

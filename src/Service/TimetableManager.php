@@ -59,7 +59,7 @@ class TimetableManager
                 if (null === $load) {
                     return null;
                 }
-                if (!$load->getEntries()->isEmpty()) {
+                if (0 < $this->entries->countForLoad($load)) {
                     throw new TimetableException(\sprintf('Remove %s from the timetable before clearing its teacher.', $subject->getName()));
                 }
                 $this->entityManager->remove($load);
@@ -88,8 +88,10 @@ class TimetableManager
                 return $load;
             }
 
+            // the saved meetings, not this request's copy of them, which another request may have changed
+            $entries = $this->entries->findForLoad($load);
             $clashes = [];
-            foreach ($load->getEntries() as $entry) {
+            foreach ($entries as $entry) {
                 $clash = $this->entries->findTeacherClash($teacher, $section->getSchoolYear(), $entry->getDay(), $entry->getPeriod(), $entry->getTerm(), $section);
                 if (null !== $clash) {
                     $clashes[] = $this->teacherBusy($teacher, $clash);
@@ -100,7 +102,7 @@ class TimetableManager
             }
 
             $load->setTeacher($teacher);
-            foreach ($load->getEntries() as $entry) {
+            foreach ($entries as $entry) {
                 $entry->syncTeacher();
             }
             $this->activityLogger->log(\sprintf('Changed teacher to %s for %s in %s', $teacher->getUsername(), $subject->getLabel(), $section->getLabel()));
@@ -135,7 +137,7 @@ class TimetableManager
             if (null === $perWeek) {
                 throw new TimetableException(\sprintf('Set meetings per week for %s on the Subjects page first.', $subject->getName()));
             }
-            if ($load->getEntries()->count() >= $perWeek) {
+            if ($this->entries->countForLoad($load) >= $perWeek) {
                 throw new TimetableException(\sprintf('%s already has all %d meetings this week.', $subject->getName(), $perWeek));
             }
 

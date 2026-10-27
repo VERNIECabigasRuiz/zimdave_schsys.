@@ -7,6 +7,7 @@ use App\Entity\School;
 use App\Entity\ScheduleEntry;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
+use App\Entity\TeachingLoad;
 use App\Entity\User;
 use App\Entity\Weekday;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -99,6 +100,22 @@ class ScheduleEntryRepository extends ServiceEntityRepository
             ->andWhere('e.term IN (:terms)')->setParameter('terms', self::overlappingTerms($term))
             ->setMaxResults(1)
             ->getQuery()->getOneOrNullResult();
+    }
+
+    /** The meetings of a load as saved now, whatever a loaded copy of the load holds. */
+    public function countForLoad(TeachingLoad $load): int
+    {
+        return $this->count(['load' => $load]);
+    }
+
+    /** @return list<ScheduleEntry> the meetings of a load as saved now */
+    public function findForLoad(TeachingLoad $load): array
+    {
+        return $this->createQueryBuilder('e')
+            ->addSelect('p')->join('e.period', 'p')
+            ->andWhere('e.load = :load')->setParameter('load', $load)
+            ->addOrderBy('e.day', 'ASC')->addOrderBy('p.startsAt', 'ASC')
+            ->getQuery()->getResult();
     }
 
     /** Number of distinct sections that have classes in the period. */

@@ -339,6 +339,50 @@ class TimetableManagerTest extends KernelTestCase
         self::assertSame(1, $this->em->getRepository(TeachingLoad::class)->count([]));
     }
 
+    /** Another request's meeting: saved in the database, but not in this request's copy of the load. */
+    private function plotElsewhere(TeachingLoad $load, Weekday $day, ClassPeriod $period): void
+    {
+        $load->getEntries()->count(); // this request has already read the load's meetings
+        $this->em->getConnection()->insert('schedule_entry', [
+            'load_id' => $load->getId(), 'section_id' => $load->getSection()->getId(), 'teacher_id' => $load->getTeacher()->getId(),
+            'school_year_id' => $this->sy->getId(), 'day' => $day->value, 'period_id' => $period->getId(), 'term' => 0,
+        ]);
+    }
+
+    public function testStaleMeetingsCannotPassTheWeeklyLimit(): void
+    {
+        $math = $this->subject(GradeLevel::Grade7, 'MATHX7', 'Remedial Math', meetingsPerWeek: 1);
+        $load = $this->manager->setTeacher($this->rizal, $math, $this->santos);
+        $this->plotElsewhere($load, Weekday::Monday, $this->p1);
+
+        $this->refused('Remedial Math already has all 1 meetings this week.', fn () => $this->manager->plot($this->rizal, $math, Weekday::Tuesday, $this->p1));
+        self::assertSame(1, $this->entryCount());
+    }
+
+    public function testStaleMeetingsCannotBeClearedAway(): void
+    {
+        $load = $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
+        $this->plotElsewhere($load, Weekday::Monday, $this->p1);
+
+        $this->refused('Remove Mathematics from the timetable before clearing its teacher.', fn () => $this->manager->setTeacher($this->rizal, $this->math7, null));
+        self::assertSame(1, $this->em->getRepository(TeachingLoad::class)->count([]));
+    }
+
+    public function testStaleMeetingsAreCheckedAndMovedOnTeacherChange(): void
+    {
+        $load = $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
+        $this->plotElsewhere($load, Weekday::Monday, $this->p1);
+        $this->manager->setTeacher($this->mabini, $this->math8, $this->reyes);
+        $this->manager->plot($this->mabini, $this->math8, Weekday::Monday, $this->p1);
+
+        $this->refused('Jose Reyes already teaches Mathematics in Grade 8 – Mabini on Mon, Period 1.', fn () => $this->manager->setTeacher($this->rizal, $this->math7, $this->reyes));
+
+        $this->em->createQuery('DELETE FROM '.ScheduleEntry::class.' e WHERE e.section = :s')->setParameter('s', $this->mabini)->execute();
+        $this->manager->setTeacher($this->rizal, $this->math7, $this->reyes);
+        $this->em->clear();
+        self::assertSame(['reyes'], array_map(static fn (ScheduleEntry $e) => $e->getTeacher()->getUsername(), $this->em->getRepository(ScheduleEntry::class)->findAll()));
+    }
+
     public function testRemove(): void
     {
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);

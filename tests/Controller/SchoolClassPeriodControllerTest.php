@@ -8,6 +8,7 @@ use App\Entity\SchoolYear;
 use App\Entity\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\Lock\LockFactory;
 
 class SchoolClassPeriodControllerTest extends AdminTestCase
 {
@@ -66,6 +67,25 @@ class SchoolClassPeriodControllerTest extends AdminTestCase
         self::assertResponseRedirects($this->url($this->school));
         self::assertContains('Deleted class period Period 1', $this->activityActions());
         self::assertNull($this->em->getRepository(ClassPeriod::class)->find($id));
+    }
+
+    public function testBusyTimetableShowsTryAgain(): void
+    {
+        $id = $this->classPeriod($this->school, $this->sy, '07:30', '08:30')->getId();
+        $crawler = $this->client->request('GET', $this->url($this->school));
+        $lock = static::getContainer()->get(LockFactory::class)->createLock('school-timetable-'.$this->school->getId());
+        self::assertTrue($lock->acquire());
+
+        try {
+            $this->client->submit($crawler->filter('tbody form')->form());
+        } finally {
+            $lock->release();
+        }
+
+        self::assertResponseRedirects($this->url($this->school));
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('body', 'Another change is being saved. Please try again.');
+        self::assertNotNull($this->em->getRepository(ClassPeriod::class)->find($id));
     }
 
     public function testOtherSchoolPrincipalDenied(): void
