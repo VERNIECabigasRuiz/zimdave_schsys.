@@ -56,6 +56,17 @@ class SchoolControllerTest extends AdminTestCase
         self::assertContains('Created school 303456 Pagsabungan National High School', $this->activityActions());
     }
 
+    public function testSchoolListLinksToClassPeriods(): void
+    {
+        $this->createSchool('303456', 'Pagsabungan NHS');
+        $school = $this->findSchool('303456');
+
+        $crawler = $this->client->request('GET', '/admin/schools');
+
+        $link = $crawler->filter('tr:contains("Pagsabungan NHS")')->selectLink('Class Periods');
+        self::assertSame('/schools/'.$school->getId().'/class-periods', $link->attr('href'));
+    }
+
     public function testSchoolIdKeepsLeadingZeros(): void
     {
         $this->createSchool('012345', 'Zero Elementary School');

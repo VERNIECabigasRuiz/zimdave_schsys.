@@ -34,7 +34,7 @@
                     </thead>
                     <tbody>
                         {% for period in periods %}
-                            <tr class="{{ period.break ? 'class-period-row--break' }}">
+                            <tr>
                                 <td>
                                     {% if period.break %}
                                         <span class="muted">{{ period.breakLabel }}</span>
