@@ -37,7 +37,7 @@ class SchoolSubjectControllerTest extends AdminTestCase
 
     private function subject(GradeLevel $grade, string $code, string $name, ?Subject $parent = null, ?School $school = null, ?SchoolYear $sy = null): Subject
     {
-        $subject = (new Subject($school ?? $this->school, $sy ?? $this->sy))->setGradeLevel($grade)->setCode($code)->setName($name)->setParent($parent);
+        $subject = (new Subject($school ?? $this->school, $sy ?? $this->sy))->setGradeLevel($grade)->setCode($code)->setName($name)->setParent($parent)->setMeetingsPerWeek(5);
         $this->em->persist($subject);
         $this->em->flush();
 
@@ -82,6 +82,7 @@ class SchoolSubjectControllerTest extends AdminTestCase
             'subject_form[gradeLevel]' => '8',
             'subject_form[code]' => 'sci8',
             'subject_form[name]' => 'Science',
+            'subject_form[meetingsPerWeek]' => '4',
         ]);
 
         self::assertResponseRedirects($this->url($this->school));
@@ -90,6 +91,34 @@ class SchoolSubjectControllerTest extends AdminTestCase
         $this->client->followRedirect();
         self::assertSelectorTextContains('.alert', 'Created SCI8 – Science.');
         self::assertContains('Created subject SCI8 – Science', $this->activityActions());
+    }
+
+    public function testFormSavesMeetingsPerWeek(): void
+    {
+        $this->client->request('GET', $this->url($this->school, '/new'));
+        $this->client->submitForm('Create subject', [
+            'subject_form[gradeLevel]' => '7',
+            'subject_form[code]' => 'SCI7',
+            'subject_form[name]' => 'Science',
+            'subject_form[meetingsPerWeek]' => '4',
+        ]);
+
+        self::assertResponseRedirects($this->url($this->school));
+        self::assertSame(4, $this->find('SCI7')->getMeetingsPerWeek());
+    }
+
+    public function testFormRequiresMeetingsPerWeek(): void
+    {
+        $this->client->request('GET', $this->url($this->school, '/new'));
+        $this->client->submitForm('Create subject', [
+            'subject_form[gradeLevel]' => '7',
+            'subject_form[code]' => 'SCI7',
+            'subject_form[name]' => 'Science',
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('main', 'Set how many times a week this subject meets.');
+        self::assertNull($this->find('SCI7'));
     }
 
     public function testNewFormPreselectsGradeAndNextPosition(): void
@@ -118,6 +147,7 @@ class SchoolSubjectControllerTest extends AdminTestCase
             'subject_form[gradeLevel]' => '7',
             'subject_form[code]' => 'MA7',
             'subject_form[name]' => 'Music and Arts',
+            'subject_form[meetingsPerWeek]' => '4',
             'subject_form[parent]' => (string) $mapeh->getId(),
         ]);
 
@@ -138,6 +168,7 @@ class SchoolSubjectControllerTest extends AdminTestCase
                 'subject_form[gradeLevel]' => '7',
                 'subject_form[code]' => 'MA7',
                 'subject_form[name]' => 'Music and Arts',
+                'subject_form[meetingsPerWeek]' => '4',
                 'subject_form[parent]' => (string) $parent->getId(),
             ]);
 
@@ -156,6 +187,7 @@ class SchoolSubjectControllerTest extends AdminTestCase
             'subject_form[gradeLevel]' => '7',
             'subject_form[code]' => 'math7',
             'subject_form[name]' => 'Mathematics',
+            'subject_form[meetingsPerWeek]' => '4',
         ]);
 
         self::assertResponseStatusCodeSame(422);
@@ -279,6 +311,7 @@ class SchoolSubjectControllerTest extends AdminTestCase
             'subject_form[gradeLevel]' => '10',
             'subject_form[code]' => 'RES10',
             'subject_form[name]' => 'Research',
+            'subject_form[meetingsPerWeek]' => '4',
         ]);
         self::assertResponseRedirects($this->url($this->school));
         self::assertNotNull($this->find('RES10'));

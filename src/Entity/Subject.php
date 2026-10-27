@@ -74,6 +74,11 @@ class Subject
     #[Assert\Positive]
     private ?int $position = 1;
 
+    /** How many class meetings a week; null on a subject with components (its components are loaded instead). */
+    #[ORM\Column(type: 'smallint', nullable: true)]
+    #[Assert\Range(min: 1, max: 10)]
+    private ?int $meetingsPerWeek = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -221,6 +226,24 @@ class Subject
         return $this;
     }
 
+    public function getMeetingsPerWeek(): ?int
+    {
+        return $this->meetingsPerWeek;
+    }
+
+    public function setMeetingsPerWeek(?int $meetingsPerWeek): static
+    {
+        $this->meetingsPerWeek = $meetingsPerWeek;
+
+        return $this;
+    }
+
+    /** Only a subject without components gets a teacher and meetings in the timetable. */
+    public function isLoadable(): bool
+    {
+        return !$this->hasComponents();
+    }
+
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
@@ -249,6 +272,9 @@ class Subject
     #[Assert\Callback]
     public function validateLevelAndParent(ExecutionContextInterface $context): void
     {
+        if (null === $this->meetingsPerWeek && $this->isLoadable()) {
+            $context->buildViolation('Set how many times a week this subject meets.')->atPath('meetingsPerWeek')->addViolation();
+        }
         if (null === $this->gradeLevel) {
             return;
         }

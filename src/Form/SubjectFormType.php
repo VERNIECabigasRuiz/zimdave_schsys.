@@ -55,6 +55,13 @@ class SubjectFormType extends AbstractType
                 'label' => 'Order on report card',
                 'attr' => ['min' => 1],
             ])
+            ->add('meetingsPerWeek', IntegerType::class, [
+                'label' => 'Meetings per week',
+                'required' => false,
+                'attr' => ['min' => 1, 'max' => 10],
+                'help' => 'How many class periods a week. Leave empty for a subject with components; set it on each component.',
+                'row_attr' => ['data-subject-form-target' => 'meetings'],
+            ])
             ->add('semester', ChoiceType::class, [
                 'choices' => self::SEMESTERS,
                 'placeholder' => 'Select semester',

@@ -52,7 +52,7 @@ class SubjectManagerTest extends KernelTestCase
     private function subject(GradeLevel $grade, string $code, string $name, ?Subject $parent = null, ?SchoolYear $sy = null, int $position = 1): Subject
     {
         $subject = (new Subject($this->school, $sy ?? $this->sy))
-            ->setGradeLevel($grade)->setCode($code)->setName($name)->setParent($parent)->setPosition($position);
+            ->setGradeLevel($grade)->setCode($code)->setName($name)->setParent($parent)->setPosition($position)->setMeetingsPerWeek(5);
         $this->em->persist($subject);
         $this->em->flush();
 
@@ -113,6 +113,29 @@ class SubjectManagerTest extends KernelTestCase
 
         self::assertSame(0, $this->manager->addDepEdSet($this->school, $this->sy, GradeLevel::Grade7));
         self::assertCount(1, $this->log());
+    }
+
+    public function testDepEdSetFillsMeetingsPerWeek(): void
+    {
+        $this->manager->addDepEdSet($this->school, $this->sy, GradeLevel::Grade7);
+        $this->em->clear();
+
+        $meetings = fn (string $code) => $this->em->getRepository(Subject::class)->findOneBy(['code' => $code])->getMeetingsPerWeek();
+        self::assertSame(5, $meetings('MATH7'));
+        self::assertNull($meetings('MAPEH7'));
+        self::assertNull($meetings('MA7'));
+        self::assertNull($meetings('PEH7'));
+    }
+
+    public function testParentWithComponentsStoresNull(): void
+    {
+        $mapeh = $this->subject(GradeLevel::Grade7, 'MAPEH7', 'MAPEH')->setMeetingsPerWeek(4);
+        $this->subject(GradeLevel::Grade7, 'MA7', 'Music and Arts', $mapeh);
+
+        $this->manager->save($mapeh);
+        $this->em->clear();
+
+        self::assertNull($this->em->getRepository(Subject::class)->findOneBy(['code' => 'MAPEH7'])->getMeetingsPerWeek());
     }
 
     public function testAddDepEdSetUsesOldGrade10ForSy2026(): void

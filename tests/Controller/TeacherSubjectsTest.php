@@ -41,7 +41,7 @@ class TeacherSubjectsTest extends AdminTestCase
 
     private function subject(GradeLevel $grade, string $code, string $name, ?SchoolYear $sy = null): Subject
     {
-        $subject = (new Subject($this->own, $sy ?? $this->sy))->setGradeLevel($grade)->setCode($code)->setName($name);
+        $subject = (new Subject($this->own, $sy ?? $this->sy))->setGradeLevel($grade)->setCode($code)->setName($name)->setMeetingsPerWeek(5);
         $this->em->persist($subject);
         $this->em->flush();
 
@@ -96,6 +96,7 @@ class TeacherSubjectsTest extends AdminTestCase
         $this->client->submitForm('Create subject', [
             'subject_form[code]' => 'JOUR7',
             'subject_form[name]' => 'Journalism',
+            'subject_form[meetingsPerWeek]' => '4',
         ]);
 
         self::assertResponseRedirects('/teacher/subjects');
@@ -113,7 +114,7 @@ class TeacherSubjectsTest extends AdminTestCase
 
         $crawler = $this->client->request('GET', '/teacher/subjects/new');
         $form = $crawler->selectButton('Create subject')->form()->disableValidation();
-        $this->client->submit($form, ['subject_form[gradeLevel]' => '8', 'subject_form[code]' => 'SCI8', 'subject_form[name]' => 'Science']);
+        $this->client->submit($form, ['subject_form[gradeLevel]' => '8', 'subject_form[code]' => 'SCI8', 'subject_form[name]' => 'Science', 'subject_form[meetingsPerWeek]' => '4']);
         self::assertResponseStatusCodeSame(422);
         self::assertNull($this->find('SCI8'));
     }

@@ -35,7 +35,7 @@ class SubjectTest extends KernelTestCase
     private function subject(GradeLevel $grade, string $code, string $name, ?Subject $parent = null, ?School $school = null, ?SchoolYear $sy = null, int $position = 1): Subject
     {
         return (new Subject($school ?? $this->school, $sy ?? $this->sy))
-            ->setGradeLevel($grade)->setCode($code)->setName($name)->setParent($parent)->setPosition($position);
+            ->setGradeLevel($grade)->setCode($code)->setName($name)->setParent($parent)->setPosition($position)->setMeetingsPerWeek(5);
     }
 
     private function saved(Subject $subject): Subject
@@ -100,6 +100,27 @@ class SubjectTest extends KernelTestCase
         self::assertContains($k10, $this->violations($this->subject(GradeLevel::Grade7, 'SCI7', 'Science')->setSemester(1)));
         self::assertContains($k10, $this->violations($this->subject(GradeLevel::Grade7, 'SCI7', 'Science')->setTrack(ShsTrack::Academic)));
         self::assertContains($k10, $this->violations($this->subject(GradeLevel::Grade7, 'SCI7', 'Science')->setStrand('STEM')));
+    }
+
+    public function testMeetingsPerWeekRange(): void
+    {
+        foreach ([0, 11] as $bad) {
+            self::assertCount(1, array_filter($this->violations($this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics')->setMeetingsPerWeek($bad)), static fn (string $v) => str_starts_with($v, 'meetingsPerWeek:')), (string) $bad);
+        }
+        foreach ([1, 10] as $ok) {
+            self::assertSame([], $this->violations($this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics')->setMeetingsPerWeek($ok)), (string) $ok);
+        }
+    }
+
+    public function testMeetingsPerWeekRequiredWithoutComponents(): void
+    {
+        $mapeh = $this->saved($this->subject(GradeLevel::Grade7, 'MAPEH7', 'MAPEH'));
+        $this->saved($this->subject(GradeLevel::Grade7, 'MA7', 'Music and Arts', $mapeh));
+
+        self::assertContains('meetingsPerWeek: Set how many times a week this subject meets.', $this->violations($this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics')->setMeetingsPerWeek(null)));
+        self::assertSame([], $this->violations($mapeh->setMeetingsPerWeek(null)));
+        self::assertTrue($this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics')->isLoadable());
+        self::assertFalse($mapeh->isLoadable());
     }
 
     public function testDuplicateCodeRejected(): void

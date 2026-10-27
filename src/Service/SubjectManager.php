@@ -16,6 +16,9 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class SubjectManager
 {
+    /** DepEd Order 10, s. 2024: every learning area meets daily. */
+    private const DEPED_MEETINGS_PER_WEEK = 5;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly SubjectRepository $subjects,
@@ -37,6 +40,9 @@ class SubjectManager
         $subject->inheritFromParent();
         foreach ($subject->getComponents() as $component) {
             $component->inheritFromParent();
+        }
+        if ($subject->hasComponents()) {
+            $subject->setMeetingsPerWeek(null);
         }
         $isNew = null === $subject->getId();
         if ($isNew) {
@@ -68,6 +74,9 @@ class SubjectManager
             $subject = $this->add($taken, new Subject($school, $schoolYear), $grade, $preset['code'], $preset['name'], $position);
             if (null === $subject) {
                 continue;
+            }
+            if ([] === $preset['components']) {
+                $subject->setMeetingsPerWeek(self::DEPED_MEETINGS_PER_WEEK);
             }
             ++$position;
             ++$count;

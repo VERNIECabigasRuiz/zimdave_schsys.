@@ -13,7 +13,7 @@
     </div>
 
     <div class="card form-card">
-        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate', 'data-controller': 'subject-form'}}) }}
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate', 'data-controller': 'subject-form', 'data-subject-form-has-components-value': subject.hasComponents ? 'true' : 'false'}}) }}
             {{ form_errors(form) }}
             <div class="form-grid">
                 {{ form_row(form.gradeLevel) }}
@@ -22,6 +22,7 @@
                 {{ form_row(form.name) }}
             </div>
             {{ form_row(form.parent) }}
+            {{ form_row(form.meetingsPerWeek) }}
             <div class="form-grid">
                 {{ form_row(form.semester) }}
                 {{ form_row(form.track) }}
