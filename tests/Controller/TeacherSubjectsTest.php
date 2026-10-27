@@ -104,6 +104,21 @@ class TeacherSubjectsTest extends AdminTestCase
         self::assertContains('Created subject JOUR7 – Journalism', $this->activityActions());
     }
 
+    public function testMeetingsPerWeekIsOptionalWithoutAPrincipal(): void
+    {
+        $this->advise(GradeLevel::Grade7, 'Narra');
+
+        $this->client->request('GET', '/teacher/subjects/new');
+        $this->client->submitForm('Create subject', [
+            'subject_form[code]' => 'JOUR7',
+            'subject_form[name]' => 'Journalism',
+            'subject_form[meetingsPerWeek]' => '',
+        ]);
+
+        self::assertResponseRedirects('/teacher/subjects');
+        self::assertNull($this->find('JOUR7')->getMeetingsPerWeek());
+    }
+
     public function testTeacherCannotTouchOtherGrades(): void
     {
         $this->advise(GradeLevel::Grade7, 'Narra');

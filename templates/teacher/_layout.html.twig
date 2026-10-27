@@ -21,7 +21,9 @@
 
             <nav class="sidebar__nav" aria-label="Teacher">
                 {{ _self.nav_link('Dashboard', path('teacher_dashboard'), route == 'teacher_dashboard') }}
-                {{ _self.nav_link('My Teaching Load', path('teacher_load'), route starts with 'teacher_load') }}
+                {% if has_teaching_load(app.user) %}
+                    {{ _self.nav_link('My Teaching Load', path('teacher_load'), route starts with 'teacher_load') }}
+                {% endif %}
                 {{ _self.nav_link('My Profile', path('profile_show'), route starts with 'profile_') }}
             </nav>
 

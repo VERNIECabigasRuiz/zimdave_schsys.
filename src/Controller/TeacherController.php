@@ -48,6 +48,8 @@ class TeacherController extends AbstractController
             'can_create_section' => null !== $school && null === $advisory && $this->ownsSections($school)
                 && null === $this->sectionManager->refusal($school),
             'can_manage_subjects' => null !== $school && $this->ownsSections($school),
+            // a school without a principal has no timetables
+            'show_now' => null !== $school && !$this->ownsSections($school),
         ]);
     }
 

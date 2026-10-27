@@ -272,7 +272,8 @@ class Subject
     #[Assert\Callback]
     public function validateLevelAndParent(ExecutionContextInterface $context): void
     {
-        if (null === $this->meetingsPerWeek && $this->isLoadable()) {
+        // Only timetables need it, and a school without a principal (Individual plan) has none
+        if (null === $this->meetingsPerWeek && $this->isLoadable() && false !== $this->school->getPlan()?->includesPrincipal()) {
             $context->buildViolation('Set how many times a week this subject meets.')->atPath('meetingsPerWeek')->addViolation();
         }
         if (null === $this->gradeLevel) {
