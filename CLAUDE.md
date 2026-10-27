@@ -19,6 +19,8 @@ If `docker ps` shows `zimdave_schsys-web-1` running, use Docker; otherwise assum
 
 The root `.htaccess` denies everything on purpose: only `public/` may be web-served.
 
+Browser checks: Claude in Chrome needs the Chrome extension installed and enabled with `/chrome` (or `claude --chrome`); otherwise use the `playwright` plugin from `.claude/settings.json`.
+
 ## Domain terms
 
 - **PDS** = Personal Data Sheet (CSC Form 212), edited under `/profile`, printed to PDF by `PdsPdfRenderer` (dompdf).
