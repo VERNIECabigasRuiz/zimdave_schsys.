@@ -1,0 +1,65 @@
+{% extends layout %}
+
+{% block title %}Class Periods · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Class Periods</h1>
+            <p>{{ school.name }}{% if school_year %} · S.Y. {{ school_year.name }}{% endif %}</p>
+        </div>
+        {% if school_year and not refusal %}
+            <div class="row-actions">
+                <a class="btn btn--primary" href="{{ path('school_class_periods_new', {id: school.id}) }}">+ New period</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not school_year %}
+        <div class="card empty">No current school year. The school day is set per school year.</div>
+    {% else %}
+        {% if refusal %}
+            <div class="alert alert--warning plan-notice" role="status">{{ refusal }}</div>
+        {% endif %}
+
+        {% if periods %}
+            <section class="card table-card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Time</th>
+                            <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for period in periods %}
+                            <tr class="{{ period.break ? 'class-period-row--break' }}">
+                                <td>
+                                    {% if period.break %}
+                                        <span class="muted">{{ period.breakLabel }}</span>
+                                    {% else %}
+                                        <strong>Period {{ numbers[period.id] }}</strong>
+                                    {% endif %}
+                                </td>
+                                <td>{{ period.timeRange }}</td>
+                                <td class="table__actions">
+                                    {% if not refusal %}
+                                        <a class="btn btn--ghost btn--sm" href="{{ path('school_class_periods_edit', {id: school.id, period: period.id}) }}">Edit</a>
+                                        <form method="post" action="{{ path('school_class_periods_delete', {id: school.id, period: period.id}) }}"
+                                              data-turbo-confirm="Delete {{ period.break ? period.breakLabel : 'Period ' ~ numbers[period.id] }}?">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('class-period-' ~ period.id) }}">
+                                            <button class="btn btn--ghost btn--sm" type="submit">Delete</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% else %}
+            <div class="card empty">No class periods for S.Y. {{ school_year.name }} yet. Add the periods and breaks of the school day.</div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

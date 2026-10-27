@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use App\Entity\ActivityLog;
 use App\Entity\Announcement;
+use App\Entity\ClassPeriod;
 use App\Entity\Plan;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
@@ -23,7 +24,7 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
+        foreach ([ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
             $this->em->createQuery('DELETE FROM '.$class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test
@@ -41,6 +42,19 @@ trait SchoolFixturesTrait
         $this->em->flush();
 
         return $sy;
+    }
+
+    protected function classPeriod(School $school, SchoolYear $sy, string $start, string $end, ?string $breakLabel = null): ClassPeriod
+    {
+        $period = (new ClassPeriod($school, $sy))
+            ->setStartsAt(new \DateTimeImmutable($start))
+            ->setEndsAt(new \DateTimeImmutable($end))
+            ->setBreakLabel($breakLabel)
+            ->setPosition(\count($this->em->getRepository(ClassPeriod::class)->findForSchool($school, $sy)) + 1);
+        $this->em->persist($period);
+        $this->em->flush();
+
+        return $period;
     }
 
     protected function plan(string $name = 'Basic'): Plan
