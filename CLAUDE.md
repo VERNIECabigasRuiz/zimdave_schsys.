@@ -40,4 +40,4 @@ The root `.htaccess` denies everything on purpose: only `public/` may be web-ser
 
 ## Git
 
-Git-flow: `feature/*` branches off `develop`, merged back into `develop`; `main` holds releases. (No `develop` branch exists yet; create it from `main` before the first feature branch.) Commit messages describe the change plainly, with no ticket/plan references.
+Git-flow: `feature/*` branches off `develop`, merged back into `develop`; `main` holds releases. Commit messages describe the change plainly, with no ticket/plan references.
