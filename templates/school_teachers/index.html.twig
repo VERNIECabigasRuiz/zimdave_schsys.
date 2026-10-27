@@ -74,6 +74,7 @@
                             <td>{{ teacher.lastLoginAt ? teacher.lastLoginAt|activity_time : '—' }}</td>
                             <td class="table__actions">
                                 <a class="btn btn--ghost btn--sm" href="{{ path('school_teachers_edit', {id: school.id, teacher: teacher.id}) }}">Edit</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_teacher_load', {id: school.id, teacher: teacher.id}) }}">Load</a>
                                 <a class="btn btn--ghost btn--sm" href="{{ path('school_teacher_pds', {id: school.id, teacher: teacher.id}) }}" title="Download {{ teacher.fullName }}'s Personal Data Sheet" data-turbo="false">PDS</a>
                                 <form method="post" action="{{ path('school_teachers_reset_password', {id: school.id, teacher: teacher.id}) }}"
                                       data-turbo-confirm="Reset the password for {{ teacher.username }}?">
