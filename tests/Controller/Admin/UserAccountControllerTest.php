@@ -2,7 +2,12 @@
 
 namespace App\Tests\Controller\Admin;
 
+use App\Entity\GradeLevel;
 use App\Entity\SchoolAssignment;
+use App\Entity\SchoolYear;
+use App\Entity\Section;
+use App\Entity\Subject;
+use App\Entity\TeachingLoad;
 use App\Entity\User;
 
 class UserAccountControllerTest extends AdminTestCase
@@ -299,6 +304,55 @@ class UserAccountControllerTest extends AdminTestCase
 
         self::assertSame(0, $this->em->getRepository(SchoolAssignment::class)->count(['user' => $ana->getId()]));
         self::assertContains('Removed ana from Pagsabungan NHS ('.$sy->getName().')', $this->activityActions());
+    }
+
+    /** A teacher with a teaching load in Pagsabungan NHS this school year. */
+    private function loadedTeacher(SchoolYear $sy): User
+    {
+        $school = $this->school('303456', 'Pagsabungan NHS');
+        $ana = $this->createUser('ana', User::ROLE_TEACHER, 'Ana Reyes');
+        $this->assign($school, $sy, $ana, User::ROLE_TEACHER);
+        $section = (new Section($school, $sy))->setGradeLevel(GradeLevel::Grade7)->setName('Rizal');
+        $math = (new Subject($school, $sy))->setGradeLevel(GradeLevel::Grade7)->setCode('MATH7')->setName('Mathematics')->setMeetingsPerWeek(5);
+        $this->em->persist($section);
+        $this->em->persist($math);
+        $this->em->persist(new TeachingLoad($section, $math, $ana));
+        $this->em->flush();
+
+        return $ana;
+    }
+
+    private function schoolOf(User $teacher): ?string
+    {
+        $this->em->clear();
+
+        return $this->em->getRepository(SchoolAssignment::class)->findOneBy(['user' => $teacher->getId()])?->getSchool()->getName();
+    }
+
+    public function testTeacherWithLoadsCannotBeRemovedFromSchool(): void
+    {
+        $ana = $this->loadedTeacher($this->schoolYear((int) date('Y'), current: true));
+
+        $crawler = $this->client->request('GET', '/admin/accounts/'.$ana->getId().'/school');
+        $this->client->submit($crawler->selectButton('Remove from school')->form());
+
+        self::assertResponseRedirects('/admin/teachers');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('body', 'Ana Reyes still has 1 load this school year.');
+        self::assertSame('Pagsabungan NHS', $this->schoolOf($ana));
+    }
+
+    public function testTeacherWithLoadsCannotBeMoved(): void
+    {
+        $ana = $this->loadedTeacher($this->schoolYear((int) date('Y'), current: true));
+        $to = $this->school('300002', 'New School');
+
+        $this->client->request('GET', '/admin/accounts/'.$ana->getId().'/school');
+        $this->client->submitForm('Save school', ['teacher_school_form[school]' => (string) $to->getId()]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Ana Reyes still has 1 load this school year.');
+        self::assertSame('Pagsabungan NHS', $this->schoolOf($ana));
     }
 
     public function testOnlyTeachersCanBeAssignedToASchool(): void

@@ -216,6 +216,22 @@ class TimetableNowTest extends KernelTestCase
         self::assertSame('weekend', $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-24 08:00'))['state']);
     }
 
+    public function testPeriodToPeriodBoundaryBelongsToNextPeriod(): void
+    {
+        // Period 3 starts the moment Period 2 ends, with no break between them
+        $p3 = $this->classPeriod($this->school, $this->sy, '09:50', '10:50');
+        $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $p3);
+
+        $now = $this->query->now($this->school, $this->sy, $this->at('2026-10-19 09:50'));
+        self::assertSame('class', $now['state']);
+        self::assertSame('Period 3', $now['period']['label']);
+        self::assertSame(['Mathematics'], array_column($now['classes'], 'subjectName'));
+
+        $mine = $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-19 09:50'));
+        self::assertSame('class', $mine['state']);
+        self::assertSame(['subjectName' => 'Mathematics', 'sectionLabel' => 'Grade 7 – Rizal', 'endsAt' => '10:50'], $mine['current']);
+    }
+
     public function testEntryQueriesLoadTheirRelationsInOneGo(): void
     {
         $this->manager->plot($this->rizal, $this->math7, Weekday::Tuesday, $this->p2);
