@@ -121,7 +121,7 @@ class TeacherClassControllerTest extends AdminTestCase
         $values['enroll_section_form']['section'] = (string) $this->rosal->getId();
         $this->client->request('POST', '/teacher/class/enroll?lrn=123456789012', $values);
 
-        self::assertFalse($this->client->getResponse()->isRedirect());
+        self::assertResponseStatusCodeSame(422);
         self::assertNull($this->findLearner('123456789012'));
         self::assertSame(0, $this->enrollmentCount());
     }
@@ -185,6 +185,12 @@ class TeacherClassControllerTest extends AdminTestCase
         self::assertResponseIsSuccessful();
         self::assertCount(0, $crawler->filter('input[name="learner_form[lrn]"]'));
 
+        $values = $crawler->selectButton('Save')->form()->getPhpValues();
+        $values['learner_form']['lrn'] = '999999999999';
+        $this->client->request('POST', '/teacher/class/'.$learner->getId().'/edit', $values);
+        self::assertSame('111111111111', $this->findLearner('111111111111')?->getLrn());
+        self::assertNull($this->findLearner('999999999999'));
+
         $this->client->request('POST', '/schools/'.$this->school->getId().'/learners/'.$learner->getId().'/move', [
             'section' => $this->rosal->getId(),
             '_token' => $this->csrfToken('learner-'.$learner->getId()),
@@ -217,9 +223,31 @@ class TeacherClassControllerTest extends AdminTestCase
 
     public function testAdviserCannotOpenLearnerOfAnotherSection(): void
     {
-        $learner = $this->enrolled('111111111111', 'Abad', 'Ana', $this->rosal);
+        $own = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $other = $this->enrolled('222222222222', 'Diaz', 'Dina', $this->rosal);
+        $otherId = $other->getId();
+        $hash = $other->getUser()->getPassword();
+        $logsBefore = \count($this->activityActions());
 
-        $this->client->request('GET', '/teacher/class/'.$learner->getId());
+        $this->client->request('GET', '/teacher/class/'.$own->getId());
+        self::assertResponseIsSuccessful();
+
+        $this->client->request('GET', '/teacher/class/'.$otherId);
         self::assertResponseStatusCodeSame(404);
+        $this->client->request('GET', '/teacher/class/'.$otherId.'/edit');
+        self::assertResponseStatusCodeSame(404);
+
+        $token = $this->csrfToken('learner-'.$otherId);
+        $this->client->request('POST', '/teacher/class/'.$otherId.'/unenroll', ['_token' => $token]);
+        self::assertResponseStatusCodeSame(404);
+        $token = $this->csrfToken('learner-'.$otherId);
+        $this->client->request('POST', '/teacher/class/'.$otherId.'/reset-password', ['_token' => $token]);
+        self::assertResponseStatusCodeSame(404);
+
+        $this->em->clear();
+        $enrollment = $this->em->getRepository(Enrollment::class)->findOneBy(['learner' => $otherId]);
+        self::assertSame($this->rosal->getId(), $enrollment->getSection()->getId());
+        self::assertSame($hash, $this->em->getRepository(Learner::class)->find($otherId)->getUser()->getPassword());
+        self::assertCount($logsBefore, $this->activityActions());
     }
 }
