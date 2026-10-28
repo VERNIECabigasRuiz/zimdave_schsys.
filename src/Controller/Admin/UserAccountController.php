@@ -82,7 +82,8 @@ class UserAccountController extends AbstractController
     public function new(Request $request, #[MapQueryParameter] ?string $role = null): Response
     {
         $user = new User();
-        if (null !== $role && isset(self::ROLE_SLUGS[$role])) {
+        // Students are created by enrolling, so that role is never preset here
+        if (null !== $role && isset(self::ROLE_SLUGS[$role]) && User::ROLE_STUDENT !== self::ROLE_SLUGS[$role]) {
             $user->setRole(self::ROLE_SLUGS[$role]);
         }
 

@@ -148,6 +148,18 @@ class UserAccountControllerTest extends AdminTestCase
         self::assertSelectorNotExists('select[name="user_account_form[role]"] option[value="ROLE_STUDENT"]');
     }
 
+    public function testStudentListHasNoCreateAccountButton(): void
+    {
+        $this->client->request('GET', '/admin/students');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('a[href="/admin/accounts/new?role=students"]');
+        self::assertSelectorNotExists('a[href^="/admin/accounts/new"]');
+
+        $this->client->request('GET', '/admin/accounts/new?role=students');
+        self::assertResponseIsSuccessful();
+        self::assertSame("", $this->client->getCrawler()->selectButton("Create account")->form()["user_account_form[role]"]->getValue());
+    }
+
     public function testAdminCannotChangeOwnRoleOrStatus(): void
     {
         $this->client->request('GET', '/admin/accounts/'.$this->admin->getId().'/edit');
