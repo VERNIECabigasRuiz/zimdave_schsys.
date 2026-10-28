@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Enrollment;
 use App\Entity\Learner;
+use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\User;
@@ -128,15 +129,13 @@ class LearnerEnrollment
      */
     public function move(Enrollment $enrollment, Section $to): void
     {
-        $learner = $enrollment->getLearner();
-        $schoolYear = $this->currentYear();
-        $this->assertCurrent($enrollment, $schoolYear);
-        $this->assertCurrentSection($to, $schoolYear);
-        if ($to->getSchool() !== $enrollment->getSchool()) {
-            throw new EnrollmentException('Choose a section of the same school.');
-        }
+        $this->assertCurrentSection($to, $this->currentYear());
 
-        $this->lock->forLearner($learner, fn () => $this->lock->forSchool($enrollment->getSchool(), function () use ($enrollment, $to, $learner): void {
+        $this->lockEnrollment($enrollment, null, function () use ($enrollment, $to): void {
+            $learner = $enrollment->getLearner();
+            if ($to->getSchool() !== $enrollment->getSchool()) {
+                throw new EnrollmentException('Choose a section of the same school.');
+            }
             $this->assertNoPendingTransfer($learner);
             // the school's seat count doesn't change, so only the plan state and the section's room matter
             $reason = $this->planLimits->blockedReason($to->getSchool()) ?? $this->planLimits->sectionFullReason($to->getSchool(), $to);
@@ -148,7 +147,7 @@ class LearnerEnrollment
             $enrollment->moveTo($to);
             $this->activityLogger->log(\sprintf('Moved %s from %s to %s', $learner->getLrn(), $from->getLabel(), $to->getLabel()));
             $this->entityManager->flush();
-        }));
+        });
     }
 
     /**
@@ -158,10 +157,10 @@ class LearnerEnrollment
      */
     public function unenroll(Enrollment $enrollment): void
     {
-        $learner = $enrollment->getLearner();
-        $this->assertCurrent($enrollment, $this->currentYear());
+        $this->currentYear();
 
-        $this->lock->forLearner($learner, fn () => $this->lock->forSchool($enrollment->getSchool(), function () use ($enrollment, $learner): void {
+        $this->lockEnrollment($enrollment, null, function () use ($enrollment): void {
+            $learner = $enrollment->getLearner();
             $this->assertNoPendingTransfer($learner);
             if (null !== $reason = $this->planLimits->blockedReason($enrollment->getSchool())) {
                 throw new PlanLimitException($reason);
@@ -171,7 +170,7 @@ class LearnerEnrollment
             $this->entityManager->remove($enrollment);
             $this->activityLogger->log(\sprintf('Unenrolled %s from %s', $learner->getLrn(), $section->getLabel()));
             $this->entityManager->flush();
-        }));
+        });
     }
 
     /**
@@ -200,23 +199,44 @@ class LearnerEnrollment
      */
     public function transferDirectly(Enrollment $enrollment, Section $to, User $by): void
     {
-        $learner = $enrollment->getLearner();
         $schoolYear = $this->currentYear();
-        $this->assertCurrent($enrollment, $schoolYear);
         $this->assertCurrentSection($to, $schoolYear);
-        if ($to->getSchool() === $enrollment->getSchool()) {
-            throw new EnrollmentException('Choose a section of another school.');
-        }
 
-        $this->lock->forLearner($learner, fn () => $this->lock->forSchool($to->getSchool(), function () use ($enrollment, $to, $learner, $schoolYear): void {
+        $this->lockEnrollment($enrollment, $to->getSchool(), function () use ($enrollment, $to, $schoolYear): void {
+            $learner = $enrollment->getLearner();
+            if ($to->getSchool() === $enrollment->getSchool()) {
+                throw new EnrollmentException('Choose a section of another school.');
+            }
             $this->assertNoPendingTransfer($learner);
+            $from = $enrollment->getSchool();
+            if (null !== $reason = $this->planLimits->blockedReason($from)) {
+                throw new PlanLimitException($reason);
+            }
             $this->planLimits->assertCanAddStudent($to->getSchool(), $schoolYear, $to);
 
-            $from = $enrollment->getSchool();
             $enrollment->moveTo($to);
             $this->activityLogger->log(\sprintf('Transferred %s from %s to %s', $learner->getLrn(), $from->getName(), $to->getSchool()->getName()));
             $this->entityManager->flush();
-        }));
+        });
+    }
+
+    /**
+     * Runs $change under the learner lock, then the school lock, on the enrollment as it is
+     * now: the copy the caller loaded may be stale if another request changed it before we got the lock.
+     * The school is the enrollment's own school unless $school is given (the receiving school).
+     */
+    private function lockEnrollment(Enrollment $enrollment, ?School $school, callable $change): void
+    {
+        $this->lock->forLearner($enrollment->getLearner(), function () use ($enrollment, $school, $change): void {
+            // refresh() silently keeps the old state of a row that is gone, so look for it first
+            if (0 === $this->enrollments->count(['id' => $enrollment->getId()])) {
+                throw new EnrollmentException('This learner is no longer enrolled.');
+            }
+            $this->entityManager->refresh($enrollment);
+            $this->assertCurrent($enrollment, $this->currentYear());
+
+            $this->lock->forSchool($school ?? $enrollment->getSchool(), $change);
+        });
     }
 
     private function currentYear(): SchoolYear

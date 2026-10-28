@@ -101,7 +101,7 @@ class LearnerEnrollmentTest extends KernelTestCase
         try {
             $change();
         } catch (\Throwable $e) {
-            self::assertInstanceOf($class, $e);
+            self::assertInstanceOf($class, $e, $e->getMessage());
             self::assertSame($message, $e->getMessage());
 
             return;
@@ -298,7 +298,7 @@ class LearnerEnrollmentTest extends KernelTestCase
         $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $old, $oldSection, $this->admin);
 
         $this->refused('Past school years cannot be changed.', fn () => $this->service->unenroll($enrollment));
-        $this->refused('Past school years cannot be changed.', fn () => $this->service->move($enrollment, $oldSection));
+        $this->refused('Past school years cannot be changed.', fn () => $this->service->move($enrollment, $this->mabini));
     }
 
     public function testUnenrollKeepsLearnerAndAccount(): void
@@ -359,6 +359,88 @@ class LearnerEnrollmentTest extends KernelTestCase
         self::assertSame($this->school, $enrollment->getSchool());
     }
 
+    public function testMoveIntoFullSectionOnPlanWithoutPrincipal(): void
+    {
+        $solo = (new Plan())->setName('Solo Test')->setTeachersPerSeat(1)->setStudentsPerSeat(1)->setIncludesPrincipal(false);
+        $this->em->persist($solo);
+        $this->em->flush();
+        $school = $this->school('300001', 'Solo School', plan: 'Solo Test', seats: 2);
+        $a = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Rizal');
+        $b = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Luna');
+        $this->enroll($this->learner('100000000001', 'Cruz', 'Ana'), $this->sy, $a, $this->admin);
+        $enrollment = $this->enroll($this->learner('100000000002', 'Reyes', 'Ben'), $this->sy, $b, $this->admin);
+
+        $this->refused('Grade 7 – Rizal is full (1 learner).', fn () => $this->service->move($enrollment, $a), PlanLimitException::class);
+        self::assertSame($b, $enrollment->getSection());
+    }
+
+    public function testMoveAllowedWhenSchoolIsExactlyAtItsStudentLimit(): void
+    {
+        $this->setStudentsPerSeat(2);
+        try {
+            $this->enroll($this->learner('100000000001', 'Cruz', 'Ana'), $this->sy, $this->rizal, $this->admin);
+            $enrollment = $this->enroll($this->learner('100000000002', 'Reyes', 'Ben'), $this->sy, $this->rizal, $this->admin);
+
+            $this->service->move($enrollment, $this->mabini);
+
+            self::assertSame($this->mabini, $enrollment->getSection());
+        } finally {
+            $this->setStudentsPerSeat(1000);
+        }
+    }
+
+    private function stale(Enrollment $enrollment, Section $to): void
+    {
+        // another request changed the row after the caller loaded the entity
+        $this->em->getConnection()->update('enrollment', ['school_id' => $to->getSchool()->getId(), 'section_id' => $to->getId()], ['id' => $enrollment->getId()]);
+    }
+
+    public function testStaleMoveAfterTransferIsRefused(): void
+    {
+        $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
+        $this->stale($enrollment, $this->otherSection);
+
+        $this->refused('Choose a section of the same school.', fn () => $this->service->move($enrollment, $this->mabini));
+
+        self::assertSame($this->otherSection->getId(), (int) $this->em->getConnection()->fetchOne('SELECT section_id FROM enrollment'));
+        self::assertSame([], $this->logs());
+    }
+
+    public function testStaleTransferAfterTransferIsRefused(): void
+    {
+        $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
+        $this->stale($enrollment, $this->otherSection);
+
+        $this->refused('Choose a section of another school.', fn () => $this->service->transferDirectly($enrollment, $this->otherSection, $this->admin));
+        self::assertSame([], $this->logs());
+    }
+
+    public function testStaleUnenrollUsesTheCurrentSchoolAndSection(): void
+    {
+        $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
+        $this->stale($enrollment, $this->otherSection);
+
+        $this->service->unenroll($enrollment);
+
+        self::assertSame(0, $this->em->getRepository(Enrollment::class)->count([]));
+        self::assertSame(['Unenrolled 123456789012 from Grade 7 – Bonifacio'], $this->logs());
+    }
+
+    public function testStaleChangeAfterUnenrollIsRefused(): void
+    {
+        $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
+        $this->em->getConnection()->delete('enrollment', ['id' => $enrollment->getId()]);
+
+        foreach ([
+            fn () => $this->service->move($enrollment, $this->mabini),
+            fn () => $this->service->unenroll($enrollment),
+            fn () => $this->service->transferDirectly($enrollment, $this->otherSection, $this->admin),
+        ] as $change) {
+            $this->refused('This learner is no longer enrolled.', $change);
+        }
+        self::assertSame([], $this->logs());
+    }
+
     public function testBlockedPlanRefusesEveryWrite(): void
     {
         $learner = $this->learner('123456789012', 'Cruz', 'Juan');
@@ -375,6 +457,7 @@ class LearnerEnrollmentTest extends KernelTestCase
             fn () => $this->service->move($enrollment, $this->mabini),
             fn () => $this->service->unenroll($enrollment),
             fn () => $this->service->resetPassword($learner),
+            fn () => $this->service->transferDirectly($enrollment, $this->otherSection, $this->admin),
         ] as $change) {
             $this->refused('This school is inactive.', $change, PlanLimitException::class);
         }
