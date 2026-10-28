@@ -1,0 +1,74 @@
+{% extends 'student/_layout.html.twig' %}
+
+{% block title %}Dashboard · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Welcome, {{ app.user.fullName }}</h1>
+            {% if school_year %}<p>S.Y. {{ school_year.name }}</p>{% endif %}
+        </div>
+    </div>
+
+    {% if enrollment is null %}
+        <div class="card empty">You are not enrolled this school year.</div>
+    {% else %}
+        <div class="card">
+            <dl>
+                <dt>School</dt><dd>{{ enrollment.school.name }}</dd>
+                <dt>Grade and section</dt><dd>{{ section.label }}</dd>
+                <dt>Adviser</dt><dd>{{ section.adviser ? section.adviser.fullName : 'No adviser yet' }}</dd>
+                <dt>School year</dt><dd>{{ school_year.name }}</dd>
+            </dl>
+        </div>
+
+        {% if state.periods is empty %}
+            <div class="card empty">No timetable yet.</div>
+        {% else %}
+            {% if state.terms|length > 1 %}
+                <nav class="filters" aria-label="Semester">
+                    {% for t in state.terms %}
+                        <a class="btn btn--sm {{ t == state.term ? 'btn--primary' : 'btn--ghost' }}"
+                           href="{{ path('student_dashboard', {term: t}) }}">{{ t == 1 ? '1st' : '2nd' }} sem</a>
+                    {% endfor %}
+                </nav>
+            {% endif %}
+
+            <section class="card table-card" aria-label="Weekly timetable">
+                <table class="table timetable-grid">
+                    <thead>
+                        <tr>
+                            <th><span class="visually-hidden">Period</span></th>
+                            {% for day in state.days %}<th>{{ day.label }}</th>{% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for period in state.periods %}
+                            <tr data-period-id="{{ period.id }}"{% if period.isBreak %} class="timetable-break"{% endif %}>
+                                <th scope="row">
+                                    {{ period.label }}
+                                    {% if period.startsAt %}<br><span class="muted">{{ period.startsAt }}–{{ period.endsAt }}</span>{% endif %}
+                                </th>
+                                {% if period.isBreak %}
+                                    <td colspan="{{ state.days|length }}" class="muted">{{ period.label }}</td>
+                                {% else %}
+                                    {% for day in state.days %}
+                                        {% set found = null %}
+                                        {% for cell in state.cells|filter(c => c.day == day.value and c.periodId == period.id) %}{% set found = cell %}{% endfor %}
+                                        {% if found %}
+                                            <td class="timetable-cell timetable-cell--filled">
+                                                <strong>{{ found.name }}</strong><br><span class="muted">{{ found.teacherName }}</span>
+                                            </td>
+                                        {% else %}
+                                            <td class="timetable-cell"></td>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% endif %}
+    {% endif %}
+{% endblock %}

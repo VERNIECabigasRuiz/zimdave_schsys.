@@ -26,7 +26,10 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('teacher_dashboard');
         }
 
-        // Student pages are built next
+        if ($this->isGranted(User::ROLE_STUDENT)) {
+            return $this->redirectToRoute('student_dashboard');
+        }
+
         return $this->render('home/index.html.twig');
     }
 }
