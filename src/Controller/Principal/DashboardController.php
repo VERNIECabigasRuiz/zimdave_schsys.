@@ -6,6 +6,7 @@ use App\Entity\School;
 use App\Entity\User;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
+use App\Repository\TransferRequestRepository;
 use App\Service\PlanLimits;
 use App\Service\SchoolClock;
 use App\Service\TimetableQuery;
@@ -25,6 +26,7 @@ class DashboardController extends AbstractController
         private readonly PlanLimits $planLimits,
         private readonly TimetableQuery $timetable,
         private readonly SchoolClock $clock,
+        private readonly TransferRequestRepository $transferRequests,
     ) {
     }
 
@@ -43,6 +45,7 @@ class DashboardController extends AbstractController
             'teachers' => $this->planLimits->countTeachers($school, $schoolYear),
             'students' => $this->planLimits->countStudents($school, $schoolYear),
             'blocked_reason' => $this->planLimits->blockedReason($school),
+            'transfers_waiting' => $this->transferRequests->countPendingOutgoing($school, $schoolYear),
         ]);
     }
 

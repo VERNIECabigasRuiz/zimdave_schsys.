@@ -41,16 +41,20 @@ class TransferRequestRepository extends ServiceEntityRepository
     }
 
     /**
-     * Requests out of the school for the school year, pending first, then newest.
+     * Requests out of the school (or only out of $fromSection) for the school year, pending first, then newest.
      *
      * @return list<TransferRequest>
      */
-    public function findOutgoing(School $school, SchoolYear $schoolYear): array
+    public function findOutgoing(School $school, SchoolYear $schoolYear, ?Section $fromSection = null): array
     {
-        return $this->listing()
+        $qb = $this->listing()
             ->andWhere('t.fromSchool = :school')->setParameter('school', $school)
-            ->andWhere('fs.schoolYear = :sy')->setParameter('sy', $schoolYear)
-            ->getQuery()->getResult();
+            ->andWhere('fs.schoolYear = :sy')->setParameter('sy', $schoolYear);
+        if (null !== $fromSection) {
+            $qb->andWhere('t.fromSection = :section')->setParameter('section', $fromSection);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     public function countPendingOutgoing(School $school, SchoolYear $schoolYear, ?Section $fromSection = null): int

@@ -36,6 +36,9 @@
         {% endif %}
 
         <section class="stats" aria-label="Shortcuts">
+            {% if transfers_waiting > 0 %}
+                {% include 'transfers/_waiting_card.html.twig' with {count: transfers_waiting, school: advisory.school} only %}
+            {% endif %}
             <a class="stat card" href="{{ path('profile_show') }}">
                 <span class="avatar avatar--green">P</span>
                 <span>

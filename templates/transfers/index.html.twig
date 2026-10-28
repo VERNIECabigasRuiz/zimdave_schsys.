@@ -1,0 +1,93 @@
+{% extends layout %}
+
+{% block title %}Transfer requests · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Transfer requests</h1>
+            <p>
+                {{ school.name }}{% if school_year %} · S.Y. {{ school_year.name }}{% endif %}
+                {% if adviser_of %} · {{ adviser_of.label }}{% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if not adviser_of %}
+        <nav class="tabs" aria-label="Direction">
+            {% for t, label in {incoming: 'Incoming', outgoing: 'Outgoing'} %}
+                <a class="tabs__tab{{ tab == t ? ' is-active' }}" href="{{ path('school_transfers', {id: school.id, tab: t}) }}"{{ tab == t ? ' aria-current="page"' }}>{{ label }}</a>
+            {% endfor %}
+        </nav>
+    {% endif %}
+
+    {% if not school_year %}
+        <div class="card empty">No current school year.</div>
+    {% elseif requests %}
+        <div class="card table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>LRN</th>
+                        <th>Name</th>
+                        {% if tab == 'incoming' %}
+                            <th>From</th>
+                            <th>Into</th>
+                        {% else %}
+                            <th>Section</th>
+                            <th>To</th>
+                        {% endif %}
+                        <th>Status</th>
+                        <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transfer in requests %}
+                        {% set learner = transfer.learner %}
+                        <tr>
+                            <td>{{ transfer.createdAt|date('M j, Y') }}</td>
+                            <td><code>{{ learner.lrn }}</code></td>
+                            <td>{{ learner.user.fullName }}</td>
+                            {% if tab == 'incoming' %}
+                                <td>{{ transfer.fromSchool.name }} · {{ transfer.fromSection.label }}</td>
+                                <td>{{ transfer.toSection.label }}</td>
+                                <td>{{ transfer.pending ? 'Waiting for ' ~ transfer.fromSchool.name : transfer.status.label }}</td>
+                            {% else %}
+                                <td>{{ transfer.fromSection.label }}</td>
+                                <td>{{ transfer.toSchool.name }} · {{ transfer.toSection.label }}</td>
+                                <td>{{ transfer.status.label }}</td>
+                            {% endif %}
+                            <td class="table__actions">
+                                <div class="row-actions">
+                                    {% if tab == 'outgoing' and is_granted('TRANSFER_DECIDE', transfer) %}
+                                        <form method="post" action="{{ path('school_transfers_approve', {id: school.id, transfer: transfer.id}) }}"
+                                              data-turbo-confirm="Move {{ learner.user.fullName }} to {{ transfer.toSchool.name }}, {{ transfer.toSection.label }}?">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('transfer-' ~ transfer.id) }}">
+                                            <button class="btn btn--primary btn--sm" type="submit">Approve</button>
+                                        </form>
+                                        <form method="post" action="{{ path('school_transfers_decline', {id: school.id, transfer: transfer.id}) }}"
+                                              data-turbo-confirm="Decline the transfer of {{ learner.user.fullName }}?">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('transfer-' ~ transfer.id) }}">
+                                            <button class="btn btn--ghost btn--sm" type="submit">Decline</button>
+                                        </form>
+                                    {% elseif tab == 'incoming' and is_granted('TRANSFER_CANCEL', transfer) %}
+                                        <form method="post" action="{{ path('school_transfers_cancel', {id: school.id, transfer: transfer.id}) }}"
+                                              data-turbo-confirm="Cancel the transfer request for {{ learner.user.fullName }}?">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('transfer-' ~ transfer.id) }}">
+                                            <button class="btn btn--ghost btn--sm" type="submit">Cancel</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% elseif tab == 'incoming' %}
+        <div class="card empty">No transfer requests into {{ school.name }} this school year.</div>
+    {% else %}
+        <div class="card empty">No transfer requests out of {{ adviser_of ? adviser_of.label : school.name }} this school year.</div>
+    {% endif %}
+{% endblock %}

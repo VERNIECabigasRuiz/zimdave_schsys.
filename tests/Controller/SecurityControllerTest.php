@@ -2,8 +2,8 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\SchoolAssignment;
 use App\Entity\User;
+use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -11,6 +11,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SecurityControllerTest extends WebTestCase
 {
+    use SchoolFixturesTrait;
+
     private KernelBrowser $client;
     private EntityManagerInterface $em;
 
@@ -18,8 +20,8 @@ class SecurityControllerTest extends WebTestCase
     {
         $this->client = static::createClient();
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
-        $this->em->createQuery('DELETE FROM '.SchoolAssignment::class)->execute();
-        $this->em->createQuery('DELETE FROM '.User::class)->execute();
+        // users are referenced by learners, transfer requests, logs…: clear everything that points at them
+        $this->clearSchoolData();
     }
 
     private function createUser(string $username, string $password, bool $admin = false, bool $mustChange = true, bool $active = true): User

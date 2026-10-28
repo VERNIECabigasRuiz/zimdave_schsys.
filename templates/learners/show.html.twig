@@ -94,7 +94,7 @@
                             <td>{{ transfer.createdAt|date('M j, Y') }}</td>
                             <td>{{ transfer.fromSchool.name }} · {{ transfer.fromSection.label }}</td>
                             <td>{{ transfer.toSchool.name }} · {{ transfer.toSection.label }}</td>
-                            <td>{{ transfer.pending ? 'Waiting for ' ~ transfer.fromSchool.name : transfer.status.name }}</td>
+                            <td>{{ transfer.pending ? 'Waiting for ' ~ transfer.fromSchool.name : transfer.status.label }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

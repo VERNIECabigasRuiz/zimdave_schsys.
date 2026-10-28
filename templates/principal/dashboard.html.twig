@@ -32,6 +32,9 @@
                 <small>Students</small>
             </span>
         </div>
+        {% if transfers_waiting > 0 %}
+            {% include 'transfers/_waiting_card.html.twig' with {count: transfers_waiting, school: school} only %}
+        {% endif %}
     </section>
 
     <turbo-frame id="now" src="{{ path('principal_now') }}" data-controller="refresh">

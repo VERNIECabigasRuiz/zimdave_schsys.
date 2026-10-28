@@ -9,6 +9,7 @@ use App\Form\SectionFormType;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
+use App\Repository\TransferRequestRepository;
 use App\Service\SchoolClock;
 use App\Service\SectionManager;
 use App\Service\TimetableQuery;
@@ -31,6 +32,7 @@ class TeacherController extends AbstractController
         private readonly SectionManager $sectionManager,
         private readonly TimetableQuery $timetable,
         private readonly SchoolClock $clock,
+        private readonly TransferRequestRepository $transferRequests,
     ) {
     }
 
@@ -50,6 +52,9 @@ class TeacherController extends AbstractController
             'can_manage_subjects' => null !== $school && $this->ownsSections($school),
             // a school without a principal has no timetables
             'show_now' => null !== $school && !$this->ownsSections($school),
+            // on a plan without a principal the adviser decides the requests leaving their section
+            'transfers_waiting' => null !== $advisory && $this->ownsSections($advisory->getSchool())
+                ? $this->transferRequests->countPendingOutgoing($advisory->getSchool(), $schoolYear, $advisory) : 0,
         ]);
     }
 

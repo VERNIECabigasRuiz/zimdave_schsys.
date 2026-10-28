@@ -13,6 +13,9 @@
         </div>
         {% if school_year %}
             <div class="row-actions">
+                {% if routes == 'school_learners' %}
+                    <a class="btn btn--ghost" href="{{ path('school_transfers', {id: school.id}) }}">Transfer requests</a>
+                {% endif %}
                 <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
             </div>
         {% endif %}
