@@ -96,7 +96,16 @@ class PlanLimits
             );
         }
 
-        // Without a principal the teacher runs the class: a section holds at most one seat's worth
+        return $this->sectionFullReason($school, $section);
+    }
+
+    /**
+     * Without a principal the teacher runs the class: a section holds at most one seat's worth.
+     *
+     * @return string|null why $section takes no more learners, or null
+     */
+    public function sectionFullReason(School $school, Section $section): ?string
+    {
         if (false === $school->getPlan()?->includesPrincipal()) {
             $perSection = (int) $school->getPlan()->getStudentsPerSeat();
             if ($this->enrollments->countForSection($section) >= $perSection) {
