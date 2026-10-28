@@ -5,7 +5,6 @@ namespace App\Tests\Service;
 use App\Entity\ActivityLog;
 use App\Entity\Enrollment;
 use App\Entity\GradeLevel;
-use App\Entity\Plan;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
@@ -16,6 +15,7 @@ use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
 use App\Service\ActivityLogger;
 use App\Service\EnrollmentException;
+use App\Service\EnrollmentGuard;
 use App\Service\LearnerLock;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
@@ -64,16 +64,10 @@ class TransferManagerTest extends KernelTestCase
             $c->get(PlanLimits::class),
             new LearnerLock($c->get(LockFactory::class), $c->get(ManagerRegistry::class)),
             $c->get(TransferRequestRepository::class),
-            $c->get(SchoolYearRepository::class),
+            new EnrollmentGuard($this->em, $c->get(SchoolYearRepository::class), $c->get(TransferRequestRepository::class)),
             $c->get(ActivityLogger::class),
             $c->get(ClockInterface::class),
         );
-    }
-
-    private function setStudentsPerSeat(int $n): void
-    {
-        $this->em->createQuery('UPDATE '.Plan::class." p SET p.studentsPerSeat = $n WHERE p.name = 'Basic'")->execute();
-        $this->em->refresh($this->plan());
     }
 
     /** @return list<string> */
@@ -101,6 +95,7 @@ class TransferManagerTest extends KernelTestCase
 
         self::assertNotNull($request->getId());
         self::assertTrue($request->isPending());
+        self::assertEquals(new \DateTimeImmutable('2026-10-16 09:00:00'), $request->getCreatedAt());
         self::assertSame($this->otherSection, $request->getToSection());
         self::assertSame($this->school, $this->enrollment->getSchool());
         self::assertSame($this->rizal, $this->enrollment->getSection());
@@ -154,24 +149,62 @@ class TransferManagerTest extends KernelTestCase
 
     public function testApproveRechecksLimits(): void
     {
+        // the receiving school has room for one learner, and the request is sent while it is empty
+        $this->other->setPlan($this->limitedPlan('Test One Seat', 1));
+        $this->em->flush();
         $request = $this->service->request($this->enrollment, $this->otherSection, $this->admin);
-        // the receiving school fills up after the request was sent
-        $this->setStudentsPerSeat(1);
-        try {
-            $this->enroll($this->learner('100000000001', 'Reyes', 'Ben'), $this->sy, $this->otherSection, $this->admin);
-            self::assertSame(1, $this->other->getStudentLimit());
+        $this->enroll($this->learner('100000000001', 'Reyes', 'Ben'), $this->sy, $this->otherSection, $this->admin);
 
-            $this->refused(
-                'The Basic plan allows 1 student(s) (1 used). Contact the administrator to upgrade.',
-                fn () => $this->service->approve($request, $this->admin),
-                PlanLimitException::class,
-            );
-        } finally {
-            $this->setStudentsPerSeat(1000);
-        }
+        $this->refused(
+            'The Test One Seat plan allows 1 student(s) (1 used). Contact the administrator to upgrade.',
+            fn () => $this->service->approve($request, $this->admin),
+            PlanLimitException::class,
+        );
         self::assertTrue($request->isPending());
         self::assertSame($this->school, $this->enrollment->getSchool());
         self::assertSame($this->rizal, $this->enrollment->getSection());
+    }
+
+    public function testApproveRefusedWhenSectionFullOnPlanWithoutPrincipal(): void
+    {
+        $solo = $this->school('300001', 'Solo School', plan: $this->limitedPlan('Test Solo', 1, false)->getName(), seats: 2);
+        $luna = $this->newSection($solo, $this->sy, GradeLevel::Grade7, 'Luna');
+        $request = $this->service->request($this->enrollment, $luna, $this->admin);
+        $this->enroll($this->learner('100000000001', 'Reyes', 'Ben'), $this->sy, $luna, $this->admin);
+
+        $this->refused('Grade 7 – Luna is full (1 learner).', fn () => $this->service->approve($request, $this->admin), PlanLimitException::class);
+        self::assertTrue($request->isPending());
+        self::assertSame($this->rizal, $this->enrollment->getSection());
+    }
+
+    public function testApproveRefusedWhenReceivingSchoolBlocked(): void
+    {
+        $request = $this->service->request($this->enrollment, $this->otherSection, $this->admin);
+        $this->other->setActive(false);
+        $this->em->flush();
+
+        $this->refused('This school is inactive.', fn () => $this->service->approve($request, $this->admin), PlanLimitException::class);
+        self::assertTrue($request->isPending());
+        self::assertSame($this->school, $this->enrollment->getSchool());
+    }
+
+    public function testRequestRefusedWhenEnrollmentIsStale(): void
+    {
+        $this->em->getConnection()->executeStatement('UPDATE enrollment SET section_id = ? WHERE id = ?', [$this->mabini->getId(), $this->enrollment->getId()]);
+
+        $this->refused('This learner was moved. Reload the page and try again.', fn () => $this->service->request($this->enrollment, $this->otherSection, $this->admin));
+        self::assertSame(0, $this->em->getRepository(TransferRequest::class)->count([]));
+    }
+
+    public function testDecidedRequestsDoNotBlockDeletingTheirSection(): void
+    {
+        $request = $this->service->request($this->enrollment, $this->otherSection, $this->admin);
+        $this->service->decline($request, $this->admin);
+
+        $this->em->remove($this->otherSection);
+        $this->em->flush();
+
+        self::assertSame(0, $this->em->getRepository(TransferRequest::class)->count([]));
     }
 
     public function testApproveRefusedWhenSendingSchoolBlocked(): void

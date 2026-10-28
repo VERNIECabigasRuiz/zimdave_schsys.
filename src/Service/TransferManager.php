@@ -3,12 +3,10 @@
 namespace App\Service;
 
 use App\Entity\Enrollment;
-use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Entity\User;
-use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\ClockInterface;
@@ -20,7 +18,6 @@ use Symfony\Component\Clock\ClockInterface;
  */
 class TransferManager
 {
-    private const MOVED = 'This learner was moved. Reload the page and try again.';
     private const DECIDED = 'This request was already decided.';
 
     public function __construct(
@@ -28,7 +25,7 @@ class TransferManager
         private readonly PlanLimits $planLimits,
         private readonly LearnerLock $lock,
         private readonly TransferRequestRepository $transfers,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly EnrollmentGuard $guard,
         private readonly ActivityLogger $activityLogger,
         private readonly ClockInterface $clock,
     ) {
@@ -41,23 +38,18 @@ class TransferManager
      */
     public function request(Enrollment $from, Section $to, User $by): TransferRequest
     {
-        $schoolYear = $this->currentYear();
-        $this->assertCurrentSection($to, $schoolYear);
+        $schoolYear = $this->guard->currentYear();
+        $this->guard->assertCurrentSection($to, $schoolYear);
 
         $loadedSchool = $from->getSchool();
         $loadedSection = $from->getSection();
 
         return $this->lock->forLearner($from->getLearner(), function () use ($from, $to, $by, $schoolYear, $loadedSchool, $loadedSection): TransferRequest {
-            $this->reload($from);
-            if ($from->getSchool() !== $loadedSchool || $from->getSection() !== $loadedSection) {
-                throw new EnrollmentException(self::MOVED);
-            }
-            $this->assertCurrentEnrollment($from, $schoolYear);
+            $this->guard->reloadEnrollment($from, $loadedSchool, $loadedSection);
+            $this->guard->assertCurrentEnrollment($from, $schoolYear);
 
             $learner = $from->getLearner();
-            if (null !== $this->transfers->findPending($learner)) {
-                throw new EnrollmentException(\sprintf('%s has a transfer request waiting.', $learner->getUser()->getFullName()));
-            }
+            $this->guard->assertNoPendingTransfer($learner);
             if ($to->getSchool() === $from->getSchool()) {
                 throw new EnrollmentException('Choose a section of another school.');
             }
@@ -66,7 +58,7 @@ class TransferManager
                 throw new PlanLimitException($reason);
             }
 
-            $request = new TransferRequest($from, $to, $by);
+            $request = new TransferRequest($from, $to, $by, $this->clock->now());
             $this->entityManager->persist($request);
             $this->activityLogger->log(\sprintf('Requested transfer of %s from %s', $learner->getLrn(), $from->getSchool()->getName()));
             $this->entityManager->flush();
@@ -82,18 +74,16 @@ class TransferManager
      */
     public function approve(TransferRequest $request, User $by): void
     {
-        $schoolYear = $this->currentYear();
+        $schoolYear = $this->guard->currentYear();
 
         $this->lock->forLearner($request->getLearner(), fn () => $this->lock->forSchool($request->getToSchool(), function () use ($request, $by, $schoolYear): void {
             $this->reloadPending($request);
-            $enrollment = $request->getEnrollment();
-            $this->reload($enrollment);
-            if ($enrollment->getSchool() !== $request->getFromSchool() || $enrollment->getSection() !== $request->getFromSection()) {
-                throw new EnrollmentException(self::MOVED);
-            }
-            $this->assertCurrentEnrollment($enrollment, $schoolYear);
+            // a pending request always has its enrollment; unenrolling is refused while one waits
+            $enrollment = $request->getEnrollment() ?? throw new EnrollmentException('This learner is no longer enrolled.');
+            $this->guard->reloadEnrollment($enrollment, $request->getFromSchool(), $request->getFromSection());
+            $this->guard->assertCurrentEnrollment($enrollment, $schoolYear);
             $to = $request->getToSection();
-            $this->assertCurrentSection($to, $schoolYear);
+            $this->guard->assertCurrentSection($to, $schoolYear);
 
             // approving writes to both schools' data
             if (null !== $reason = $this->planLimits->blockedReason($request->getFromSchool())) {
@@ -150,33 +140,6 @@ class TransferManager
         $this->entityManager->refresh($request);
         if (!$request->isPending()) {
             throw new EnrollmentException(self::DECIDED);
-        }
-    }
-
-    private function reload(Enrollment $enrollment): void
-    {
-        if (0 === $this->entityManager->getRepository(Enrollment::class)->count(['id' => $enrollment->getId()])) {
-            throw new EnrollmentException('This learner is no longer enrolled.');
-        }
-        $this->entityManager->refresh($enrollment);
-    }
-
-    private function currentYear(): SchoolYear
-    {
-        return $this->schoolYears->findCurrent() ?? throw new EnrollmentException('There is no current school year.');
-    }
-
-    private function assertCurrentSection(Section $section, SchoolYear $schoolYear): void
-    {
-        if ($section->getSchoolYear()->getId() !== $schoolYear->getId()) {
-            throw new EnrollmentException('Choose a section of the current school year.');
-        }
-    }
-
-    private function assertCurrentEnrollment(Enrollment $enrollment, SchoolYear $schoolYear): void
-    {
-        if ($enrollment->getSchoolYear()->getId() !== $schoolYear->getId()) {
-            throw new EnrollmentException('Past school years cannot be changed.');
         }
     }
 }

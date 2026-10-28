@@ -158,21 +158,14 @@ class PlanLimitsTest extends KernelTestCase
 
     public function testStudentLimit(): void
     {
-        $basic = $this->plan();
-        $this->em->createQuery('UPDATE '.Plan::class.' p SET p.studentsPerSeat = 2 WHERE p.id = :id')->setParameter('id', $basic->getId())->execute();
-        $this->em->refresh($basic);
-        try {
-            $school = $this->school('300001', 'Pagsabungan NHS');
-            $section = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Rizal');
-            $this->addLearners($school, $section, 1);
-            self::assertNull($this->studentRefusal($school, $section));
+        $school = $this->school('300001', 'Pagsabungan NHS', plan: $this->limitedPlan('Test Two Seats', 2)->getName());
+        $section = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Rizal');
+        $this->addLearners($school, $section, 1);
+        self::assertNull($this->studentRefusal($school, $section));
 
-            $this->addLearners($school, $section, 1);
-            self::assertSame(2, $this->limits->countStudents($school, $this->sy));
-            self::assertSame('The Basic plan allows 2 student(s) (2 used). Contact the administrator to upgrade.', $this->studentRefusal($school, $section));
-        } finally {
-            $this->em->createQuery('UPDATE '.Plan::class.' p SET p.studentsPerSeat = 1000 WHERE p.id = :id')->setParameter('id', $basic->getId())->execute();
-        }
+        $this->addLearners($school, $section, 1);
+        self::assertSame(2, $this->limits->countStudents($school, $this->sy));
+        self::assertSame('The Test Two Seats plan allows 2 student(s) (2 used). Contact the administrator to upgrade.', $this->studentRefusal($school, $section));
     }
 
     public function testSectionFullOnPlanWithoutPrincipal(): void

@@ -154,7 +154,7 @@ class LearnerVoterTest extends KernelTestCase
     private function pendingRequest(): TransferRequest
     {
         $target = $this->newSection($this->other, $this->sy, GradeLevel::Grade7, 'Mabini');
-        $request = new TransferRequest($this->enrollment, $target, $this->users['otherPrincipal']);
+        $request = new TransferRequest($this->enrollment, $target, $this->users['otherPrincipal'], new \DateTimeImmutable());
         $this->em->persist($request);
         $this->em->flush();
 
@@ -199,7 +199,7 @@ class LearnerVoterTest extends KernelTestCase
         $learner = $this->learner('100000000003', 'Old', 'Pupil');
         $enrollment = $this->enroll($learner, $oldYear, $from, $this->users['admin']);
         $target = $this->newSection($this->other, $oldYear, GradeLevel::Grade7, 'OldTarget');
-        $request = new TransferRequest($enrollment, $target, $this->users['otherPrincipal']);
+        $request = new TransferRequest($enrollment, $target, $this->users['otherPrincipal'], new \DateTimeImmutable());
         $this->em->persist($request);
         $this->school->setPlan($this->plan('Individual'));
         $this->em->flush();

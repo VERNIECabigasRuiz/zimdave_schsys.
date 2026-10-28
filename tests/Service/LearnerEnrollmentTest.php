@@ -12,6 +12,7 @@ use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\TransferRequest;
+use App\Entity\TransferStatus;
 use App\Entity\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolYearRepository;
@@ -19,6 +20,7 @@ use App\Repository\TransferRequestRepository;
 use App\Repository\UserRepository;
 use App\Service\ActivityLogger;
 use App\Service\EnrollmentException;
+use App\Service\EnrollmentGuard;
 use App\Service\LearnerEnrollment;
 use App\Service\LearnerLock;
 use App\Service\PlanLimitException;
@@ -75,7 +77,7 @@ class LearnerEnrollmentTest extends KernelTestCase
             $c->get(PlanLimits::class),
             new LearnerLock($c->get(LockFactory::class), $c->get(ManagerRegistry::class)),
             $enrollments ?? $realEnrollments,
-            $c->get(TransferRequestRepository::class),
+            new EnrollmentGuard($this->em, $c->get(SchoolYearRepository::class), $c->get(TransferRequestRepository::class)),
             $c->get(SchoolYearRepository::class),
             $c->get(UserRepository::class),
             $c->get(UserPasswordHasherInterface::class),
@@ -107,12 +109,6 @@ class LearnerEnrollmentTest extends KernelTestCase
             return;
         }
         self::fail('Expected '.$class.': '.$message);
-    }
-
-    private function setStudentsPerSeat(int $n): void
-    {
-        $this->em->createQuery('UPDATE '.Plan::class." p SET p.studentsPerSeat = $n WHERE p.name = 'Basic'")->execute();
-        $this->em->refresh($this->plan());
     }
 
     public function testEnrollNewCreatesStudentAccount(): void
@@ -178,19 +174,16 @@ class LearnerEnrollmentTest extends KernelTestCase
 
     public function testSchoolLimit(): void
     {
-        $this->setStudentsPerSeat(1);
-        try {
-            $this->enroll($this->learner('100000000001', 'Cruz', 'Ana'), $this->sy, $this->rizal, $this->admin);
+        $this->school->setPlan($this->limitedPlan('Test One Seat', 1));
+        $this->em->flush();
+        $this->enroll($this->learner('100000000001', 'Cruz', 'Ana'), $this->sy, $this->rizal, $this->admin);
 
-            $this->refused(
-                'The Basic plan allows 1 student(s) (1 used). Contact the administrator to upgrade.',
-                fn () => $this->service->enrollNew($this->newLearner('100000000002'), $this->rizal, $this->admin),
-                PlanLimitException::class,
-            );
-            self::assertSame(1, $this->em->getRepository(Enrollment::class)->count([]));
-        } finally {
-            $this->setStudentsPerSeat(1000);
-        }
+        $this->refused(
+            'The Test One Seat plan allows 1 student(s) (1 used). Contact the administrator to upgrade.',
+            fn () => $this->service->enrollNew($this->newLearner('100000000002'), $this->rizal, $this->admin),
+            PlanLimitException::class,
+        );
+        self::assertSame(1, $this->em->getRepository(Enrollment::class)->count([]));
     }
 
     public function testSectionLimitOnPlanWithoutPrincipal(): void
@@ -317,7 +310,7 @@ class LearnerEnrollmentTest extends KernelTestCase
     public function testPendingTransferBlocksMoveAndUnenroll(): void
     {
         $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
-        $this->em->persist(new TransferRequest($enrollment, $this->otherSection, $this->admin));
+        $this->em->persist(new TransferRequest($enrollment, $this->otherSection, $this->admin, new \DateTimeImmutable()));
         $this->em->flush();
 
         $message = 'Cruz, Juan has a transfer request waiting.';
@@ -325,6 +318,25 @@ class LearnerEnrollmentTest extends KernelTestCase
         $this->refused($message, fn () => $this->service->unenroll($enrollment));
         $this->refused($message, fn () => $this->service->transferDirectly($enrollment, $this->otherSection, $this->admin));
         self::assertSame($this->rizal, $enrollment->getSection());
+    }
+
+    public function testUnenrollAfterDecidedRequestKeepsTheRequestAsHistory(): void
+    {
+        $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
+        $request = new TransferRequest($enrollment, $this->otherSection, $this->admin, new \DateTimeImmutable());
+        $request->decide(TransferStatus::Declined, $this->admin, new \DateTimeImmutable());
+        $this->em->persist($request);
+        $this->em->flush();
+        $requestId = $request->getId();
+
+        $this->service->unenroll($enrollment);
+
+        $this->em->clear();
+        $kept = $this->em->getRepository(TransferRequest::class)->find($requestId);
+        self::assertNotNull($kept);
+        self::assertNull($kept->getEnrollment());
+        self::assertSame('123456789012', $kept->getLearner()->getLrn());
+        self::assertSame(0, $this->em->getRepository(Enrollment::class)->count([]));
     }
 
     public function testResetPassword(): void
@@ -376,17 +388,14 @@ class LearnerEnrollmentTest extends KernelTestCase
 
     public function testMoveAllowedWhenSchoolIsExactlyAtItsStudentLimit(): void
     {
-        $this->setStudentsPerSeat(2);
-        try {
-            $this->enroll($this->learner('100000000001', 'Cruz', 'Ana'), $this->sy, $this->rizal, $this->admin);
-            $enrollment = $this->enroll($this->learner('100000000002', 'Reyes', 'Ben'), $this->sy, $this->rizal, $this->admin);
+        $this->school->setPlan($this->limitedPlan('Test Two Seats', 2));
+        $this->em->flush();
+        $this->enroll($this->learner('100000000001', 'Cruz', 'Ana'), $this->sy, $this->rizal, $this->admin);
+        $enrollment = $this->enroll($this->learner('100000000002', 'Reyes', 'Ben'), $this->sy, $this->rizal, $this->admin);
 
-            $this->service->move($enrollment, $this->mabini);
+        $this->service->move($enrollment, $this->mabini);
 
-            self::assertSame($this->mabini, $enrollment->getSection());
-        } finally {
-            $this->setStudentsPerSeat(1000);
-        }
+        self::assertSame($this->mabini, $enrollment->getSection());
     }
 
     private function stale(Enrollment $enrollment, Section $to): void

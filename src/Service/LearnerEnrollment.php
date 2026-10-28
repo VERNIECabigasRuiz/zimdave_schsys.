@@ -10,7 +10,6 @@ use App\Entity\Section;
 use App\Entity\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolYearRepository;
-use App\Repository\TransferRequestRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -27,7 +26,7 @@ class LearnerEnrollment
         private readonly PlanLimits $planLimits,
         private readonly LearnerLock $lock,
         private readonly EnrollmentRepository $enrollments,
-        private readonly TransferRequestRepository $transfers,
+        private readonly EnrollmentGuard $guard,
         private readonly SchoolYearRepository $schoolYears,
         private readonly UserRepository $users,
         private readonly UserPasswordHasherInterface $passwordHasher,
@@ -45,8 +44,8 @@ class LearnerEnrollment
      */
     public function enrollNew(Learner $learner, Section $section, User $by): string
     {
-        $schoolYear = $this->currentYear();
-        $this->assertCurrentSection($section, $schoolYear);
+        $schoolYear = $this->guard->currentYear();
+        $this->guard->assertCurrentSection($section, $schoolYear);
 
         return $this->lock->forSchool($section->getSchool(), function () use ($learner, $section, $by, $schoolYear): string {
             $this->planLimits->assertCanAddStudent($section->getSchool(), $schoolYear, $section);
@@ -72,8 +71,8 @@ class LearnerEnrollment
      */
     public function enrollExisting(Learner $learner, Section $section, User $by): void
     {
-        $schoolYear = $this->currentYear();
-        $this->assertCurrentSection($section, $schoolYear);
+        $schoolYear = $this->guard->currentYear();
+        $this->guard->assertCurrentSection($section, $schoolYear);
 
         $this->lock->forLearner($learner, fn () => $this->lock->forSchool($section->getSchool(), function () use ($learner, $section, $by, $schoolYear): void {
             if (null !== $current = $this->enrollments->findCurrent($learner, $schoolYear)) {
@@ -129,14 +128,14 @@ class LearnerEnrollment
      */
     public function move(Enrollment $enrollment, Section $to): void
     {
-        $this->assertCurrentSection($to, $this->currentYear());
+        $this->guard->assertCurrentSection($to, $this->guard->currentYear());
 
         $this->lockEnrollment($enrollment, null, function () use ($enrollment, $to): void {
             $learner = $enrollment->getLearner();
             if ($to->getSchool() !== $enrollment->getSchool()) {
                 throw new EnrollmentException('Choose a section of the same school.');
             }
-            $this->assertNoPendingTransfer($learner);
+            $this->guard->assertNoPendingTransfer($learner);
             // the school's seat count doesn't change, so only the plan state and the section's room matter
             $reason = $this->planLimits->blockedReason($to->getSchool()) ?? $this->planLimits->sectionFullReason($to->getSchool(), $to);
             if (null !== $reason) {
@@ -157,11 +156,11 @@ class LearnerEnrollment
      */
     public function unenroll(Enrollment $enrollment): void
     {
-        $this->currentYear();
+        $this->guard->currentYear();
 
         $this->lockEnrollment($enrollment, null, function () use ($enrollment): void {
             $learner = $enrollment->getLearner();
-            $this->assertNoPendingTransfer($learner);
+            $this->guard->assertNoPendingTransfer($learner);
             if (null !== $reason = $this->planLimits->blockedReason($enrollment->getSchool())) {
                 throw new PlanLimitException($reason);
             }
@@ -199,15 +198,15 @@ class LearnerEnrollment
      */
     public function transferDirectly(Enrollment $enrollment, Section $to, User $by): void
     {
-        $schoolYear = $this->currentYear();
-        $this->assertCurrentSection($to, $schoolYear);
+        $schoolYear = $this->guard->currentYear();
+        $this->guard->assertCurrentSection($to, $schoolYear);
 
         $this->lockEnrollment($enrollment, $to->getSchool(), function () use ($enrollment, $to, $schoolYear): void {
             $learner = $enrollment->getLearner();
             if ($to->getSchool() === $enrollment->getSchool()) {
                 throw new EnrollmentException('Choose a section of another school.');
             }
-            $this->assertNoPendingTransfer($learner);
+            $this->guard->assertNoPendingTransfer($learner);
             $from = $enrollment->getSchool();
             if (null !== $reason = $this->planLimits->blockedReason($from)) {
                 throw new PlanLimitException($reason);
@@ -232,44 +231,11 @@ class LearnerEnrollment
         $loadedSection = $enrollment->getSection();
 
         $this->lock->forLearner($enrollment->getLearner(), function () use ($enrollment, $school, $change, $loadedSchool, $loadedSection): void {
-            // refresh() silently keeps the old state of a row that is gone, so look for it first
-            if (0 === $this->enrollments->count(['id' => $enrollment->getId()])) {
-                throw new EnrollmentException('This learner is no longer enrolled.');
-            }
-            $this->entityManager->refresh($enrollment);
-            if ($enrollment->getSchool() !== $loadedSchool || $enrollment->getSection() !== $loadedSection) {
-                throw new EnrollmentException('This learner was moved. Reload the page and try again.');
-            }
-            $this->assertCurrent($enrollment, $this->currentYear());
+            $this->guard->reloadEnrollment($enrollment, $loadedSchool, $loadedSection);
+            $this->guard->assertCurrentEnrollment($enrollment, $this->guard->currentYear());
 
             $this->lock->forSchool($school ?? $enrollment->getSchool(), $change);
         });
-    }
-
-    private function currentYear(): SchoolYear
-    {
-        return $this->schoolYears->findCurrent() ?? throw new EnrollmentException('There is no current school year.');
-    }
-
-    private function assertCurrentSection(Section $section, SchoolYear $schoolYear): void
-    {
-        if ($section->getSchoolYear()->getId() !== $schoolYear->getId()) {
-            throw new EnrollmentException('Choose a section of the current school year.');
-        }
-    }
-
-    private function assertCurrent(Enrollment $enrollment, SchoolYear $schoolYear): void
-    {
-        if ($enrollment->getSchoolYear()->getId() !== $schoolYear->getId()) {
-            throw new EnrollmentException('Past school years cannot be changed.');
-        }
-    }
-
-    private function assertNoPendingTransfer(Learner $learner): void
-    {
-        if (null !== $this->transfers->findPending($learner)) {
-            throw new EnrollmentException(\sprintf('%s has a transfer request waiting.', $learner->getUser()->getFullName()));
-        }
     }
 
     /** Refuses writes to a learner whose current school is inactive or past its plan. */

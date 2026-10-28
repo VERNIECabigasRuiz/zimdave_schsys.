@@ -18,20 +18,21 @@ class TransferRequest
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private Learner $learner;
 
+    /** Null once the learner is unenrolled; the request keeps the learner and where they were as history. */
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
-    private Enrollment $enrollment;
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Enrollment $enrollment;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private School $fromSchool;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Section $fromSection;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Section $toSection;
 
     #[ORM\Column(length: 10, enumType: TransferStatus::class)]
@@ -51,7 +52,7 @@ class TransferRequest
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $decidedAt = null;
 
-    public function __construct(Enrollment $enrollment, Section $toSection, User $requestedBy)
+    public function __construct(Enrollment $enrollment, Section $toSection, User $requestedBy, \DateTimeImmutable $createdAt)
     {
         $this->enrollment = $enrollment;
         $this->learner = $enrollment->getLearner();
@@ -59,7 +60,7 @@ class TransferRequest
         $this->fromSection = $enrollment->getSection();
         $this->toSection = $toSection;
         $this->requestedBy = $requestedBy;
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = $createdAt;
     }
 
     public function getId(): ?int
@@ -72,7 +73,7 @@ class TransferRequest
         return $this->learner;
     }
 
-    public function getEnrollment(): Enrollment
+    public function getEnrollment(): ?Enrollment
     {
         return $this->enrollment;
     }

@@ -69,6 +69,16 @@ trait SchoolFixturesTrait
         return $this->em->getRepository(Plan::class)->findOneBy(['name' => $name]);
     }
 
+    /** A plan of its own, so a test never edits the shared Basic row; clearSchoolData removes it. */
+    protected function limitedPlan(string $name, int $studentsPerSeat, bool $includesPrincipal = true): Plan
+    {
+        $plan = (new Plan())->setName($name)->setTeachersPerSeat(15)->setStudentsPerSeat($studentsPerSeat)->setIncludesPrincipal($includesPrincipal);
+        $this->em->persist($plan);
+        $this->em->flush();
+
+        return $plan;
+    }
+
     protected function school(
         string $schoolId,
         string $name,
