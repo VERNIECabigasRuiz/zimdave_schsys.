@@ -6,8 +6,10 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\User;
+use App\Repository\EnrollmentRepository;
 use App\Repository\SectionRepository;
 use App\Repository\TeachingLoadRepository;
+use App\Repository\TransferRequestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -22,6 +24,8 @@ class SectionManager
         private readonly PlanLimits $planLimits,
         private readonly ActivityLogger $activityLogger,
         private readonly TeachingLoadRepository $loads,
+        private readonly EnrollmentRepository $enrollments,
+        private readonly TransferRequestRepository $transferRequests,
     ) {
     }
 
@@ -58,6 +62,12 @@ class SectionManager
     public function delete(Section $section): void
     {
         $this->assertWritable($section->getSchool());
+        if (0 < $learners = $this->enrollments->countForSection($section)) {
+            throw new InUseException(\sprintf('%s has %d %s. Move or unenroll them first.', $section->getLabel(), $learners, 1 === $learners ? 'learner' : 'learners'));
+        }
+        if (0 < $pending = $this->transferRequests->countPendingInto($section)) {
+            throw new InUseException(\sprintf('%s has %d pending %s.', $section->getLabel(), $pending, 1 === $pending ? 'transfer' : 'transfers'));
+        }
         if ([] !== $this->loads->findForSection($section)) {
             throw $this->hasTimetable($section);
         }

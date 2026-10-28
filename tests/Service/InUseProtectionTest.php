@@ -11,6 +11,7 @@ use App\Entity\Section;
 use App\Entity\ShsTrack;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
+use App\Entity\TransferRequest;
 use App\Entity\User;
 use App\Entity\Weekday;
 use App\Service\AssignmentException;
@@ -235,6 +236,30 @@ class InUseProtectionTest extends KernelTestCase
 
         $this->refused(InUseException::class, 'Grade 7 – Rizal has a timetable. Remove its classes and teachers first.', fn () => $manager->delete($this->rizal));
         self::assertSame(1, $this->em->getRepository(Section::class)->count([]));
+    }
+
+    public function testSectionWithLearnersCannotBeDeleted(): void
+    {
+        $manager = static::getContainer()->get(SectionManager::class);
+        $this->enroll($this->learner('100000000001', 'Cruz', 'Ana'), $this->sy, $this->rizal, $this->santos);
+
+        $this->refused(InUseException::class, 'Grade 7 – Rizal has 1 learner. Move or unenroll them first.', fn () => $manager->delete($this->rizal));
+        self::assertSame(1, $this->em->getRepository(Section::class)->count([]));
+
+        $this->enroll($this->learner('100000000002', 'Reyes', 'Ben'), $this->sy, $this->rizal, $this->santos);
+        $this->refused(InUseException::class, 'Grade 7 – Rizal has 2 learners. Move or unenroll them first.', fn () => $manager->delete($this->rizal));
+    }
+
+    public function testSectionWithPendingTransfersCannotBeDeleted(): void
+    {
+        $manager = static::getContainer()->get(SectionManager::class);
+        $bonifacio = $this->newSection($this->school, $this->sy, GradeLevel::Grade7, 'Bonifacio');
+        $enrollment = $this->enroll($this->learner('100000000001', 'Cruz', 'Ana'), $this->sy, $bonifacio, $this->santos);
+        $this->em->persist(new TransferRequest($enrollment, $this->rizal, $this->santos, new \DateTimeImmutable('2026-10-16')));
+        $this->em->flush();
+
+        $this->refused(InUseException::class, 'Grade 7 – Rizal has 1 pending transfer.', fn () => $manager->delete($this->rizal));
+        self::assertSame(1, $this->em->getRepository(TransferRequest::class)->count([]));
     }
 
     public function testTeacherWithLoadsCannotBeRemovedOrMoved(): void

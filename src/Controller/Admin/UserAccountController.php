@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Form\UserAccountFormType;
+use App\Repository\LearnerRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\UserRepository;
@@ -54,6 +55,7 @@ class UserAccountController extends AbstractController
         private readonly SchoolAssignmentRepository $assignments,
         private readonly PlanLimits $planLimits,
         private readonly SchoolTeacherLock $teacherLock,
+        private readonly LearnerRepository $learners,
     ) {
     }
 
@@ -130,6 +132,7 @@ class UserAccountController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->guardPrincipalRoleChange($form, $account, $originalRole);
+            $this->guardLearnerRoleChange($form, $account, $originalRole);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -298,6 +301,21 @@ class UserAccountController extends AbstractController
                 $assignment->getSchool()->getName(),
                 $assignment->getSchoolYear()->getName(),
             )));
+        }
+    }
+
+    /**
+     * A learner's account stays a student account; the learner record is what makes it one.
+     */
+    private function guardLearnerRoleChange(FormInterface $form, User $account, ?string $originalRole): void
+    {
+        if ($originalRole === $account->getRole()) {
+            return;
+        }
+
+        $learner = $this->learners->findOneByUser($account);
+        if (null !== $learner) {
+            $form->get('role')->addError(new FormError(\sprintf('This account belongs to learner %s.', $learner->getLrn())));
         }
     }
 

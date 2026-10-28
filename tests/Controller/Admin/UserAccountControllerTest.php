@@ -124,6 +124,30 @@ class UserAccountControllerTest extends AdminTestCase
         self::assertFalse($user->isActive(), 'Unchecked "active" box deactivates the account');
     }
 
+    public function testLearnerAccountKeepsItsRole(): void
+    {
+        $learner = $this->learner('100000000001', 'Cruz', 'Ana');
+        $user = $learner->getUser();
+
+        $this->client->request('GET', '/admin/accounts/'.$user->getId().'/edit');
+        self::assertSelectorExists('select[name="user_account_form[role]"] option[value="ROLE_STUDENT"][selected]');
+        $this->client->submitForm('Save changes', [
+            'user_account_form[role]' => User::ROLE_TEACHER,
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertStringContainsString('This account belongs to learner 100000000001.', $this->client->getCrawler()->filter('.form-card')->text());
+        self::assertSame(User::ROLE_STUDENT, $this->findUser($user->getUsername())->getRole());
+    }
+
+    public function testNewAccountCannotBeAStudent(): void
+    {
+        $this->client->request('GET', '/admin/accounts/new');
+
+        self::assertSelectorExists('select[name="user_account_form[role]"] option[value="ROLE_TEACHER"]');
+        self::assertSelectorNotExists('select[name="user_account_form[role]"] option[value="ROLE_STUDENT"]');
+    }
+
     public function testAdminCannotChangeOwnRoleOrStatus(): void
     {
         $this->client->request('GET', '/admin/accounts/'.$this->admin->getId().'/edit');

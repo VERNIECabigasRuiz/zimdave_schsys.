@@ -15,10 +15,13 @@ class UserAccountFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Students are created by enrolling a learner, so a new account can't be one
+        $roles = $options['is_new'] ? array_diff_key(User::ROLE_LABELS, [User::ROLE_STUDENT => true]) : User::ROLE_LABELS;
+
         $builder
             ->add('role', ChoiceType::class, [
                 'label' => 'Role',
-                'choices' => array_flip(User::ROLE_LABELS),
+                'choices' => array_flip($roles),
                 'placeholder' => 'Choose a role',
                 'constraints' => [new Assert\NotBlank(message: 'Please choose a role.')],
                 'disabled' => $options['lock_role'],
