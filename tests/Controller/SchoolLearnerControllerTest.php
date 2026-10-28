@@ -458,16 +458,6 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertCount(0, $crawler->selectButton('Unenroll'));
     }
 
-    /** A valid CSRF token of the client's session (a page must have been requested first). */
-    private function csrfToken(string $id): string
-    {
-        static::getContainer()->get('request_stack')->push($this->client->getRequest());
-        $token = static::getContainer()->get('security.csrf.token_manager')->getToken($id)->getValue();
-        $this->client->getRequest()->getSession()->save();
-
-        return $token;
-    }
-
     /**
      * Learners the principal's school must not write to: one at another school, one enrolled nowhere.
      *

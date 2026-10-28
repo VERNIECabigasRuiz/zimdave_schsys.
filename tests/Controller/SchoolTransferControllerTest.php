@@ -77,16 +77,6 @@ class SchoolTransferControllerTest extends AdminTestCase
         return $this->em->getRepository(Enrollment::class)->findOneBy(['learner' => $learner->getId(), 'schoolYear' => $this->sy->getId()]);
     }
 
-    /** A valid CSRF token of the client's session (a page must have been requested first). */
-    private function csrfToken(string $id): string
-    {
-        static::getContainer()->get('request_stack')->push($this->client->getRequest());
-        $token = static::getContainer()->get('security.csrf.token_manager')->getToken($id)->getValue();
-        $this->client->getRequest()->getSession()->save();
-
-        return $token;
-    }
-
     /** Posts $action on $request at $school's transfer page with a real token. */
     private function post(School $school, TransferRequest $request, string $action): void
     {
@@ -223,6 +213,102 @@ class SchoolTransferControllerTest extends AdminTestCase
 
         // the incoming tab is not theirs
         $this->client->request('GET', $this->url($this->other, '?tab=incoming'));
+        self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testAdviserSeesAndDecidesOnlyTheirSection(): void
+    {
+        $this->other->setPlan($this->limitedPlan('Solo', 50, includesPrincipal: false));
+        $tess = $this->createUser('tess', User::ROLE_TEACHER, 'Tess Reyes');
+        $this->assign($this->other, $this->sy, $tess, User::ROLE_TEACHER);
+        $this->mabini->setAdviser($tess);
+        $lito = $this->createUser('lito', User::ROLE_TEACHER, 'Lito Lim');
+        $this->assign($this->other, $this->sy, $lito, User::ROLE_TEACHER);
+        $luna = $this->newSection($this->other, $this->sy, GradeLevel::Grade7, 'Luna');
+        $luna->setAdviser($lito);
+        $this->em->flush();
+        $ben = $this->learner('222222222222', 'Bautista', 'Ben');
+        $this->enroll($ben, $this->sy, $luna, $lito);
+        $this->pending();
+        $theirs = $this->pending($ben);
+        $this->client->loginUser($tess);
+
+        $crawler = $this->client->request('GET', '/teacher');
+        self::assertSelectorTextContains('main', 'Transfer requests waiting: 1');
+        $this->client->click($crawler->selectLink('Transfer requests waiting: 1')->link());
+        self::assertSelectorTextContains('.table', 'Abad, Ana');
+        self::assertSelectorTextNotContains('main', 'Bautista');
+        self::assertSelectorTextNotContains('main', '222222222222');
+
+        $this->post($this->other, $theirs, 'approve');
+        self::assertResponseStatusCodeSame(403);
+        $this->post($this->other, $theirs, 'decline');
+        self::assertResponseStatusCodeSame(403);
+
+        self::assertSame(TransferStatus::Pending, $this->reload($theirs)->getStatus());
+        self::assertSame($luna->getId(), $this->currentEnrollment($ben)->getSection()->getId());
+    }
+
+    public function testAdviserReachesTransfersFromTheirClass(): void
+    {
+        $this->other->setPlan($this->limitedPlan('Solo', 50, includesPrincipal: false));
+        $tess = $this->createUser('tess', User::ROLE_TEACHER, 'Tess Reyes');
+        $this->assign($this->other, $this->sy, $tess, User::ROLE_TEACHER);
+        $this->mabini->setAdviser($tess);
+        $this->em->flush();
+        $this->client->loginUser($tess);
+
+        $crawler = $this->client->request('GET', '/teacher/class');
+        $this->client->click($crawler->selectLink('Transfer requests')->link());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'No transfer requests out of Grade 7 – Mabini');
+    }
+
+    public function testAdviserOnPlanWithPrincipalHasNoTransfersLinkOnTheirClass(): void
+    {
+        $tess = $this->createUser('tess', User::ROLE_TEACHER, 'Tess Reyes');
+        $this->assign($this->other, $this->sy, $tess, User::ROLE_TEACHER);
+        $this->mabini->setAdviser($tess);
+        $this->em->flush();
+        $this->client->loginUser($tess);
+
+        $crawler = $this->client->request('GET', '/teacher/class');
+        self::assertResponseIsSuccessful();
+        self::assertCount(0, $crawler->selectLink('Transfer requests'));
+    }
+
+    public function testDecidingAnAlreadyDecidedRequestSaysSo(): void
+    {
+        $request = $this->pending();
+        $request->decide(TransferStatus::Declined, $this->pedro, new \DateTimeImmutable('2026-10-27'));
+        $this->em->flush();
+
+        $this->client->loginUser($this->pedro);
+        foreach (['approve', 'decline'] as $action) {
+            $this->post($this->other, $request, $action);
+            self::assertResponseRedirects($this->url($this->other, '?tab=outgoing'), null, $action);
+            $this->client->followRedirect();
+            self::assertSelectorTextContains('.alert--error', 'This request was already decided.');
+        }
+
+        $this->client->loginUser($this->maria);
+        $this->post($this->school, $request, 'cancel');
+        self::assertResponseRedirects($this->url($this->school, '?tab=incoming'));
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--error', 'This request was already decided.');
+
+        self::assertSame(TransferStatus::Declined, $this->reload($request)->getStatus());
+        self::assertSame($this->mabini->getId(), $this->currentEnrollment($this->ana)->getSection()->getId());
+    }
+
+    public function testOutsiderPostingToADecidedRequestIs403(): void
+    {
+        $request = $this->pending();
+        $request->decide(TransferStatus::Declined, $this->pedro, new \DateTimeImmutable('2026-10-27'));
+        $this->em->flush();
+
+        // Maria may not decide what leaves Other NHS, decided or not
+        $this->post($this->other, $request, 'approve');
         self::assertResponseStatusCodeSame(403);
     }
 

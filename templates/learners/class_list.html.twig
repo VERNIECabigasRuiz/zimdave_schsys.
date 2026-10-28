@@ -15,6 +15,10 @@
             </p>
         </div>
         <div class="row-actions">
+            {# on a plan without a principal the adviser decides the transfers leaving their section #}
+            {% if routes == 'teacher_class' and school.plan and not school.plan.includesPrincipal %}
+                <a class="btn btn--ghost" href="{{ path('school_transfers', {id: school.id, tab: 'outgoing'}) }}">Transfer requests</a>
+            {% endif %}
             <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
         </div>
     </div>

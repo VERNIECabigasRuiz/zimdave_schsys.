@@ -73,15 +73,6 @@ class TeacherClassControllerTest extends AdminTestCase
         ];
     }
 
-    private function csrfToken(string $id): string
-    {
-        static::getContainer()->get('request_stack')->push($this->client->getRequest());
-        $token = static::getContainer()->get('security.csrf.token_manager')->getToken($id)->getValue();
-        $this->client->getRequest()->getSession()->save();
-
-        return $token;
-    }
-
     public function testAdviserSeesOwnClassAndNav(): void
     {
         $this->enrolled('111111111111', 'Abad', 'Ana');

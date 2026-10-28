@@ -118,6 +118,9 @@ class SchoolTransferController extends AbstractController
     public function approve(School $school, int $transfer, #[CurrentUser] User $user): Response
     {
         $request = $this->find($school, $transfer, outgoing: true);
+        if (null !== $stale = $this->refuseDecided($school, $request, $user, 'outgoing')) {
+            return $stale;
+        }
         $this->denyAccessUnlessGranted(LearnerVoter::DECIDE_TRANSFER, $request);
 
         try {
@@ -137,6 +140,9 @@ class SchoolTransferController extends AbstractController
     public function decline(School $school, int $transfer, #[CurrentUser] User $user): Response
     {
         $request = $this->find($school, $transfer, outgoing: true);
+        if (null !== $stale = $this->refuseDecided($school, $request, $user, 'outgoing')) {
+            return $stale;
+        }
         $this->denyAccessUnlessGranted(LearnerVoter::DECIDE_TRANSFER, $request);
 
         try {
@@ -154,6 +160,9 @@ class SchoolTransferController extends AbstractController
     public function cancel(School $school, int $transfer, #[CurrentUser] User $user): Response
     {
         $request = $this->find($school, $transfer, outgoing: false);
+        if (null !== $stale = $this->refuseDecided($school, $request, $user, 'incoming')) {
+            return $stale;
+        }
         $this->denyAccessUnlessGranted(LearnerVoter::CANCEL_TRANSFER, $request);
 
         try {
@@ -199,6 +208,21 @@ class SchoolTransferController extends AbstractController
         }
 
         return $request;
+    }
+
+    /**
+     * A request decided meanwhile (another tab, another approver) is not an access error: someone
+     * who may open the transfers page is told so and sent back to it. Others still get 403.
+     */
+    private function refuseDecided(School $school, TransferRequest $request, User $user, string $tab): ?Response
+    {
+        if ($request->isPending()) {
+            return null;
+        }
+        $this->adviserScope($school, $user, $this->schoolYears->findCurrent());
+        $this->addFlash('error', 'This request was already decided.');
+
+        return $this->backTo($school, $tab);
     }
 
     private function backTo(School $school, string $tab): Response
