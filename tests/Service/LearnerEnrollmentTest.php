@@ -30,6 +30,7 @@ use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -83,12 +84,13 @@ class LearnerEnrollmentTest extends KernelTestCase
             $c->get(UserPasswordHasherInterface::class),
             new TemporaryPasswordGenerator(),
             $c->get(ActivityLogger::class),
+            $c->get(ClockInterface::class),
         );
     }
 
     private function newLearner(string $lrn, string $last = 'Cruz', string $first = 'Juan'): Learner
     {
-        return (new Learner(new User()))->setLrn($lrn)->setLastName($last)->setFirstName($first)
+        return (new Learner(new User(), new \DateTimeImmutable()))->setLrn($lrn)->setLastName($last)->setFirstName($first)
             ->setSex(SexAtBirth::Male)->setBirthDate(new \DateTimeImmutable('2012-05-01'));
     }
 
@@ -233,26 +235,22 @@ class LearnerEnrollmentTest extends KernelTestCase
         self::assertSame(1, $this->em->getRepository(Enrollment::class)->count([]));
     }
 
-    public function testChangeLrnUpdatesUsername(): void
+    public function testPendingRequestOfPastYearDoesNotFreezeLearner(): void
     {
         $learner = $this->learner('123456789012', 'Cruz', 'Juan');
+        $old = $this->enroll($learner, $this->sy, $this->rizal, $this->admin);
+        $this->em->persist(new TransferRequest($old, $this->otherSection, $this->admin, new \DateTimeImmutable('2026-10-01')));
+        $this->sy->setCurrent(false);
+        $this->em->flush();
+        $next = $this->schoolYear(2027, current: true);
+        $rizal = $this->newSection($this->school, $next, GradeLevel::Grade8, 'Rizal');
+        $mabini = $this->newSection($this->school, $next, GradeLevel::Grade8, 'Mabini');
+        $enrollment = $this->enroll($learner, $next, $rizal, $this->admin);
 
-        $this->service->changeLrn($learner, '210987654321');
+        $this->service->move($enrollment, $mabini);
+        $this->service->unenroll($enrollment);
 
-        $this->em->clear();
-        $saved = $this->em->getRepository(Learner::class)->find($learner->getId());
-        self::assertSame('210987654321', $saved->getLrn());
-        self::assertSame('210987654321', $saved->getUser()->getUsername());
-        self::assertContains('Changed LRN 123456789012 to 210987654321', $this->logs());
-    }
-
-    public function testChangeLrnRefusesTakenUsername(): void
-    {
-        $learner = $this->learner('123456789012', 'Cruz', 'Juan');
-        $this->plainUser('210987654321', User::ROLE_TEACHER);
-
-        $this->refused('The username 210987654321 is already taken by another account. Ask the administrator.', fn () => $this->service->changeLrn($learner, '210987654321'));
-        self::assertSame('123456789012', $learner->getLrn());
+        self::assertSame(1, $this->em->getRepository(Enrollment::class)->count([]));
     }
 
     public function testUpdateLogs(): void
@@ -499,7 +497,7 @@ class LearnerEnrollmentTest extends KernelTestCase
             fn () => $this->service->enrollNew($this->newLearner('111111111111'), $this->rizal, $this->admin),
             fn () => $this->service->enrollExisting($newcomer, $this->rizal, $this->admin),
             fn () => $this->service->update($learner),
-            fn () => $this->service->changeLrn($learner, '999999999999'),
+            fn () => $this->service->update($learner, '999999999999'),
             fn () => $this->service->move($enrollment, $this->mabini),
             fn () => $this->service->unenroll($enrollment),
             fn () => $this->service->resetPassword($learner),

@@ -14,7 +14,7 @@ final class Version20261028084314 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Let a transfer request outlive its enrollment and cascade with its sections';
     }
 
     public function up(Schema $schema): void
@@ -31,6 +31,7 @@ final class Version20261028084314 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
+        // Fails once any transfer_request.enrollment_id is NULL (the column becomes NOT NULL again).
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE transfer_request DROP FOREIGN KEY FK_8422FDD48F7DB25B');
         $this->addSql('ALTER TABLE transfer_request DROP FOREIGN KEY FK_8422FDD4F387257D');

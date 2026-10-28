@@ -38,14 +38,14 @@ class Enrollment
     #[ORM\Column]
     private \DateTimeImmutable $enrolledAt;
 
-    public function __construct(Learner $learner, SchoolYear $schoolYear, Section $section, User $enrolledBy)
+    public function __construct(Learner $learner, SchoolYear $schoolYear, Section $section, User $enrolledBy, \DateTimeImmutable $enrolledAt)
     {
         $this->learner = $learner;
         $this->schoolYear = $schoolYear;
         $this->school = $section->getSchool();
         $this->section = $section;
         $this->enrolledBy = $enrolledBy;
-        $this->enrolledAt = new \DateTimeImmutable();
+        $this->enrolledAt = $enrolledAt;
     }
 
     public function getId(): ?int

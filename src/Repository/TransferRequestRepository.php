@@ -22,9 +22,16 @@ class TransferRequestRepository extends ServiceEntityRepository
         parent::__construct($registry, TransferRequest::class);
     }
 
-    public function findPending(Learner $learner): ?TransferRequest
+    /** The learner's waiting request out of a section of the school year; older years' requests are no longer actionable. */
+    public function findPending(Learner $learner, SchoolYear $schoolYear): ?TransferRequest
     {
-        return $this->findOneBy(['learner' => $learner, 'status' => TransferStatus::Pending]);
+        return $this->createQueryBuilder('t')
+            ->innerJoin('t.fromSection', 'fs')
+            ->andWhere('t.learner = :learner')->setParameter('learner', $learner)
+            ->andWhere('t.status = :pending')->setParameter('pending', TransferStatus::Pending)
+            ->andWhere('fs.schoolYear = :sy')->setParameter('sy', $schoolYear)
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
     }
 
     /**
@@ -93,7 +100,7 @@ class TransferRequestRepository extends ServiceEntityRepository
     private function listing(): QueryBuilder
     {
         return $this->createQueryBuilder('t')
-            ->addSelect('l')->innerJoin('t.learner', 'l')
+            ->addSelect('l', 'u')->innerJoin('t.learner', 'l')->innerJoin('l.user', 'u')
             ->innerJoin('t.fromSection', 'fs')
             ->innerJoin('t.toSection', 'ts')
             ->addSelect('CASE WHEN t.status = :pending THEN 0 ELSE 1 END AS HIDDEN pendingRank')

@@ -12,6 +12,7 @@ use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -32,6 +33,7 @@ class LearnerEnrollment
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TemporaryPasswordGenerator $passwordGenerator,
         private readonly ActivityLogger $activityLogger,
+        private readonly ClockInterface $clock,
     ) {
     }
 
@@ -56,7 +58,7 @@ class LearnerEnrollment
             $password = $this->setTemporaryPassword($user);
             $this->entityManager->persist($user);
             $this->entityManager->persist($learner);
-            $this->entityManager->persist(new Enrollment($learner, $schoolYear, $section, $by));
+            $this->entityManager->persist(new Enrollment($learner, $schoolYear, $section, $by, $this->clock->now()));
             $this->activityLogger->log(\sprintf('Enrolled %s in %s', $learner->getLrn(), $section->getLabel()));
             $this->entityManager->flush();
 
@@ -82,7 +84,7 @@ class LearnerEnrollment
             }
             $this->planLimits->assertCanAddStudent($section->getSchool(), $schoolYear, $section);
 
-            $this->entityManager->persist(new Enrollment($learner, $schoolYear, $section, $by));
+            $this->entityManager->persist(new Enrollment($learner, $schoolYear, $section, $by, $this->clock->now()));
             $this->activityLogger->log(\sprintf('Enrolled %s in %s', $learner->getLrn(), $section->getLabel()));
             $this->entityManager->flush();
         }));
@@ -103,21 +105,6 @@ class LearnerEnrollment
                 $this->applyLrn($learner, $lrn);
             }
             $this->activityLogger->log(\sprintf('Updated learner %s', $learner->getLrn()));
-            $this->entityManager->flush();
-        });
-    }
-
-    /**
-     * Changes the LRN, which is also the learner's username.
-     *
-     * @throws PlanLimitException|EnrollmentException
-     */
-    public function changeLrn(Learner $learner, string $lrn): void
-    {
-        $lrn = trim($lrn);
-        $this->lock->forLearner($learner, function () use ($learner, $lrn): void {
-            $this->assertNotBlocked($learner);
-            $this->applyLrn($learner, $lrn);
             $this->entityManager->flush();
         });
     }

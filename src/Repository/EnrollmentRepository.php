@@ -10,6 +10,7 @@ use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -70,8 +71,8 @@ class EnrollmentRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
-    /** @return list<Enrollment> */
-    public function search(School $school, SchoolYear $schoolYear, ?string $query, ?Section $section): array
+    /** @return Paginator<Enrollment> */
+    public function search(School $school, SchoolYear $schoolYear, ?string $query, ?Section $section, int $page = 1, int $perPage = 50): Paginator
     {
         $qb = $this->ordered($this->createQueryBuilder('e'))
             ->andWhere('e.school = :school')->setParameter('school', $school)
@@ -85,7 +86,10 @@ class EnrollmentRepository extends ServiceEntityRepository
                 ->setParameter('q', '%'.addcslashes($query, '%_\\').'%');
         }
 
-        return $qb->getQuery()->getResult();
+        $qb->setFirstResult(max(0, $page - 1) * $perPage)->setMaxResults($perPage);
+
+        // only to-one joins, so the rows are not multiplied
+        return new Paginator($qb, false);
     }
 
     /** @return list<Enrollment> newest school year first */
@@ -101,7 +105,7 @@ class EnrollmentRepository extends ServiceEntityRepository
     private function ordered(QueryBuilder $qb): QueryBuilder
     {
         return $qb
-            ->addSelect('l')->innerJoin('e.learner', 'l')
+            ->addSelect('l', 'u')->innerJoin('e.learner', 'l')->innerJoin('l.user', 'u')
             ->addSelect('CASE WHEN l.sex = :male THEN 0 ELSE 1 END AS HIDDEN sexRank')
             ->setParameter('male', SexAtBirth::Male)
             ->addOrderBy('sexRank', 'ASC')

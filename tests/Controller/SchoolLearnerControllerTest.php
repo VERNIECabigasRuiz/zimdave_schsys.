@@ -231,6 +231,60 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertSelectorTextContains('.page-head', '2 learners');
     }
 
+    public function testIndexIsPagedByFifty(): void
+    {
+        for ($i = 1; $i <= 51; ++$i) {
+            $this->enrolled(sprintf('1000000000%02d', $i), sprintf('Lastname%02d', $i), 'Ana');
+        }
+
+        $crawler = $this->client->request('GET', $this->url($this->school));
+        self::assertCount(50, $crawler->filter('.table tbody tr'));
+        self::assertSelectorTextContains('.page-head', '51 learners');
+        self::assertSelectorNotExists('.pager a:contains("Previous")');
+        $next = $crawler->filter('.pager a:contains("Next")');
+        self::assertCount(1, $next);
+
+        $crawler = $this->client->request('GET', $this->url($this->school, '?page=2'));
+        self::assertSame(['Lastname51, Ana'], $crawler->filter('.table tbody tr td:nth-child(2)')->each(static fn ($td) => $td->text()));
+        self::assertSelectorTextContains('.page-head', '51 learners');
+        self::assertSelectorNotExists('.pager a:contains("Next")');
+        self::assertCount(1, $crawler->filter('.pager a:contains("Previous")'));
+    }
+
+    public function testPagerKeepsSearchAndSection(): void
+    {
+        for ($i = 1; $i <= 51; ++$i) {
+            $this->enrolled(sprintf('1000000000%02d', $i), sprintf('Lastname%02d', $i), 'Ana', $this->rosal);
+        }
+
+        $crawler = $this->client->request('GET', $this->url($this->school, '?q=Lastname&section='.$this->rosal->getId()));
+        $href = $crawler->filter('.pager a:contains("Next")')->attr('href');
+
+        self::assertStringContainsString('q=Lastname', $href);
+        self::assertStringContainsString('section='.$this->rosal->getId(), $href);
+        self::assertStringContainsString('page=2', $href);
+    }
+
+    public function testIndexQueryCountDoesNotGrowWithLearners(): void
+    {
+        for ($i = 1; $i <= 9; ++$i) {
+            $this->enrolled('10000000000'.$i, 'Abad'.$i, 'Ana');
+        }
+
+        // the same page listing one learner, then all nine: lazy loading would add queries per learner.
+        // The first request only drops the fixtures' queries from the profiler's log.
+        $this->client->request('GET', $this->url($this->school));
+        $this->client->enableProfiler();
+        $this->client->request('GET', $this->url($this->school, '?q=Abad1'));
+        $one = \count($this->client->getProfile()->getCollector('db')->getQueries()['default']);
+        $this->client->enableProfiler();
+        $crawler = $this->client->request('GET', $this->url($this->school));
+        $all = \count($this->client->getProfile()->getCollector('db')->getQueries()['default']);
+
+        self::assertCount(9, $crawler->filter('.table tbody tr'));
+        self::assertSame($one, $all);
+    }
+
     public function testFilterBySection(): void
     {
         $this->enrolled('111111111111', 'Abad', 'Ana');

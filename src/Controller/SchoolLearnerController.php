@@ -25,6 +25,7 @@ class SchoolLearnerController extends AbstractLearnerController
         School $school,
         #[MapQueryParameter] ?string $q = null,
         #[MapQueryParameter(flags: \FILTER_NULL_ON_FAILURE)] ?int $section = null,
+        #[MapQueryParameter(flags: \FILTER_NULL_ON_FAILURE)] ?int $page = null,
     ): Response {
         if (null === $schoolYear = $this->schoolYears->findCurrent()) {
             return $this->render('learners/index.html.twig', [
@@ -32,7 +33,7 @@ class SchoolLearnerController extends AbstractLearnerController
             ]);
         }
 
-        return $this->renderIndex($this->scope($school, $schoolYear), $q, $section);
+        return $this->renderIndex($this->scope($school, $schoolYear), $q, $section, $page ?? 1);
     }
 
     #[Route('/learners/enroll', name: 'school_learners_enroll', methods: ['GET', 'POST'])]
@@ -99,6 +100,6 @@ class SchoolLearnerController extends AbstractLearnerController
 
     private function layout(): string
     {
-        return $this->isGranted('ROLE_ADMIN') ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig';
+        return $this->isGranted(User::ROLE_ADMIN) ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig';
     }
 }

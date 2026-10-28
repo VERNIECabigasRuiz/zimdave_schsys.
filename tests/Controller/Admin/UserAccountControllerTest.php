@@ -140,6 +140,29 @@ class UserAccountControllerTest extends AdminTestCase
         self::assertSame(User::ROLE_STUDENT, $this->findUser($user->getUsername())->getRole());
     }
 
+    public function testLearnerAccountKeepsUsernameAndName(): void
+    {
+        $learner = $this->learner('100000000001', 'Cruz', 'Ana');
+        $user = $learner->getUser();
+        $username = $user->getUsername();
+        $fullName = $user->getFullName();
+
+        $crawler = $this->client->request('GET', '/admin/accounts/'.$user->getId().'/edit');
+        self::assertSelectorExists('input[name="user_account_form[username]"][disabled]');
+        self::assertSelectorExists('input[name="user_account_form[fullName]"][disabled]');
+        self::assertStringContainsString('This account belongs to learner 100000000001.', $crawler->filter('.form-card')->text());
+
+        // a hand-made request must not change them either
+        $token = $crawler->filter('input[name="user_account_form[_token]"]')->attr('value');
+        $this->client->request('POST', '/admin/accounts/'.$user->getId().'/edit', ['user_account_form' => [
+            'role' => User::ROLE_STUDENT, 'username' => 'hacked', 'fullName' => 'Hacked Name', 'active' => '1', '_token' => $token,
+        ]]);
+
+        $saved = $this->findUser($username);
+        self::assertSame($username, $saved->getUsername());
+        self::assertSame($fullName, $saved->getFullName());
+    }
+
     public function testNewAccountCannotBeAStudent(): void
     {
         $this->client->request('GET', '/admin/accounts/new');

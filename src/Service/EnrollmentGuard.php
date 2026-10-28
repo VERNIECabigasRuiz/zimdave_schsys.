@@ -69,7 +69,7 @@ class EnrollmentGuard
     /** @throws EnrollmentException */
     public function assertNoPendingTransfer(Learner $learner): void
     {
-        if (null !== $this->transfers->findPending($learner)) {
+        if (null !== $this->transfers->findPending($learner, $this->currentYear())) {
             throw new EnrollmentException(\sprintf('%s has a transfer request waiting.', $learner->getUser()->getFullName()));
         }
     }

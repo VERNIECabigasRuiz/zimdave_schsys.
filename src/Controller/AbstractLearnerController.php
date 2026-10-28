@@ -24,6 +24,7 @@ use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +36,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 abstract class AbstractLearnerController extends AbstractController
 {
+    private const PER_PAGE = 50;
+
     public function __construct(
         protected readonly SchoolYearRepository $schoolYears,
         protected readonly SchoolRepository $schools,
@@ -46,16 +49,23 @@ abstract class AbstractLearnerController extends AbstractController
         protected readonly LearnerLookup $lookup,
         protected readonly PlanLimits $planLimits,
         protected readonly EntityManagerInterface $entityManager,
+        protected readonly ClockInterface $clock,
     ) {
     }
 
     /** Every learner enrolled at the school this year, searched by LRN or name and filtered by section. */
-    protected function renderIndex(LearnerScope $scope, ?string $query, ?int $sectionId): Response
+    protected function renderIndex(LearnerScope $scope, ?string $query, ?int $sectionId, int $page = 1): Response
     {
         $section = null !== $sectionId ? $this->requireSection($scope, $sectionId) : null;
+        $page = max(1, $page);
+        $enrollments = $this->enrollments->search($scope->school, $scope->schoolYear, $query, $section, $page, self::PER_PAGE);
+        $matches = \count($enrollments);
 
         return $this->render('learners/index.html.twig', $this->pageVars($scope) + [
-            'enrollments' => $this->enrollments->search($scope->school, $scope->schoolYear, $query, $section),
+            'enrollments' => $enrollments,
+            'page' => $page,
+            'matches' => $matches,
+            'has_next' => $page * self::PER_PAGE < $matches,
             'sections' => $this->sections->findForSchool($scope->school, $scope->schoolYear),
             'count' => $this->enrollments->countForSchool($scope->school, $scope->schoolYear),
             'limit' => $scope->school->getStudentLimit(),
@@ -109,7 +119,7 @@ abstract class AbstractLearnerController extends AbstractController
         }
 
         $isNew = LookupKind::New === $result->kind;
-        $learner = $isNew ? (new Learner(new User()))->setLrn($lrn) : $result->learner;
+        $learner = $isNew ? (new Learner(new User(), $this->clock->now()))->setLrn($lrn) : $result->learner;
         $form = $this->createForm(EnrollSectionFormType::class, null, ['learner' => $isNew ? $learner : null, 'sections' => $sections]);
         $form->handleRequest($request);
 

@@ -45,7 +45,7 @@ class EnrollmentRepositoryTest extends KernelTestCase
     private function learner(string $last, string $first, SexAtBirth $sex): Learner
     {
         $user = (new User())->setRole(User::ROLE_STUDENT)->setPassword('x');
-        $learner = (new Learner($user))
+        $learner = (new Learner($user, new \DateTimeImmutable()))
             ->setLrn((string) ++$this->lrnSeq)
             ->setLastName($last)
             ->setFirstName($first)
@@ -60,7 +60,7 @@ class EnrollmentRepositoryTest extends KernelTestCase
     public function testClassListOrder(): void
     {
         foreach ([['Abad', SexAtBirth::Female], ['Cruz', SexAtBirth::Male], ['Abad', SexAtBirth::Male], ['Cruz', SexAtBirth::Female]] as [$last, $sex]) {
-            $this->em->persist(new Enrollment($this->learner($last, $sex->label(), $sex), $this->sy, $this->section, $this->admin));
+            $this->em->persist(new Enrollment($this->learner($last, $sex->label(), $sex), $this->sy, $this->section, $this->admin, new \DateTimeImmutable()));
         }
         $this->em->flush();
 
@@ -74,10 +74,10 @@ class EnrollmentRepositoryTest extends KernelTestCase
     public function testOneEnrollmentPerYear(): void
     {
         $learner = $this->learner('Abad', 'Ana', SexAtBirth::Female);
-        $this->em->persist(new Enrollment($learner, $this->sy, $this->section, $this->admin));
+        $this->em->persist(new Enrollment($learner, $this->sy, $this->section, $this->admin, new \DateTimeImmutable()));
         $this->em->flush();
 
-        $this->em->persist(new Enrollment($learner, $this->sy, $this->section, $this->admin));
+        $this->em->persist(new Enrollment($learner, $this->sy, $this->section, $this->admin, new \DateTimeImmutable()));
         $this->expectException(UniqueConstraintViolationException::class);
         $this->em->flush();
     }

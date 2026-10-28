@@ -27,7 +27,7 @@ class LearnerTest extends KernelTestCase
 
     private function learner(string $lrn = '123456789012', string $last = 'Dela Cruz', string $first = 'Juan'): Learner
     {
-        return (new Learner(new User()))
+        return (new Learner(new User(), new \DateTimeImmutable()))
             ->setLrn($lrn)
             ->setLastName($last)
             ->setFirstName($first)
@@ -54,7 +54,7 @@ class LearnerTest extends KernelTestCase
 
     public function testLrnSetsUsername(): void
     {
-        $learner = new Learner(new User());
+        $learner = new Learner(new User(), new \DateTimeImmutable());
         $learner->setLrn('123456789012');
         self::assertSame('123456789012', $learner->getUser()->getUsername());
     }

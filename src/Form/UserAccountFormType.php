@@ -18,6 +18,8 @@ class UserAccountFormType extends AbstractType
         // Students are created by enrolling a learner, so a new account can't be one
         $roles = $options['is_new'] ? array_diff_key(User::ROLE_LABELS, [User::ROLE_STUDENT => true]) : User::ROLE_LABELS;
 
+        $learnerHelp = \sprintf('This account belongs to learner %s.', $options['learner_lrn']);
+
         $builder
             ->add('role', ChoiceType::class, [
                 'label' => 'Role',
@@ -29,12 +31,15 @@ class UserAccountFormType extends AbstractType
             ->add('fullName', TextType::class, [
                 'label' => 'Full name',
                 'empty_data' => '',
+                'disabled' => null !== $options['learner_lrn'],
+                'help' => null !== $options['learner_lrn'] ? $learnerHelp : null,
                 'attr' => ['placeholder' => 'e.g. Juan Dela Cruz', 'autocomplete' => 'off'],
             ])
             ->add('username', TextType::class, [
                 'label' => 'Username',
                 'empty_data' => '',
-                'help' => 'Letters, numbers, dots, dashes and underscores. Used to sign in.',
+                'disabled' => null !== $options['learner_lrn'],
+                'help' => null !== $options['learner_lrn'] ? $learnerHelp : 'Letters, numbers, dots, dashes and underscores. Used to sign in.',
                 'attr' => ['autocomplete' => 'off', 'autocapitalize' => 'none', 'spellcheck' => 'false'],
             ]);
 
@@ -67,7 +72,10 @@ class UserAccountFormType extends AbstractType
             'suggested_password' => null,
             // Admins can't change their own role or deactivate themselves
             'lock_role' => false,
+            // A learner's username is their LRN and their name comes from the learner record
+            'learner_lrn' => null,
         ]);
+        $resolver->setAllowedTypes('learner_lrn', ['null', 'string']);
         $resolver->setAllowedTypes('is_new', 'bool');
         $resolver->setAllowedTypes('lock_role', 'bool');
     }

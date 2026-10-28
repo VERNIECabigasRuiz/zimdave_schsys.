@@ -14,7 +14,7 @@ final class Version20261028074223 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Create learner, enrollment and transfer_request tables';
     }
 
     public function up(Schema $schema): void

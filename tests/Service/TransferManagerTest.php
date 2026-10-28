@@ -110,6 +110,21 @@ class TransferManagerTest extends KernelTestCase
         self::assertSame(1, $this->em->getRepository(TransferRequest::class)->count([]));
     }
 
+    public function testPendingRequestOfPastYearDoesNotBlockNewRequest(): void
+    {
+        $this->service->request($this->enrollment, $this->otherSection, $this->admin);
+        $this->sy->setCurrent(false);
+        $this->em->flush();
+        $next = $this->schoolYear(2027, current: true);
+        $rizal = $this->newSection($this->school, $next, GradeLevel::Grade8, 'Rizal');
+        $target = $this->newSection($this->other, $next, GradeLevel::Grade8, 'Bonifacio');
+        $enrollment = $this->enroll($this->enrollment->getLearner(), $next, $rizal, $this->admin);
+
+        $request = $this->service->request($enrollment, $target, $this->admin);
+
+        self::assertTrue($request->isPending());
+    }
+
     public function testRequestToSameSchoolRefused(): void
     {
         $this->refused('Choose a section of another school.', fn () => $this->service->request($this->enrollment, $this->mabini, $this->admin));

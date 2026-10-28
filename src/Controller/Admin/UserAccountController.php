@@ -127,6 +127,7 @@ class UserAccountController extends AbstractController
         $form = $this->createForm(UserAccountFormType::class, $account, [
             'is_new' => false,
             'lock_role' => $this->isSelf($account),
+            'learner_lrn' => $this->learners->findOneByUser($account)?->getLrn(),
         ]);
         $originalRole = $account->getRole();
         $form->handleRequest($request);

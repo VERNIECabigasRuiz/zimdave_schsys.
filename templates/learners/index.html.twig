@@ -42,7 +42,7 @@
             {% endif %}
         </form>
 
-        {% if enrollments %}
+        {% if matches > 0 %}
             <div class="card table-card">
                 <table class="table">
                     <thead>
@@ -70,6 +70,17 @@
                     </tbody>
                 </table>
             </div>
+            {% if page > 1 or has_next %}
+                <nav class="pager" aria-label="Pages">
+                    <span class="muted">Page {{ page }}</span>
+                    {% if page > 1 %}
+                        <a class="btn btn--ghost btn--sm" href="{{ path(routes, route_params|merge({q: query, section: section ? section.id : null, page: page - 1})) }}">Previous</a>
+                    {% endif %}
+                    {% if has_next %}
+                        <a class="btn btn--ghost btn--sm" href="{{ path(routes, route_params|merge({q: query, section: section ? section.id : null, page: page + 1})) }}">Next</a>
+                    {% endif %}
+                </nav>
+            {% endif %}
         {% elseif query or section %}
             <div class="card empty">No learners match.</div>
         {% else %}

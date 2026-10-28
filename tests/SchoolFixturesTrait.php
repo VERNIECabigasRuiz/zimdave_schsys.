@@ -141,7 +141,7 @@ trait SchoolFixturesTrait
     protected function learner(string $lrn, string $lastName, string $firstName): Learner
     {
         $user = $this->plainUser('learner'.$lrn, User::ROLE_STUDENT);
-        $learner = (new Learner($user))->setLrn($lrn)->setLastName($lastName)->setFirstName($firstName)->setSex(SexAtBirth::Female)->setBirthDate(new \DateTimeImmutable('2012-05-01'));
+        $learner = (new Learner($user, new \DateTimeImmutable()))->setLrn($lrn)->setLastName($lastName)->setFirstName($firstName)->setSex(SexAtBirth::Female)->setBirthDate(new \DateTimeImmutable('2012-05-01'));
         $this->em->persist($learner);
         $this->em->flush();
 
@@ -150,7 +150,7 @@ trait SchoolFixturesTrait
 
     protected function enroll(Learner $learner, SchoolYear $sy, Section $section, User $by): Enrollment
     {
-        $enrollment = new Enrollment($learner, $sy, $section, $by);
+        $enrollment = new Enrollment($learner, $sy, $section, $by, new \DateTimeImmutable());
         $this->em->persist($enrollment);
         $this->em->flush();
 
