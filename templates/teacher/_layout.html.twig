@@ -24,6 +24,9 @@
                 {% if has_teaching_load(app.user) %}
                     {{ _self.nav_link('My Teaching Load', path('teacher_load'), route starts with 'teacher_load') }}
                 {% endif %}
+                {% if advises_section(app.user) %}
+                    {{ _self.nav_link('My class', path('teacher_class'), route starts with 'teacher_class') }}
+                {% endif %}
                 {{ _self.nav_link('My Profile', path('profile_show'), route starts with 'profile_') }}
             </nav>
 

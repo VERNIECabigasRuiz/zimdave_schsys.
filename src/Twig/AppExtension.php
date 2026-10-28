@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\ActivityLogRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
+use App\Repository\SectionRepository;
 use Twig\Attribute\AsTwigFilter;
 use Twig\Attribute\AsTwigFunction;
 
@@ -15,6 +16,7 @@ class AppExtension
         private readonly ActivityLogRepository $activityLogs,
         private readonly SchoolYearRepository $schoolYears,
         private readonly SchoolAssignmentRepository $assignments,
+        private readonly SectionRepository $sections,
     ) {
     }
 
@@ -56,5 +58,14 @@ class AppExtension
         $school = null === $schoolYear ? null : $this->assignments->findSchoolOf($teacher, $schoolYear, User::ROLE_TEACHER);
 
         return false !== $school?->getPlan()?->includesPrincipal();
+    }
+
+    /** Whether the teacher advises a section this S.Y. (they then have a "My class" page). */
+    #[AsTwigFunction('advises_section')]
+    public function advisesSection(User $teacher): bool
+    {
+        $schoolYear = $this->schoolYears->findCurrent();
+
+        return null !== $schoolYear && null !== $this->sections->findAdvisory($teacher, $schoolYear);
     }
 }
