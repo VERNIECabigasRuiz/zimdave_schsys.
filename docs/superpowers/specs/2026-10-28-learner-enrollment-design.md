@@ -150,8 +150,9 @@ sections and subjects. An **adviser** is the teacher set as `Section::adviser` i
 | Page | Route | Who |
 |---|---|---|
 | Learners of a school (search by LRN/name, filter by section, **Enroll**) | `GET /schools/{id}/learners` | admin, principal |
-| Enroll (LRN step, then form) | `GET\|POST /schools/{id}/learners/enroll` | admin, principal, adviser |
-| Class list | `GET /schools/{id}/sections/{section}/learners` | admin, principal, the section's adviser |
+| Enroll (LRN step, then form) | `GET\|POST /schools/{id}/learners/enroll` | admin, principal |
+| Class list | `GET /schools/{id}/sections/{section}/learners` | admin, principal |
+| Adviser's class: class list, enroll, learner, edit, unenroll, reset password | `/teacher/class/...` (like `/teacher/subjects`) | the section's adviser |
 | Learner page (details, enrollment history, transfer requests, allowed actions) | `GET /schools/{id}/learners/{learner}` | as the table above |
 | Edit details / LRN | `GET\|POST /schools/{id}/learners/{learner}/edit` | as the table above |
 | Move, unenroll, reset password | `POST /schools/{id}/learners/{learner}/{action}` | as the table above |
@@ -203,6 +204,8 @@ Validator; POST actions use CSRF tokens.
   `<section> has <k> pending transfers.`
 - On the admin Accounts page, the role of a learner's account cannot be changed:
   `This account belongs to learner <LRN>.`
+- The admin's new-account form no longer offers the Student role: student accounts are created
+  only by enrolling, so every student account has a learner.
 
 ## Copy
 
