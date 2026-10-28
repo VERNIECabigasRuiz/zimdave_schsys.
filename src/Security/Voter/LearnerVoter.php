@@ -72,6 +72,11 @@ final class LearnerVoter extends Voter
             return false;
         }
 
+        // A request belongs to the school year of the section it leaves.
+        if ($subject instanceof TransferRequest && $subject->getFromSection()->getSchoolYear()->getId() !== $currentYear->getId()) {
+            return false;
+        }
+
         if ($isAdmin) {
             return match (true) {
                 $subject instanceof Section => $subject->getSchoolYear()->getId() === $currentYear->getId(),

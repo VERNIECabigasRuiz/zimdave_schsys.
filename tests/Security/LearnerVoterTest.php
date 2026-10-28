@@ -191,6 +191,24 @@ class LearnerVoterTest extends KernelTestCase
         $this->assertRoles(LearnerVoter::CANCEL_TRANSFER, $request, $none);
     }
 
+    public function testPendingRequestFromPreviousYearIsDeniedToEveryone(): void
+    {
+        $oldYear = $this->schoolYear(2025, current: false);
+        $from = $this->newSection($this->school, $oldYear, GradeLevel::Grade7, 'Old');
+        $from->setAdviser($this->users['adviser']);
+        $learner = $this->learner('100000000003', 'Old', 'Pupil');
+        $enrollment = $this->enroll($learner, $oldYear, $from, $this->users['admin']);
+        $target = $this->newSection($this->other, $oldYear, GradeLevel::Grade7, 'OldTarget');
+        $request = new TransferRequest($enrollment, $target, $this->users['otherPrincipal']);
+        $this->em->persist($request);
+        $this->school->setPlan($this->plan('Individual'));
+        $this->em->flush();
+
+        $none = $this->matrix(false, false, false);
+        $this->assertRoles(LearnerVoter::DECIDE_TRANSFER, $request, $none);
+        $this->assertRoles(LearnerVoter::CANCEL_TRANSFER, $request, $none);
+    }
+
     public function testFormerAdviserLosesAccess(): void
     {
         $this->assertRoles(LearnerVoter::EDIT, $this->learner, ['adviser' => true]);
