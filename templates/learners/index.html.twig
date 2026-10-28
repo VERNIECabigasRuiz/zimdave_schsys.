@@ -1,0 +1,76 @@
+{% extends layout %}
+
+{% block title %}Learners · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Learners</h1>
+            <p>
+                {{ school.name }}{% if school_year %} · S.Y. {{ school_year.name }}
+                · {{ count }} {{ count == 1 ? 'learner' : 'learners' }} enrolled of {{ limit }}{% endif %}
+            </p>
+        </div>
+        {% if school_year %}
+            <div class="row-actions">
+                <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not school_year %}
+        <div class="card empty">No current school year. Learners are enrolled per school year.</div>
+    {% else %}
+        {% if refusal %}
+            <div class="alert alert--warning plan-notice" role="status">{{ refusal }}</div>
+        {% endif %}
+
+        <form class="filters" method="get" action="{{ path(routes, route_params) }}">
+            <input type="search" name="q" value="{{ query }}" placeholder="Search by LRN or name" aria-label="Search by LRN or name">
+            <select name="section" aria-label="Section">
+                <option value="">All sections</option>
+                {% for s in sections %}
+                    <option value="{{ s.id }}" {{ section and section.id == s.id ? 'selected' }}>{{ s.label }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn--ghost btn--sm" type="submit">Search</button>
+            {% if query or section %}
+                <a class="link-muted" href="{{ path(routes, route_params) }}">Clear</a>
+            {% endif %}
+        </form>
+
+        {% if enrollments %}
+            <div class="card table-card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>LRN</th>
+                            <th>Name</th>
+                            <th>Sex</th>
+                            <th>Section</th>
+                            <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrollments %}
+                            {% set learner = enrollment.learner %}
+                            <tr>
+                                <td><code>{{ learner.lrn }}</code></td>
+                                <td>{{ learner.user.fullName }}</td>
+                                <td>{{ learner.sex ? learner.sex.label }}</td>
+                                <td><a href="{{ path(routes ~ '_class', route_params|merge({section: enrollment.section.id})) }}">{{ enrollment.section.label }}</a></td>
+                                <td class="table__actions">
+                                    <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_show', route_params|merge({learner: learner.id})) }}">Open</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% elseif query or section %}
+            <div class="card empty">No learners match.</div>
+        {% else %}
+            <div class="card empty">No learners enrolled for S.Y. {{ school_year.name }} yet.</div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

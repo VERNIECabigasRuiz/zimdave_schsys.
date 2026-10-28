@@ -23,6 +23,7 @@
                 {{ _self.nav_link('Dashboard', path('principal_dashboard'), route == 'principal_dashboard') }}
                 {{ _self.nav_link('Teachers', path('principal_teachers'), route starts with 'school_teachers' or route starts with 'school_teacher_load' or route == 'principal_teachers') }}
                 {{ _self.nav_link('Sections', path('principal_sections'), route starts with 'school_sections' or route starts with 'school_timetable') }}
+                {{ _self.nav_link('Learners', path('principal_learners'), route starts with 'school_learners') }}
                 {{ _self.nav_link('Subjects', path('principal_subjects'), route starts with 'school_subjects') }}
                 {{ _self.nav_link('Class Periods', path('principal_class_periods'), route starts with 'school_class_periods') }}
                 {{ _self.nav_link('School Profile', path('principal_school'), route == 'principal_school') }}

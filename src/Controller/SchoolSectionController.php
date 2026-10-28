@@ -6,6 +6,7 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Form\SectionFormType;
+use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Security\Voter\SchoolVoter;
@@ -32,6 +33,7 @@ class SchoolSectionController extends AbstractController
         private readonly SectionRepository $sections,
         private readonly SchoolYearRepository $schoolYears,
         private readonly SectionManager $manager,
+        private readonly EnrollmentRepository $enrollments,
     ) {
     }
 
@@ -50,6 +52,7 @@ class SchoolSectionController extends AbstractController
             'school' => $school,
             'school_year' => $schoolYear,
             'groups' => $groups,
+            'enrolled' => $schoolYear ? $this->enrollments->countBySection($school, $schoolYear) : [],
             'refusal' => $this->manager->refusal($school),
             'bring_back_from' => $previous && [] !== $this->sections->findBringBackCandidates($school, $previous, $schoolYear) ? $previous : null,
         ]);

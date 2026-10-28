@@ -1,0 +1,55 @@
+{% extends layout %}
+
+{% set count = enrollments|length %}
+
+{% block title %}{{ section.label }} · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ section.label }}</h1>
+            <p>
+                {{ school.name }} · S.Y. {{ school_year.name }}
+                · {{ count }} {{ count == 1 ? 'learner' : 'learners' }}{% if limit %} of {{ limit }}{% endif %}
+                {% if section.adviser %} · Adviser: {{ section.adviser.fullName }}{% endif %}
+            </p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
+        </div>
+    </div>
+
+    {% if enrollments %}
+        <div class="card table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>LRN</th>
+                        <th>Name</th>
+                        <th>Sex</th>
+                        <th>Birthdate</th>
+                        <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in enrollments %}
+                        {% set learner = enrollment.learner %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><code>{{ learner.lrn }}</code></td>
+                            <td>{{ learner.user.fullName }}</td>
+                            <td>{{ learner.sex ? learner.sex.label }}</td>
+                            <td>{{ learner.birthDate ? learner.birthDate|date('M j, Y') }}</td>
+                            <td class="table__actions">
+                                <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_show', route_params|merge({learner: learner.id})) }}">Open</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card empty">No learners in {{ section.label }} yet.</div>
+    {% endif %}
+{% endblock %}

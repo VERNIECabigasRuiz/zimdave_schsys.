@@ -1,0 +1,7 @@
+{# A learner's details, read-only #}
+<dl class="info-list">
+    <div><dt>LRN</dt><dd><code>{{ learner.lrn }}</code></dd></div>
+    <div><dt>Name</dt><dd>{{ learner.user.fullName }}</dd></div>
+    <div><dt>Sex</dt><dd>{{ learner.sex ? learner.sex.label : '—' }}</dd></div>
+    <div><dt>Birthdate</dt><dd>{{ learner.birthDate ? learner.birthDate|date('M j, Y') : '—' }}</dd></div>
+</dl>

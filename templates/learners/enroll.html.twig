@@ -1,0 +1,81 @@
+{% extends layout %}
+
+{% block title %}Enroll a learner · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Enroll a learner</h1>
+            <p>{{ school.name }} · S.Y. {{ school_year.name }}{% if fixed_section %} · {{ fixed_section.label }}{% endif %}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {% if not result %}
+            <form class="form" method="get" action="{{ path(routes ~ '_enroll', route_params) }}" novalidate>
+                <div class="form-row">
+                    <label for="lrn">LRN</label>
+                    <input type="text" id="lrn" name="lrn" value="{{ lrn }}" inputmode="numeric" maxlength="12" autofocus{% if lrn_error %} aria-invalid="true" aria-describedby="lrn-error"{% endif %}>
+                    {% if lrn_error %}<p class="form-error" id="lrn-error">{{ lrn_error }}</p>{% endif %}
+                    <p class="form-help">The learner's 12-digit Learner Reference Number.</p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Next</button>
+                    <a class="link-muted" href="{{ path(routes, route_params) }}">Cancel</a>
+                </div>
+            </form>
+        {% else %}
+            {% set kind = result.kind.name %}
+            <p>LRN <code>{{ lrn }}</code> · <a class="link-muted" href="{{ path(routes ~ '_enroll', route_params) }}">Type another LRN</a></p>
+
+            {% if kind == 'Here' %}
+                <p>{{ result.learner.user.fullName }} is already enrolled in {{ result.enrollment.section.label }}.</p>
+                <a class="btn btn--ghost" href="{{ path(routes ~ '_show', route_params|merge({learner: result.learner.id})) }}">Open learner</a>
+            {% elseif kind == 'Elsewhere' %}
+                {% set name = result.learner.user.fullName %}
+                {% set other = result.enrollment.school.name %}
+                {% if fixed_section %}
+                    {% if school.plan and not school.plan.includesPrincipal %}
+                        <p class="alert alert--warning" role="status">{{ name }} is enrolled at {{ other }}. Ask the administrator to transfer them.</p>
+                    {% else %}
+                        <p class="alert alert--warning" role="status">{{ name }} is enrolled at {{ other }}. Ask your principal to request a transfer.</p>
+                    {% endif %}
+                {% else %}
+                    <p>{{ name }} is enrolled at {{ other }}.</p>
+                    {% if transfer_form %}
+                        {{ form_start(transfer_form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+                            {{ form_errors(transfer_form) }}
+                            {{ form_row(transfer_form.section, {help: other ~ ' must approve the request before ' ~ name ~ ' moves.'}) }}
+                            <div class="form-actions">
+                                <button class="btn btn--primary" type="submit">Request transfer</button>
+                            </div>
+                        {{ form_end(transfer_form) }}
+                    {% elseif is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn--ghost" href="{{ path(routes ~ '_show', route_params|merge({learner: result.learner.id})) }}">Open learner</a>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+                    {{ form_errors(form) }}
+                    {% if form.learner is defined %}
+                        {{ form_errors(form.learner) }}
+                        {% include 'learners/_fields.html.twig' with {form: form.learner} only %}
+                    {% else %}
+                        {% include 'learners/_details.html.twig' with {learner: result.learner} only %}
+                        {# R4: details of a learner not enrolled this year are edited only by an administrator #}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <p><a class="link-muted" href="{{ path(routes ~ '_edit', route_params|merge({learner: result.learner.id})) }}">Edit details</a></p>
+                        {% endif %}
+                    {% endif %}
+                    {% if form.section is defined %}
+                        {{ form_row(form.section) }}
+                    {% endif %}
+                    <div class="form-actions">
+                        <button class="btn btn--primary" type="submit">Enroll</button>
+                        <a class="link-muted" href="{{ path(routes, route_params) }}">Cancel</a>
+                    </div>
+                {{ form_end(form) }}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

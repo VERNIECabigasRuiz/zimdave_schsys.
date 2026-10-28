@@ -40,6 +40,7 @@
                         <tr>
                             <th>Section</th>
                             <th>Class adviser</th>
+                            <th>Enrolled</th>
                             <th class="table__actions"><span class="visually-hidden">Actions</span></th>
                         </tr>
                     </thead>
@@ -60,6 +61,7 @@
                                         <span class="badge badge--amber">No adviser yet</span>
                                     {% endif %}
                                 </td>
+                                <td><a href="{{ path('school_learners_class', {id: school.id, section: section.id}) }}">{{ enrolled[section.id] ?? 0 }}</a></td>
                                 <td class="table__actions">
                                     <a class="btn btn--ghost btn--sm" href="{{ path('school_timetable', {id: school.id, section: section.id}) }}">Timetable</a>
                                     {% if not refusal %}

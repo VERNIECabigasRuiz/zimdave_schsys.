@@ -1,0 +1,12 @@
+{# The learner's detail fields, shared by the enroll and edit forms #}
+{% if form.lrn is defined %}{{ form_row(form.lrn) }}{% endif %}
+<div class="form-grid">
+    {{ form_row(form.lastName) }}
+    {{ form_row(form.firstName) }}
+    {{ form_row(form.middleName) }}
+    {{ form_row(form.extension) }}
+</div>
+<div class="form-grid">
+    {{ form_row(form.sex) }}
+    {{ form_row(form.birthDate) }}
+</div>

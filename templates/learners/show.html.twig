@@ -1,0 +1,104 @@
+{% extends layout %}
+
+{% block title %}{{ learner.user.fullName }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ learner.user.fullName }}</h1>
+            <p>
+                LRN {{ learner.lrn }} ·
+                {% if current %}{{ current.section.label }}, {{ current.school.name }}{% else %}Not enrolled this school year{% endif %}
+            </p>
+        </div>
+        <div class="row-actions">
+            {% if can.edit %}
+                <a class="btn btn--ghost" href="{{ path(routes ~ '_edit', route_params|merge({learner: learner.id})) }}">Edit details</a>
+            {% endif %}
+            {% if can.reset_password %}
+                <form method="post" action="{{ path(routes ~ '_reset_password', route_params|merge({learner: learner.id})) }}"
+                      data-turbo-confirm="Give {{ learner.user.fullName }} a new temporary password?">
+                    <input type="hidden" name="_token" value="{{ csrf_token('learner-' ~ learner.id) }}">
+                    <button class="btn btn--ghost" type="submit">Reset password</button>
+                </form>
+            {% endif %}
+            {% if can.unenroll %}
+                <form method="post" action="{{ path(routes ~ '_unenroll', route_params|merge({learner: learner.id})) }}"
+                      data-turbo-confirm="Unenroll {{ learner.user.fullName }} from {{ current.section.label }}? The learner and their account stay.">
+                    <input type="hidden" name="_token" value="{{ csrf_token('learner-' ~ learner.id) }}">
+                    <button class="btn btn--ghost" type="submit">Unenroll</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <section class="card">
+        <h2>Details</h2>
+        {% include 'learners/_details.html.twig' with {learner: learner} only %}
+    </section>
+
+    {% if can.move and move_sections %}
+        <section class="card">
+            <h2>Move to another section</h2>
+            <form class="filters" method="post" action="{{ path(routes ~ '_move', route_params|merge({learner: learner.id})) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('learner-' ~ learner.id) }}">
+                <select name="section" aria-label="New section">
+                    {% for s in move_sections %}
+                        <option value="{{ s.id }}">{{ s.label }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn--ghost btn--sm" type="submit">Move</button>
+            </form>
+        </section>
+    {% endif %}
+
+    <section class="card table-card history">
+        <h2>Enrollment history</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>S.Y.</th>
+                    <th>School</th>
+                    <th>Section</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in history %}
+                    <tr>
+                        <td>{{ enrollment.schoolYear.name }}</td>
+                        <td>{{ enrollment.school.name }}</td>
+                        <td>{{ enrollment.section.label }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3" class="muted">Not enrolled in any school year.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    {% if transfers %}
+        <section class="card table-card transfers">
+            <h2>Transfer requests</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transfer in transfers %}
+                        <tr>
+                            <td>{{ transfer.createdAt|date('M j, Y') }}</td>
+                            <td>{{ transfer.fromSchool.name }} · {{ transfer.fromSection.label }}</td>
+                            <td>{{ transfer.toSchool.name }} · {{ transfer.toSection.label }}</td>
+                            <td>{{ transfer.pending ? 'Waiting for ' ~ transfer.fromSchool.name : transfer.status.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% endif %}
+{% endblock %}

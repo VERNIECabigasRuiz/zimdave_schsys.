@@ -83,6 +83,17 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('school_sections', ['id' => $school->getId()]);
     }
 
+    #[Route('/learners', name: 'principal_learners', methods: ['GET'])]
+    public function learners(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_learners', ['id' => $school->getId()]);
+    }
+
     #[Route('/subjects', name: 'principal_subjects', methods: ['GET'])]
     public function subjects(#[CurrentUser] User $user): Response
     {
