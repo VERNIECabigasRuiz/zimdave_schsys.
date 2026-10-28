@@ -14,6 +14,7 @@ use App\Entity\TransferStatus;
 use App\Entity\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\Lock\LockFactory;
 
 class SchoolLearnerControllerTest extends AdminTestCase
 {
@@ -455,5 +456,127 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertSelectorTextContains('.history', 'Other NHS');
         self::assertCount(0, $crawler->selectButton('Move'));
         self::assertCount(0, $crawler->selectButton('Unenroll'));
+    }
+
+    /** A valid CSRF token of the client's session (a page must have been requested first). */
+    private function csrfToken(string $id): string
+    {
+        static::getContainer()->get('request_stack')->push($this->client->getRequest());
+        $token = static::getContainer()->get('security.csrf.token_manager')->getToken($id)->getValue();
+        $this->client->getRequest()->getSession()->save();
+
+        return $token;
+    }
+
+    /**
+     * Learners the principal's school must not write to: one at another school, one enrolled nowhere.
+     *
+     * @return array{0: Learner, 1: Learner, 2: Section}
+     */
+    private function learnersNotHere(): array
+    {
+        $other = $this->school('303457', 'Other NHS', planValidUntil: new \DateTimeImmutable('2027-04-30'));
+        $mabini = $this->newSection($other, $this->sy, GradeLevel::Grade7, 'Mabini');
+        $theirs = $this->enrolled('111111111111', 'Abad', 'Ana', $mabini);
+        $nowhere = $this->learner('222222222222', 'Zamora', 'Ben');
+
+        return [$theirs, $nowhere, $mabini];
+    }
+
+    /** @param list<string> $actions */
+    private function assertWritesAre404(array $learners, array $actions): void
+    {
+        $this->client->request('GET', $this->url($this->school));
+        foreach ($learners as $learner) {
+            $token = $this->csrfToken('learner-'.$learner->getId());
+            foreach ($actions as $action) {
+                $this->client->request('POST', $this->url($this->school, '/'.$learner->getId().'/'.$action), [
+                    '_token' => $token,
+                    'section' => (string) $this->rosal->getId(),
+                ]);
+                self::assertResponseStatusCodeSame(404, $learner->getLrn().' '.$action);
+            }
+        }
+    }
+
+    public function testPrincipalCannotWriteToLearnersNotEnrolledHere(): void
+    {
+        [$theirs, $nowhere, $mabini] = $this->learnersNotHere();
+        $hashes = [$theirs->getUser()->getPassword(), $nowhere->getUser()->getPassword()];
+
+        $this->assertWritesAre404([$theirs, $nowhere], ['move', 'unenroll', 'reset-password']);
+
+        self::assertSame($mabini->getId(), $this->currentEnrollment($theirs)->getSection()->getId());
+        self::assertNull($this->currentEnrollment($nowhere));
+        self::assertSame($hashes, [$this->findLearner('111111111111')->getUser()->getPassword(), $this->findLearner('222222222222')->getUser()->getPassword()]);
+        self::assertSame([], $this->activityActions());
+    }
+
+    public function testAdminMoveAndUnenrollNeedACurrentEnrollmentHere(): void
+    {
+        [$theirs, $nowhere, $mabini] = $this->learnersNotHere();
+        $this->client->loginUser($this->admin);
+
+        $this->assertWritesAre404([$theirs, $nowhere], ['move', 'unenroll']);
+
+        self::assertSame($mabini->getId(), $this->currentEnrollment($theirs)->getSection()->getId());
+        self::assertNull($this->currentEnrollment($nowhere));
+        self::assertSame([], $this->activityActions());
+    }
+
+    public function testOnlyThePrincipalOfTheSchoolRequestsTransfers(): void
+    {
+        [$theirs] = $this->learnersNotHere();
+        $pedro = $this->createUser('pedro', User::ROLE_PRINCIPAL, 'Pedro Cruz');
+        $this->assign($this->school('303458', 'Third NHS'), $this->sy, $pedro);
+        $teacher = $this->createUser('ana', User::ROLE_TEACHER);
+        $this->assign($this->school, $this->sy, $teacher, User::ROLE_TEACHER);
+
+        foreach ([$this->admin, $teacher, $pedro] as $user) {
+            $this->client->loginUser($user);
+            $this->client->request('POST', '/schools/'.$this->school->getId().'/transfers/request?lrn='.$theirs->getLrn(), [
+                'enroll_section_form' => ['section' => (string) $this->rosal->getId()],
+            ]);
+            self::assertResponseStatusCodeSame(403, $user->getUsername());
+        }
+
+        $this->em->clear();
+        self::assertSame(0, $this->em->getRepository(TransferRequest::class)->count([]));
+    }
+
+    public function testEditRefusedForATakenUsernameSavesNothing(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $this->createUser('999999999999', User::ROLE_TEACHER);
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/edit'));
+        $this->client->submitForm('Save', ['learner_form[lrn]' => '999999999999', 'learner_form[firstName]' => 'Anna']);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'The username 999999999999 is already taken by another account. Ask the administrator.');
+        $learner = $this->findLearner('111111111111');
+        self::assertSame(['Ana', 'Abad, Ana', '111111111111'], [$learner->getFirstName(), $learner->getUser()->getFullName(), $learner->getUser()->getUsername()]);
+        self::assertSame([], $this->activityActions());
+    }
+
+    public function testEditRefusedWhileTheLearnerIsBeingChangedSavesNothing(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/edit'));
+
+        // another request is in the middle of changing this learner
+        $lock = static::getContainer()->get(LockFactory::class)->createLock('learner-'.$learner->getId());
+        self::assertTrue($lock->acquire());
+        try {
+            $this->client->submitForm('Save', ['learner_form[lrn]' => '888888888888', 'learner_form[firstName]' => 'Anna']);
+        } finally {
+            $lock->release();
+        }
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Another change is being saved. Please try again.');
+        $learner = $this->findLearner('111111111111');
+        self::assertSame(['Ana', 'Abad, Ana', '111111111111'], [$learner->getFirstName(), $learner->getUser()->getFullName(), $learner->getUser()->getUsername()]);
+        self::assertSame([], $this->activityActions());
     }
 }

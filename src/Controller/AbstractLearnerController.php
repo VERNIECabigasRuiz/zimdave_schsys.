@@ -167,19 +167,20 @@ abstract class AbstractLearnerController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $newLrn = $learner->getLrn();
             try {
-                if ($newLrn !== $oldLrn) {
-                    // changeLrn() logs the old and new LRN, so it starts from the old one
-                    $learner->setLrn($oldLrn);
-                    $this->enrollment->changeLrn($learner, $newLrn);
-                }
-                $this->enrollment->update($learner);
+                // update() saves the details and the new LRN in one write, and logs the old and
+                // new LRN, so it starts from the old one
+                $learner->setLrn($oldLrn);
+                $this->enrollment->update($learner, $newLrn);
                 $this->addFlash('success', \sprintf('Saved %s.', $learner->getUser()->getFullName()));
 
                 return $this->redirectToShow($scope, $learner);
             } catch (PlanLimitException|EnrollmentException $e) {
                 // the refused changes are still on the managed objects; drop them so nothing saves them later
-                $this->entityManager->refresh($learner->getUser());
-                $this->entityManager->refresh($learner);
+                // (after a unique-key clash LearnerLock has already swapped in a fresh entity manager)
+                if ($this->entityManager->contains($learner)) {
+                    $this->entityManager->refresh($learner->getUser());
+                    $this->entityManager->refresh($learner);
+                }
                 $form->addError(new FormError($e->getMessage()));
             }
         }

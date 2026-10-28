@@ -266,6 +266,34 @@ class LearnerEnrollmentTest extends KernelTestCase
         self::assertSame('Cruz, Juanito', $learner->getUser()->getFullName());
     }
 
+    public function testUpdateWithNewLrnSavesBothInOneWrite(): void
+    {
+        $learner = $this->learner('123456789012', 'Cruz', 'Juan');
+        $learner->setFirstName('Juanito');
+
+        $this->service->update($learner, '210987654321');
+
+        $this->em->clear();
+        $saved = $this->em->getRepository(Learner::class)->find($learner->getId());
+        self::assertSame(['210987654321', '210987654321', 'Cruz, Juanito'], [$saved->getLrn(), $saved->getUser()->getUsername(), $saved->getUser()->getFullName()]);
+        self::assertContains('Changed LRN 123456789012 to 210987654321', $this->logs());
+        self::assertContains('Updated learner 210987654321', $this->logs());
+    }
+
+    public function testUpdateWithTakenLrnSavesNothing(): void
+    {
+        $learner = $this->learner('123456789012', 'Cruz', 'Juan');
+        $this->plainUser('210987654321', User::ROLE_TEACHER);
+        $learner->setFirstName('Juanito');
+
+        $this->refused('The username 210987654321 is already taken by another account. Ask the administrator.', fn () => $this->service->update($learner, '210987654321'));
+
+        $this->em->clear();
+        $saved = $this->em->getRepository(Learner::class)->find($learner->getId());
+        self::assertSame(['123456789012', 'Juan'], [$saved->getLrn(), $saved->getFirstName()]);
+        self::assertSame([], $this->logs());
+    }
+
     public function testMoveWithinSchool(): void
     {
         $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);

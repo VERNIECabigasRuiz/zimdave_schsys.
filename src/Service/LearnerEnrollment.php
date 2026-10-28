@@ -89,14 +89,19 @@ class LearnerEnrollment
     }
 
     /**
-     * Saves changed details (the form already validated them).
+     * Saves changed details (the form already validated them) and, when $lrn differs from the
+     * learner's LRN, the new LRN too, in one write: a refusal saves neither.
      *
      * @throws PlanLimitException|EnrollmentException
      */
-    public function update(Learner $learner): void
+    public function update(Learner $learner, ?string $lrn = null): void
     {
-        $this->lock->forLearner($learner, function () use ($learner): void {
+        $lrn = null !== $lrn ? trim($lrn) : null;
+        $this->lock->forLearner($learner, function () use ($learner, $lrn): void {
             $this->assertNotBlocked($learner);
+            if (null !== $lrn && $lrn !== $learner->getLrn()) {
+                $this->applyLrn($learner, $lrn);
+            }
             $this->activityLogger->log(\sprintf('Updated learner %s', $learner->getLrn()));
             $this->entityManager->flush();
         });
@@ -112,13 +117,19 @@ class LearnerEnrollment
         $lrn = trim($lrn);
         $this->lock->forLearner($learner, function () use ($learner, $lrn): void {
             $this->assertNotBlocked($learner);
-            $this->assertUsernameFree($lrn, $learner->getUser());
-
-            $old = $learner->getLrn();
-            $learner->setLrn($lrn);
-            $this->activityLogger->log(\sprintf('Changed LRN %s to %s', $old, $lrn));
+            $this->applyLrn($learner, $lrn);
             $this->entityManager->flush();
         });
+    }
+
+    /** Sets and logs the new LRN once its username is known to be free; the caller flushes. */
+    private function applyLrn(Learner $learner, string $lrn): void
+    {
+        $this->assertUsernameFree($lrn, $learner->getUser());
+
+        $old = $learner->getLrn();
+        $learner->setLrn($lrn);
+        $this->activityLogger->log(\sprintf('Changed LRN %s to %s', $old, $lrn));
     }
 
     /**
