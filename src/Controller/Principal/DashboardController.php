@@ -41,6 +41,7 @@ class DashboardController extends AbstractController
             'school' => $school,
             'school_year' => $schoolYear,
             'teachers' => $this->planLimits->countTeachers($school, $schoolYear),
+            'students' => $this->planLimits->countStudents($school, $schoolYear),
             'blocked_reason' => $this->planLimits->blockedReason($school),
         ]);
     }

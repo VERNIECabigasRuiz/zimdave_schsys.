@@ -6,6 +6,7 @@ use App\Entity\ActivityLog;
 use App\Entity\Announcement;
 use App\Entity\ClassPeriod;
 use App\Entity\Enrollment;
+use App\Entity\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\Plan;
 use App\Entity\School;
@@ -14,6 +15,7 @@ use App\Entity\ScheduleEntry;
 use App\Entity\Section;
 use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
+use App\Entity\SexAtBirth;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
 use App\Entity\TransferRequest;
@@ -115,5 +117,33 @@ trait SchoolFixturesTrait
         $this->em->flush();
 
         return $user;
+    }
+
+    protected function newSection(School $school, SchoolYear $sy, GradeLevel $level, string $name): Section
+    {
+        $section = (new Section($school, $sy))->setGradeLevel($level)->setName($name);
+        $this->em->persist($section);
+        $this->em->flush();
+
+        return $section;
+    }
+
+    protected function learner(string $lrn, string $lastName, string $firstName): Learner
+    {
+        $user = $this->plainUser('learner'.$lrn, User::ROLE_STUDENT);
+        $learner = (new Learner($user))->setLrn($lrn)->setLastName($lastName)->setFirstName($firstName)->setSex(SexAtBirth::Female)->setBirthDate(new \DateTimeImmutable('2012-05-01'));
+        $this->em->persist($learner);
+        $this->em->flush();
+
+        return $learner;
+    }
+
+    protected function enroll(Learner $learner, SchoolYear $sy, Section $section, User $by): Enrollment
+    {
+        $enrollment = new Enrollment($learner, $sy, $section, $by);
+        $this->em->persist($enrollment);
+        $this->em->flush();
+
+        return $enrollment;
     }
 }

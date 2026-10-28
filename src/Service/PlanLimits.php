@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Entity\School;
 use App\Entity\SchoolYear;
+use App\Entity\Section;
+use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolAssignmentRepository;
 use Symfony\Component\Clock\ClockInterface;
 
@@ -14,6 +16,7 @@ class PlanLimits
 {
     public function __construct(
         private readonly SchoolAssignmentRepository $assignments,
+        private readonly EnrollmentRepository $enrollments,
         private readonly ClockInterface $clock,
     ) {
     }
@@ -52,6 +55,53 @@ class PlanLimits
                 $limit,
                 $used,
             );
+        }
+
+        return null;
+    }
+
+    /** Learners enrolled in $school in $schoolYear, i.e. the student places in use. */
+    public function countStudents(School $school, SchoolYear $schoolYear): int
+    {
+        return $this->enrollments->countForSchool($school, $schoolYear);
+    }
+
+    /**
+     * @throws PlanLimitException when the school may not enroll another learner in $section
+     */
+    public function assertCanAddStudent(School $school, SchoolYear $schoolYear, Section $section): void
+    {
+        if (null !== $reason = $this->canAddStudent($school, $schoolYear, $section)) {
+            throw new PlanLimitException($reason);
+        }
+    }
+
+    /**
+     * @return string|null why another learner is refused, or null when it is allowed
+     */
+    public function canAddStudent(School $school, SchoolYear $schoolYear, Section $section): ?string
+    {
+        if (null !== $reason = $this->blockedReason($school)) {
+            return $reason;
+        }
+
+        $used = $this->countStudents($school, $schoolYear);
+        $limit = $school->getStudentLimit();
+        if ($used >= $limit) {
+            return \sprintf(
+                'The %s plan allows %d student(s) (%d used). Contact the administrator to upgrade.',
+                $school->getPlan()?->getName(),
+                $limit,
+                $used,
+            );
+        }
+
+        // Without a principal the teacher runs the class: a section holds at most one seat's worth
+        if (false === $school->getPlan()?->includesPrincipal()) {
+            $perSection = (int) $school->getPlan()->getStudentsPerSeat();
+            if ($this->enrollments->countForSection($section) >= $perSection) {
+                return \sprintf('%s is full (%d %s).', $section->getLabel(), $perSection, 1 === $perSection ? 'learner' : 'learners');
+            }
         }
 
         return null;

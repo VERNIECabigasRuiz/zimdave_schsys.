@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller\Principal;
 
+use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\User;
@@ -55,6 +56,18 @@ class PrincipalAreaTest extends AdminTestCase
         self::assertStringContainsString('Apr 30, 2027', $head);
         $stats = $crawler->filter('.stat')->each(static fn ($node) => $node->filter('small')->text().'='.$node->filter('strong')->text());
         self::assertSame(['Teachers=2 / 15', 'Students=0 / 1,000'], $stats);
+    }
+
+    public function testDashboardCountsEnrolledLearners(): void
+    {
+        $this->makePrincipal();
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade7, 'Rizal');
+        $this->enroll($this->learner('100000000001', 'Cruz', 'Juan'), $this->sy, $section, $this->maria);
+
+        $crawler = $this->client->request('GET', '/principal');
+
+        $stats = $crawler->filter('.stat')->each(static fn ($node) => $node->filter('small')->text().'='.$node->filter('strong')->text());
+        self::assertContains('Students=1 / 1,000', $stats);
     }
 
     public function testExpiredPlanWarning(): void

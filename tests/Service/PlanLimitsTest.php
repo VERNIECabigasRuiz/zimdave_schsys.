@@ -5,6 +5,10 @@ namespace App\Tests\Service;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\User;
+use App\Entity\GradeLevel;
+use App\Entity\Plan;
+use App\Entity\Section;
+use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
@@ -29,7 +33,7 @@ class PlanLimitsTest extends KernelTestCase
         static::mockTime('2026-10-16');
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
         // Built by hand: the container only keeps it once a page uses it (the teachers page does)
-        $this->limits = new PlanLimits(static::getContainer()->get(SchoolAssignmentRepository::class), new Clock());
+        $this->limits = new PlanLimits(static::getContainer()->get(SchoolAssignmentRepository::class), static::getContainer()->get(EnrollmentRepository::class), new Clock());
         $this->clearSchoolData();
         $this->sy = $this->schoolYear(2026, current: true);
     }
@@ -127,5 +131,86 @@ class PlanLimitsTest extends KernelTestCase
         $school = $this->school('300001', 'Pagsabungan NHS', active: false);
 
         self::assertSame('This school is inactive.', $this->refusal($school));
+    }
+
+    private function studentRefusal(School $school, Section $section): ?string
+    {
+        try {
+            $this->limits->assertCanAddStudent($school, $this->sy, $section);
+        } catch (PlanLimitException $e) {
+            self::assertSame($e->getMessage(), $this->limits->canAddStudent($school, $this->sy, $section));
+
+            return $e->getMessage();
+        }
+        self::assertNull($this->limits->canAddStudent($school, $this->sy, $section));
+
+        return null;
+    }
+
+    private function addLearners(School $school, Section $section, int $count): void
+    {
+        static $next = 100000;
+        $by = $this->plainUser('enroller'.++$next, User::ROLE_PRINCIPAL);
+        for ($i = 0; $i < $count; ++$i) {
+            $this->enroll($this->learner((string) ++$next, 'Cruz', 'Juan'), $this->sy, $section, $by);
+        }
+    }
+
+    public function testStudentLimit(): void
+    {
+        $basic = $this->plan();
+        $this->em->createQuery('UPDATE '.Plan::class.' p SET p.studentsPerSeat = 2 WHERE p.id = :id')->setParameter('id', $basic->getId())->execute();
+        $this->em->refresh($basic);
+        try {
+            $school = $this->school('300001', 'Pagsabungan NHS');
+            $section = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Rizal');
+            $this->addLearners($school, $section, 1);
+            self::assertNull($this->studentRefusal($school, $section));
+
+            $this->addLearners($school, $section, 1);
+            self::assertSame(2, $this->limits->countStudents($school, $this->sy));
+            self::assertSame('The Basic plan allows 2 student(s) (2 used). Contact the administrator to upgrade.', $this->studentRefusal($school, $section));
+        } finally {
+            $this->em->createQuery('UPDATE '.Plan::class.' p SET p.studentsPerSeat = 1000 WHERE p.id = :id')->setParameter('id', $basic->getId())->execute();
+        }
+    }
+
+    public function testSectionFullOnPlanWithoutPrincipal(): void
+    {
+        $solo = (new Plan())->setName('Solo Test')->setTeachersPerSeat(1)->setStudentsPerSeat(2)->setIncludesPrincipal(false);
+        $this->em->persist($solo);
+        $this->em->flush();
+        $school = $this->school('300001', 'Solo School', plan: 'Solo Test', seats: 2);
+        $section = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Rizal');
+        $this->addLearners($school, $section, 2);
+
+        self::assertSame('Grade 7 – Rizal is full (2 learners).', $this->studentRefusal($school, $section));
+
+        $other = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Bonifacio');
+        self::assertNull($this->studentRefusal($school, $other));
+
+        $solo->setIncludesPrincipal(true);
+        $this->em->flush();
+        self::assertNull($this->studentRefusal($school, $section));
+    }
+
+    public function testSectionFullSingular(): void
+    {
+        $solo = (new Plan())->setName('Solo Test')->setTeachersPerSeat(1)->setStudentsPerSeat(1)->setIncludesPrincipal(false);
+        $this->em->persist($solo);
+        $this->em->flush();
+        $school = $this->school('300001', 'Solo School', plan: 'Solo Test', seats: 2);
+        $section = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Rizal');
+        $this->addLearners($school, $section, 1);
+
+        self::assertSame('Grade 7 – Rizal is full (1 learner).', $this->studentRefusal($school, $section));
+    }
+
+    public function testBlockedSchoolRefusesStudents(): void
+    {
+        $school = $this->school('300001', 'Pagsabungan NHS', active: false);
+        $section = $this->newSection($school, $this->sy, GradeLevel::Grade7, 'Rizal');
+
+        self::assertSame('This school is inactive.', $this->studentRefusal($school, $section));
     }
 }

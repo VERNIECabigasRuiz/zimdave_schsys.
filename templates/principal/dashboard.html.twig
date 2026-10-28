@@ -25,11 +25,10 @@
                 <small>Teachers</small>
             </span>
         </a>
-        {# Students are counted once student accounts exist #}
         <div class="stat card">
             <span class="avatar avatar--amber">S</span>
             <span>
-                <strong>0 / {{ school.studentLimit|number_format }}</strong>
+                <strong>{{ students|number_format }} / {{ school.studentLimit|number_format }}</strong>
                 <small>Students</small>
             </span>
         </div>
