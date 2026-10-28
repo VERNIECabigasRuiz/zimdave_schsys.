@@ -47,6 +47,9 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Write helper scripts to a scratchpad file and run that, rather than an inline heredoc.
 - When you add a new setup step, check the first run's log to confirm it actually ran.
 - Before a run that wipes old reports, copy the results you'll compare against.
+- Before moving or deleting a folder, check what reads, writes, clears or links to it (including redirects and URLs).
+- With staged changes, use `git stash --index` (or test another way) for quick before/after checks.
+- Take server names and paths from the notes, not from files found during a task.
 
 ## Plans / Specs
 
