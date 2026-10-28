@@ -42,9 +42,9 @@ class SchoolLearnerController extends AbstractLearnerController
     }
 
     #[Route('/learners/{learner}', name: 'school_learners_show', methods: ['GET'])]
-    public function show(School $school, int $learner): Response
+    public function show(School $school, int $learner, #[MapQueryParameter(name: 'to_school', flags: \FILTER_NULL_ON_FAILURE)] ?int $toSchool = null): Response
     {
-        return $this->renderShow($this->scope($school), $learner);
+        return $this->renderShow($this->scope($school), $learner, $toSchool);
     }
 
     #[Route('/learners/{learner}/edit', name: 'school_learners_edit', methods: ['GET', 'POST'])]
@@ -58,6 +58,14 @@ class SchoolLearnerController extends AbstractLearnerController
     public function move(Request $request, School $school, int $learner): Response
     {
         return $this->handleMove($request, $this->scope($school), $learner);
+    }
+
+    #[Route('/learners/{learner}/transfer', name: 'school_learners_transfer', methods: ['POST'])]
+    #[IsGranted(User::ROLE_ADMIN)]
+    #[IsCsrfTokenValid(new Expression('"learner-" ~ args["learner"]'), tokenKey: '_token')]
+    public function transfer(Request $request, School $school, int $learner, #[CurrentUser] User $user): Response
+    {
+        return $this->handleTransfer($request, $this->scope($school), $learner, $user);
     }
 
     #[Route('/learners/{learner}/unenroll', name: 'school_learners_unenroll', methods: ['POST'])]

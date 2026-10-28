@@ -45,7 +45,7 @@ class DashboardControllerTest extends AdminTestCase
         $crawler = $this->client->request('GET', '/admin');
 
         self::assertSame(
-            ['Dashboard', 'User Accounts', 'School Year', 'Schools', 'Plans', 'PRINCIPAL', 'TEACHER', 'STUDENT', 'ANNOUNCEMENTS'],
+            ['Dashboard', 'User Accounts', 'School Year', 'Schools', 'Learners', 'Plans', 'PRINCIPAL', 'TEACHER', 'STUDENT', 'ANNOUNCEMENTS'],
             $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()),
         );
         self::assertSelectorTextContains('.sidebar__link.is-active', 'Dashboard');
@@ -70,6 +70,7 @@ class DashboardControllerTest extends AdminTestCase
         yield ['/admin/school-years'];
         yield ['/admin/schools'];
         yield ['/admin/plans'];
+        yield ['/admin/learners'];
         yield ['/admin/announcements'];
     }
 

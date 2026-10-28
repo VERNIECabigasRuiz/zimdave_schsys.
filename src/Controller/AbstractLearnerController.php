@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Enrollment;
 use App\Entity\Learner;
+use App\Entity\School;
 use App\Entity\Section;
 use App\Entity\User;
 use App\Form\EnrollSectionFormType;
 use App\Form\LearnerFormType;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
+use App\Repository\SchoolRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Repository\TransferRequestRepository;
@@ -35,6 +37,7 @@ abstract class AbstractLearnerController extends AbstractController
 {
     public function __construct(
         protected readonly SchoolYearRepository $schoolYears,
+        protected readonly SchoolRepository $schools,
         protected readonly SectionRepository $sections,
         protected readonly EnrollmentRepository $enrollments,
         protected readonly LearnerRepository $learners,
@@ -131,11 +134,16 @@ abstract class AbstractLearnerController extends AbstractController
         return $this->render('learners/enroll.html.twig', ['form' => $form] + $vars);
     }
 
-    protected function renderShow(LearnerScope $scope, int $id): Response
+    protected function renderShow(LearnerScope $scope, int $id, ?int $toSchoolId = null): Response
     {
         [$learner, $current] = $this->requireLearner($scope, $id, true);
         $here = $scope->covers($current);
         $canMove = $here && null === $scope->fixedSection && $this->isGranted(LearnerVoter::MOVE, $learner);
+        $canTransfer = $here && null === $scope->fixedSection && $this->isGranted(User::ROLE_ADMIN);
+        $toSchool = $canTransfer && null !== $toSchoolId ? $this->schools->find($toSchoolId) : null;
+        if (null !== $toSchool && ($toSchool->getId() === $scope->school->getId() || !$toSchool->isActive())) {
+            $toSchool = null;
+        }
 
         return $this->render('learners/show.html.twig', $this->pageVars($scope) + [
             'learner' => $learner,
@@ -146,6 +154,12 @@ abstract class AbstractLearnerController extends AbstractController
                 $this->sections->findForSchool($scope->school, $scope->schoolYear),
                 static fn (Section $s) => $s !== $current->getSection(),
             )) : [],
+            'transfer_schools' => $canTransfer ? array_values(array_filter(
+                $this->schools->findAllOrdered(),
+                static fn (School $s) => $s->isActive() && $s->getId() !== $scope->school->getId(),
+            )) : [],
+            'transfer_to_school' => $toSchool,
+            'transfer_sections' => null !== $toSchool ? $this->sections->findForSchool($toSchool, $scope->schoolYear) : [],
             'can' => [
                 'edit' => $this->isGranted(LearnerVoter::EDIT, $learner),
                 'reset_password' => $this->isGranted(LearnerVoter::RESET_PASSWORD, $learner),
@@ -200,6 +214,26 @@ abstract class AbstractLearnerController extends AbstractController
         try {
             $this->enrollment->move($current, $to);
             $this->addFlash('success', \sprintf('Moved %s to %s.', $learner->getUser()->getFullName(), $to->getLabel()));
+        } catch (PlanLimitException|EnrollmentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToShow($scope, $learner);
+    }
+
+    /** An administrator moves the learner to a section of another school at once. */
+    protected function handleTransfer(Request $request, LearnerScope $scope, int $id, User $user): Response
+    {
+        [$learner, $current] = $this->requireLearner($scope, $id, false);
+        $to = $this->sections->find($request->getPayload()->getInt('section'));
+        if (null === $to || $to->getSchool()->getId() === $scope->school->getId()
+            || $to->getSchoolYear()->getId() !== $scope->schoolYear->getId()) {
+            throw $this->createNotFoundException('This section is not at another school this school year.');
+        }
+
+        try {
+            $this->enrollment->transferDirectly($current, $to, $user);
+            $this->addFlash('success', \sprintf('Transferred %s to %s at %s.', $learner->getUser()->getFullName(), $to->getLabel(), $to->getSchool()->getName()));
         } catch (PlanLimitException|EnrollmentException $e) {
             $this->addFlash('error', $e->getMessage());
         }

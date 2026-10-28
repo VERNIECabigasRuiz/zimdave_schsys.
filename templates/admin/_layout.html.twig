@@ -25,6 +25,7 @@
                 {{ _self.nav_link('User Accounts', path('admin_accounts'), route starts with 'admin_account' and slug is null) }}
                 {{ _self.nav_link('School Year', path('admin_school_years'), route starts with 'admin_school_year' or route starts with 'admin_grading') }}
                 {{ _self.nav_link('Schools', path('admin_schools'), route starts with 'admin_schools') }}
+                {{ _self.nav_link('Learners', path('admin_learners'), route == 'admin_learners') }}
                 {{ _self.nav_link('Plans', path('admin_plans'), route starts with 'admin_plans') }}
                 {{ _self.nav_link('PRINCIPAL', path('admin_accounts_by_role', {slug: 'principals'}), slug == 'principals') }}
                 {{ _self.nav_link('TEACHER', path('admin_accounts_by_role', {slug: 'teachers'}), slug == 'teachers') }}

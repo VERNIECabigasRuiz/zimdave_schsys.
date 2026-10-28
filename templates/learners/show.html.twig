@@ -52,6 +52,36 @@
         </section>
     {% endif %}
 
+    {% if transfer_schools %}
+        <section class="card">
+            <h2>Transfer to another school</h2>
+            <form class="filters" method="get" action="{{ path(routes ~ '_show', route_params|merge({learner: learner.id})) }}">
+                <select name="to_school" aria-label="School">
+                    {% for s in transfer_schools %}
+                        <option value="{{ s.id }}" {{ transfer_to_school and transfer_to_school.id == s.id ? 'selected' }}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn--ghost btn--sm" type="submit">Choose school</button>
+            </form>
+            {% if transfer_to_school %}
+                {% if transfer_sections %}
+                    <form class="filters" method="post" action="{{ path(routes ~ '_transfer', route_params|merge({learner: learner.id})) }}"
+                          data-turbo-confirm="Transfer {{ learner.user.fullName }} to {{ transfer_to_school.name }} now?">
+                        <input type="hidden" name="_token" value="{{ csrf_token('learner-' ~ learner.id) }}">
+                        <select name="section" aria-label="Section at {{ transfer_to_school.name }}">
+                            {% for s in transfer_sections %}
+                                <option value="{{ s.id }}">{{ s.label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn--ghost btn--sm" type="submit">Transfer</button>
+                    </form>
+                {% else %}
+                    <p class="muted">{{ transfer_to_school.name }} has no sections this school year.</p>
+                {% endif %}
+            {% endif %}
+        </section>
+    {% endif %}
+
     <section class="card table-card history">
         <h2>Enrollment history</h2>
         <table class="table">
