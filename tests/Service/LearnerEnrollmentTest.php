@@ -400,7 +400,7 @@ class LearnerEnrollmentTest extends KernelTestCase
         $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
         $this->stale($enrollment, $this->otherSection);
 
-        $this->refused('Choose a section of the same school.', fn () => $this->service->move($enrollment, $this->mabini));
+        $this->refused('This learner was moved. Reload the page and try again.', fn () => $this->service->move($enrollment, $this->mabini));
 
         self::assertSame($this->otherSection->getId(), (int) $this->em->getConnection()->fetchOne('SELECT section_id FROM enrollment'));
         self::assertSame([], $this->logs());
@@ -411,21 +411,30 @@ class LearnerEnrollmentTest extends KernelTestCase
         $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
         $this->stale($enrollment, $this->otherSection);
 
-        $this->refused('Choose a section of another school.', fn () => $this->service->transferDirectly($enrollment, $this->otherSection, $this->admin));
+        $this->refused('This learner was moved. Reload the page and try again.', fn () => $this->service->transferDirectly($enrollment, $this->otherSection, $this->admin));
         self::assertSame([], $this->logs());
     }
 
-    public function testStaleUnenrollUsesTheCurrentSchoolAndSection(): void
+    public function testStaleUnenrollAfterTransferIsRefused(): void
     {
         $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
         $this->stale($enrollment, $this->otherSection);
 
-        $this->service->unenroll($enrollment);
+        $this->refused('This learner was moved. Reload the page and try again.', fn () => $this->service->unenroll($enrollment));
 
-        self::assertSame(0, $this->em->getRepository(Enrollment::class)->count([]));
-        self::assertSame(['Unenrolled 123456789012 from Grade 7 – Bonifacio'], $this->logs());
+        self::assertSame($this->otherSection->getId(), (int) $this->em->getConnection()->fetchOne('SELECT section_id FROM enrollment'));
+        self::assertSame([], $this->logs());
     }
 
+    public function testStaleUnenrollAfterMoveInSameSchoolIsRefused(): void
+    {
+        $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
+        $this->stale($enrollment, $this->mabini);
+
+        $this->refused('This learner was moved. Reload the page and try again.', fn () => $this->service->unenroll($enrollment));
+        self::assertSame(1, $this->em->getRepository(Enrollment::class)->count([]));
+        self::assertSame([], $this->logs());
+    }
     public function testStaleChangeAfterUnenrollIsRefused(): void
     {
         $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);

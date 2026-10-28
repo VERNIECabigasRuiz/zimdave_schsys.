@@ -227,12 +227,19 @@ class LearnerEnrollment
      */
     private function lockEnrollment(Enrollment $enrollment, ?School $school, callable $change): void
     {
-        $this->lock->forLearner($enrollment->getLearner(), function () use ($enrollment, $school, $change): void {
+        // what the caller (and the voter that let them in) saw before we got the lock
+        $loadedSchool = $enrollment->getSchool();
+        $loadedSection = $enrollment->getSection();
+
+        $this->lock->forLearner($enrollment->getLearner(), function () use ($enrollment, $school, $change, $loadedSchool, $loadedSection): void {
             // refresh() silently keeps the old state of a row that is gone, so look for it first
             if (0 === $this->enrollments->count(['id' => $enrollment->getId()])) {
                 throw new EnrollmentException('This learner is no longer enrolled.');
             }
             $this->entityManager->refresh($enrollment);
+            if ($enrollment->getSchool() !== $loadedSchool || $enrollment->getSection() !== $loadedSection) {
+                throw new EnrollmentException('This learner was moved. Reload the page and try again.');
+            }
             $this->assertCurrent($enrollment, $this->currentYear());
 
             $this->lock->forSchool($school ?? $enrollment->getSchool(), $change);
