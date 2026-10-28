@@ -5,6 +5,8 @@ namespace App\Tests;
 use App\Entity\ActivityLog;
 use App\Entity\Announcement;
 use App\Entity\ClassPeriod;
+use App\Entity\Enrollment;
+use App\Entity\Learner;
 use App\Entity\Plan;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
@@ -14,6 +16,7 @@ use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
+use App\Entity\TransferRequest;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -26,7 +29,7 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
+        foreach ([TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
             $this->em->createQuery('DELETE FROM '.$class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test
