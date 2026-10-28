@@ -13,14 +13,15 @@
     {% if enrollment is null %}
         <div class="card empty">You are not enrolled this school year.</div>
     {% else %}
-        <div class="card">
-            <dl>
-                <dt>School</dt><dd>{{ enrollment.school.name }}</dd>
-                <dt>Grade and section</dt><dd>{{ section.label }}</dd>
-                <dt>Adviser</dt><dd>{{ section.adviser ? section.adviser.fullName : 'No adviser yet' }}</dd>
-                <dt>School year</dt><dd>{{ school_year.name }}</dd>
+        <section class="card class-info-card" aria-label="Your class">
+            <h2>My class</h2>
+            <dl class="info-list">
+                <div><dt>School</dt><dd>{{ enrollment.school.name }}</dd></div>
+                <div><dt>Grade and section</dt><dd>{{ section.label }}</dd></div>
+                <div><dt>Adviser</dt><dd>{{ section.adviser ? section.adviser.fullName : 'No adviser yet' }}</dd></div>
+                <div><dt>School year</dt><dd>{{ school_year.name }}</dd></div>
             </dl>
-        </div>
+        </section>
 
         {% if state.periods is empty %}
             <div class="card empty">No timetable yet.</div>

@@ -35,7 +35,7 @@
             </turbo-frame>
         {% endif %}
 
-        <section class="stats" aria-label="Shortcuts">
+        <section class="stats dashboard-shortcuts" aria-label="Shortcuts">
             {% if transfers_waiting > 0 %}
                 {% include 'transfers/_waiting_card.html.twig' with {count: transfers_waiting, school: advisory.school} only %}
             {% endif %}

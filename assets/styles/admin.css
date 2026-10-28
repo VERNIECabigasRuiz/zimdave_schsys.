@@ -1298,6 +1298,18 @@ body.admin-page {
     outline-offset: 2px;
 }
 
+/* Pills that sit beside text inputs in a form grid: same height, filling the column */
+.form .choice-chips--input {
+    flex-wrap: nowrap;
+}
+
+.form .choice-chips--input label {
+    flex: 1;
+    justify-content: center;
+    height: 52px;
+    border-radius: var(--radius-input);
+}
+
 .form fieldset .checkbox-row {
     margin-bottom: 1.2rem;
 }
@@ -1493,6 +1505,22 @@ body.admin-page {
 
 .advisory-card h2 {
     margin: .2rem 0 0;
+    font-size: 1.2rem;
+}
+
+.dashboard-shortcuts {
+    margin-top: 1.2rem;
+}
+
+/* The student's class details on their dashboard */
+.class-info-card {
+    max-width: 640px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+}
+
+.class-info-card h2 {
+    margin: 0 0 1rem;
     font-size: 1.2rem;
 }
 
