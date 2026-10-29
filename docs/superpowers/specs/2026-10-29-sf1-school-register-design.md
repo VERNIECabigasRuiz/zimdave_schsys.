@@ -91,9 +91,11 @@ One migration adds the columns; `learning_modality` defaults to `face_to_face` f
   `LAST, FIRST MIDDLE`, upper case.
 - **Remarks text**: if the enrollment has a `remarkCode`, `{code} {details} {date Y-m-d}`
   (parts that are empty are left out). Otherwise, if the enrollment came from an **approved
-  transfer** (a `TransferRequest` with status approved whose `toSection` is this enrollment's
-  section and whose learner is this learner, in that school year), `T/I {from school name}
-  {decidedAt Y-m-d}`. Otherwise empty. A manual remark always wins over the automatic T/I.
+  transfer** — the latest approved `TransferRequest` whose `enrollment` is this enrollment and
+  whose `toSchool` is the enrollment's school (a transfer moves the same enrollment row, so this
+  survives a later move between sections) — `T/I {from school name} {decidedAt Y-m-d}`.
+  Otherwise empty. A manual remark always wins over the automatic T/I. An admin's direct transfer
+  creates no request, so it gets no automatic T/I; the remark is set by hand.
 - **SF1 incomplete**: a learner is incomplete when any of these is missing:
   barangay, city, province; at least one parent name (father last+first or mother last+first) or a
   guardian name; contact number.
