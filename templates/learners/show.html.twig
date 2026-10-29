@@ -40,6 +40,25 @@
         {% include 'learners/_details.html.twig' with {learner: learner} only %}
     </section>
 
+    {% if can.record %}
+        <section class="card">
+            <h2>ID photo</h2>
+            {% if learner.user.photoPath %}
+                <img class="profile-card__photo" src="{{ asset(learner.user.photoPath) }}" alt="Photo of {{ learner.user.fullName }}">
+            {% else %}
+                <span class="profile-card__photo profile-card__photo--empty" aria-hidden="true">{{ learner.user.initials }}</span>
+            {% endif %}
+            {% include 'profile/_photo_form.html.twig' with {form: photo_form} only %}
+            {% if learner.user.photoPath %}
+                <form method="post" action="{{ path(routes ~ '_photo_remove', route_params|merge({learner: learner.id})) }}"
+                      data-turbo-confirm="Remove the ID photo of {{ learner.user.fullName }}?">
+                    <input type="hidden" name="_token" value="{{ csrf_token('learner-' ~ learner.id) }}">
+                    <button class="btn btn--ghost btn--sm" type="submit">Remove photo</button>
+                </form>
+            {% endif %}
+        </section>
+    {% endif %}
+
     {% if current %}
         <section class="card">
             <h2>School year {{ current.schoolYear.name }}</h2>

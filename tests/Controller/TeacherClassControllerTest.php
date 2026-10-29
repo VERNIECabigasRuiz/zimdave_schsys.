@@ -242,6 +242,23 @@ class TeacherClassControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(403);
     }
 
+    public function testAdviserUploadsIdPhoto(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $path = sys_get_temp_dir().'/zim_id_'.bin2hex(random_bytes(4)).'.jpg';
+        imagejpeg(imagecreatetruecolor(400, 400), $path);
+
+        $crawler = $this->client->request('GET', '/teacher/class/'.$learner->getId());
+        $form = $crawler->selectButton('Upload photo')->form();
+        $form['image_upload_form[image]']->upload($path);
+        $this->client->submit($form);
+
+        self::assertResponseRedirects('/teacher/class/'.$learner->getId());
+        $photo = $this->findLearner('111111111111')->getUser()->getPhotoPath();
+        self::assertNotNull($photo);
+        unlink(static::getContainer()->getParameter('app.upload_root').'/'.$photo);
+    }
+
     public function testTeacherWithoutAdvisoryCannotEdit(): void
     {
         $learner = $this->enrolled('111111111111', 'Abad', 'Ana');

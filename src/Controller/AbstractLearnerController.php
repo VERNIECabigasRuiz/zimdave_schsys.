@@ -9,6 +9,7 @@ use App\Entity\Section;
 use App\Entity\User;
 use App\Form\EnrollmentRecordFormType;
 use App\Form\EnrollSectionFormType;
+use App\Form\ImageUploadFormType;
 use App\Form\LearnerFormType;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
@@ -18,6 +19,7 @@ use App\Repository\SectionRepository;
 use App\Repository\TransferRequestRepository;
 use App\Security\Voter\LearnerVoter;
 use App\Service\EnrollmentException;
+use App\Service\ImageProcessingException;
 use App\Service\LearnerEnrollment;
 use App\Service\LearnerLookup;
 use App\Service\LookupKind;
@@ -180,6 +182,9 @@ abstract class AbstractLearnerController extends AbstractController
             )) : [],
             'transfer_to_school' => $toSchool,
             'transfer_sections' => null !== $toSchool ? $this->sections->findForSchool($toSchool, $scope->schoolYear) : [],
+            'photo_form' => $this->createForm(ImageUploadFormType::class, options: [
+                'action' => $this->generateUrl($scope->routes.'_photo', $scope->routeParams + ['learner' => $learner->getId()]),
+            ]),
             'can' => [
                 'edit' => $this->isGranted(LearnerVoter::EDIT, $learner),
                 'record' => $here && $this->isGranted(LearnerVoter::EDIT, $learner),
@@ -224,6 +229,47 @@ abstract class AbstractLearnerController extends AbstractController
             'form' => $form,
             'learner' => $learner,
         ]);
+    }
+
+    /** Uploads the ID photo of a learner enrolled here; errors come back as a flash message. */
+    protected function handlePhoto(Request $request, LearnerScope $scope, int $id): Response
+    {
+        [$learner] = $this->requireLearner($scope, $id, false);
+        $this->denyAccessUnlessGranted(LearnerVoter::EDIT, $learner);
+
+        $form = $this->createForm(ImageUploadFormType::class);
+        $form->handleRequest($request);
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            $error = $form->getErrors(true)->current();
+            $this->addFlash('error', $error ? $error->getMessage() : 'The photo could not be uploaded.');
+
+            return $this->redirectToShow($scope, $learner);
+        }
+
+        try {
+            $this->enrollment->updatePhoto($learner, $form->get('image')->getData());
+            $this->addFlash('success', 'Photo updated.');
+        } catch (ImageProcessingException|PlanLimitException|EnrollmentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToShow($scope, $learner);
+    }
+
+    /** Removes the ID photo; the CSRF token is checked by the route. */
+    protected function handlePhotoRemove(LearnerScope $scope, int $id): Response
+    {
+        [$learner] = $this->requireLearner($scope, $id, false);
+        $this->denyAccessUnlessGranted(LearnerVoter::EDIT, $learner);
+
+        try {
+            $this->enrollment->updatePhoto($learner, null);
+            $this->addFlash('success', 'Photo removed.');
+        } catch (PlanLimitException|EnrollmentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToShow($scope, $learner);
     }
 
     /** The section's SF1 (School Register) as an .xls file laid out like LIS's. */

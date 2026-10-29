@@ -99,6 +99,19 @@ class StudentDashboardTest extends AdminTestCase
         self::assertCount(0, $crawler->filter('form[name="learner_form"]'));
     }
 
+    public function testShowsIdPhoto(): void
+    {
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Mabini');
+        $this->enroll($this->learner, $this->sy, $section, $this->maria);
+        $this->learner->getUser()->setPhotoPath('uploads/photos/'.str_repeat('d', 32).'.webp');
+        $this->em->flush();
+        $this->client->loginUser($this->learner->getUser());
+
+        $this->client->request('GET', '/student');
+
+        self::assertSelectorExists('img[src*="uploads/photos/'.str_repeat('d', 32).'.webp"]');
+    }
+
     public function testNoAdviserYet(): void
     {
         $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Mabini');

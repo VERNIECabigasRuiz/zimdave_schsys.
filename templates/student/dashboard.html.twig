@@ -25,6 +25,9 @@
 
         <section class="card" aria-label="My information">
             <h2>My information</h2>
+            {% if learner.user.photoPath %}
+                <img class="profile-card__photo" src="{{ asset(learner.user.photoPath) }}" alt="Your ID photo">
+            {% endif %}
             {% include 'learners/_details.html.twig' with {learner: learner} only %}
             <h3>School year {{ school_year.name }}</h3>
             {% include 'learners/_enrollment_details.html.twig' with {enrollment: enrollment, remarks_text: remarks_text} only %}

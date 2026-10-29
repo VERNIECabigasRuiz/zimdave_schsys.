@@ -13,6 +13,7 @@ use App\Repository\SchoolYearRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\ClockInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -34,6 +35,7 @@ class LearnerEnrollment
         private readonly TemporaryPasswordGenerator $passwordGenerator,
         private readonly ActivityLogger $activityLogger,
         private readonly ClockInterface $clock,
+        private readonly ImageProcessor $images,
     ) {
     }
 
@@ -120,6 +122,28 @@ class LearnerEnrollment
         $this->lock->forLearner($learner, function () use ($learner): void {
             $this->assertNotBlocked($learner);
             $this->activityLogger->log(\sprintf('Updated SF1 record of %s', $learner->getLrn()));
+            $this->entityManager->flush();
+        });
+    }
+
+    /**
+     * Stores $file as the learner's ID photo (cropped to passport size), or removes the photo when null.
+     *
+     * @throws ImageProcessingException|PlanLimitException|EnrollmentException
+     */
+    public function updatePhoto(Learner $learner, ?File $file): void
+    {
+        $this->lock->forLearner($learner, function () use ($learner, $file): void {
+            $this->assertNotBlocked($learner);
+            $user = $learner->getUser();
+            if (null !== $file) {
+                $user->setPhotoPath($this->images->storePhoto($file, $user->getPhotoPath()));
+                $this->activityLogger->log(\sprintf('Updated ID photo of %s', $learner->getLrn()));
+            } else {
+                $this->images->remove($user->getPhotoPath());
+                $user->setPhotoPath(null);
+                $this->activityLogger->log(\sprintf('Removed ID photo of %s', $learner->getLrn()));
+            }
             $this->entityManager->flush();
         });
     }

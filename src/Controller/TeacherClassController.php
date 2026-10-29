@@ -56,6 +56,19 @@ class TeacherClassController extends AbstractLearnerController
         return $this->handleEdit($request, $this->scope($user), $learner);
     }
 
+    #[Route('/{learner}/photo', name: 'teacher_class_photo', methods: ['POST'])]
+    public function photo(Request $request, #[CurrentUser] User $user, int $learner): Response
+    {
+        return $this->handlePhoto($request, $this->scope($user), $learner);
+    }
+
+    #[Route('/{learner}/photo/remove', name: 'teacher_class_photo_remove', methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression('"learner-" ~ args["learner"]'), tokenKey: '_token')]
+    public function photoRemove(#[CurrentUser] User $user, int $learner): Response
+    {
+        return $this->handlePhotoRemove($this->scope($user), $learner);
+    }
+
     #[Route('/{learner}/enrollment', name: 'teacher_class_enrollment', methods: ['GET', 'POST'])]
     public function enrollmentRecord(Request $request, #[CurrentUser] User $user, int $learner): Response
     {

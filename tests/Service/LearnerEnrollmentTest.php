@@ -21,6 +21,7 @@ use App\Repository\UserRepository;
 use App\Service\ActivityLogger;
 use App\Service\EnrollmentException;
 use App\Service\EnrollmentGuard;
+use App\Service\ImageProcessor;
 use App\Service\LearnerEnrollment;
 use App\Service\LearnerLock;
 use App\Service\PlanLimitException;
@@ -85,6 +86,7 @@ class LearnerEnrollmentTest extends KernelTestCase
             new TemporaryPasswordGenerator(),
             $c->get(ActivityLogger::class),
             $c->get(ClockInterface::class),
+            $c->get(ImageProcessor::class),
         );
     }
 

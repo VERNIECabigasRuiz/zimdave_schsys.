@@ -546,6 +546,99 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(403);
     }
 
+    private function jpegFile(): string
+    {
+        $path = sys_get_temp_dir().'/zim_id_'.bin2hex(random_bytes(4)).'.jpg';
+        imagejpeg(imagecreatetruecolor(800, 800), $path);
+
+        return $path;
+    }
+
+    /** Uploads $path through the ID photo form on the learner's page */
+    private function uploadIdPhoto(string $show, string $path, string $name = 'photo.jpg'): void
+    {
+        $crawler = $this->client->request('GET', $show);
+        $form = $crawler->selectButton('Upload photo')->form();
+        $form['image_upload_form[image]']->upload($path);
+        $files = $form->getPhpFiles();
+        $files['image_upload_form']['image']['name'] = $name;
+        $this->client->request('POST', $form->getUri(), $form->getPhpValues(), $files);
+    }
+
+    private function photoFile(string $path): string
+    {
+        return static::getContainer()->getParameter('app.upload_root').'/'.$path;
+    }
+
+    public function testPrincipalUploadsAndRemovesIdPhoto(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $show = $this->url($this->school, '/'.$learner->getId());
+
+        $this->uploadIdPhoto($show, $this->jpegFile());
+
+        self::assertResponseRedirects($show);
+        $photo = $this->findLearner('111111111111')->getUser()->getPhotoPath();
+        self::assertMatchesRegularExpression('#^uploads/photos/[0-9a-f]{32}\.webp$#', $photo);
+        self::assertSame([350, 450], \array_slice(getimagesize($this->photoFile($photo)), 0, 2));
+        self::assertContains('Updated ID photo of 111111111111', $this->activityActions());
+
+        $this->client->request('GET', $show);
+        $this->client->submitForm('Remove photo');
+        self::assertResponseRedirects($show);
+        self::assertNull($this->findLearner('111111111111')->getUser()->getPhotoPath());
+        self::assertFileDoesNotExist($this->photoFile($photo));
+        self::assertContains('Removed ID photo of 111111111111', $this->activityActions());
+    }
+
+    public function testFakeImageKeepsOldPhoto(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $show = $this->url($this->school, '/'.$learner->getId());
+        $this->uploadIdPhoto($show, $this->jpegFile());
+        $old = $this->findLearner('111111111111')->getUser()->getPhotoPath();
+        $fake = sys_get_temp_dir().'/zim_fake_'.bin2hex(random_bytes(4)).'.jpg';
+        file_put_contents($fake, 'not an image');
+
+        $this->uploadIdPhoto($show, $fake);
+        $this->client->followRedirect();
+
+        self::assertSelectorExists('.alert--error');
+        self::assertSame($old, $this->findLearner('111111111111')->getUser()->getPhotoPath());
+        unlink($this->photoFile($old));
+    }
+
+    public function testIdPhotoOfOtherSchoolLearnerOrWithoutTokenRefused(): void
+    {
+        $other = $this->school('303457', 'Other NHS');
+        $theirs = $this->enrolled('222222222222', 'Zamora', 'Ben', $this->newSection($other, $this->sy, GradeLevel::Grade7, 'Mabini'));
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $learner->getUser()->setPhotoPath('uploads/photos/'.str_repeat('b', 32).'.webp');
+        $this->em->flush();
+
+        $this->client->request('GET', $this->url($this->school));
+        $token = $this->csrfToken('learner-'.$theirs->getId());
+        $this->client->request('POST', $this->url($this->school, '/'.$theirs->getId().'/photo/remove'), ['_token' => $token]);
+        self::assertResponseStatusCodeSame(404);
+
+        $this->client->request('POST', $this->url($this->school, '/'.$learner->getId().'/photo/remove'), ['_token' => 'wrong']);
+        // Symfony reports an invalid CSRF token as an authentication failure: back to sign-in, nothing changes
+        self::assertResponseRedirects('http://localhost/login');
+        self::assertNotNull($this->findLearner('111111111111')->getUser()->getPhotoPath());
+    }
+
+    public function testClassListShowsNoPhoto(): void
+    {
+        $this->enrolled('111111111111', 'Abad', 'Ana');
+        $this->enrolled('222222222222', 'Cruz', 'Carl')->getUser()->setPhotoPath('uploads/photos/'.str_repeat('c', 32).'.webp');
+        $this->em->flush();
+
+        $rows = $this->client->request('GET', $this->classUrl($this->school, $this->sampaguita))->filter('.table tbody tr');
+
+        self::assertStringContainsString('No photo', $rows->eq(0)->text());
+        self::assertStringNotContainsString('No photo', $rows->eq(1)->text());
+    }
+
     public function testEditRefusesLrnOfAnotherLearner(): void
     {
         $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
