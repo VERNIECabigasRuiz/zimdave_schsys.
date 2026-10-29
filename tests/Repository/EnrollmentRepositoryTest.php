@@ -71,6 +71,18 @@ class EnrollmentRepositoryTest extends KernelTestCase
         self::assertSame(['M Abad', 'M Cruz', 'F Abad', 'F Cruz'], $order);
     }
 
+    public function testClassListOrdersSameNamesByMiddleName(): void
+    {
+        foreach (['Zosa', 'Abella'] as $middle) {
+            $learner = $this->learner('Cruz', 'Juan', SexAtBirth::Male)->setMiddleName($middle);
+            $this->em->persist(new Enrollment($learner, $this->sy, $this->section, $this->admin, new \DateTimeImmutable()));
+            $this->em->flush();
+        }
+
+        $middles = array_map(static fn (Enrollment $e) => $e->getLearner()->getMiddleName(), $this->enrollments->findClassList($this->section));
+        self::assertSame(['Abella', 'Zosa'], $middles);
+    }
+
     public function testOneEnrollmentPerYear(): void
     {
         $learner = $this->learner('Abad', 'Ana', SexAtBirth::Female);

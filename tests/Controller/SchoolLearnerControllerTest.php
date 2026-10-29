@@ -203,6 +203,22 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertSelectorTextContains('.page-head', '2 learners');
     }
 
+    public function testClassListMarksIncompleteLearners(): void
+    {
+        $this->enrolled('111111111111', 'Abad', 'Ana');
+        $this->enrolled('222222222222', 'Cruz', 'Carl')->setAddressBarangay('Pagsabungan')->setAddressCity('Mandaue City')
+            ->setAddressProvince('Cebu')->setMotherLastName('Molina')->setMotherFirstName('Angelle')->setContactNumber('09171234567');
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', $this->classUrl($this->school, $this->sampaguita));
+
+        $rows = $crawler->filter('.table tbody tr');
+        self::assertStringContainsString('SF1 incomplete', $rows->eq(0)->text());
+        self::assertStringNotContainsString('SF1 incomplete', $rows->eq(1)->text());
+        $learner = $this->findLearner('111111111111');
+        self::assertSame($this->url($this->school, '/'.$learner->getId().'/edit'), $rows->eq(0)->filter('a.badge')->attr('href'));
+    }
+
     public function testClassListShowsSectionLimitWithoutPrincipal(): void
     {
         $this->school->setPlan($this->limitedPlan('Solo', 40, includesPrincipal: false));

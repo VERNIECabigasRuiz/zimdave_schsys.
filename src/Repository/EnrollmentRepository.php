@@ -63,7 +63,7 @@ class EnrollmentRepository extends ServiceEntityRepository
         return $counts;
     }
 
-    /** @return list<Enrollment> boys first, then girls; each by last name, first name */
+    /** @return list<Enrollment> boys first, then girls; each by last, first and middle name */
     public function findClassList(Section $section): array
     {
         return $this->ordered($this->createQueryBuilder('e'))
@@ -110,6 +110,8 @@ class EnrollmentRepository extends ServiceEntityRepository
             ->setParameter('male', SexAtBirth::Male)
             ->addOrderBy('sexRank', 'ASC')
             ->addOrderBy('l.lastName', 'ASC')
-            ->addOrderBy('l.firstName', 'ASC');
+            ->addOrderBy('l.firstName', 'ASC')
+            ->addOrderBy('l.middleName', 'ASC')
+            ->addOrderBy('e.id', 'ASC');
     }
 }

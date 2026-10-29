@@ -33,6 +33,7 @@
                         <th>Name</th>
                         <th>Sex</th>
                         <th>Birthdate</th>
+                        <th>SF1</th>
                         <th class="table__actions"><span class="visually-hidden">Actions</span></th>
                     </tr>
                 </thead>
@@ -45,6 +46,12 @@
                             <td>{{ learner.user.fullName }}</td>
                             <td>{{ learner.sex ? learner.sex.label }}</td>
                             <td>{{ learner.birthDate ? learner.birthDate|date('M j, Y') }}</td>
+                            <td>
+                                {# whoever may see a class list may edit its learners #}
+                                {% if learner.sf1Incomplete %}
+                                    <a class="badge badge--amber" href="{{ path(routes ~ '_edit', route_params|merge({learner: learner.id})) }}">SF1 incomplete</a>
+                                {% endif %}
+                            </td>
                             <td class="table__actions">
                                 <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_show', route_params|merge({learner: learner.id})) }}">Open</a>
                             </td>
