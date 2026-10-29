@@ -24,10 +24,14 @@ use App\Service\LookupKind;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
 use App\Sf1\Sf1Remarks;
+use App\Sf1\Sf1ReportBuilder;
+use App\Sf1\Sf1Writer;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -53,6 +57,8 @@ abstract class AbstractLearnerController extends AbstractController
         protected readonly EntityManagerInterface $entityManager,
         protected readonly ClockInterface $clock,
         protected readonly Sf1Remarks $remarks,
+        protected readonly Sf1ReportBuilder $sf1Reports,
+        protected readonly Sf1Writer $sf1Writer,
     ) {
     }
 
@@ -217,6 +223,29 @@ abstract class AbstractLearnerController extends AbstractController
         return $this->render('learners/form.html.twig', $this->pageVars($scope) + [
             'form' => $form,
             'learner' => $learner,
+        ]);
+    }
+
+    /** The section's SF1 (School Register) as an .xls file laid out like LIS's. */
+    protected function downloadSf1(Section $section): Response
+    {
+        $this->denyAccessUnlessGranted(LearnerVoter::VIEW_CLASS, $section);
+        $report = $this->sf1Reports->build($section);
+
+        $file = tempnam(sys_get_temp_dir(), 'sf1');
+        try {
+            IOFactory::createWriter($this->sf1Writer->write($report), 'Xls')->save($file);
+            $content = file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $fileName = $report->fileName();
+
+        return new Response($content, Response::HTTP_OK, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            // section names may have an Ñ; old browsers get underscores
+            'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $fileName, preg_replace('/[^\x20-\x7E]/', '_', $fileName)),
         ]);
     }
 

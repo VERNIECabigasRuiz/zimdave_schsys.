@@ -29,6 +29,12 @@ class TeacherClassController extends AbstractLearnerController
         return $this->renderClassList($scope, $scope->fixedSection);
     }
 
+    #[Route('/sf1', name: 'teacher_class_sf1', methods: ['GET'])]
+    public function sf1(#[CurrentUser] User $user): Response
+    {
+        return $this->downloadSf1($this->scope($user)->fixedSection);
+    }
+
     #[Route('/enroll', name: 'teacher_class_enroll', methods: ['GET', 'POST'])]
     public function enroll(Request $request, #[CurrentUser] User $user): Response
     {

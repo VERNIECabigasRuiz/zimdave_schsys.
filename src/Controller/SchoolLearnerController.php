@@ -97,6 +97,12 @@ class SchoolLearnerController extends AbstractLearnerController
         return $this->renderClassList($scope, $this->requireSection($scope, $section));
     }
 
+    #[Route('/sections/{section}/sf1', name: 'school_learners_sf1', methods: ['GET'])]
+    public function sf1(School $school, int $section): Response
+    {
+        return $this->downloadSf1($this->requireSection($this->scope($school), $section));
+    }
+
     private function scope(School $school, ?SchoolYear $schoolYear = null): LearnerScope
     {
         $schoolYear ??= $this->schoolYears->findCurrent() ?? throw $this->createNotFoundException('No current school year.');

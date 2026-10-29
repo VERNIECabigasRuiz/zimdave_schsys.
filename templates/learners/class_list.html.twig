@@ -19,6 +19,7 @@
             {% if routes == 'teacher_class' and school.plan and not school.plan.includesPrincipal %}
                 <a class="btn btn--ghost" href="{{ path('school_transfers', {id: school.id, tab: 'outgoing'}) }}">Transfer requests</a>
             {% endif %}
+            <a class="btn btn--ghost" href="{{ path(routes ~ '_sf1', fixed_section ? route_params : route_params|merge({section: section.id})) }}" data-turbo="false">Download SF1</a>
             <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
         </div>
     </div>

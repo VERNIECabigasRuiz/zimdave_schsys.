@@ -219,6 +219,59 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertSame($this->url($this->school, '/'.$learner->getId().'/edit'), $rows->eq(0)->filter('a.badge')->attr('href'));
     }
 
+    private function assertSf1Download(string $fileName): void
+    {
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/vnd.ms-excel');
+        self::assertStringContainsString('attachment', $this->client->getResponse()->headers->get('Content-Disposition'));
+        self::assertStringContainsString('filename="'.$fileName.'"', $this->client->getResponse()->headers->get('Content-Disposition'));
+        // .xls files are OLE compound documents
+        self::assertStringStartsWith("\xD0\xCF\x11\xE0", $this->client->getInternalResponse()->getContent());
+    }
+
+    public function testPrincipalDownloadsSf1(): void
+    {
+        $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $crawler = $this->client->request('GET', $this->classUrl($this->school, $this->sampaguita));
+        $this->client->click($crawler->selectLink('Download SF1')->link());
+
+        $this->assertSf1Download('SF1_2026_Grade 7 - SAMPAGUITA.xls');
+    }
+
+    public function testAdminDownloadsSf1OfEmptySection(): void
+    {
+        $this->client->loginUser($this->admin);
+
+        $this->client->request('GET', '/schools/'.$this->school->getId().'/sections/'.$this->rosal->getId().'/sf1');
+
+        $this->assertSf1Download('SF1_2026_Grade 7 - ROSAL.xls');
+    }
+
+    public function testSf1OfOtherSchoolIsRefused(): void
+    {
+        $other = $this->school('303457', 'Other NHS');
+        $section = $this->newSection($other, $this->sy, GradeLevel::Grade7, 'Mabini');
+
+        $this->client->request('GET', '/schools/'.$other->getId().'/sections/'.$section->getId().'/sf1');
+        self::assertResponseStatusCodeSame(403);
+
+        $this->client->request('GET', '/schools/'.$this->school->getId().'/sections/'.$section->getId().'/sf1');
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testStudentCannotDownloadSf1(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $learner->getUser()->setMustChangePassword(false);
+        $this->em->flush();
+        $this->client->loginUser($learner->getUser());
+
+        $this->client->request('GET', '/schools/'.$this->school->getId().'/sections/'.$this->sampaguita->getId().'/sf1');
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testClassListShowsSectionLimitWithoutPrincipal(): void
     {
         $this->school->setPlan($this->limitedPlan('Solo', 40, includesPrincipal: false));

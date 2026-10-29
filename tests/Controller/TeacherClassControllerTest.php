@@ -220,6 +220,28 @@ class TeacherClassControllerTest extends AdminTestCase
         self::assertSame('CCT REF-123', $enrollment->getManualRemarkText());
     }
 
+    public function testAdviserDownloadsSf1(): void
+    {
+        $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $crawler = $this->client->request('GET', '/teacher/class');
+        $this->client->click($crawler->selectLink('Download SF1')->link());
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/vnd.ms-excel');
+        self::assertStringContainsString('filename="SF1_2026_Grade 7 - SAMPAGUITA.xls"', $this->client->getResponse()->headers->get('Content-Disposition'));
+    }
+
+    public function testTeacherWithoutAdvisoryCannotDownloadSf1(): void
+    {
+        $this->sampaguita->setAdviser(null);
+        $this->em->flush();
+
+        $this->client->request('GET', '/teacher/class/sf1');
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testTeacherWithoutAdvisoryCannotEdit(): void
     {
         $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
