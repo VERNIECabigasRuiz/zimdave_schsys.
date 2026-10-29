@@ -192,6 +192,31 @@ class TeacherClassControllerTest extends AdminTestCase
         self::assertSame($this->sampaguita->getId(), $enrollment->getSection()->getId());
     }
 
+    public function testAdviserSavesSf1Fields(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $id = $learner->getId();
+
+        $this->client->request('GET', '/teacher/class/'.$id.'/edit');
+        $this->client->submitForm('Save', ['learner_form[motherTongue]' => 'Cebuano', 'learner_form[guardianName]' => 'Nena Abad']);
+
+        self::assertResponseRedirects('/teacher/class/'.$id);
+        $saved = $this->findLearner('111111111111');
+        self::assertSame('Cebuano', $saved->getMotherTongue());
+        self::assertSame('Nena Abad', $saved->getGuardianName());
+    }
+
+    public function testTeacherWithoutAdvisoryCannotEdit(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $this->sampaguita->setAdviser(null);
+        $this->em->flush();
+
+        $this->client->request('GET', '/teacher/class/'.$learner->getId().'/edit');
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testAdviserEditsUnenrollsAndResets(): void
     {
         $learner = $this->enrolled('111111111111', 'Abad', 'Ana');

@@ -82,6 +82,22 @@ class StudentDashboardTest extends AdminTestCase
         self::assertSelectorTextContains('body', $this->sy->getName());
     }
 
+    public function testShowsOwnSf1InfoReadOnly(): void
+    {
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Mabini');
+        $this->enroll($this->learner, $this->sy, $section, $this->maria);
+        $this->learner->setReligion('Christianity')->setAddressCity('Mandaue City');
+        $this->em->flush();
+        $this->client->loginUser($this->learner->getUser());
+
+        $crawler = $this->client->request('GET', '/student');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('body', 'Christianity');
+        self::assertSelectorTextContains('body', 'Mandaue City');
+        self::assertCount(0, $crawler->filter('form[name="learner_form"]'));
+    }
+
     public function testNoAdviserYet(): void
     {
         $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Mabini');

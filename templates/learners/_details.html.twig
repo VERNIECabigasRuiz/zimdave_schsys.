@@ -5,3 +5,26 @@
     <div><dt>Sex</dt><dd>{{ learner.sex ? learner.sex.label : '—' }}</dd></div>
     <div><dt>Birthdate</dt><dd>{{ learner.birthDate ? learner.birthDate|date('M j, Y') : '—' }}</dd></div>
 </dl>
+
+<h3>Other information</h3>
+<dl class="info-list">
+    <div><dt>Mother tongue</dt><dd>{{ learner.motherTongue ?? '—' }}</dd></div>
+    <div><dt>IP (ethnic group)</dt><dd>{{ learner.ipGroup ?? '—' }}</dd></div>
+    <div><dt>Religion</dt><dd>{{ learner.religion ?? '—' }}</dd></div>
+</dl>
+
+<h3>Address</h3>
+<dl class="info-list">
+    <div><dt>House #, street, sitio or purok</dt><dd>{{ learner.addressStreet ?? '—' }}</dd></div>
+    <div><dt>Barangay</dt><dd>{{ learner.addressBarangay ?? '—' }}</dd></div>
+    <div><dt>Municipality or city</dt><dd>{{ learner.addressCity ?? '—' }}</dd></div>
+    <div><dt>Province</dt><dd>{{ learner.addressProvince ?? '—' }}</dd></div>
+</dl>
+
+<h3>Family</h3>
+<dl class="info-list">
+    <div><dt>Father</dt><dd>{{ learner.fatherSf1Name ?? '—' }}</dd></div>
+    <div><dt>Mother's maiden name</dt><dd>{{ learner.motherSf1Name ?? '—' }}</dd></div>
+    <div><dt>Guardian</dt><dd>{{ learner.guardianName ? learner.guardianName ~ (learner.guardianRelationship ? ' (' ~ learner.guardianRelationship ~ ')') : '—' }}</dd></div>
+    <div><dt>Contact number</dt><dd>{{ learner.contactNumber ?? '—' }}</dd></div>
+</dl>

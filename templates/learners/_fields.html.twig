@@ -10,3 +10,53 @@
     {{ form_row(form.sex, {attr: {class: 'choice-chips choice-chips--input'}}) }}
     {{ form_row(form.birthDate) }}
 </div>
+
+{# SF1 (School Register) information, all optional #}
+<fieldset class="periods">
+    <legend>Other information</legend>
+    <div class="form-grid">
+        {{ form_row(form.motherTongue) }}
+        {{ form_row(form.ipGroup) }}
+        {{ form_row(form.religion) }}
+    </div>
+</fieldset>
+<fieldset class="periods">
+    <legend>Address</legend>
+    {{ form_row(form.addressStreet) }}
+    <div class="form-grid">
+        {{ form_row(form.addressBarangay) }}
+        {{ form_row(form.addressCity) }}
+        {{ form_row(form.addressProvince) }}
+    </div>
+</fieldset>
+<fieldset class="periods">
+    <legend>Family</legend>
+    <p class="muted">Father</p>
+    <div class="form-grid">
+        {{ form_row(form.fatherLastName) }}
+        {{ form_row(form.fatherFirstName) }}
+        {{ form_row(form.fatherMiddleName) }}
+    </div>
+    <p class="muted">Mother's maiden name</p>
+    <div class="form-grid">
+        {{ form_row(form.motherLastName) }}
+        {{ form_row(form.motherFirstName) }}
+        {{ form_row(form.motherMiddleName) }}
+    </div>
+    <div class="form-grid">
+        {{ form_row(form.guardianName) }}
+        {{ form_row(form.guardianRelationship) }}
+    </div>
+    {{ form_row(form.contactNumber) }}
+</fieldset>
+
+<datalist id="sf1-mother-tongues">
+    {% for value in ['Cebuano / Sinugbuanong Binisaya', 'Tagalog', 'Ilocano', 'Hiligaynon', 'Waray', 'Bikol', 'Kapampangan', 'Pangasinan', 'Maranao', 'Maguindanaoan', 'Tausug', 'Chavacano', 'Bol-anon', 'English'] %}
+        <option value="{{ value }}"></option>
+    {% endfor %}
+</datalist>
+<datalist id="sf1-religions">
+    {% for value in ['Christianity', 'Roman Catholic', 'Islam', 'Iglesia ni Cristo', 'Seventh-day Adventist', 'Born Again Christian', "Jehovah's Witness", 'Aglipay', 'Others'] %}
+        <option value="{{ value }}"></option>
+    {% endfor %}
+</datalist>

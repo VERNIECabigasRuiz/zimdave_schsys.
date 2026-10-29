@@ -45,6 +45,29 @@ class LearnerFormType extends AbstractType
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
             ]);
+
+        // SF1 information, all optional; the datalists are in learners/_fields.html.twig
+        $optional = [
+            'motherTongue' => ['Mother tongue', ['list' => 'sf1-mother-tongues']],
+            'ipGroup' => ['IP (ethnic group)', []],
+            'religion' => ['Religion', ['list' => 'sf1-religions']],
+            'addressStreet' => ['House #, street, sitio or purok', []],
+            'addressBarangay' => ['Barangay', []],
+            'addressCity' => ['Municipality or city', []],
+            'addressProvince' => ['Province', []],
+            'fatherLastName' => ['Last name', []],
+            'fatherFirstName' => ['First name', []],
+            'fatherMiddleName' => ['Middle name', []],
+            'motherLastName' => ['Last name', []],
+            'motherFirstName' => ['First name', []],
+            'motherMiddleName' => ['Middle name', []],
+            'guardianName' => ['Guardian\'s name', ['placeholder' => 'Only if not a parent']],
+            'guardianRelationship' => ['Relationship', ['placeholder' => 'Grandmother, aunt…']],
+            'contactNumber' => ['Contact number of parent or guardian', ['inputmode' => 'tel']],
+        ];
+        foreach ($optional as $name => [$label, $attr]) {
+            $builder->add($name, TextType::class, ['label' => $label, 'required' => false, 'attr' => $attr]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

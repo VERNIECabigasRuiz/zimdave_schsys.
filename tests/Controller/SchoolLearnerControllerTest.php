@@ -325,6 +325,61 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertContains('Updated learner 999999999999', $actions);
     }
 
+    /** @return array<string, string> */
+    private function sf1Fields(): array
+    {
+        return [
+            'learner_form[religion]' => 'Christianity',
+            'learner_form[addressBarangay]' => 'Pagsabungan',
+            'learner_form[motherLastName]' => 'Molina',
+            'learner_form[motherFirstName]' => 'Angelle',
+            'learner_form[contactNumber]' => '09171234567',
+        ];
+    }
+
+    public function testPrincipalSavesSf1Fields(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/edit'));
+        $this->client->submitForm('Save', $this->sf1Fields());
+
+        self::assertResponseRedirects($this->url($this->school, '/'.$learner->getId()));
+        $saved = $this->findLearner('111111111111');
+        self::assertSame('Christianity', $saved->getReligion());
+        self::assertSame('Pagsabungan', $saved->getAddressBarangay());
+        self::assertSame('MOLINA, ANGELLE', $saved->getMotherSf1Name());
+        self::assertSame('09171234567', $saved->getContactNumber());
+        self::assertNull($saved->getIpGroup());
+
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('main', 'Pagsabungan');
+        self::assertSelectorTextContains('main', '09171234567');
+    }
+
+    public function testAdminSavesSf1Fields(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $this->client->loginUser($this->admin);
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/edit'));
+        $this->client->submitForm('Save', $this->sf1Fields());
+
+        self::assertResponseRedirects($this->url($this->school, '/'.$learner->getId()));
+        self::assertSame('Christianity', $this->findLearner('111111111111')->getReligion());
+    }
+
+    public function testSf1FieldTooLongIs422(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/edit'));
+        $this->client->submitForm('Save', ['learner_form[addressStreet]' => str_repeat('x', 101)]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertNull($this->findLearner('111111111111')->getAddressStreet());
+    }
+
     public function testEditRefusesLrnOfAnotherLearner(): void
     {
         $learner = $this->enrolled('111111111111', 'Abad', 'Ana');

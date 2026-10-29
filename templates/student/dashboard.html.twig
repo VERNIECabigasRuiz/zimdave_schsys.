@@ -23,6 +23,11 @@
             </dl>
         </section>
 
+        <section class="card" aria-label="My information">
+            <h2>My information</h2>
+            {% include 'learners/_details.html.twig' with {learner: learner} only %}
+        </section>
+
         {% if state.periods is empty %}
             <div class="card empty">No timetable yet.</div>
         {% else %}
