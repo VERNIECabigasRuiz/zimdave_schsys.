@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Enrollment;
 use App\Entity\Learner;
 use App\Entity\School;
 use App\Entity\SchoolYear;
@@ -30,6 +31,19 @@ class TransferRequestRepository extends ServiceEntityRepository
             ->andWhere('t.learner = :learner')->setParameter('learner', $learner)
             ->andWhere('t.status = :pending')->setParameter('pending', TransferStatus::Pending)
             ->andWhere('fs.schoolYear = :sy')->setParameter('sy', $schoolYear)
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
+    }
+
+    /** The latest approved transfer that brought this enrollment to its present school. */
+    public function findApprovedInto(Enrollment $enrollment): ?TransferRequest
+    {
+        return $this->createQueryBuilder('t')
+            ->innerJoin('t.toSection', 'ts')
+            ->andWhere('t.enrollment = :enrollment')->setParameter('enrollment', $enrollment)
+            ->andWhere('t.status = :approved')->setParameter('approved', TransferStatus::Approved)
+            ->andWhere('ts.school = :school')->setParameter('school', $enrollment->getSchool())
+            ->orderBy('t.decidedAt', 'DESC')->addOrderBy('t.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery()->getOneOrNullResult();
     }
