@@ -1,0 +1,75 @@
+{# The month like SF2: learners down, school days across. Needs report, today, day_route. #}
+{% macro learner_rows(rows, report, today) %}
+    {% for row in rows %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <th scope="row" class="sf2-grid__name">{{ row.name }}</th>
+            {% for i, cell in row.cells %}
+                {% set day = report.days[i] %}
+                {% if cell == 'x' %}
+                    <td class="sf2-cell sf2-cell--absent">x</td>
+                {% elseif cell == 'L' %}
+                    <td class="sf2-cell sf2-cell--late" title="Late"></td>
+                {% elseif cell == 'C' %}
+                    <td class="sf2-cell sf2-cell--cutting" title="Cutting classes"></td>
+                {% elseif cell == '-' %}
+                    <td class="sf2-cell sf2-cell--out"></td>
+                {% elseif day <= today and not report.taken[i] %}
+                    <td class="sf2-cell sf2-cell--untaken">–</td>
+                {% else %}
+                    <td class="sf2-cell"></td>
+                {% endif %}
+            {% endfor %}
+            <td class="sf2-grid__total">{{ row.absences }}</td>
+            <td class="sf2-grid__total">{{ row.tardies }}</td>
+            <td class="sf2-grid__remark">{{ row.remark }}</td>
+        </tr>
+    {% endfor %}
+{% endmacro %}
+
+{% macro total_row(label, rows, present, report) %}
+    <tr class="sf2-grid__totals">
+        <th colspan="2" scope="row">{{ label }}</th>
+        {% for i in report.days|keys %}
+            <td class="sf2-cell">{{ present[i] }}</td>
+        {% endfor %}
+        <td class="sf2-grid__total">{{ rows|reduce((sum, row) => sum + row.absences, 0) }}</td>
+        <td class="sf2-grid__total">{{ rows|reduce((sum, row) => sum + row.tardies, 0) }}</td>
+        <td></td>
+    </tr>
+{% endmacro %}
+
+<div class="card table-card sf2-scroll">
+    <table class="sf2-grid">
+        <thead>
+            <tr>
+                <th rowspan="2">No.</th>
+                <th rowspan="2" class="sf2-grid__name">Learner's name</th>
+                {% for day in report.days %}
+                    <th class="sf2-grid__day">
+                        {% if day_route and day <= today %}
+                            <a href="{{ path(day_route, {date: day|date('Y-m-d')}) }}" title="Roll call of {{ day|date('M j') }}">{{ day|date('j') }}</a>
+                        {% else %}
+                            {{ day|date('j') }}
+                        {% endif %}
+                    </th>
+                {% else %}
+                    <th rowspan="2">No school days this month</th>
+                {% endfor %}
+                <th rowspan="2">Absent</th>
+                <th rowspan="2">Tardy</th>
+                <th rowspan="2" class="sf2-grid__remark">Remarks</th>
+            </tr>
+            <tr>
+                {% for i in report.days|keys %}<th class="sf2-grid__letter">{{ report.dayLetter(i) }}</th>{% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {{ _self.learner_rows(report.male, report, today) }}
+            {{ _self.total_row('Male · total per day', report.male, report.malePresent, report) }}
+            {{ _self.learner_rows(report.female, report, today) }}
+            {{ _self.total_row('Female · total per day', report.female, report.femalePresent, report) }}
+            {{ _self.total_row('Combined total per day', report.rows, report.days|keys|map(i => report.combinedPresent(i)), report) }}
+        </tbody>
+    </table>
+</div>

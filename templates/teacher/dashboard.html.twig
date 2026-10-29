@@ -21,6 +21,12 @@
             {% if advisory %}
                 <p class="muted">Advisory class</p>
                 <h2>Adviser of {{ advisory.label }}</h2>
+                {% if attendance_today.schoolDay %}
+                    <p>
+                        Today's attendance: {{ attendance_today.taken ? 'taken' : 'not taken yet' }}
+                        <a class="btn btn--{{ attendance_today.taken ? 'ghost' : 'primary' }} btn--sm" href="{{ path('teacher_class_attendance') }}">{{ attendance_today.taken ? 'View' : 'Take attendance' }}</a>
+                    </p>
+                {% endif %}
             {% else %}
                 <p>No advisory class this S.Y.</p>
                 {% if can_create_section %}

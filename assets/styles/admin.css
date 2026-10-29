@@ -1539,3 +1539,154 @@ body.admin-page {
     margin: 1rem 0 .3rem;
     font-size: .95rem;
 }
+
+/* Attendance: the day's roll call */
+.roll-call__counts {
+    font-weight: 600;
+}
+
+.roll-call__group th {
+    padding-top: 1.25rem;
+    color: var(--ink-600);
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.roll-call__out td {
+    color: var(--ink-500);
+    background: var(--page-bg);
+}
+
+.roll-call__table label {
+    font-weight: 500;
+}
+
+.mark-chip {
+    min-width: 7.5rem;
+    padding: .35rem .9rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--white);
+    color: var(--ink-900);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button.mark-chip:hover {
+    border-color: var(--blue-500);
+}
+
+.mark-chip--absent { background: #fde3e8; border-color: #f4a7b6; color: #b4233f; }
+.mark-chip--late { background: #fdf0d5; border-color: #f6cf85; color: #9a5b00; }
+.mark-chip--cutting { background: #ece8fd; border-color: #c4b8f6; color: #4b33b5; }
+
+.day-picker input {
+    padding: .4rem .6rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-input);
+    font: inherit;
+}
+
+/* Attendance: the month grid, like SF2 */
+.sf2-scroll {
+    padding: .75rem;
+}
+
+.sf2-grid {
+    border-collapse: collapse;
+    font-size: .8rem;
+    white-space: nowrap;
+}
+
+.sf2-grid th,
+.sf2-grid td {
+    border: 1px solid var(--line-soft);
+    padding: .3rem .4rem;
+    text-align: center;
+}
+
+.sf2-grid thead th {
+    background: var(--page-bg);
+    font-weight: 600;
+}
+
+.sf2-grid .sf2-grid__name {
+    min-width: 14rem;
+    text-align: left;
+    font-weight: 500;
+}
+
+.sf2-grid__day a {
+    color: var(--blue-600);
+    text-decoration: none;
+}
+
+.sf2-grid__letter {
+    font-size: .7rem;
+    color: var(--ink-600);
+}
+
+.sf2-grid .sf2-grid__remark {
+    min-width: 10rem;
+    text-align: left;
+    white-space: normal;
+}
+
+.sf2-grid__total {
+    font-weight: 600;
+}
+
+.sf2-grid__totals th,
+.sf2-grid__totals td {
+    background: var(--page-bg);
+    font-weight: 600;
+}
+
+.sf2-cell {
+    width: 1.9rem;
+    min-width: 1.9rem;
+    height: 1.9rem;
+}
+
+span.sf2-cell {
+    display: inline-block;
+    width: 1.2rem;
+    min-width: 0;
+    height: 1.2rem;
+    border: 1px solid var(--line);
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1.1rem;
+}
+
+.sf2-cell--absent { color: #b4233f; font-weight: 700; }
+.sf2-cell--late { background: linear-gradient(135deg, #8a94a6 50%, transparent 50%); }
+.sf2-cell--cutting { background: linear-gradient(135deg, transparent 50%, #8a94a6 50%); }
+.sf2-cell--untaken { color: var(--ink-500); }
+.sf2-cell--out { background: repeating-linear-gradient(45deg, var(--page-bg), var(--page-bg) 3px, var(--line-soft) 3px, var(--line-soft) 6px); }
+
+.sf2-foot {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.sf2-summary td {
+    text-align: center;
+}
+
+.sf2-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+@media (max-width: 900px) {
+    .sf2-foot {
+        grid-template-columns: 1fr;
+    }
+}

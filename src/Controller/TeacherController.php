@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Attendance\SchoolCalendar;
 use App\Entity\School;
 use App\Entity\Section;
 use App\Entity\User;
 use App\Form\SectionFormType;
+use App\Repository\RollCallRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
@@ -33,6 +35,8 @@ class TeacherController extends AbstractController
         private readonly TimetableQuery $timetable,
         private readonly SchoolClock $clock,
         private readonly TransferRequestRepository $transferRequests,
+        private readonly SchoolCalendar $calendar,
+        private readonly RollCallRepository $rollCalls,
     ) {
     }
 
@@ -55,7 +59,19 @@ class TeacherController extends AbstractController
             // on a plan without a principal the adviser decides the requests leaving their section
             'transfers_waiting' => null !== $advisory && $this->ownsSections($advisory->getSchool())
                 ? $this->transferRequests->countPendingOutgoing($advisory->getSchool(), $schoolYear, $advisory) : 0,
+            'attendance_today' => $this->attendanceToday($advisory),
         ]);
+    }
+
+    /** @return array{schoolDay: bool, taken: bool} whether the advisory has classes today, and its roll call is in */
+    private function attendanceToday(?Section $advisory): array
+    {
+        $today = $this->clock->now()->setTime(0, 0);
+        if (null === $advisory || !$this->calendar->isSchoolDay($advisory->getSchool(), $advisory->getSchoolYear(), $today)) {
+            return ['schoolDay' => false, 'taken' => false];
+        }
+
+        return ['schoolDay' => true, 'taken' => null !== $this->rollCalls->findOne($advisory, $today)];
     }
 
     /** The "Your class now" card: only the turbo-frame, so the dashboard can reload it in place. */

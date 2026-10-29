@@ -24,6 +24,9 @@
             <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_ids', section_params|merge({layout: 'sheet'})) }}" data-turbo="false" title="A4, 9 cards per page, print double-sided">Paper sheets</a>
             <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_ids', section_params|merge({layout: 'card'})) }}" data-turbo="false" title="One card-sized page per side">ID printer</a>
             <a class="btn btn--ghost" href="{{ path(routes ~ '_sf1', section_params) }}" data-turbo="false">Download SF1</a>
+            {% if routes == 'teacher_class' %}
+                <a class="btn btn--ghost" href="{{ path('teacher_class_attendance_month') }}">Attendance · SF2</a>
+            {% endif %}
             <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
         </div>
     </div>

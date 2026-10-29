@@ -1,0 +1,80 @@
+{% extends layout %}
+
+{% block title %}Attendance {{ report.month|date('F Y') }} · {{ section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ report.month|date('F Y') }}</h1>
+            <p>
+                Attendance · {{ section.label }} · {{ section.school.name }}
+                {% if section.adviser %} · Adviser: {{ section.adviser.fullName }}{% endif %}
+            </p>
+        </div>
+        <div class="row-actions">
+            {% if previous %}
+                <a class="btn btn--ghost btn--sm" href="{{ path(month_route, route_params|merge({month: previous|date('Y-m')})) }}">← {{ previous|date('F') }}</a>
+            {% endif %}
+            {% if next %}
+                <a class="btn btn--ghost btn--sm" href="{{ path(month_route, route_params|merge({month: next|date('Y-m')})) }}">{{ next|date('F') }} →</a>
+            {% endif %}
+            {% if day_route %}
+                <a class="btn btn--ghost" href="{{ path(day_route) }}">Today's roll call</a>
+            {% endif %}
+            <a class="btn btn--primary" href="{{ path(sf2_route, route_params|merge({month: report.month|date('Y-m')})) }}" data-turbo="false">Download SF2</a>
+        </div>
+    </div>
+
+    {% if report.submission %}
+        <div class="alert alert--success sf2-status" role="status">
+            <span>
+                Submitted {{ report.submission.submittedAt|date('M j, Y g:i A') }} by {{ report.submission.submittedBy.fullName }} · locked
+            </span>
+            {% if reopen_url ?? false %}
+                <form method="post" action="{{ reopen_url }}" onsubmit="return confirm('Reopen {{ report.month|date('F Y') }} so the adviser can change it?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('reopen-' ~ section.id) }}">
+                    <button class="btn btn--ghost btn--sm" type="submit">Reopen</button>
+                </form>
+            {% endif %}
+        </div>
+    {% elseif submit_form ?? false %}
+        <div class="card form-card sf2-submit">
+            {{ form_start(submit_form, {attr: {class: 'form'}}) }}
+                <p>{{ report.month|date('F') }} is over. Submit its SF2 to the principal; the month is then locked.</p>
+                {% if submit_form.confirmMissing is defined %}
+                    {{ form_row(submit_form.confirmMissing) }}
+                {% endif %}
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Submit SF2 for {{ report.month|date('F') }}</button>
+                </div>
+            {{ form_end(submit_form) }}
+        </div>
+    {% endif %}
+
+    {% set flagged = report.rows|filter(row => row.fiveConsecutive) %}
+    {% if flagged %}
+        <div class="alert alert--error" role="alert">
+            Absent 5 consecutive school days: {{ flagged|map(row => row.name)|join('; ') }}. DepEd asks the adviser to follow up, e.g. with a home visit.
+        </div>
+    {% endif %}
+    {% for row in report.rows|filter(row => row.undatedDrop) %}
+        <div class="alert alert--warning" role="status">Set the drop date in {{ row.name }}'s enrollment record; until then the learner keeps counting.</div>
+    {% endfor %}
+
+    {% include 'attendance/_grid.html.twig' %}
+
+    <div class="sf2-foot">
+        {% include 'attendance/_summary.html.twig' %}
+        <div class="card form-card sf2-legend">
+            <h2 class="section-title section-title--flush">Codes</h2>
+            <p><span class="sf2-cell sf2-cell--absent">x</span> Absent · <span class="sf2-cell sf2-cell--late"></span> Late (upper half) · <span class="sf2-cell sf2-cell--cutting"></span> Cutting classes (lower half) · blank Present</p>
+            <p><span class="sf2-cell sf2-cell--untaken">–</span> no roll call that day (counts as present) · <span class="sf2-cell sf2-cell--out"></span> not enrolled that day</p>
+            {% if report.daysOff %}
+                <h2 class="section-title">No classes</h2>
+                <ul>
+                    {% for dayOff in report.daysOff %}<li>{{ dayOff }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
