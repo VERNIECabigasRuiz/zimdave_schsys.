@@ -13,6 +13,7 @@ use App\Entity\School;
 use App\Entity\SchoolAssignment;
 use App\Entity\ScheduleEntry;
 use App\Entity\Section;
+use App\Entity\SchoolDayOff;
 use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
 use App\Entity\SexAtBirth;
@@ -31,7 +32,7 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
+        foreach ([SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
             $this->em->createQuery('DELETE FROM '.$class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test
