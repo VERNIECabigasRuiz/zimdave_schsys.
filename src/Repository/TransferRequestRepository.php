@@ -49,6 +49,21 @@ class TransferRequestRepository extends ServiceEntityRepository
     }
 
     /**
+     * Approved transfers out of the section decided on or after $since.
+     *
+     * @return list<TransferRequest>
+     */
+    public function findApprovedOutOf(Section $section, \DateTimeImmutable $since): array
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.enrollment', 'e')->addSelect('e')
+            ->andWhere('t.fromSection = :section')->setParameter('section', $section)
+            ->andWhere('t.status = :approved')->setParameter('approved', TransferStatus::Approved)
+            ->andWhere('t.decidedAt >= :since')->setParameter('since', $since->setTime(0, 0))
+            ->getQuery()->getResult();
+    }
+
+    /**
      * Requests into the school for the school year, pending first, then newest.
      *
      * @return list<TransferRequest>
