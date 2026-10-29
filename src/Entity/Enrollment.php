@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\EnrollmentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /** A learner's place in one section for one school year. */
 #[ORM\Entity(repositoryClass: EnrollmentRepository::class)]
@@ -144,6 +145,15 @@ class Enrollment
         $this->remarkDate = $remarkDate;
 
         return $this;
+    }
+
+    /** Details or a date mean nothing without the remark they belong to. */
+    #[Assert\Callback]
+    public function validateRemark(ExecutionContextInterface $context): void
+    {
+        if (null === $this->remarkCode && (null !== $this->remarkDetails || null !== $this->remarkDate)) {
+            $context->buildViolation('Choose a remark for these details.')->atPath('remarkCode')->addViolation();
+        }
     }
 
     /** "DRP Moved abroad 2025-09-01", or null without a remark code */

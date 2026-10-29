@@ -30,9 +30,9 @@ final readonly class Sf1Report
     ) {
     }
 
-    /** "SF1_2025_Grade 8 - ARTISTIC.xls" */
+    /** "SF1_2025_Grade 8 - ARTISTIC.xls"; slashes and "%" in a section name become "-", a download filename can't have them */
     public function fileName(): string
     {
-        return \sprintf('SF1_%s_%s - %s.xls', substr($this->schoolYear, 0, 4), $this->gradeLevel, $this->section);
+        return \sprintf('SF1_%s_%s - %s.xls', substr($this->schoolYear, 0, 4), $this->gradeLevel, preg_replace('/[\/\\\\%]/', '-', $this->section));
     }
 }

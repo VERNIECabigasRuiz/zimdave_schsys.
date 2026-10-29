@@ -173,12 +173,23 @@ class Sf1Writer
             $style = $sheet->getStyle('A'.$row.':AU'.$row);
             $style->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
             $style->getAlignment()->setWrapText(true)->setVertical(Alignment::VERTICAL_CENTER);
-            // Excel doesn't grow merged cells to fit; two lines fit LIS's longest values
-            $sheet->getRowDimension($row)->setRowHeight(24);
+            // Excel doesn't grow merged cells to fit, so make room for the longest value: at least two lines, ~11pt a line
+            $sheet->getRowDimension($row)->setRowHeight(max(24, $this->linesNeeded($data) * 11));
             ++$row;
         }
 
         return $row;
+    }
+
+    /** Wrapped lines the row's longest value takes in its columns (about one character per width unit) */
+    private function linesNeeded(Sf1Row $data): int
+    {
+        $lines = 1;
+        foreach (self::COLUMNS as $field => [, , $width]) {
+            $lines = max($lines, (int) ceil(mb_strlen((string) $data->{$field}) / $width));
+        }
+
+        return $lines;
     }
 
     private function total(Worksheet $sheet, int $row, int $count, string $label): int

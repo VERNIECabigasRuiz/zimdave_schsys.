@@ -248,6 +248,27 @@ class SchoolLearnerControllerTest extends AdminTestCase
         $this->assertSf1Download('SF1_2026_Grade 7 - ROSAL.xls');
     }
 
+    public function testSf1OfSectionWithSlashInNameDownloads(): void
+    {
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade7, 'St. Peter/Paul 100%');
+
+        $this->client->request('GET', '/schools/'.$this->school->getId().'/sections/'.$section->getId().'/sf1');
+
+        $this->assertSf1Download('SF1_2026_Grade 7 - ST. PETER-PAUL 100-.xls');
+    }
+
+    public function testRemarkDetailsWithoutCodeIs422(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/enrollment'));
+        $this->client->submitForm('Save', ['enrollment_record_form[remarkDetails]' => 'Moved to Cebu']);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Choose a remark for these details.');
+        self::assertNull($this->currentEnrollment($learner)->getRemarkDetails());
+    }
+
     public function testSf1OfOtherSchoolIsRefused(): void
     {
         $other = $this->school('303457', 'Other NHS');

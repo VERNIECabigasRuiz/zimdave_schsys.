@@ -112,6 +112,17 @@ class Sf1WriterTest extends TestCase
         self::assertNotContains('Generated thru LIS', $texts);
     }
 
+    public function testRowsGrowToFitLongValues(): void
+    {
+        $long = new Sf1Row('1', 'A, B, C', 'M', '03-20-2012', 13, null, null, null, str_repeat('Purok Mahayag ', 7), null, null, null,
+            null, null, null, null, null, 'Face to Face', null);
+
+        $sheet = $this->roundTrip($this->report([$this->row('2', 'D, E, F', 'M'), $long], []));
+
+        self::assertSame(24.0, (float) $sheet->getRowDimension(7)->getRowHeight());
+        self::assertGreaterThanOrEqual(7 * 11, $sheet->getRowDimension(8)->getRowHeight());
+    }
+
     public function testPageSetup(): void
     {
         $setup = $this->roundTrip($this->report([], []))->getPageSetup();
