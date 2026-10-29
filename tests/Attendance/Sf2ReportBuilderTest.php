@@ -289,6 +289,6 @@ class Sf2ReportBuilderTest extends KernelTestCase
         $this->artistic->setName('A/B%C');
         $this->em->flush();
 
-        self::assertSame('SF2_2025_Grade 8 - A-B-C_August.xls', $this->build()->fileName());
+        self::assertSame('SF2_2025_Grade 8 - A-B-C_August.xlsx', $this->build()->fileName());
     }
 }

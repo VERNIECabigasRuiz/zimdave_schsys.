@@ -58,9 +58,9 @@ final readonly class Sf2Report
         return [...$this->male, ...$this->female];
     }
 
-    /** "SF2_2025_Grade 8 - ARTISTIC_August.xls" */
+    /** "SF2_2025_Grade 8 - ARTISTIC_August.xlsx" */
     public function fileName(): string
     {
-        return \sprintf('SF2_%s_%s - %s_%s.xls', substr($this->schoolYear, 0, 4), $this->gradeLevel, preg_replace('/[\/\\\\%]/', '-', $this->section), $this->month->format('F'));
+        return \sprintf('SF2_%s_%s - %s_%s.xlsx', substr($this->schoolYear, 0, 4), $this->gradeLevel, preg_replace('/[\/\\\\%]/', '-', $this->section), $this->month->format('F'));
     }
 }
