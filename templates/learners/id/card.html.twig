@@ -1,0 +1,22 @@
+{# One card-sized page per side, for PVC ID card printers #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learner IDs</title>
+    <style>@page { size: 54mm 86mm; margin: 0; }</style>
+    {% include 'learners/id/_styles.html.twig' %}
+    <style>
+        .page { width: 54mm; height: 86mm; }
+        .card--front, .card--back { border: 0; }
+    </style>
+</head>
+<body>
+    {% for card in cards %}
+        <div class="page">{% include 'learners/id/_front.html.twig' with {card: card, style: 'left: 0; top: 0;'} only %}</div>
+        <div class="page">{% include 'learners/id/_back.html.twig' with {card: card, style: 'left: 0; top: 0;'} only %}</div>
+    {% else %}
+        <div class="page"><p class="empty">No learners.</p></div>
+    {% endfor %}
+</body>
+</html>

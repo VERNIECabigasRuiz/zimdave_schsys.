@@ -1,0 +1,36 @@
+{# A4 sheets of 3 × 3 cards with cut marks: a page of fronts, then a page of their mirrored backs #}
+{% set left, top, step_x, step_y = 20, 15.5, 58, 90 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learner IDs</title>
+    <style>@page { size: A4 portrait; margin: 0; }</style>
+    {% include 'learners/id/_styles.html.twig' %}
+    <style>.page { width: 210mm; height: 297mm; }</style>
+</head>
+<body>
+    {% for sheet in pages %}
+        {% for side in ['front', 'back'] %}
+            <div class="page">
+                {% for card in sheet[side] %}
+                    {% set x = left + (loop.index0 % per_row) * step_x %}
+                    {% set y = top + (loop.index0 // per_row) * step_y %}
+                    {% if card %}
+                        {% include 'learners/id/_' ~ side ~ '.html.twig' with {card: card, style: 'left: ' ~ x ~ 'mm; top: ' ~ y ~ 'mm;'} only %}
+                        {# cut marks: 3 mm hairlines just outside each corner #}
+                        {% for cx in [x, x + 54] %}
+                            {% for cy in [y, y + 86] %}
+                                <div class="cut" style="left: {{ cx == x ? cx - 4 : cx + 1 }}mm; top: {{ cy }}mm; width: 3mm; height: 0.1mm;"></div>
+                                <div class="cut" style="left: {{ cx }}mm; top: {{ cy == y ? cy - 4 : cy + 1 }}mm; width: 0.1mm; height: 3mm;"></div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="page"><p class="empty">No learners in this section.</p></div>
+    {% endfor %}
+</body>
+</html>

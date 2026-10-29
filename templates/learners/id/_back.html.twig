@@ -1,0 +1,42 @@
+{# The back of one ID card; `style` places it on the page. Missing values are left out, never shown as "—". #}
+<div class="card card--back" style="{{ style }}">
+    <div class="backhead"></div>
+    <div class="backgold"></div>
+    <div class="abs backhead__text">LEARNER IDENTIFICATION CARD</div>
+
+    {% if card.emergencyName or card.emergencyNumber %}
+        <div class="abs block emergency">
+            <div class="label">In case of emergency, please notify</div>
+            {% if card.emergencyName %}
+                <div class="value">{{ card.emergencyName }}</div>
+                <div class="value value--small">{{ card.emergencyLabel }}</div>
+            {% endif %}
+            {% if card.emergencyNumber %}<div class="value">{{ card.emergencyNumber }}</div>{% endif %}
+        </div>
+    {% endif %}
+
+    {% if card.address %}
+        <div class="abs block address">
+            <div class="label">Address</div>
+            <div class="value value--small">{{ card.address }}</div>
+        </div>
+    {% endif %}
+
+    <img class="qr" src="{{ card.qr }}" alt="">
+    <div class="abs qr__lrn">LRN {{ card.lrn }}</div>
+
+    <div class="abs head">
+        {% if card.schoolHead %}<div class="head__name">{{ card.schoolHead }}</div>{% endif %}
+        <div class="head__role">School Head</div>
+    </div>
+
+    {% if card.validUntil %}
+        <div class="abs valid">Valid until {{ card.validUntil|date('F j, Y') }}</div>
+    {% endif %}
+
+    <div class="property"></div>
+    <div class="abs property__text">
+        This card is the property of {{ card.schoolName }}.
+        If found, please return to the school{% if card.schoolAddress %} · {{ card.schoolAddress }}{% endif %}{% if card.schoolContact %} · {{ card.schoolContact }}{% endif %}.
+    </div>
+</div>
