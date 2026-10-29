@@ -142,6 +142,31 @@ class AttendanceStatisticsTest extends KernelTestCase
         self::assertSame(Sf2Status::Late, $this->statistics()->status($august, null));
     }
 
+    public function testQueriesDoNotGrowWithLearners(): void
+    {
+        $this->rollCall('2025-08-22', [0 => LearnerMark::Absent]);
+        $before = $this->queriesFor($this->school);
+        for ($i = 20; $i < 30; ++$i) {
+            $this->enrolledOnTime('12001717'.$i.'00', 'Learner'.$i, $this->artistic);
+        }
+
+        self::assertSame($before, $this->queriesFor($this->school), 'the overview runs a query per learner');
+    }
+
+    private function queriesFor(School $school): int
+    {
+        $holder = static::getContainer()->get('doctrine.debug_data_holder');
+        $statistics = $this->statistics();
+        // a first run loads the entities, so both counts are of the queries alone
+        for ($run = 0; $run < 2; ++$run) {
+            $holder->reset();
+            $statistics->today($school, $this->sy);
+            $statistics->month($school, $this->sy, new \DateTimeImmutable('2025-08-01'));
+        }
+
+        return \count($holder->getData()['default'] ?? []);
+    }
+
     public function testMonthAndFollowUps(): void
     {
         static::mockTime('2025-08-29 10:00:00');

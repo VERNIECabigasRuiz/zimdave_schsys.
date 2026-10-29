@@ -19,8 +19,6 @@ class Sf2Roster
     public function __construct(
         private readonly EnrollmentRepository $enrollments,
         private readonly TransferRequestRepository $transfers,
-        private readonly Sf1Remarks $remarks,
-        private readonly SchoolCalendar $calendar,
     ) {
     }
 
@@ -31,24 +29,31 @@ class Sf2Roster
         $last = $first->modify('last day of this month');
         $schoolYear = $section->getSchoolYear();
         $start = $schoolYear->getStartDate()?->setTime(0, 0) ?? $first;
-        $cutOff = $this->calendar->cutOff($schoolYear);
 
+        $transfersIn = $this->transfers->findApprovedIntoSection($section);
         $entries = [];
         foreach ($this->enrollments->findClassList($section) as $enrollment) {
-            $transferIn = $this->transfers->findApprovedInto($enrollment);
+            $transferIn = $transfersIn[$enrollment->getId()] ?? null;
             $transferredIn = null !== $transferIn && null !== $transferIn->getDecidedAt();
-            $from = $transferredIn ? $transferIn->getDecidedAt()->setTime(0, 0) : max($enrollment->getEnrolledAt()->setTime(0, 0), $start);
+            // DepEd's late enrollee is the one with SF1's LE remark; others count from the first day, however late they were encoded
+            $lateEnrollment = !$transferredIn && Sf1Remark::LateEnrollment === $enrollment->getRemarkCode();
+            $from = match (true) {
+                $transferredIn => $transferIn->getDecidedAt()->setTime(0, 0),
+                $lateEnrollment => max(($enrollment->getRemarkDate() ?? $enrollment->getEnrolledAt())->setTime(0, 0), $start),
+                default => $start,
+            };
             $dropped = Sf1Remark::Dropped === $enrollment->getRemarkCode();
             $dropDate = $dropped ? $enrollment->getRemarkDate()?->setTime(0, 0) : null;
 
             $entries[] = $this->entry(
                 $enrollment, $from, $dropDate?->modify('-1 day'),
-                lateEnrollment: !$transferredIn && $from > $cutOff,
+                lateEnrollment: $lateEnrollment,
                 transferredIn: $transferredIn,
                 transferredOut: false,
                 dropped: $dropped,
                 undatedDrop: $dropped && null === $dropDate,
-                remark: $dropped ? trim('DRP '.($enrollment->getRemarkDetails() ?? '')) : $this->remarks->textFor($enrollment),
+                // as Sf1Remarks::textFor(), without a query per learner
+                remark: $dropped ? trim('DRP '.($enrollment->getRemarkDetails() ?? '')) : ($enrollment->getManualRemarkText() ?? (null !== $transferIn ? Sf1Remarks::transferIn($transferIn) : null)),
             );
         }
 
@@ -58,7 +63,7 @@ class Sf2Roster
                 continue;
             }
             $entries[] = $this->entry(
-                $enrollment, max($enrollment->getEnrolledAt()->setTime(0, 0), $start), $transfer->getDecidedAt()->setTime(0, 0)->modify('-1 day'),
+                $enrollment, $start, $transfer->getDecidedAt()->setTime(0, 0)->modify('-1 day'),
                 lateEnrollment: false,
                 transferredIn: false,
                 transferredOut: true,

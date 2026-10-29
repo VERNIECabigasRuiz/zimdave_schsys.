@@ -58,12 +58,7 @@ class Sf2RosterTest extends KernelTestCase
     {
         $c = static::getContainer();
 
-        return new Sf2Roster(
-            $c->get(EnrollmentRepository::class),
-            $c->get(TransferRequestRepository::class),
-            new Sf1Remarks($c->get(TransferRequestRepository::class)),
-            new SchoolCalendar($c->get(SchoolDayOffRepository::class)),
-        );
+        return new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class));
     }
 
     private function enrolled(string $last, string $first, string $enrolledAt, SexAtBirth $sex = SexAtBirth::Female, ?Section $section = null): Enrollment
@@ -107,9 +102,30 @@ class Sf2RosterTest extends KernelTestCase
         self::assertSame('ARNOL, GERALD, -', $entry->name);
     }
 
-    public function testLateEnrolleeCountsFromEnrollment(): void
+    public function testLearnerEncodedLateCountsFromTheFirstDay(): void
     {
-        $this->enrolled('Bañez', 'Remuel', '2025-08-11');
+        // a school that starts using the system in October encodes everyone then; only an LE remark makes a late enrollee
+        $this->enrolled('Arnol', 'Gerald', '2025-10-06');
+
+        $entry = $this->entries('2025-08-01')['Arnol'];
+        self::assertSame('2025-06-01', $entry->from->format('Y-m-d'));
+        self::assertFalse($entry->lateEnrollment);
+    }
+
+    public function testLateEnrolleeWithoutADateCountsFromEncoding(): void
+    {
+        $this->enrolled('Cabahug', 'John', '2025-08-13')->setRemarkCode(Sf1Remark::LateEnrollment);
+        $this->em->flush();
+
+        $entry = $this->entries('2025-08-01')['Cabahug'];
+        self::assertSame('2025-08-13', $entry->from->format('Y-m-d'));
+        self::assertTrue($entry->lateEnrollment);
+    }
+
+    public function testLateEnrolleeCountsFromTheRemarkDate(): void
+    {
+        $this->enrolled('Bañez', 'Remuel', '2025-08-20')->setRemarkCode(Sf1Remark::LateEnrollment)->setRemarkDate(new \DateTimeImmutable('2025-08-11'));
+        $this->em->flush();
 
         $entry = $this->entries('2025-08-01')['Bañez'];
         self::assertSame('2025-08-11', $entry->from->format('Y-m-d'));

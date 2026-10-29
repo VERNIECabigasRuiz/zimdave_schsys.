@@ -70,7 +70,8 @@ class Sf2ReportBuilderTest extends KernelTestCase
             ->setRemarkCode(Sf1Remark::Dropped)->setRemarkDetails('b.1 Illness')->setRemarkDate(new \DateTimeImmutable('2025-08-20'));
         $this->e['Cruz'] = $this->enrolled('Cruz', SexAtBirth::Female, '2025-05-20');
         $this->e['Diaz'] = $this->enrolled('Diaz', SexAtBirth::Female, '2025-05-20');
-        $this->e['Estrada'] = $this->enrolled('Estrada', SexAtBirth::Female, '2025-08-11');
+        $this->e['Estrada'] = $this->enrolled('Estrada', SexAtBirth::Female, '2025-08-11')
+            ->setRemarkCode(Sf1Remark::LateEnrollment)->setRemarkDate(new \DateTimeImmutable('2025-08-11'));
         $this->em->flush();
     }
 
@@ -116,7 +117,7 @@ class Sf2ReportBuilderTest extends KernelTestCase
         $clock = new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila');
 
         return (new Sf2ReportBuilder(
-            new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class), new Sf1Remarks($c->get(TransferRequestRepository::class)), $calendar),
+            new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class)),
             $calendar,
             $c->get(RollCallRepository::class),
             $c->get(Sf2SubmissionRepository::class),

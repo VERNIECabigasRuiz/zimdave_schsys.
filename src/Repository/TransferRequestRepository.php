@@ -49,6 +49,32 @@ class TransferRequestRepository extends ServiceEntityRepository
     }
 
     /**
+     * The latest approved transfer that brought each of the section's enrollments to its school, in one query.
+     *
+     * @return array<int, TransferRequest> keyed by enrollment id
+     */
+    public function findApprovedIntoSection(Section $section): array
+    {
+        $transfers = $this->createQueryBuilder('t')
+            ->innerJoin('t.enrollment', 'e')->addSelect('e')
+            ->innerJoin('t.toSection', 'ts')
+            ->innerJoin('t.fromSchool', 'fs')->addSelect('fs')
+            ->andWhere('e.section = :section')->setParameter('section', $section)
+            ->andWhere('t.status = :approved')->setParameter('approved', TransferStatus::Approved)
+            ->andWhere('ts.school = e.school')
+            ->orderBy('t.decidedAt', 'ASC')->addOrderBy('t.id', 'ASC')
+            ->getQuery()->getResult();
+
+        $byEnrollment = [];
+        foreach ($transfers as $transfer) {
+            // the latest wins, as in findApprovedInto()
+            $byEnrollment[$transfer->getEnrollment()->getId()] = $transfer;
+        }
+
+        return $byEnrollment;
+    }
+
+    /**
      * Approved transfers out of the section decided on or after $since.
      *
      * @return list<TransferRequest>

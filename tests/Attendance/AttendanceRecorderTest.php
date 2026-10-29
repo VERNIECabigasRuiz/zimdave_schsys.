@@ -17,6 +17,7 @@ use App\Entity\School;
 use App\Entity\SchoolDayOff;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
+use App\Entity\Sf1Remark;
 use App\Entity\Sf2Submission;
 use App\Entity\User;
 use App\Repository\EnrollmentRepository;
@@ -96,7 +97,7 @@ class AttendanceRecorderTest extends KernelTestCase
             $this->em,
             $c->get(LockFactory::class),
             $this->rules(),
-            new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class), new Sf1Remarks($c->get(TransferRequestRepository::class)), $calendar),
+            new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class)),
             $calendar,
             $c->get(RollCallRepository::class),
             $c->get(Sf2SubmissionRepository::class),
@@ -169,6 +170,7 @@ class AttendanceRecorderTest extends KernelTestCase
     public function testMarksForNotCountedLearnersAreIgnored(): void
     {
         $late = new Enrollment($this->learner('120017170009', 'Diaz', 'Late'), $this->sy, $this->artistic, $this->adviser, new \DateTimeImmutable('2025-08-22 08:00'));
+        $late->setRemarkCode(Sf1Remark::LateEnrollment)->setRemarkDate(new \DateTimeImmutable('2025-08-22'));
         $this->em->persist($late);
         $this->em->flush();
 
