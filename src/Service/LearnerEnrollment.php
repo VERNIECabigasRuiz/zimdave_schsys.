@@ -109,6 +109,21 @@ class LearnerEnrollment
         });
     }
 
+    /**
+     * Saves the SF1 record (learning modality, remarks) already set on the enrollment.
+     *
+     * @throws PlanLimitException|EnrollmentException
+     */
+    public function updateRecord(Enrollment $enrollment): void
+    {
+        $learner = $enrollment->getLearner();
+        $this->lock->forLearner($learner, function () use ($learner): void {
+            $this->assertNotBlocked($learner);
+            $this->activityLogger->log(\sprintf('Updated SF1 record of %s', $learner->getLrn()));
+            $this->entityManager->flush();
+        });
+    }
+
     /** Sets and logs the new LRN once its username is known to be free; the caller flushes. */
     private function applyLrn(Learner $learner, string $lrn): void
     {

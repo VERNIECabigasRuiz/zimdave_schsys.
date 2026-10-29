@@ -7,6 +7,7 @@ use App\Entity\Learner;
 use App\Entity\School;
 use App\Entity\Section;
 use App\Entity\User;
+use App\Form\EnrollmentRecordFormType;
 use App\Form\EnrollSectionFormType;
 use App\Form\LearnerFormType;
 use App\Repository\EnrollmentRepository;
@@ -22,6 +23,7 @@ use App\Service\LearnerLookup;
 use App\Service\LookupKind;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
+use App\Sf1\Sf1Remarks;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockInterface;
@@ -50,6 +52,7 @@ abstract class AbstractLearnerController extends AbstractController
         protected readonly PlanLimits $planLimits,
         protected readonly EntityManagerInterface $entityManager,
         protected readonly ClockInterface $clock,
+        protected readonly Sf1Remarks $remarks,
     ) {
     }
 
@@ -160,6 +163,7 @@ abstract class AbstractLearnerController extends AbstractController
             'current' => $current,
             'history' => $this->enrollments->findHistory($learner),
             'transfers' => $this->transfers->findForLearner($learner),
+            'remarks_text' => null !== $current ? $this->remarks->textFor($current) : null,
             'move_sections' => $canMove ? array_values(array_filter(
                 $this->sections->findForSchool($scope->school, $scope->schoolYear),
                 static fn (Section $s) => $s !== $current->getSection(),
@@ -172,6 +176,7 @@ abstract class AbstractLearnerController extends AbstractController
             'transfer_sections' => null !== $toSchool ? $this->sections->findForSchool($toSchool, $scope->schoolYear) : [],
             'can' => [
                 'edit' => $this->isGranted(LearnerVoter::EDIT, $learner),
+                'record' => $here && $this->isGranted(LearnerVoter::EDIT, $learner),
                 'reset_password' => $this->isGranted(LearnerVoter::RESET_PASSWORD, $learner),
                 'move' => $canMove,
                 'unenroll' => $here && $this->isGranted(LearnerVoter::UNENROLL, $learner),
@@ -212,6 +217,37 @@ abstract class AbstractLearnerController extends AbstractController
         return $this->render('learners/form.html.twig', $this->pageVars($scope) + [
             'form' => $form,
             'learner' => $learner,
+        ]);
+    }
+
+    /** This school year's SF1 record of a learner enrolled here: learning modality and remarks. */
+    protected function handleEnrollmentRecord(Request $request, LearnerScope $scope, int $id): Response
+    {
+        [$learner, $current] = $this->requireLearner($scope, $id, false);
+        $this->denyAccessUnlessGranted(LearnerVoter::EDIT, $learner);
+
+        $form = $this->createForm(EnrollmentRecordFormType::class, $current);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $this->enrollment->updateRecord($current);
+                $this->addFlash('success', \sprintf('Saved %s.', $learner->getUser()->getFullName()));
+
+                return $this->redirectToShow($scope, $learner);
+            } catch (PlanLimitException|EnrollmentException $e) {
+                if ($this->entityManager->contains($current)) {
+                    $this->entityManager->refresh($current);
+                }
+                $form->addError(new FormError($e->getMessage()));
+            }
+        }
+
+        return $this->render('learners/enrollment_record.html.twig', $this->pageVars($scope) + [
+            'form' => $form,
+            'learner' => $learner,
+            'enrollment' => $current,
+            'automatic_remark' => $this->remarks->automaticFor($current),
         ]);
     }
 

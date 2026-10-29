@@ -380,6 +380,82 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertNull($this->findLearner('111111111111')->getAddressStreet());
     }
 
+    public function testPrincipalSetsModalityAndRemark(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $show = $this->url($this->school, '/'.$learner->getId());
+
+        $crawler = $this->client->request('GET', $show);
+        $this->client->click($crawler->selectLink('This school year')->link());
+        self::assertResponseIsSuccessful();
+        $this->client->submitForm('Save', [
+            'enrollment_record_form[learningModality]' => 'modular_digital',
+            'enrollment_record_form[remarkCode]' => 'late_enrollment',
+            'enrollment_record_form[remarkDetails]' => 'Enrolled in July',
+        ]);
+
+        self::assertResponseRedirects($show);
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('main', 'Modular (Digital)');
+        self::assertSelectorTextContains('main', 'LE Enrolled in July');
+        self::assertContains('Updated SF1 record of 111111111111', $this->activityActions());
+    }
+
+    public function testRemarkDetailsTooLongIs422(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/enrollment'));
+        $this->client->submitForm('Save', ['enrollment_record_form[remarkDetails]' => str_repeat('x', 151)]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertNull($this->currentEnrollment($learner)->getRemarkDetails());
+    }
+
+    public function testAutomaticTiHintShown(): void
+    {
+        $other = $this->school('303457', 'Mandaue NHS');
+        $learner = $this->learner('111111111111', 'Abad', 'Ana');
+        $enrollment = $this->enroll($learner, $this->sy, $this->newSection($other, $this->sy, GradeLevel::Grade7, 'Bonifacio'), $this->maria);
+        $request = (new TransferRequest($enrollment, $this->sampaguita, $this->maria, new \DateTimeImmutable('2026-06-15')))
+            ->decide(TransferStatus::Approved, $this->maria, new \DateTimeImmutable('2026-06-16'));
+        $enrollment->moveTo($this->sampaguita);
+        $this->em->persist($request);
+        $this->em->flush();
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/enrollment'));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'Automatic: T/I Mandaue NHS 2026-06-16');
+    }
+
+    public function testEnrollmentRecordOfOtherSchoolIs403AndNotEnrolledIs404(): void
+    {
+        $other = $this->school('303457', 'Other NHS');
+        $theirs = $this->enrolled('111111111111', 'Abad', 'Ana', $this->newSection($other, $this->sy, GradeLevel::Grade7, 'Mabini'));
+        $this->client->request('GET', $this->url($other, '/'.$theirs->getId().'/enrollment'));
+        self::assertResponseStatusCodeSame(403);
+
+        $lastYear = $this->learner('222222222222', 'Zamora', 'Ben');
+        $old = $this->schoolYear(2025, current: false);
+        $this->enroll($lastYear, $old, $this->newSection($this->school, $old, GradeLevel::Grade7, 'Old'), $this->maria);
+        $this->client->loginUser($this->admin);
+        $this->client->request('GET', $this->url($this->school, '/'.$lastYear->getId().'/enrollment'));
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testStudentCannotOpenEnrollmentRecord(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $learner->getUser()->setMustChangePassword(false);
+        $this->em->flush();
+        $this->client->loginUser($learner->getUser());
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/enrollment'));
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testEditRefusesLrnOfAnotherLearner(): void
     {
         $learner = $this->enrolled('111111111111', 'Abad', 'Ana');

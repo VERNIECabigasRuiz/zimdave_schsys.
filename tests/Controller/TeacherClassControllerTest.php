@@ -206,6 +206,20 @@ class TeacherClassControllerTest extends AdminTestCase
         self::assertSame('Nena Abad', $saved->getGuardianName());
     }
 
+    public function testAdviserSetsRemark(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $id = $learner->getId();
+
+        $this->client->request('GET', '/teacher/class/'.$id.'/enrollment');
+        $this->client->submitForm('Save', ['enrollment_record_form[remarkCode]' => 'cct', 'enrollment_record_form[remarkDetails]' => 'REF-123']);
+
+        self::assertResponseRedirects('/teacher/class/'.$id);
+        $this->em->clear();
+        $enrollment = $this->em->getRepository(Enrollment::class)->findOneBy(['learner' => $id]);
+        self::assertSame('CCT REF-123', $enrollment->getManualRemarkText());
+    }
+
     public function testTeacherWithoutAdvisoryCannotEdit(): void
     {
         $learner = $this->enrolled('111111111111', 'Abad', 'Ana');

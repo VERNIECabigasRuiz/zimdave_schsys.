@@ -26,6 +26,8 @@
         <section class="card" aria-label="My information">
             <h2>My information</h2>
             {% include 'learners/_details.html.twig' with {learner: learner} only %}
+            <h3>School year {{ school_year.name }}</h3>
+            {% include 'learners/_enrollment_details.html.twig' with {enrollment: enrollment, remarks_text: remarks_text} only %}
         </section>
 
         {% if state.periods is empty %}

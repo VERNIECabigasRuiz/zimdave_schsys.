@@ -7,6 +7,7 @@ use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
 use App\Repository\SchoolYearRepository;
 use App\Service\TimetableQuery;
+use App\Sf1\Sf1Remarks;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +25,7 @@ class StudentController extends AbstractController
         private readonly LearnerRepository $learners,
         private readonly EnrollmentRepository $enrollments,
         private readonly TimetableQuery $timetable,
+        private readonly Sf1Remarks $remarks,
     ) {
     }
 
@@ -46,6 +48,7 @@ class StudentController extends AbstractController
             'school_year' => $schoolYear,
             'learner' => $learner,
             'enrollment' => $enrollment,
+            'remarks_text' => null !== $enrollment ? $this->remarks->textFor($enrollment) : null,
             'section' => $section,
             'state' => $state,
         ]);

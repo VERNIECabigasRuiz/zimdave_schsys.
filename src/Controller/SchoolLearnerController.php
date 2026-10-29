@@ -54,6 +54,12 @@ class SchoolLearnerController extends AbstractLearnerController
         return $this->handleEdit($request, $this->scope($school), $learner);
     }
 
+    #[Route('/learners/{learner}/enrollment', name: 'school_learners_enrollment', methods: ['GET', 'POST'])]
+    public function enrollmentRecord(Request $request, School $school, int $learner): Response
+    {
+        return $this->handleEnrollmentRecord($request, $this->scope($school), $learner);
+    }
+
     #[Route('/learners/{learner}/move', name: 'school_learners_move', methods: ['POST'])]
     #[IsCsrfTokenValid(new Expression('"learner-" ~ args["learner"]'), tokenKey: '_token')]
     public function move(Request $request, School $school, int $learner): Response

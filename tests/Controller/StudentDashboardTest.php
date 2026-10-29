@@ -95,6 +95,7 @@ class StudentDashboardTest extends AdminTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('body', 'Christianity');
         self::assertSelectorTextContains('body', 'Mandaue City');
+        self::assertSelectorTextContains('body', 'Face to Face');
         self::assertCount(0, $crawler->filter('form[name="learner_form"]'));
     }
 
