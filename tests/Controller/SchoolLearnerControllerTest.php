@@ -14,6 +14,7 @@ use App\Entity\TransferStatus;
 use App\Entity\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Lock\LockFactory;
 
 class SchoolLearnerControllerTest extends AdminTestCase
@@ -697,6 +698,38 @@ class SchoolLearnerControllerTest extends AdminTestCase
         // Symfony reports an invalid CSRF token as an authentication failure: back to sign-in, nothing changes
         self::assertResponseRedirects('http://localhost/login');
         self::assertNotNull($this->findLearner('111111111111')->getUser()->getPhotoPath());
+    }
+
+    public function testIdPhotoUploadRefusedForOtherSchoolStudentOrBadToken(): void
+    {
+        $other = $this->school('303457', 'Other NHS');
+        $theirs = $this->enrolled('222222222222', 'Zamora', 'Ben', $this->newSection($other, $this->sy, GradeLevel::Grade7, 'Mabini'));
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $learner->getUser()->setMustChangePassword(false);
+        $this->em->flush();
+        $show = $this->url($this->school, '/'.$learner->getId());
+        $upload = fn (string $url, array $values) => $this->client->request('POST', $url, $values,
+            ['image_upload_form' => ['image' => new UploadedFile($this->jpegFile(), 'photo.jpg', 'image/jpeg', null, true)]]);
+
+        // another school's learner, through this school's pages
+        $crawler = $this->client->request('GET', $show);
+        $values = $crawler->selectButton('Upload photo')->form()->getPhpValues();
+        $upload($this->url($this->school, '/'.$theirs->getId().'/photo'), $values);
+        self::assertResponseStatusCodeSame(404);
+
+        // a forged token: refused with a message, nothing stored
+        $values['image_upload_form']['_token'] = 'forged';
+        $upload($show.'/photo', $values);
+        $this->client->followRedirect();
+        self::assertSelectorExists('.alert--error');
+
+        // the learner themself
+        $this->client->loginUser($learner->getUser());
+        $upload($show.'/photo', $values);
+        self::assertResponseStatusCodeSame(403);
+
+        self::assertNull($this->findLearner('111111111111')->getUser()->getPhotoPath());
+        self::assertNull($this->findLearner('222222222222')->getUser()->getPhotoPath());
     }
 
     public function testClassListShowsNoPhoto(): void

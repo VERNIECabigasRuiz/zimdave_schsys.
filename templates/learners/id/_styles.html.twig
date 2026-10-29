@@ -12,7 +12,8 @@
     .seal, .logo { position: absolute; top: 2mm; width: 10mm; height: 10mm; }
     .seal { left: 2.2mm; }
     .logo { right: 2.2mm; }
-    .gov { top: 2.6mm; color: #ffffff; line-height: 1.25; }
+    /* between the seal and the logo (2.2–12.2 mm from each side), so a long division wraps instead of running over them */
+    .gov { top: 2.6mm; left: 12.8mm; width: 28.4mm; color: #ffffff; line-height: 1.2; }
     .gov__republic { font-size: 4.3pt; letter-spacing: 0.15pt; }
     .gov__deped { font-size: 5.6pt; font-weight: bold; }
     .gov__region { font-size: 4.2pt; color: #d6e2f7; }

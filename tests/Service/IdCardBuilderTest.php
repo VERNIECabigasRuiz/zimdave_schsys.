@@ -9,6 +9,7 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
+use App\Entity\Sf1Remark;
 use App\Entity\User;
 use App\LearnerId\IdCard;
 use App\LearnerId\IdCardBuilder;
@@ -139,7 +140,8 @@ class IdCardBuilderTest extends KernelTestCase
         $learner->getUser()->setPhotoPath($path);
         try {
             $enrollment = $this->em->getRepository(Enrollment::class)->findOneBy(['learner' => $learner]);
-            self::assertStringStartsWith('data:image/png;base64,', $this->builder()->forEnrollment($enrollment)->photo);
+            // JPEG: dompdf embeds it as is, while an RGBA PNG goes through its per-pixel PHP loop
+            self::assertStringStartsWith('data:image/jpeg;base64,', $this->builder()->forEnrollment($enrollment)->photo);
         } finally {
             unlink($file);
         }
@@ -148,6 +150,18 @@ class IdCardBuilderTest extends KernelTestCase
     public function testNoPrincipal(): void
     {
         self::assertNull($this->card($this->learner('111111111111', 'Arnol', 'Gerald'))->schoolHead);
+    }
+
+    public function testForSectionLeavesOutDroppedLearners(): void
+    {
+        $this->enroll($this->learner('111111111111', 'Arnol', 'Gerald'), $this->sy, $this->artistic, $this->adviser);
+        $this->enroll($this->learner('222222222222', 'Vega', 'Emmanuel'), $this->sy, $this->artistic, $this->adviser)
+            ->setRemarkCode(Sf1Remark::Dropped);
+        $this->em->flush();
+
+        $lrns = array_map(static fn (IdCard $c) => $c->lrn, $this->builder()->forSection($this->artistic));
+
+        self::assertSame(['111111111111'], $lrns);
     }
 
     public function testForSectionKeepsClassListOrder(): void

@@ -5,6 +5,7 @@ namespace App\LearnerId;
 use App\Entity\Enrollment;
 use App\Entity\Learner;
 use App\Entity\Section;
+use App\Entity\Sf1Remark;
 use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Service\ImageProcessor;
@@ -25,12 +26,13 @@ class IdCardBuilder
     ) {
     }
 
-    /** @return list<IdCard> in class-list order */
+    /** @return list<IdCard> in class-list order, leaving out learners who dropped out */
     public function forSection(Section $section): array
     {
         $shared = $this->shared($section);
+        $enrolled = array_filter($this->enrollments->findClassList($section), static fn (Enrollment $e) => Sf1Remark::Dropped !== $e->getRemarkCode());
 
-        return array_map(fn (Enrollment $e) => $this->card($e, $shared), $this->enrollments->findClassList($section));
+        return array_values(array_map(fn (Enrollment $e) => $this->card($e, $shared), $enrolled));
     }
 
     public function forEnrollment(Enrollment $enrollment): IdCard
@@ -75,7 +77,7 @@ class IdCardBuilder
             name: $this->displayName($learner),
             lrn: $learner->getLrn(),
             gradeSection: ($section->getGradeLevel()?->label() ?? '').' – '.mb_strtoupper($section->getName()),
-            photo: null !== $photo ? $this->webpDataUri($this->images->absolutePath($photo)) : null,
+            photo: null !== $photo ? $this->webpDataUri($this->images->absolutePath($photo), jpeg: true) : null,
             emergencyLabel: $emergencyLabel,
             emergencyName: $emergencyName,
             emergencyNumber: $learner->getContactNumber(),
@@ -118,8 +120,12 @@ class IdCardBuilder
         return [null, null];
     }
 
-    /** A stored .webp as an inline PNG (Dompdf may not load files, and reads PNG everywhere) */
-    private function webpDataUri(string $file): ?string
+    /**
+     * A stored .webp inlined (Dompdf may not load files): photos as JPEG, which Dompdf embeds as is,
+     * logos as PNG to keep their transparency. An RGBA PNG goes through Dompdf's per-pixel PHP loop,
+     * far too slow for a section's worth of photos.
+     */
+    private function webpDataUri(string $file, bool $jpeg = false): ?string
     {
         $image = is_file($file) ? @imagecreatefromwebp($file) : false;
         if (!$image instanceof \GdImage) {
@@ -127,8 +133,8 @@ class IdCardBuilder
         }
 
         ob_start();
-        imagepng($image);
+        $jpeg ? imagejpeg($image, null, 90) : imagepng($image);
 
-        return 'data:image/png;base64,'.base64_encode((string) ob_get_clean());
+        return 'data:image/'.($jpeg ? 'jpeg' : 'png').';base64,'.base64_encode((string) ob_get_clean());
     }
 }

@@ -86,6 +86,14 @@ class IdCardPdfTest extends KernelTestCase
         self::assertSame(1, self::pages($pdf));
     }
 
+    public function testRegionLineStaysBetweenSealAndLogo(): void
+    {
+        $html = $this->pdf()->html([self::card('120017170001')], IdLayout::Card);
+
+        // the seal and logo take 2.2–12.2 mm from each side; the government lines must wrap between them
+        self::assertMatchesRegularExpression('/\.gov\s*\{[^}]*left:\s*12\.8mm;[^}]*width:\s*28\.4mm;/', $html);
+    }
+
     public function testLongNameAndMissingDataStayOnOnePage(): void
     {
         $card = self::card('120017170001', 'MA. KRISTINE JOY B. DELA CRUZ-VILLANUEVA', full: false);
