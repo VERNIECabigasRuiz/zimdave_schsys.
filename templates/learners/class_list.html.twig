@@ -19,7 +19,11 @@
             {% if routes == 'teacher_class' and school.plan and not school.plan.includesPrincipal %}
                 <a class="btn btn--ghost" href="{{ path('school_transfers', {id: school.id, tab: 'outgoing'}) }}">Transfer requests</a>
             {% endif %}
-            <a class="btn btn--ghost" href="{{ path(routes ~ '_sf1', fixed_section ? route_params : route_params|merge({section: section.id})) }}" data-turbo="false">Download SF1</a>
+            {% set section_params = fixed_section ? route_params : route_params|merge({section: section.id}) %}
+            <span class="muted">Print IDs:</span>
+            <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_ids', section_params|merge({layout: 'sheet'})) }}" data-turbo="false" title="A4, 9 cards per page, print double-sided">Paper sheets</a>
+            <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_ids', section_params|merge({layout: 'card'})) }}" data-turbo="false" title="One card-sized page per side">ID printer</a>
+            <a class="btn btn--ghost" href="{{ path(routes ~ '_sf1', section_params) }}" data-turbo="false">Download SF1</a>
             <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
         </div>
     </div>

@@ -259,6 +259,28 @@ class TeacherClassControllerTest extends AdminTestCase
         unlink(static::getContainer()->getParameter('app.upload_root').'/'.$photo);
     }
 
+    public function testAdviserPrintsClassIds(): void
+    {
+        $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $crawler = $this->client->request('GET', '/teacher/class');
+        $this->client->click($crawler->selectLink('Paper sheets')->link());
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/pdf');
+        self::assertStringContainsString('filename="IDs_2026_Grade 7 - SAMPAGUITA.pdf"', $this->client->getResponse()->headers->get('Content-Disposition'));
+    }
+
+    public function testTeacherWithoutAdvisoryCannotPrintIds(): void
+    {
+        $this->sampaguita->setAdviser(null);
+        $this->em->flush();
+
+        $this->client->request('GET', '/teacher/class/ids');
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testTeacherWithoutAdvisoryCannotEdit(): void
     {
         $learner = $this->enrolled('111111111111', 'Abad', 'Ana');

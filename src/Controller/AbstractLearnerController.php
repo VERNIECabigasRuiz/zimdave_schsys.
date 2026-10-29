@@ -11,6 +11,9 @@ use App\Form\EnrollmentRecordFormType;
 use App\Form\EnrollSectionFormType;
 use App\Form\ImageUploadFormType;
 use App\Form\LearnerFormType;
+use App\LearnerId\IdCardBuilder;
+use App\LearnerId\IdCardPdf;
+use App\LearnerId\IdLayout;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
 use App\Repository\SchoolRepository;
@@ -61,6 +64,8 @@ abstract class AbstractLearnerController extends AbstractController
         protected readonly Sf1Remarks $remarks,
         protected readonly Sf1ReportBuilder $sf1Reports,
         protected readonly Sf1Writer $sf1Writer,
+        protected readonly IdCardBuilder $idCards,
+        protected readonly IdCardPdf $idCardPdf,
     ) {
     }
 
@@ -270,6 +275,33 @@ abstract class AbstractLearnerController extends AbstractController
         }
 
         return $this->redirectToShow($scope, $learner);
+    }
+
+    /** ID cards of every learner in the section, as a PDF. */
+    protected function downloadIds(Section $section, string $layout): Response
+    {
+        $this->denyAccessUnlessGranted(LearnerVoter::VIEW_CLASS, $section);
+        $pdf = $this->idCardPdf->render($this->idCards->forSection($section), IdLayout::tryFrom($layout) ?? IdLayout::Sheet);
+
+        return $this->pdfResponse($pdf, IdCardPdf::sectionFileName($section));
+    }
+
+    /** One learner's ID card, e.g. to replace a lost one. */
+    protected function handleIdDownload(LearnerScope $scope, int $id, string $layout): Response
+    {
+        [$learner, $current] = $this->requireLearner($scope, $id, false);
+        $this->denyAccessUnlessGranted(LearnerVoter::EDIT, $learner);
+        $pdf = $this->idCardPdf->render([$this->idCards->forEnrollment($current)], IdLayout::tryFrom($layout) ?? IdLayout::Sheet);
+
+        return $this->pdfResponse($pdf, 'ID_'.$learner->getLrn().'.pdf');
+    }
+
+    private function pdfResponse(string $pdf, string $fileName): Response
+    {
+        return new Response($pdf, Response::HTTP_OK, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $fileName, preg_replace('/[^\x20-\x7E]/', '_', $fileName)),
+        ]);
     }
 
     /** The section's SF1 (School Register) as an .xls file laid out like LIS's. */

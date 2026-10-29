@@ -49,6 +49,11 @@
                 <span class="profile-card__photo profile-card__photo--empty" aria-hidden="true">{{ learner.user.initials }}</span>
             {% endif %}
             {% include 'profile/_photo_form.html.twig' with {form: photo_form} only %}
+            <p class="row-actions">
+                <span class="muted">Print ID:</span>
+                <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_id', route_params|merge({learner: learner.id, layout: 'sheet'})) }}" data-turbo="false">Paper sheet</a>
+                <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_id', route_params|merge({learner: learner.id, layout: 'card'})) }}" data-turbo="false">ID printer</a>
+            </p>
             {% if learner.user.photoPath %}
                 <form method="post" action="{{ path(routes ~ '_photo_remove', route_params|merge({learner: learner.id})) }}"
                       data-turbo-confirm="Remove the ID photo of {{ learner.user.fullName }}?">

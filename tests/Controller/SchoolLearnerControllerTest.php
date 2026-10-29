@@ -269,6 +269,78 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertNull($this->currentEnrollment($learner)->getRemarkDetails());
     }
 
+    private function assertPdfDownload(string $fileName): void
+    {
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/pdf');
+        // HeaderUtils quotes the name only when it has to (spaces)
+        self::assertMatchesRegularExpression('/filename="?'.preg_quote($fileName, '/').'"?(;|$)/', $this->client->getResponse()->headers->get('Content-Disposition'));
+        self::assertStringStartsWith('%PDF', $this->client->getInternalResponse()->getContent());
+    }
+
+    public function testPrincipalPrintsSectionIds(): void
+    {
+        $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $crawler = $this->client->request('GET', $this->classUrl($this->school, $this->sampaguita));
+        self::assertCount(1, $crawler->selectLink('ID printer'));
+        $this->client->click($crawler->selectLink('Paper sheets')->link());
+
+        $this->assertPdfDownload('IDs_2026_Grade 7 - SAMPAGUITA.pdf');
+    }
+
+    public function testPrintSingleIdAsCard(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        $crawler = $this->client->request('GET', $this->url($this->school, '/'.$learner->getId()));
+        $this->client->click($crawler->selectLink('ID printer')->link());
+
+        $this->assertPdfDownload('ID_111111111111.pdf');
+    }
+
+    public function testBadLayoutFallsBackToSheet(): void
+    {
+        $this->client->request('GET', '/schools/'.$this->school->getId().'/sections/'.$this->sampaguita->getId().'/ids?layout=foo');
+
+        $this->assertPdfDownload('IDs_2026_Grade 7 - SAMPAGUITA.pdf');
+    }
+
+    public function testAdminPrintsIdsOfEmptySection(): void
+    {
+        $this->client->loginUser($this->admin);
+
+        $this->client->request('GET', '/schools/'.$this->school->getId().'/sections/'.$this->rosal->getId().'/ids');
+
+        $this->assertPdfDownload('IDs_2026_Grade 7 - ROSAL.pdf');
+    }
+
+    public function testIdsOfOtherSchoolRefused(): void
+    {
+        $other = $this->school('303457', 'Other NHS');
+        $section = $this->newSection($other, $this->sy, GradeLevel::Grade7, 'Mabini');
+        $theirs = $this->enrolled('222222222222', 'Zamora', 'Ben', $section);
+
+        $this->client->request('GET', '/schools/'.$other->getId().'/sections/'.$section->getId().'/ids');
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('GET', '/schools/'.$this->school->getId().'/sections/'.$section->getId().'/ids');
+        self::assertResponseStatusCodeSame(404);
+        $this->client->request('GET', $this->url($this->school, '/'.$theirs->getId().'/id'));
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testStudentCannotPrintIds(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $learner->getUser()->setMustChangePassword(false);
+        $this->em->flush();
+        $this->client->loginUser($learner->getUser());
+
+        $this->client->request('GET', $this->url($this->school, '/'.$learner->getId().'/id'));
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testSf1OfOtherSchoolIsRefused(): void
     {
         $other = $this->school('303457', 'Other NHS');

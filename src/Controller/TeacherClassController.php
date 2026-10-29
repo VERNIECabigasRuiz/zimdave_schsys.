@@ -7,6 +7,7 @@ use App\Security\Voter\LearnerVoter;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
@@ -33,6 +34,18 @@ class TeacherClassController extends AbstractLearnerController
     public function sf1(#[CurrentUser] User $user): Response
     {
         return $this->downloadSf1($this->scope($user)->fixedSection);
+    }
+
+    #[Route('/ids', name: 'teacher_class_ids', methods: ['GET'])]
+    public function ids(#[CurrentUser] User $user, #[MapQueryParameter] string $layout = 'sheet'): Response
+    {
+        return $this->downloadIds($this->scope($user)->fixedSection, $layout);
+    }
+
+    #[Route('/{learner}/id', name: 'teacher_class_id', methods: ['GET'])]
+    public function id(#[CurrentUser] User $user, int $learner, #[MapQueryParameter] string $layout = 'sheet'): Response
+    {
+        return $this->handleIdDownload($this->scope($user), $learner, $layout);
     }
 
     #[Route('/enroll', name: 'teacher_class_enroll', methods: ['GET', 'POST'])]

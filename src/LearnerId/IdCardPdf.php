@@ -2,6 +2,7 @@
 
 namespace App\LearnerId;
 
+use App\Entity\Section;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Twig\Environment;
@@ -29,6 +30,15 @@ class IdCardPdf
         $dompdf->render();
 
         return (string) $dompdf->output();
+    }
+
+    /** "IDs_2025_Grade 8 - ARTISTIC.pdf"; "/", "\" and "%" become "-", a download filename can't have them */
+    public static function sectionFileName(Section $section): string
+    {
+        $schoolYear = $section->getSchoolYear();
+        $startYear = $schoolYear->getStartDate()?->format('Y') ?? substr($schoolYear->getName(), 0, 4);
+
+        return \sprintf('IDs_%s_%s - %s.pdf', $startYear, $section->getGradeLevel()?->label() ?? '', preg_replace('/[\/\\\\%]/', '-', mb_strtoupper($section->getName())));
     }
 
     /** @param list<IdCard> $cards */

@@ -110,6 +110,18 @@ class SchoolLearnerController extends AbstractLearnerController
         return $this->renderClassList($scope, $this->requireSection($scope, $section));
     }
 
+    #[Route('/sections/{section}/ids', name: 'school_learners_ids', methods: ['GET'])]
+    public function ids(School $school, int $section, #[MapQueryParameter] string $layout = 'sheet'): Response
+    {
+        return $this->downloadIds($this->requireSection($this->scope($school), $section), $layout);
+    }
+
+    #[Route('/learners/{learner}/id', name: 'school_learners_id', methods: ['GET'])]
+    public function id(School $school, int $learner, #[MapQueryParameter] string $layout = 'sheet'): Response
+    {
+        return $this->handleIdDownload($this->scope($school), $learner, $layout);
+    }
+
     #[Route('/sections/{section}/sf1', name: 'school_learners_sf1', methods: ['GET'])]
     public function sf1(School $school, int $section): Response
     {
