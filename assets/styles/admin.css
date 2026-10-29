@@ -1690,3 +1690,36 @@ span.sf2-cell {
         grid-template-columns: 1fr;
     }
 }
+
+/* Attendance: the principal's overview */
+.attendance-bar {
+    display: inline-block;
+    width: 5rem;
+    height: .5rem;
+    margin-right: .4rem;
+    border-radius: 999px;
+    background: var(--line-soft);
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+.attendance-bar span {
+    display: block;
+    height: 100%;
+    background: var(--green);
+}
+
+.attendance-subtotal th,
+.attendance-subtotal td {
+    background: var(--page-bg);
+    font-weight: 600;
+}
+
+.attendance-month-head {
+    margin-top: 1.5rem;
+    align-items: center;
+}
+
+.attendance-follow-ups {
+    border-left: 4px solid var(--rose);
+}

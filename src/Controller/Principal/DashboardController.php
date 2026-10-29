@@ -2,6 +2,7 @@
 
 namespace App\Controller\Principal;
 
+use App\Attendance\AttendanceStatistics;
 use App\Entity\School;
 use App\Entity\User;
 use App\Repository\SchoolAssignmentRepository;
@@ -27,6 +28,7 @@ class DashboardController extends AbstractController
         private readonly TimetableQuery $timetable,
         private readonly SchoolClock $clock,
         private readonly TransferRequestRepository $transferRequests,
+        private readonly AttendanceStatistics $attendance,
     ) {
     }
 
@@ -46,6 +48,7 @@ class DashboardController extends AbstractController
             'students' => $this->planLimits->countStudents($school, $schoolYear),
             'blocked_reason' => $this->planLimits->blockedReason($school),
             'transfers_waiting' => $this->transferRequests->countPendingOutgoing($school, $schoolYear),
+            'attendance_today' => $this->attendance->today($school, $schoolYear),
         ]);
     }
 
@@ -95,6 +98,17 @@ class DashboardController extends AbstractController
         }
 
         return $this->redirectToRoute('school_learners', ['id' => $school->getId()]);
+    }
+
+    #[Route('/attendance', name: 'principal_attendance', methods: ['GET'])]
+    public function attendance(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_attendance', ['id' => $school->getId()]);
     }
 
     #[Route('/subjects', name: 'principal_subjects', methods: ['GET'])]

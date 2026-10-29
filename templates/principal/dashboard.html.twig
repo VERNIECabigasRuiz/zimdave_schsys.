@@ -35,6 +35,19 @@
         {% if transfers_waiting > 0 %}
             {% include 'transfers/_waiting_card.html.twig' with {count: transfers_waiting, school: school} only %}
         {% endif %}
+        <a class="stat card" href="{{ path('school_attendance', {id: school.id}) }}">
+            <span class="avatar avatar--blue">✓</span>
+            <span>
+                {% if attendance_today.schoolDay %}
+                    {% set taken = attendance_today.sections|filter(s => s.taken) %}
+                    <strong>{{ taken|length }} / {{ attendance_today.sections|length }}</strong>
+                    <small>Attendance today · {{ taken|reduce((sum, s) => sum + s.absent, 0) }} absent</small>
+                {% else %}
+                    <strong>No classes</strong>
+                    <small>Attendance today · {{ attendance_today.reason }}</small>
+                {% endif %}
+            </span>
+        </a>
     </section>
 
     <turbo-frame id="now" src="{{ path('principal_now') }}" data-controller="refresh">

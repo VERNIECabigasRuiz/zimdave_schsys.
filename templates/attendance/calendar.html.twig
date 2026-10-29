@@ -1,0 +1,67 @@
+{% extends layout %}
+
+{% block title %}School calendar · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>School calendar</h1>
+            <p>
+                {{ school.name }} · S.Y. {{ school_year.name }}
+                {% if school_year.startDate and school_year.endDate %} · {{ school_year.startDate|date('M j, Y') }} – {{ school_year.endDate|date('M j, Y') }}{% endif %}
+            </p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--ghost" href="{{ path('school_attendance', {id: school.id}) }}">Attendance</a>
+        </div>
+    </div>
+
+    <p class="muted">Every weekday of the school year is a school day, except the days off below. Advisers can't take attendance on a day off, and it doesn't count in SF2.</p>
+
+    <div class="sf2-foot">
+        <div class="card table-card">
+            {% if days_off %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Reason</th>
+                            <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day_off in days_off %}
+                            <tr>
+                                <td>{{ day_off.date|date('D, M j, Y') }}</td>
+                                <td>{{ day_off.reason }}</td>
+                                <td class="table__actions">
+                                    <form method="post" action="{{ path('school_calendar_remove', {id: school.id, dayOff: day_off.id}) }}" onsubmit="return confirm('Make {{ day_off.date|date('M j') }} a school day again?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('day-off-' ~ day_off.id) }}">
+                                        <button class="btn btn--ghost btn--sm" type="submit">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty">No days off yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="card form-card">
+            <h2 class="section-title section-title--flush">Add a day off</h2>
+            {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+                {{ form_errors(form) }}
+                <div class="form-grid">
+                    {{ form_row(form.from) }}
+                    {{ form_row(form.to) }}
+                </div>
+                {{ form_row(form.reason) }}
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Add days off</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

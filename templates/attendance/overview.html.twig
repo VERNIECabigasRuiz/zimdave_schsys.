@@ -1,0 +1,152 @@
+{% extends layout %}
+
+{% block title %}Attendance · {{ school.name }} · ZIM School{% endblock %}
+
+{% macro section_rows(rows, school, month) %}
+    {% for row in rows %}
+        {% set s = row.report.summary %}
+        <tr>
+            <td><a href="{{ path('school_attendance_section', {id: school.id, section: row.section.id, month: month|date('Y-m')}) }}">{{ row.section.label }}</a></td>
+            <td>{{ row.section.adviser ? row.section.adviser.fullName : '—' }}</td>
+            <td>{{ s.daysOfClasses }}</td>
+            <td>{{ s.registered[2] }}</td>
+            <td>{{ s.ada[2] ?? '—' }}</td>
+            <td>
+                {% if s.percentAttendance[2] is not null %}
+                    <span class="attendance-bar" title="{{ s.percentAttendance[2] }}%"><span style="width: {{ min(100, s.percentAttendance[2]) }}%"></span></span>
+                    {{ s.percentAttendance[2] }}%
+                {% else %}—{% endif %}
+            </td>
+            <td>{{ row.absences }}</td>
+            <td>{{ row.tardies }}</td>
+            <td>
+                <span class="badge {{ row.status.value == 'submitted' ? 'badge--green' : (row.status.value == 'late' ? 'badge--rose' : '') }}">{{ row.status.label }}</span>
+                {% if row.report.submission %}<small class="muted">{{ row.report.submission.submittedAt|date('M j') }}</small>{% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+{% endmacro %}
+
+{% macro subtotal(label, rows) %}
+    {% set days = max(rows|map(r => r.report.summary.daysOfClasses)) %}
+    {% set registered = rows|reduce((sum, r) => sum + r.report.summary.registered[2], 0) %}
+    {% set ada = rows|reduce((sum, r) => sum + (r.report.summary.ada[2] ?? 0), 0) %}
+    <tr class="attendance-subtotal">
+        <th colspan="2" scope="row">{{ label }}</th>
+        <td>{{ days }}</td>
+        <td>{{ registered }}</td>
+        <td>{{ ada|round(2) }}</td>
+        <td>{{ registered > 0 ? (ada / registered * 100)|round(2) ~ '%' : '—' }}</td>
+        <td>{{ rows|reduce((sum, r) => sum + r.absences, 0) }}</td>
+        <td>{{ rows|reduce((sum, r) => sum + r.tardies, 0) }}</td>
+        <td>{{ rows|filter(r => r.status.value == 'submitted')|length }} of {{ rows|length }} submitted</td>
+    </tr>
+{% endmacro %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Attendance</h1>
+            <p>{{ school.name }} · S.Y. {{ school_year.name }}</p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--ghost" href="{{ path('school_calendar', {id: school.id}) }}">School calendar</a>
+        </div>
+    </div>
+
+    <h2 class="section-title">Today</h2>
+    {% if not today.schoolDay %}
+        <div class="card form-card"><p>No classes today ({{ today.reason }}).</p></div>
+    {% else %}
+        {% set taken = today.sections|filter(s => s.taken) %}
+        <section class="stats" aria-label="Attendance today">
+            <div class="stat card">
+                <span class="avatar avatar--blue">✓</span>
+                <span><strong>{{ taken|length }} / {{ today.sections|length }}</strong><small>Sections took attendance</small></span>
+            </div>
+            <div class="stat card">
+                <span class="avatar avatar--green">P</span>
+                <span><strong>{{ taken|reduce((sum, s) => sum + s.present, 0) }}</strong><small>Present (in those sections)</small></span>
+            </div>
+            <div class="stat card">
+                <span class="avatar avatar--rose">A</span>
+                <span><strong>{{ taken|reduce((sum, s) => sum + s.absent, 0) }}</strong><small>Absent</small></span>
+            </div>
+            <div class="stat card">
+                <span class="avatar avatar--amber">T</span>
+                <span><strong>{{ taken|reduce((sum, s) => sum + s.tardy, 0) }}</strong><small>Late or cutting classes</small></span>
+            </div>
+        </section>
+        <div class="card table-card">
+            <table class="table">
+                <thead>
+                    <tr><th>Section</th><th>Adviser</th><th>Enrolled</th><th>Present</th><th>Absent</th><th>Tardy</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    {% for s in today.sections %}
+                        <tr>
+                            <td>{{ s.section.label }}</td>
+                            <td>{{ s.adviserName ?? '—' }}</td>
+                            <td>{{ s.enrolled }}</td>
+                            <td>{{ s.taken ? s.present : '—' }}</td>
+                            <td>{{ s.taken ? s.absent : '—' }}</td>
+                            <td>{{ s.taken ? s.tardy : '—' }}</td>
+                            <td>{% if s.taken %}<span class="badge badge--green">Taken</span>{% else %}<span class="badge badge--amber">Not taken yet</span>{% endif %}</td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="7" class="empty">No sections this school year.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <div class="page-head attendance-month-head">
+        <h2 class="section-title">{{ month|date('F Y') }}</h2>
+        <form method="get" class="filters">
+            <label class="visually-hidden" for="attendance-month">Month</label>
+            <select id="attendance-month" name="month" onchange="this.form.submit()">
+                {% for m in months %}
+                    <option value="{{ m|date('Y-m') }}"{{ m|date('Y-m') == month|date('Y-m') ? ' selected' }}>{{ m|date('F Y') }}</option>
+                {% endfor %}
+            </select>
+            <noscript><button class="btn btn--ghost btn--sm" type="submit">Show</button></noscript>
+        </form>
+    </div>
+
+    {% if follow_ups %}
+        <div class="card form-card attendance-follow-ups">
+            <h2 class="section-title section-title--flush">Needs follow-up: absent 5 consecutive school days</h2>
+            <ul>
+                {% for f in follow_ups %}
+                    <li>
+                        <a href="{{ path('school_learners_show', {id: school.id, learner: f.row.learnerId}) }}">{{ f.row.name }}</a>
+                        · {{ f.section.label }}{% if f.section.adviser %} · Adviser: {{ f.section.adviser.fullName }}{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <div class="card table-card">
+        <table class="table attendance-month">
+            <thead>
+                <tr>
+                    <th>Section</th><th>Adviser</th><th>Days</th><th>Registered</th><th>ADA</th><th>% attendance</th><th>Absences</th><th>Tardies</th><th>SF2</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set all = [] %}
+                {% for grade, rows in by_grade %}
+                    {{ _self.section_rows(rows, school, month) }}
+                    {% if by_grade|length > 1 %}{{ _self.subtotal(grade, rows) }}{% endif %}
+                    {% set all = all|merge(rows) %}
+                {% else %}
+                    <tr><td colspan="9" class="empty">No sections this school year.</td></tr>
+                {% endfor %}
+                {% if all %}{{ _self.subtotal('School total', all) }}{% endif %}
+            </tbody>
+        </table>
+    </div>
+    <p class="muted">SF2 is due on the 5th of the next month. ADA: average daily attendance. Late and cutting classes count as present and as tardy.</p>
+{% endblock %}

@@ -26,6 +26,8 @@
             <a class="btn btn--ghost" href="{{ path(routes ~ '_sf1', section_params) }}" data-turbo="false">Download SF1</a>
             {% if routes == 'teacher_class' %}
                 <a class="btn btn--ghost" href="{{ path('teacher_class_attendance_month') }}">Attendance · SF2</a>
+            {% else %}
+                <a class="btn btn--ghost" href="{{ path('school_attendance_section', {id: school.id, section: section.id}) }}">Attendance · SF2</a>
             {% endif %}
             <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
         </div>
