@@ -4,11 +4,13 @@ namespace App\Tests;
 
 use App\Entity\ActivityLog;
 use App\Entity\Announcement;
+use App\Entity\AttendanceMark;
 use App\Entity\ClassPeriod;
 use App\Entity\Enrollment;
 use App\Entity\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\Plan;
+use App\Entity\RollCall;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
 use App\Entity\ScheduleEntry;
@@ -17,6 +19,7 @@ use App\Entity\SchoolDayOff;
 use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
 use App\Entity\SexAtBirth;
+use App\Entity\Sf2Submission;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
 use App\Entity\TransferRequest;
@@ -32,7 +35,7 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
+        foreach ([AttendanceMark::class, RollCall::class, Sf2Submission::class, SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
             $this->em->createQuery('DELETE FROM '.$class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test
