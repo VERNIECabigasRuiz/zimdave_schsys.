@@ -49,10 +49,9 @@ class Sf2Writer
         $femaleTotal = $firstFemale + self::FEMALE_ROWS + $extraFemale;
         $this->addRows($sheet, $firstFemale + self::FEMALE_ROWS, $extraFemale);
         $shift = $extraMale + $extraFemale;
-        if ($shift > 0) {
-            // the template prints on two pages at a fixed scale; added rows would push its foot to a third
-            $sheet->getPageSetup()->setFitToPage(true)->setFitToWidth(1)->setFitToHeight(2);
-        }
+        // the template prints on two pages at a fixed scale; added rows (and the taller signature
+        // rows below) would push its foot to a third
+        $sheet->getPageSetup()->setFitToPage(true)->setFitToWidth(1)->setFitToHeight(2);
 
         $sheet->setCellValueExplicit('C6', (string) $report->schoolId, 's');
         $sheet->setCellValue('K6', $report->schoolYear);

@@ -55,7 +55,7 @@ class PrincipalAreaTest extends AdminTestCase
         self::assertStringContainsString('Basic plan', $head);
         self::assertStringContainsString('Apr 30, 2027', $head);
         $stats = $crawler->filter('.stat')->each(static fn ($node) => $node->filter('small')->text().'='.$node->filter('strong')->text());
-        self::assertSame(['Teachers=2 / 15', 'Students=0 / 1,000'], $stats);
+        self::assertSame(['Teachers=2 / 15', 'Students=0 / 1,000', 'Attendance today · 0 absent=0 / 0'], $stats);
     }
 
     public function testDashboardCountsEnrolledLearners(): void
@@ -116,7 +116,7 @@ class PrincipalAreaTest extends AdminTestCase
 
         $crawler = $this->client->request('GET', '/schools/'.$this->school->getId().'/teachers');
 
-        self::assertSame(['Dashboard', 'Teachers', 'Sections', 'Learners', 'Subjects', 'Class Periods', 'School Profile', 'My Profile'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()));
+        self::assertSame(['Dashboard', 'Teachers', 'Sections', 'Learners', 'Attendance', 'Subjects', 'Class Periods', 'School Profile', 'My Profile'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()));
         self::assertSelectorTextContains('.sidebar__link.is-active', 'Teachers');
         self::assertSelectorNotExists('.topbar__search');
     }

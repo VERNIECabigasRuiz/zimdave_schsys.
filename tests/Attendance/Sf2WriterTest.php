@@ -191,5 +191,8 @@ class Sf2WriterTest extends TestCase
         // the template's 12 pt row clips the tilde of a capital Ñ
         self::assertGreaterThanOrEqual(18, $sheet->getRowDimension(88)->getRowHeight());
         self::assertGreaterThanOrEqual(18, $sheet->getRowDimension(92)->getRowHeight());
+        // the taller rows must not push the foot onto a third page
+        self::assertTrue($sheet->getPageSetup()->getFitToPage());
+        self::assertSame(2, $sheet->getPageSetup()->getFitToHeight());
     }
 }
