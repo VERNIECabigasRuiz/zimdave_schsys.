@@ -79,9 +79,10 @@ Empty optional values are left out, never printed as "—".
 
 One PDF, rendered with dompdf like the PDS. `IdLayout` enum:
 
-- `sheet` (default) — **A4 portrait, 8 cards per page** (2 across × 4 down, 54 × 86 mm each,
-  centred, 4 mm gaps) with corner cut marks. Pages alternate: fronts of up to 8 learners, then their
-  backs. On the back page each row's two cards swap places, so printing double-sided with
+- `sheet` (default) — **A4 portrait, 9 cards per page** (3 across × 3 down, 54 × 86 mm each,
+  4 mm gaps: 170 × 266 mm, centred) with corner cut marks. (2 × 4 = 8 does not fit: four CR80
+  cards stacked are 344 mm, A4 is 297 mm.) Pages alternate: fronts of up to 9 learners, then their
+  backs. On the back page each row of three is reversed, so printing double-sided with
   "flip on long edge" puts every back behind its front.
 - `card` — **page size exactly 54 × 86 mm**, no margins: front page then back page per learner, for
   PVC ID printers.
@@ -132,8 +133,8 @@ Dependency: `composer require chillerlan/php-qrcode`.
   null; valid-until from the SY end date; null photo when missing, data URI when present.
 - `QrCode::png()` returns a `data:image/png;base64,` URI whose decoded bytes start with the PNG
   signature. (Decoding the QR back to the LRN needs a reader library; not worth adding.)
-- `IdCardPdf`: `sheetPages()` — 8 learners → 1 sheet (front + back), 9 → 2; back row order swapped
-  (`[b, a, d, c, …]`), a lone last card lands on the mirrored side; `render()` returns bytes starting
+- `IdCardPdf`: `sheetPages()` — 9 learners → 1 sheet (front + back), 10 → 2; each back row of
+  three reversed (`[c, b, a, f, e, d, …]`), a lone last card lands on the mirrored side; `render()` returns bytes starting
   `%PDF` for both layouts and for an empty list.
 - HTTP (WebTestCase): principal, admin and adviser download section and single IDs (200,
   `application/pdf`, file name); other school's principal, a non-adviser teacher and a student get
