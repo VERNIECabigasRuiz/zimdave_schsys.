@@ -3,14 +3,17 @@
 namespace App\Tests\Service;
 
 use App\Entity\ActivityLog;
+use App\Entity\Grade;
 use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
 use App\Entity\ShsTrack;
 use App\Entity\Subject;
+use App\Entity\User;
 use App\Repository\SubjectRepository;
 use App\Service\ActivityLogger;
+use App\Service\InUseException;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
 use App\Service\SubjectManager;
@@ -42,6 +45,7 @@ class SubjectManagerTest extends KernelTestCase
             $container->get(PlanLimits::class),
             $container->get(ActivityLogger::class),
             $container->get(\App\Repository\TeachingLoadRepository::class),
+            $container->get(\App\Repository\GradeRepository::class),
         );
         $this->clearSchoolData();
         $this->last = $this->schoolYear(2025, current: false);
@@ -103,6 +107,39 @@ class SubjectManagerTest extends KernelTestCase
 
         self::assertSame(['MATH7'], $this->codes());
         self::assertSame(['Deleted subject MAPEH7 – MAPEH with 2 components'], $this->log());
+    }
+
+    public function testDeleteRefusedWhileLearnersHaveGrades(): void
+    {
+        $this->sy->rebuildGradingPeriods();
+        $this->em->flush();
+        $teacher = $this->plainUser('dave', User::ROLE_TEACHER);
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade7, 'Rizal');
+        $math = $this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics');
+        $grades = [];
+        foreach (['120017170001' => 'Arnol', '120017170002' => 'Bello'] as $lrn => $lastName) {
+            $enrollment = $this->enroll($this->learner($lrn, $lastName, 'Ana'), $this->sy, $section, $teacher);
+            $grades[] = $grade = new Grade($enrollment, $math, $this->sy->getGradingPeriod(1), 85, $teacher, new \DateTimeImmutable('2026-10-16'));
+            $this->em->persist($grade);
+        }
+        $this->em->flush();
+
+        try {
+            $this->manager->delete($math);
+            self::fail('Expected the graded subject to be refused');
+        } catch (InUseException $e) {
+            self::assertSame("Mathematics has grades in 2 learners' records.", $e->getMessage());
+        }
+        self::assertSame(['MATH7'], $this->codes());
+
+        $this->em->remove($this->em->find(Grade::class, $grades[0]->getId()));
+        $this->em->flush();
+        try {
+            $this->manager->delete($this->em->find(Subject::class, $math->getId()));
+            self::fail('Expected the graded subject to be refused');
+        } catch (InUseException $e) {
+            self::assertSame("Mathematics has grades in 1 learner's record.", $e->getMessage());
+        }
     }
 
     public function testAddDepEdSetForGrade7(): void

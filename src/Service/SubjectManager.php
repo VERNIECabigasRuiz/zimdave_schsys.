@@ -7,6 +7,7 @@ use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Subject;
+use App\Repository\GradeRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +27,7 @@ class SubjectManager
         private readonly PlanLimits $planLimits,
         private readonly ActivityLogger $activityLogger,
         private readonly TeachingLoadRepository $loads,
+        private readonly GradeRepository $grades,
     ) {
     }
 
@@ -61,6 +63,9 @@ class SubjectManager
         $this->assertWritable($subject->getSchool());
         if (0 < $loaded = $this->loads->countForSubject($subject)) {
             throw new InUseException(\sprintf('%s is loaded in %d %s.', $subject->getName(), $loaded, 1 === $loaded ? 'section' : 'sections'));
+        }
+        if (0 < $graded = $this->grades->countForSubject($subject)) {
+            throw new InUseException(\sprintf('%s has grades in %d %s.', $subject->getName(), $graded, 1 === $graded ? "learner's record" : "learners' records"));
         }
         $count = $subject->getComponents()->count();
         $this->activityLogger->log('Deleted subject '.$subject->getLabel().($count > 0 ? \sprintf(' with %d components', $count) : ''));
