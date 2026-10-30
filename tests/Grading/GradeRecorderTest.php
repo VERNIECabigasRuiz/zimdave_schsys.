@@ -16,6 +16,8 @@ use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
+use App\Entity\TransferRequest;
+use App\Entity\TransferStatus;
 use App\Entity\User;
 use App\Grading\GradeRecorder;
 use App\Grading\GradeRules;
@@ -26,6 +28,7 @@ use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Repository\TransferRequestRepository;
 use App\Service\ActivityLogger;
+use App\Service\LearnerLock;
 use App\Service\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -304,5 +307,84 @@ class GradeRecorderTest extends KernelTestCase
         self::assertSame(0, $this->em->getRepository(GradeUnlock::class)->count([]));
         self::assertTrue($this->logged('Unlocked Term 1 grades'));
         self::assertSame(1, $this->save([$this->id(0) => 85]));
+    }
+
+    /** As TransferManager::approve does: the same enrollment row moves to the receiving section. */
+    private function transfer(Enrollment $enrollment, Section $to): void
+    {
+        $request = new TransferRequest($enrollment, $to, $this->teacher, new \DateTimeImmutable('2025-08-22 08:00'));
+        $request->decide(TransferStatus::Approved, $this->principal, new \DateTimeImmutable('2025-08-22 09:00'));
+        $enrollment->moveTo($to);
+        $this->em->persist($request);
+        $this->em->flush();
+    }
+
+    /** @return array<int, int> grade values by enrollment id, read back from the database */
+    private function savedValues(): array
+    {
+        $this->em->clear();
+        $values = [];
+        foreach ($this->em->getRepository(Grade::class)->findAll() as $grade) {
+            $values[$grade->getEnrollment()->getId()] = $grade->getValue();
+        }
+        ksort($values);
+
+        return $values;
+    }
+
+    public function testTransferredOutAndDroppedLearnersKeepTheirGrades(): void
+    {
+        $this->setOpen(true);
+        $this->save([$this->id(0) => 85, $this->id(1) => 90, $this->id(2) => 95]);
+        $this->transfer($this->enrolled[1], $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Brilliant'));
+        $this->enrolled[2]->setRemarkCode(Sf1Remark::Dropped);
+        $this->em->flush();
+
+        // a value for each read-only row
+        self::assertSame(1, $this->save([$this->id(0) => 86, $this->id(1) => 70, $this->id(2) => 71]));
+        self::assertSame([$this->id(0) => 86, $this->id(1) => 90, $this->id(2) => 95], $this->savedValues());
+
+        // a cleared box for each read-only row
+        $this->load = $this->em->find(TeachingLoad::class, $this->load->getId());
+        $this->term1 = $this->em->find(GradingPeriod::class, $this->term1->getId());
+        $this->teacher = $this->em->find(User::class, $this->teacher->getId());
+        self::assertSame(1, $this->save([$this->id(0) => 87, $this->id(1) => null, $this->id(2) => null]));
+        self::assertSame([$this->id(0) => 87, $this->id(1) => 90, $this->id(2) => 95], $this->savedValues());
+    }
+
+    public function testOutOfRangeValueChangesNoOtherGrade(): void
+    {
+        $this->setOpen(true);
+        $this->save([$this->id(0) => 80]);
+
+        // the first row is valid and comes before the bad one
+        self::assertSame('Enter a grade from 60 to 100.', $this->refusal(fn () => $this->save([$this->id(0) => 85, $this->id(1) => 90, $this->id(2) => 101])));
+
+        // nothing was changed in memory either, so a later flush writes nothing
+        $this->em->flush();
+        self::assertSame([$this->id(0) => 80], $this->savedValues());
+    }
+
+    public function testSaveIsRefusedWhileThePrincipalIsLocking(): void
+    {
+        $this->setOpen(true);
+        $locking = static::getContainer()->get(LockFactory::class)->createLock('grade-lock-'.$this->school->getId());
+        self::assertTrue($locking->acquire());
+
+        try {
+            self::assertSame(LearnerLock::BUSY, $this->refusal(fn () => $this->save([$this->id(0) => 85])));
+        } finally {
+            $locking->release();
+        }
+        self::assertSame(0, $this->gradeCount());
+
+        // saves of different classes of the school only share the lock, so they don't block each other
+        $other = static::getContainer()->get(LockFactory::class)->createLock('grade-lock-'.$this->school->getId());
+        self::assertTrue($other->acquireRead());
+        try {
+            self::assertSame(1, $this->save([$this->id(0) => 85]));
+        } finally {
+            $other->release();
+        }
     }
 }

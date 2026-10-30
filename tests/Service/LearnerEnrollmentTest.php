@@ -4,6 +4,7 @@ namespace App\Tests\Service;
 
 use App\Entity\ActivityLog;
 use App\Entity\Enrollment;
+use App\Entity\Grade;
 use App\Entity\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\Plan;
@@ -11,10 +12,12 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
+use App\Entity\Subject;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Entity\User;
 use App\Repository\EnrollmentRepository;
+use App\Repository\GradeRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
 use App\Repository\UserRepository;
@@ -87,6 +90,7 @@ class LearnerEnrollmentTest extends KernelTestCase
             $c->get(ActivityLogger::class),
             $c->get(ClockInterface::class),
             $c->get(ImageProcessor::class),
+            $c->get(GradeRepository::class),
         );
     }
 
@@ -333,6 +337,24 @@ class LearnerEnrollmentTest extends KernelTestCase
         self::assertNotNull($this->em->getRepository(Learner::class)->find($learner->getId()));
         self::assertNotNull($this->em->getRepository(User::class)->findOneBy(['username' => '123456789012']));
         self::assertContains('Unenrolled 123456789012 from Grade 7 – Rizal', $this->logs());
+    }
+
+    public function testUnenrollIsRefusedOnceTheLearnerHasGrades(): void
+    {
+        $this->sy->rebuildGradingPeriods();
+        $math = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade7)->setCode('MATH7')->setName('Mathematics')->setPosition(1);
+        $math->setMeetingsPerWeek(5);
+        $this->em->persist($math);
+        $enrollment = $this->enroll($this->learner('123456789012', 'Cruz', 'Juan'), $this->sy, $this->rizal, $this->admin);
+        $this->em->persist(new Grade($enrollment, $math, $this->sy->getGradingPeriod(1), 90, $this->admin, new \DateTimeImmutable()));
+        $this->em->flush();
+
+        $this->refused('Cruz, Juan has grades this school year. Mark the learner as dropped instead.', fn () => $this->service->unenroll($enrollment));
+
+        $this->em->clear();
+        self::assertSame(1, $this->em->getRepository(Enrollment::class)->count([]));
+        self::assertSame(1, $this->em->getRepository(Grade::class)->count([]));
+        self::assertNotContains('Unenrolled 123456789012 from Grade 7 – Rizal', $this->logs());
     }
 
     public function testPendingTransferBlocksMoveAndUnenroll(): void

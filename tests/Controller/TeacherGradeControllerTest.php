@@ -14,6 +14,8 @@ use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
+use App\Entity\TransferRequest;
+use App\Entity\TransferStatus;
 use App\Entity\User;
 use App\Grading\GradeRecorder;
 use App\Tests\Controller\Admin\AdminTestCase;
@@ -128,6 +130,9 @@ class TeacherGradeControllerTest extends AdminTestCase
         $this->em->persist(new TeachingLoad($kinder, $this->subject(GradeLevel::Kinder, 'K', 'Kindergarten'), $this->teacher));
         $science = $this->subject(GradeLevel::Grade8, 'SCI8', 'Science', 2);
         $this->em->persist(new TeachingLoad($this->honest, $science, $this->teacher));
+        $mapeh = $this->subject(GradeLevel::Grade8, 'MAPEH8', 'MAPEH', 3);
+        $this->em->persist((new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade8)->setCode('MUS8')->setName('Music')->setParent($mapeh)->setPosition(1));
+        $this->em->persist(new TeachingLoad($this->honest, $mapeh, $this->teacher));
         $this->em->flush();
         $this->em->persist(new Grade($this->enrollments['Abad'], $this->math, $this->term1, 90, $this->teacher, new \DateTimeImmutable('2025-08-21')));
         $this->em->flush();
@@ -151,6 +156,8 @@ class TeacherGradeControllerTest extends AdminTestCase
         $ungraded = $crawler->filter('.grade-loads--ungraded');
         self::assertStringContainsString('Not graded here yet', $crawler->filter('main')->text());
         self::assertStringContainsString('Kindergarten – Daisy', $ungraded->text());
+        self::assertStringContainsString('MAPEH', $ungraded->text());
+        self::assertStringContainsString("Kinder, Senior High and subjects graded through their components aren't graded here yet.", $crawler->filter('main')->text());
         self::assertCount(0, $ungraded->filter('a'));
 
         $this->lockTerm1();
@@ -254,6 +261,29 @@ class TeacherGradeControllerTest extends AdminTestCase
         self::assertSame([], $this->grades());
         // the dropped learner is greyed with the status
         self::assertSelectorTextContains('.grade-sheet .roll-call__out', 'Dropped');
+    }
+
+    public function testTransferredOutLearnerKeepsTheGradeReadOnly(): void
+    {
+        $abad = $this->enrollments['Abad'];
+        $this->em->persist(new Grade($abad, $this->math, $this->term1, 91, $this->teacher, new \DateTimeImmutable('2025-08-21')));
+        // as TransferManager::approve does: the same enrollment row moves to the receiving section
+        $to = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Brilliant');
+        $request = new TransferRequest($abad, $to, $this->teacher, new \DateTimeImmutable('2025-08-22 08:00'));
+        $request->decide(TransferStatus::Approved, $this->principal, new \DateTimeImmutable('2025-08-22 09:00'));
+        $abad->moveTo($to);
+        $this->em->persist($request);
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', $this->sheetUrl());
+
+        self::assertResponseIsSuccessful();
+        $row = $crawler->filter('.grade-sheet tr.roll-call__out');
+        self::assertCount(1, $row);
+        self::assertStringContainsString('Transferred out', $row->text());
+        self::assertStringContainsString('91', $row->text());
+        self::assertCount(0, $row->filter('input'));
+        self::assertCount(0, $crawler->filter('input[name="'.self::field($abad).'"]'));
     }
 
     public function testOtherTeacherIs403(): void

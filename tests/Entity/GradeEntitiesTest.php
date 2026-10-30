@@ -175,30 +175,39 @@ class GradeEntitiesTest extends KernelTestCase
         self::assertSame(0, $this->em->getRepository(Grade::class)->count([]));
     }
 
-    public function testFindForSheetAndSectionAndCounts(): void
+    public function testFindForEnrollmentsAndCounts(): void
     {
         $other = $this->enroll($this->learner('120017170002', 'Bello', 'Ana'), $this->sy, $this->section, $this->teacher);
+        $notAsked = $this->enroll($this->learner('120017170003', 'Cruz', 'Ana'), $this->sy, $this->section, $this->teacher);
         $this->grade($this->enrollment, $this->math, $this->term1, 88);
         $this->grade($other, $this->math, $this->term1, 75);
+        $this->grade($notAsked, $this->math, $this->term1, 70);
         $this->grade($this->enrollment, $this->science, $this->term1, 80);
         $this->grade($this->enrollment, $this->math, $this->term2, 85);
 
         $repository = $this->em->getRepository(Grade::class);
         self::assertInstanceOf(GradeRepository::class, $repository);
+        $ids = [$this->enrollment->getId(), $other->getId()];
 
-        $sheet = $repository->findForSheet($this->section, $this->math, $this->term1);
-        self::assertEqualsCanonicalizing([$this->enrollment->getId(), $other->getId()], array_keys($sheet));
+        $sheet = $repository->findForEnrollments($ids, $this->math, $this->term1);
+        self::assertEqualsCanonicalizing($ids, array_keys($sheet));
         self::assertSame(88, $sheet[$this->enrollment->getId()]->getValue());
+        self::assertSame([], $repository->findForEnrollments([], $this->math, $this->term1));
+        self::assertSame([], $repository->findForEnrollmentsByPeriod([], $this->term1));
 
-        $bySection = $repository->findForSection($this->section, $this->term1);
+        $bySection = $repository->findForEnrollmentsByPeriod($ids, $this->term1);
+        self::assertEqualsCanonicalizing($ids, array_keys($bySection));
         self::assertSame(88, $bySection[$this->enrollment->getId()][$this->math->getId()]->getValue());
         self::assertSame(80, $bySection[$this->enrollment->getId()][$this->science->getId()]->getValue());
         self::assertSame(75, $bySection[$other->getId()][$this->math->getId()]->getValue());
         self::assertArrayNotHasKey($this->science->getId(), $bySection[$other->getId()]);
 
-        self::assertSame(3, $repository->countForSchool($this->school, $this->term1));
+        self::assertSame(4, $repository->countForSchool($this->school, $this->term1));
+        self::assertSame(4, $repository->countForPeriod($this->term1));
+        self::assertSame(3, $repository->countForEnrollment($this->enrollment));
+        self::assertSame(1, $repository->countForEnrollment($other));
         self::assertSame(1, $repository->countForSchool($this->school, $this->term2));
-        self::assertSame(2, $repository->countForSubject($this->math));
+        self::assertSame(3, $repository->countForSubject($this->math));
     }
 
     public function testDeleteForSchoolRemovesOnlyThatSchoolsUnlocksForThePeriod(): void

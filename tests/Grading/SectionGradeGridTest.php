@@ -13,6 +13,8 @@ use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
+use App\Entity\TransferRequest;
+use App\Entity\TransferStatus;
 use App\Entity\User;
 use App\Grading\GradeRules;
 use App\Grading\GridColumn;
@@ -184,5 +186,29 @@ class SectionGradeGridTest extends KernelTestCase
         $cruz = array_values(array_filter($grid['rows'], static fn (array $r) => str_starts_with($r['learner']->name, 'CRUZ')))[0];
         self::assertFalse($cruz['learner']->editable);
         self::assertSame(75, $cruz['cells']['s'.$this->math->getId()]);
+    }
+
+    public function testATransferredOutLearnerKeepsTheGradesOfThisSection(): void
+    {
+        $abad = $this->enrolled('Abad');
+        $this->grade($abad, $this->math, 90);
+        $this->grade($abad, $this->music, 85);
+        $this->grade($abad, $this->arts, 90);
+        // as TransferManager::approve does: the same enrollment row moves to the receiving section
+        $to = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Brilliant');
+        $request = new TransferRequest($abad, $to, $this->teacher, new \DateTimeImmutable('2025-08-22 08:00'));
+        $request->decide(TransferStatus::Approved, $this->teacher, new \DateTimeImmutable('2025-08-22 09:00'));
+        $abad->moveTo($to);
+        $this->em->persist($request);
+        $this->em->flush();
+
+        $grid = $this->grid()->build($this->honest, $this->term1);
+
+        self::assertCount(1, $grid['rows']);
+        $row = $grid['rows'][0];
+        self::assertSame([false, 'Transferred out'], [$row['learner']->editable, $row['learner']->status]);
+        self::assertSame(90, $row['cells']['s'.$this->math->getId()]);
+        self::assertSame(88, $row['cells']['avg'.$this->mapeh->getId()]);
+        self::assertSame([0, 0], [self::byKey($grid['columns'])['s'.$this->math->getId()]->graded, self::byKey($grid['columns'])['s'.$this->math->getId()]->listed]);
     }
 }

@@ -108,6 +108,18 @@ class GradeRules
     }
 
     /**
+     * The enrollment ids of a sheet's rows, to look their grades up by.
+     *
+     * @param list<SheetLearner> $learners
+     *
+     * @return list<int>
+     */
+    public static function enrollmentIds(array $learners): array
+    {
+        return array_map(static fn (SheetLearner $learner) => (int) $learner->enrollment->getId(), $learners);
+    }
+
+    /**
      * A parent subject's grade: the rounded average of its components' grades, only when every component has one.
      *
      * @param array<int, ?int> $componentGrades by subject id

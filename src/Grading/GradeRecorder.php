@@ -21,7 +21,7 @@ use App\Service\SchoolClock;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Lock\LockFactory;
 
-/** Saves grade sheets and applies the principal's locks. A class's grades, and a school's locks, change one request at a time. */
+/** Saves grade sheets and applies the principal's locks. A class's grades, and a school's locks, change one request at a time; a save and a lock never overlap. */
 class GradeRecorder
 {
     public function __construct(
@@ -51,7 +51,9 @@ class GradeRecorder
         $section = $load->getSection();
         $subject = $load->getSubject();
 
-        return $this->locked(\sprintf('grades-%d-%d', $section->getId(), $subject->getId()), function () use ($load, $section, $subject, $period, $values, $by): int {
+        // the class's own lock keeps two saves of the class apart; a shared hold on the school's grade lock keeps
+        // the principal from locking the period, or relocking the class, while this save is past its check
+        return $this->locked(\sprintf('grades-%d-%d', $section->getId(), $subject->getId()), fn (): int => $this->locked('grade-lock-'.$section->getSchool()->getId(), function () use ($load, $section, $subject, $period, $values, $by): int {
             if (!$this->rules->isGradable($load)) {
                 throw new GradingException("This class isn't graded here.");
             }
@@ -60,17 +62,24 @@ class GradeRecorder
                 throw new GradingException($refusal);
             }
 
+            $learners = $this->rules->sheet($section);
+            // every value is checked before any grade changes, so a refusal leaves nothing half-applied
+            foreach ($learners as $learner) {
+                $value = $learner->editable ? ($values[(int) $learner->enrollment->getId()] ?? null) : null;
+                if (null !== $value && ($value < 60 || $value > 100)) {
+                    throw new GradingException('Enter a grade from 60 to 100.');
+                }
+            }
+
             $now = $this->clock->now();
-            $existing = $this->grades->findForSheet($section, $subject, $period);
+            // by enrollment: a learner who transferred out has moved section but keeps the grades given here
+            $existing = $this->grades->findForEnrollments(GradeRules::enrollmentIds($learners), $subject, $period);
             $graded = 0;
-            foreach ($this->rules->sheet($section) as $learner) {
+            foreach ($learners as $learner) {
                 $id = (int) $learner->enrollment->getId();
                 $grade = $existing[$id] ?? null;
                 if ($learner->editable && \array_key_exists($id, $values)) {
                     $value = $values[$id];
-                    if (null !== $value && ($value < 60 || $value > 100)) {
-                        throw new GradingException('Enter a grade from 60 to 100.');
-                    }
                     if (null === $value) {
                         if (null !== $grade) {
                             $this->entityManager->remove($grade);
@@ -92,7 +101,7 @@ class GradeRecorder
             $this->entityManager->flush();
 
             return $graded;
-        });
+        }, shared: true));
     }
 
     /** @throws GradingException */
@@ -172,16 +181,18 @@ class GradeRecorder
     }
 
     /**
+     * Runs $change holding the lock, exclusively or, when $shared, alongside other shared holders (never blocking).
+     *
      * @template T
      *
      * @param callable(): T $change
      *
      * @return T
      */
-    private function locked(string $key, callable $change): mixed
+    private function locked(string $key, callable $change, bool $shared = false): mixed
     {
         $lock = $this->lockFactory->createLock($key);
-        if (!$lock->acquire()) {
+        if (!($shared ? $lock->acquireRead() : $lock->acquire())) {
             throw new GradingException(LearnerLock::BUSY);
         }
 

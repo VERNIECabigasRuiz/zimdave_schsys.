@@ -9,6 +9,7 @@ use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\User;
 use App\Repository\EnrollmentRepository;
+use App\Repository\GradeRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +37,7 @@ class LearnerEnrollment
         private readonly ActivityLogger $activityLogger,
         private readonly ClockInterface $clock,
         private readonly ImageProcessor $images,
+        private readonly GradeRepository $grades,
     ) {
     }
 
@@ -187,7 +189,8 @@ class LearnerEnrollment
     }
 
     /**
-     * Takes the learner off the class list; the learner, the account and past years stay.
+     * Takes the learner off the class list; the learner, the account and past years stay. Refused once the
+     * learner has grades: removing the enrollment would delete them, and a learner who left is marked dropped.
      *
      * @throws PlanLimitException|EnrollmentException
      */
@@ -198,6 +201,9 @@ class LearnerEnrollment
         $this->lockEnrollment($enrollment, null, function () use ($enrollment): void {
             $learner = $enrollment->getLearner();
             $this->guard->assertNoPendingTransfer($learner);
+            if ($this->grades->countForEnrollment($enrollment) > 0) {
+                throw new EnrollmentException(\sprintf('%s has grades this school year. Mark the learner as dropped instead.', $learner->getUser()->getFullName()));
+            }
             if (null !== $reason = $this->planLimits->blockedReason($enrollment->getSchool())) {
                 throw new PlanLimitException($reason);
             }

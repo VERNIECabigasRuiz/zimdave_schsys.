@@ -312,6 +312,20 @@ class SchoolGradeControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
+    public function testSubjectOfAnotherGradeLevelIs404(): void
+    {
+        $grade7 = $this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics 7', 1);
+        $this->lockTerm1();
+        $url = $this->url(\sprintf('/sections/%d/subjects/%d/grades/%d/', $this->honest->getId(), $grade7->getId(), $this->term1->getId()));
+
+        $this->client->request('POST', $url.'unlock', ['_token' => $this->csrfToken(\sprintf('grade-unlock-class-%d-%d-%d', $this->honest->getId(), $grade7->getId(), $this->term1->getId()))]);
+        self::assertResponseStatusCodeSame(404);
+        self::assertSame(0, $this->unlockCount());
+
+        $this->client->request('POST', $url.'lock', ['_token' => $this->csrfToken(\sprintf('grade-lock-class-%d-%d-%d', $this->honest->getId(), $grade7->getId(), $this->term1->getId()))]);
+        self::assertResponseStatusCodeSame(404);
+    }
+
     public function testUnknownPeriodIs404(): void
     {
         $this->client->request('GET', $this->url('/grades?period=999999'));

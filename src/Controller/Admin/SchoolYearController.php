@@ -6,6 +6,8 @@ use App\Entity\GradingPeriod;
 use App\Entity\SchoolYear;
 use App\Entity\User;
 use App\Form\SchoolYearFormType;
+use App\Repository\GradeLockRepository;
+use App\Repository\GradeRepository;
 use App\Repository\SchoolYearRepository;
 use App\Service\ActivityLogger;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +28,8 @@ class SchoolYearController extends AbstractController
         private readonly SchoolYearRepository $schoolYears,
         private readonly EntityManagerInterface $entityManager,
         private readonly ActivityLogger $activityLogger,
+        private readonly GradeRepository $grades,
+        private readonly GradeLockRepository $locks,
     ) {
     }
 
@@ -78,6 +82,7 @@ class SchoolYearController extends AbstractController
     {
         $originalSystem = $schoolYear->getGradingSystem();
         $hadOpenPeriod = $schoolYear->hasOpenGradingPeriod();
+        $periodsBefore = $schoolYear->getGradingPeriods()->toArray();
         $form = $this->createForm(SchoolYearFormType::class, $schoolYear, ['with_periods' => true]);
         $form->handleRequest($request);
 
@@ -88,6 +93,15 @@ class SchoolYearController extends AbstractController
                 // The page normally redraws the period rows for the new system; without that, split evenly
                 $schoolYear->rebuildGradingPeriods();
             }
+        }
+
+        // Deleting a period deletes its grades and locks in every school, so a graded period stays
+        if ($form->isSubmitted() && $form->isValid() && null !== $graded = $this->firstGradedPeriodRemoved($schoolYear, $periodsBefore)) {
+            $form->get('gradingSystem')->addError(new FormError(\sprintf(
+                '%s has grades. Switching to %ss would delete them.',
+                $originalSystem->periodName().' '.$graded->getNumber(), // its label under the system it belongs to
+                strtolower($schoolYear->getGradingSystem()->periodName()),
+            )));
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -154,5 +168,23 @@ class SchoolYearController extends AbstractController
             ->setName(\sprintf('%d-%d', $startYear, $startYear + 1))
             ->setStartDate(new \DateTimeImmutable(\sprintf('%d-06-01', $startYear)))
             ->setEndDate(new \DateTimeImmutable(\sprintf('%d-04-30', $startYear + 1)));
+    }
+
+    /**
+     * The first period, by number, that the edit takes away although grades were entered or locked in it.
+     *
+     * @param list<GradingPeriod> $before the periods before the edit
+     */
+    private function firstGradedPeriodRemoved(SchoolYear $schoolYear, array $before): ?GradingPeriod
+    {
+        $removed = array_filter($before, static fn (GradingPeriod $period) => !$schoolYear->getGradingPeriods()->contains($period));
+        usort($removed, static fn (GradingPeriod $a, GradingPeriod $b) => $a->getNumber() <=> $b->getNumber());
+        foreach ($removed as $period) {
+            if ($this->grades->countForPeriod($period) > 0 || $this->locks->count(['gradingPeriod' => $period]) > 0) {
+                return $period;
+            }
+        }
+
+        return null;
     }
 }

@@ -2,9 +2,13 @@
 
 namespace App\Tests\Controller\Admin;
 
+use App\Entity\Grade;
+use App\Entity\GradeLevel;
+use App\Entity\GradeLock;
 use App\Entity\GradingPeriod;
 use App\Entity\GradingSystem;
 use App\Entity\SchoolYear;
+use App\Entity\Subject;
 
 class SchoolYearControllerTest extends AdminTestCase
 {
@@ -278,6 +282,84 @@ class SchoolYearControllerTest extends AdminTestCase
         self::assertSelectorTextContains('.form-card', 'Close grading for every period before switching between terms and quarters.');
         self::assertSame(GradingSystem::Terms, $this->findSchoolYear('2026-2027')->getGradingSystem());
         self::assertCount(3, $this->findSchoolYear('2026-2027')->getGradingPeriods());
+    }
+
+    /** A 2026-2027 school year of four closed quarters, with a grade in quarter $graded, a lock on quarter $locked, or both. */
+    private function quartersWith(?int $graded, ?int $locked = null): SchoolYear
+    {
+        $sy = (new SchoolYear())
+            ->setName('2026-2027')
+            ->setStartDate(new \DateTimeImmutable('2026-06-01'))
+            ->setEndDate(new \DateTimeImmutable('2027-04-30'))
+            ->setGradingSystem(GradingSystem::Quarters);
+        $sy->rebuildGradingPeriods();
+        $this->em->persist($sy);
+        $this->em->flush();
+
+        // in another school than any the admin is looking at: grades anywhere count
+        $school = $this->school('303196', 'Pagsabungan NHS');
+        if (null !== $graded) {
+            $section = $this->newSection($school, $sy, GradeLevel::Grade8, 'Honest');
+            $math = (new Subject($school, $sy))->setGradeLevel(GradeLevel::Grade8)->setCode('MATH8')->setName('Mathematics')->setPosition(1);
+            $math->setMeetingsPerWeek(5);
+            $this->em->persist($math);
+            $enrollment = $this->enroll($this->learner('120017170001', 'Abad', 'Ana'), $sy, $section, $this->admin);
+            $this->em->persist(new Grade($enrollment, $math, $sy->getGradingPeriod($graded), 90, $this->admin, new \DateTimeImmutable('2027-04-20')));
+        }
+        if (null !== $locked) {
+            $this->em->persist(new GradeLock($school, $sy->getGradingPeriod($locked), $this->admin, new \DateTimeImmutable('2027-04-21')));
+        }
+        $this->em->flush();
+
+        return $sy;
+    }
+
+    public function testSwitchingToTermsIsRefusedWhenQuarter4HasGrades(): void
+    {
+        $sy = $this->quartersWith(graded: 4);
+
+        // the page redraws three term rows, so the form itself drops quarter 4
+        $this->submitEditWithPeriods(
+            $sy,
+            ['gradingSystem' => 'terms'],
+            [['2026-06-01', '2026-09-15'], ['2026-09-16', '2026-12-18'], ['2027-01-04', '2027-04-30']],
+        );
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Quarter 4 has grades. Switching to terms would delete them.');
+        $saved = $this->findSchoolYear('2026-2027');
+        self::assertSame(GradingSystem::Quarters, $saved->getGradingSystem());
+        self::assertCount(4, $saved->getGradingPeriods());
+        self::assertSame(1, $this->em->getRepository(Grade::class)->count([]));
+    }
+
+    public function testSwitchingToTermsIsRefusedWhenQuarter4IsLocked(): void
+    {
+        $sy = $this->quartersWith(graded: null, locked: 4);
+
+        // without the redrawn rows the periods are rebuilt on save
+        $this->client->request('GET', '/admin/school-years/'.$sy->getId().'/edit');
+        $this->client->submitForm('Save changes', ['school_year_form[gradingSystem]' => 'terms']);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Quarter 4 has grades. Switching to terms would delete them.');
+        self::assertCount(4, $this->findSchoolYear('2026-2027')->getGradingPeriods());
+        self::assertSame(1, $this->em->getRepository(GradeLock::class)->count([]));
+    }
+
+    public function testSwitchingToTermsKeepsTheGradesOfTheQuartersThatStay(): void
+    {
+        $sy = $this->quartersWith(graded: 1, locked: 1);
+
+        $this->client->request('GET', '/admin/school-years/'.$sy->getId().'/edit');
+        $this->client->submitForm('Save changes', ['school_year_form[gradingSystem]' => 'terms']);
+
+        self::assertResponseRedirects('/admin/school-years');
+        $saved = $this->findSchoolYear('2026-2027');
+        self::assertSame(GradingSystem::Terms, $saved->getGradingSystem());
+        self::assertCount(3, $saved->getGradingPeriods());
+        self::assertSame(1, $this->em->getRepository(Grade::class)->count([]));
+        self::assertSame(1, $this->em->getRepository(GradeLock::class)->count([]));
     }
 
     public function testOpenAndCloseQuarterGrading(): void

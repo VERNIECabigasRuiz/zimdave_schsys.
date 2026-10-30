@@ -45,7 +45,8 @@ class SectionGradeGrid
     {
         $subjects = $this->subjects->findForSection($section);
         $learners = $this->rules->sheet($section);
-        $saved = $this->grades->findForSection($section, $period);
+        // by enrollment: a learner who transferred out has moved section but keeps the grades given here
+        $saved = $this->grades->findForEnrollmentsByPeriod(GradeRules::enrollmentIds($learners), $period);
 
         $teachers = [];
         foreach ($this->loads->findForSection($section) as $load) {

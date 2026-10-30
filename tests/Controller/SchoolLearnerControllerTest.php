@@ -3,12 +3,14 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Enrollment;
+use App\Entity\Grade;
 use App\Entity\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
+use App\Entity\Subject;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Entity\User;
@@ -787,6 +789,27 @@ class SchoolLearnerControllerTest extends AdminTestCase
         self::assertContains('Moved 111111111111 from Grade 7 – Sampaguita to Grade 7 – Rosal', $actions);
         self::assertContains('Reset password of learner 111111111111', $actions);
         self::assertContains('Unenrolled 111111111111 from Grade 7 – Rosal', $actions);
+    }
+
+    public function testUnenrollOfALearnerWithGradesIsRefused(): void
+    {
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+        $this->sy->rebuildGradingPeriods();
+        $math = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade7)->setCode('MATH7')->setName('Mathematics')->setPosition(1);
+        $math->setMeetingsPerWeek(5);
+        $this->em->persist($math);
+        $enrollment = $this->em->getRepository(Enrollment::class)->findOneBy(['learner' => $learner]);
+        $this->em->persist(new Grade($enrollment, $math, $this->sy->getGradingPeriod(1), 90, $this->maria, new \DateTimeImmutable()));
+        $this->em->flush();
+        $show = $this->url($this->school, '/'.$learner->getId());
+
+        $crawler = $this->client->request('GET', $show);
+        $this->client->submit($crawler->selectButton('Unenroll')->form());
+
+        self::assertResponseRedirects($show);
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--error', 'Abad, Ana has grades this school year. Mark the learner as dropped instead.');
+        self::assertNotNull($this->currentEnrollment($learner));
     }
 
     public function testShowListsHistory(): void

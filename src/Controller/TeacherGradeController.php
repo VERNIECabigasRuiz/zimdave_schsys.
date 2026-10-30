@@ -54,10 +54,11 @@ class TeacherGradeController extends AbstractController
                 $ungraded[] = $load;
                 continue;
             }
-            $editable = array_filter($this->rules->sheet($load->getSection()), static fn (SheetLearner $l) => $l->editable);
+            $editable = array_values(array_filter($this->rules->sheet($load->getSection()), static fn (SheetLearner $l) => $l->editable));
+            $ids = GradeRules::enrollmentIds($editable);
             $cells = [];
             foreach ($periods as $period) {
-                $saved = $this->grades->findForSheet($load->getSection(), $load->getSubject(), $period);
+                $saved = $this->grades->findForEnrollments($ids, $load->getSubject(), $period);
                 $cells[] = [
                     'period' => $period,
                     'graded' => \count(array_filter($editable, static fn (SheetLearner $l) => isset($saved[$l->enrollment->getId()]))),
@@ -93,7 +94,8 @@ class TeacherGradeController extends AbstractController
         $section = $load->getSection();
         $subject = $load->getSubject();
         $learners = $this->rules->sheet($section);
-        $saved = $this->grades->findForSheet($section, $subject, $period);
+        // by enrollment: a learner who transferred out has moved section but keeps the grades given here
+        $saved = $this->grades->findForEnrollments(GradeRules::enrollmentIds($learners), $subject, $period);
         $gradable = $this->rules->isGradable($load);
         $status = $gradable ? $this->rules->status($section, $subject, $period) : null;
         $refusal = null === $status ? "This class isn't graded here." : $this->rules->refusalToEdit($status, $period);

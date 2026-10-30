@@ -207,12 +207,12 @@ class SchoolGradeController extends AbstractController
         return $section;
     }
 
-    /** @return array{Section, Subject} a gradable class of the school */
+    /** @return array{Section, Subject} a gradable class of the school: a subject the section takes */
     private function requireClass(School $school, int $sectionId, int $subjectId): array
     {
         $section = $this->requireSection($school, $sectionId);
         $subject = $this->subjects->find($subjectId);
-        if (null === $subject || $subject->getSchool()->getId() !== $school->getId() || !$this->rules->isGradableSubject($section, $subject)) {
+        if (null === $subject || !\in_array($subject, $this->subjects->findForSection($section), true) || !$this->rules->isGradableSubject($section, $subject)) {
             throw $this->createNotFoundException();
         }
 

@@ -54,8 +54,8 @@ class SchoolGradeOverview
             foreach ($this->loads->findForSection($section) as $load) {
                 $teachers[$load->getSubject()->getId()] = $load->getTeacher()->getFullName();
             }
-            $editable = array_filter($this->rules->sheet($section), static fn (SheetLearner $learner) => $learner->editable);
-            $saved = $this->grades->findForSection($section, $period);
+            $editable = array_values(array_filter($this->rules->sheet($section), static fn (SheetLearner $learner) => $learner->editable));
+            $saved = $this->grades->findForEnrollmentsByPeriod(GradeRules::enrollmentIds($editable), $period);
 
             foreach ($subjects as $subject) {
                 $graded = 0;
