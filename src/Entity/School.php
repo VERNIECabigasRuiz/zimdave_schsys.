@@ -91,11 +91,11 @@ class School
 
     /** Who certifies the SF8 (the "Certified Correct" block). */
     #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\Length(max: 100)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
     private ?string $sf8CertifierName = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\Length(max: 100)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
     private ?string $sf8CertifierPosition = null;
 
     public function getId(): ?int

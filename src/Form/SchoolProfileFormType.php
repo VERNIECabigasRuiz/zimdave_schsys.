@@ -49,6 +49,16 @@ class SchoolProfileFormType extends AbstractType
                 'required' => false,
                 'default_protocol' => 'https',
                 'attr' => ['placeholder' => 'https://facebook.com/yourschool'],
+            ])
+            ->add('sf8CertifierName', TextType::class, [
+                'label' => 'SF8 certified correct by',
+                'required' => false,
+                'help' => 'Printed under "Certified correct" on the SF8, e.g. the school nurse.',
+            ])
+            ->add('sf8CertifierPosition', TextType::class, [
+                'label' => 'Position',
+                'required' => false,
+                'attr' => ['placeholder' => 'e.g. School Nurse'],
             ]);
     }
 

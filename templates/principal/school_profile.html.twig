@@ -41,6 +41,14 @@
                 </div>
                 {{ form_row(form.facebookUrl) }}
 
+                <fieldset class="periods">
+                    <legend>School forms</legend>
+                    <div class="form-grid">
+                        {{ form_row(form.sf8CertifierName) }}
+                        {{ form_row(form.sf8CertifierPosition) }}
+                    </div>
+                </fieldset>
+
                 <div class="form-actions">
                     <button class="btn btn--primary" type="submit">Save school profile</button>
                 </div>

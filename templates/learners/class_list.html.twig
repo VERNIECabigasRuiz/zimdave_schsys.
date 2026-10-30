@@ -29,6 +29,7 @@
                 <a class="btn btn--ghost" href="{{ path('teacher_class_nutrition') }}">Nutrition · SF8</a>
             {% else %}
                 <a class="btn btn--ghost" href="{{ path('school_attendance_section', {id: school.id, section: section.id}) }}">Attendance · SF2</a>
+                <a class="btn btn--ghost" href="{{ path('school_nutrition_section', {id: school.id, section: section.id, period: 'baseline'}) }}">Nutrition · SF8</a>
             {% endif %}
             <a class="btn btn--primary" href="{{ path(routes ~ '_enroll', route_params) }}">+ Enroll learner</a>
         </div>
