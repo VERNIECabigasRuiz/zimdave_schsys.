@@ -1,0 +1,308 @@
+<?php
+
+namespace App\Tests\Grading;
+
+use App\Entity\ActivityLog;
+use App\Entity\Enrollment;
+use App\Entity\Grade;
+use App\Entity\GradeLevel;
+use App\Entity\GradeLock;
+use App\Entity\GradeUnlock;
+use App\Entity\GradingPeriod;
+use App\Entity\School;
+use App\Entity\SchoolYear;
+use App\Entity\Section;
+use App\Entity\SexAtBirth;
+use App\Entity\Sf1Remark;
+use App\Entity\Subject;
+use App\Entity\TeachingLoad;
+use App\Entity\User;
+use App\Grading\GradeRecorder;
+use App\Grading\GradeRules;
+use App\Grading\GradingException;
+use App\Repository\EnrollmentRepository;
+use App\Repository\GradeLockRepository;
+use App\Repository\GradeRepository;
+use App\Repository\GradeUnlockRepository;
+use App\Repository\TransferRequestRepository;
+use App\Service\ActivityLogger;
+use App\Service\SchoolClock;
+use App\Tests\SchoolFixturesTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Clock\ClockInterface;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\Lock\LockFactory;
+
+class GradeRecorderTest extends KernelTestCase
+{
+    use ClockSensitiveTrait;
+    use SchoolFixturesTrait;
+
+    private EntityManagerInterface $em;
+    private SchoolYear $sy;
+    private School $school;
+    private Section $honest;
+    private User $teacher;
+    private User $principal;
+    private Subject $math;
+    private TeachingLoad $load;
+    private GradingPeriod $term1;
+    /** @var list<Enrollment> */
+    private array $enrolled = [];
+    private int $lrn = 120017170100;
+
+    protected function setUp(): void
+    {
+        self::bootKernel();
+        static::mockTime('2025-08-22 10:00:00');
+        $this->em = static::getContainer()->get(EntityManagerInterface::class);
+        $this->clearSchoolData();
+        $this->sy = $this->schoolYear(2025, current: true);
+        $this->sy->rebuildGradingPeriods();
+        $this->em->flush();
+        $this->term1 = $this->sy->getGradingPeriod(1);
+        $this->school = $this->school('303196', 'Pagsabungan National High School');
+        $this->teacher = $this->plainUser('dave', User::ROLE_TEACHER);
+        $this->principal = $this->plainUser('rosa', User::ROLE_PRINCIPAL);
+        $this->honest = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Honest');
+        $this->math = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade8)->setCode('MATH8')->setName('Mathematics')->setPosition(1);
+        $this->math->setMeetingsPerWeek(5);
+        $this->em->persist($this->math);
+        $this->load = new TeachingLoad($this->honest, $this->math, $this->teacher);
+        $this->em->persist($this->load);
+        foreach (['Arnol', 'Bañez', 'Cruz'] as $name) {
+            $this->enrolled[] = $this->enrolled($name, $this->honest);
+        }
+        $this->em->flush();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->clearSchoolData();
+        parent::tearDown();
+    }
+
+    private function enrolled(string $last, Section $section): Enrollment
+    {
+        $learner = $this->learner((string) ++$this->lrn, $last, 'Learner')->setSex(SexAtBirth::Male);
+
+        return $this->enroll($learner, $this->sy, $section, $this->teacher);
+    }
+
+    private function recorder(): GradeRecorder
+    {
+        $c = static::getContainer();
+        $rules = new GradeRules(
+            $c->get(GradeRepository::class),
+            $c->get(GradeLockRepository::class),
+            $c->get(GradeUnlockRepository::class),
+            $c->get(EnrollmentRepository::class),
+            $c->get(TransferRequestRepository::class),
+        );
+
+        return new GradeRecorder(
+            $this->em,
+            $c->get(LockFactory::class),
+            $rules,
+            $c->get(GradeRepository::class),
+            $c->get(GradeLockRepository::class),
+            $c->get(GradeUnlockRepository::class),
+            $c->get(ActivityLogger::class),
+            new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
+        );
+    }
+
+    private function id(int $i): int
+    {
+        return $this->enrolled[$i]->getId();
+    }
+
+    /** @param array<int, ?int> $values */
+    private function save(array $values): int
+    {
+        return $this->recorder()->saveSheet($this->load, $this->term1, $values, $this->teacher);
+    }
+
+    private function refusal(callable $action): string
+    {
+        try {
+            $action();
+        } catch (GradingException $e) {
+            return $e->getMessage();
+        }
+        self::fail('Expected a GradingException.');
+    }
+
+    private function lock(): void
+    {
+        $this->em->persist(new GradeLock($this->school, $this->term1, $this->principal, new \DateTimeImmutable('2025-08-22 10:00')));
+        $this->em->flush();
+    }
+
+    private function setOpen(bool $open): void
+    {
+        $this->term1->setOpen($open);
+        $this->em->flush();
+    }
+
+    private function gradeCount(): int
+    {
+        return $this->em->getRepository(Grade::class)->count([]);
+    }
+
+    private function logged(string $action): bool
+    {
+        foreach ($this->em->getRepository(ActivityLog::class)->findAll() as $log) {
+            if ($log->getAction() === $action) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function testSaveUpsertsAndDeletes(): void
+    {
+        $this->setOpen(true);
+
+        self::assertSame(2, $this->save([$this->id(0) => 85, $this->id(1) => 90, $this->id(2) => null]));
+        self::assertSame(2, $this->gradeCount());
+        self::assertTrue($this->logged('Saved Term 1 grades of Mathematics – Grade 8 – HONEST'));
+
+        self::assertSame(2, $this->save([$this->id(0) => 88, $this->id(1) => null, $this->id(2) => 100]));
+        self::assertSame(2, $this->gradeCount());
+        $grades = $this->em->getRepository(Grade::class)->findAll();
+        $values = [];
+        foreach ($grades as $grade) {
+            $values[$grade->getEnrollment()->getId()] = $grade->getValue();
+        }
+        self::assertSame([$this->id(0) => 88, $this->id(2) => 100], $values);
+    }
+
+    public function testSaveRejectsOutOfRangeValue(): void
+    {
+        $this->setOpen(true);
+
+        self::assertSame('Enter a grade from 60 to 100.', $this->refusal(fn () => $this->save([$this->id(0) => 59])));
+        self::assertSame(0, $this->gradeCount());
+    }
+
+    public function testSaveRefusedWhenLocked(): void
+    {
+        $this->setOpen(true);
+        $this->save([$this->id(0) => 85]);
+        $this->lock();
+
+        $message = $this->refusal(fn () => $this->save([$this->id(0) => 70, $this->id(1) => 90]));
+
+        self::assertSame('Term 1 is locked by the principal.', $message);
+        $this->em->clear();
+        $grades = $this->em->getRepository(Grade::class)->findAll();
+        self::assertCount(1, $grades);
+        self::assertSame(85, $grades[0]->getValue());
+    }
+
+    public function testSaveRefusedWhenClosed(): void
+    {
+        $this->setOpen(false);
+
+        self::assertSame("Term 1 isn't open for grading.", $this->refusal(fn () => $this->save([$this->id(0) => 85])));
+        self::assertSame(0, $this->gradeCount());
+    }
+
+    public function testSaveAllowedWhenUnlockedAfterAdminClosed(): void
+    {
+        $this->setOpen(true);
+        $this->save([$this->id(0) => 85]);
+        $this->lock();
+        $this->setOpen(false);
+        $this->recorder()->unlockClass($this->honest, $this->math, $this->term1, $this->principal);
+
+        self::assertSame(2, $this->save([$this->id(0) => 86, $this->id(1) => 91]));
+        self::assertSame(2, $this->gradeCount());
+    }
+
+    public function testIgnoresDroppedAndOffSheetIds(): void
+    {
+        $this->setOpen(true);
+        $this->enrolled[2]->setRemarkCode(Sf1Remark::Dropped);
+        $other = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Brilliant');
+        $stranger = $this->enrolled('Zamora', $other);
+        $this->em->flush();
+
+        $graded = $this->save([$this->id(0) => 85, $this->id(2) => 90, $stranger->getId() => 95, 999999 => 80]);
+
+        self::assertSame(1, $graded);
+        self::assertSame(1, $this->gradeCount());
+    }
+
+    public function testLockClearsUnlocks(): void
+    {
+        $this->setOpen(true);
+        $this->em->persist(new GradeUnlock($this->honest, $this->math, $this->term1, $this->principal, new \DateTimeImmutable('2025-08-22 11:00')));
+        $this->em->persist(new GradeUnlock($this->honest, $this->math, $this->sy->getGradingPeriod(2), $this->principal, new \DateTimeImmutable('2025-08-22 11:00')));
+        $this->em->flush();
+
+        $this->recorder()->lockPeriod($this->school, $this->term1, $this->principal);
+
+        self::assertSame(1, $this->em->getRepository(GradeLock::class)->count([]));
+        $unlocks = $this->em->getRepository(GradeUnlock::class)->findAll();
+        self::assertCount(1, $unlocks);
+        self::assertSame(2, $unlocks[0]->getGradingPeriod()->getNumber(), "another period's unlock stays");
+        self::assertSame('Term 1 is already locked.', $this->refusal(fn () => $this->recorder()->lockPeriod($this->school, $this->term1, $this->principal)));
+        self::assertTrue($this->logged('Locked Term 1 grades'));
+    }
+
+    public function testLockRefusedWhenNeverOpened(): void
+    {
+        $this->setOpen(false);
+
+        self::assertSame("Term 1 hasn't been opened for grading yet.", $this->refusal(fn () => $this->recorder()->lockPeriod($this->school, $this->term1, $this->principal)));
+        self::assertSame(0, $this->em->getRepository(GradeLock::class)->count([]));
+    }
+
+    public function testLockAllowedAfterAdminClosedWithGrades(): void
+    {
+        $this->setOpen(true);
+        $this->save([$this->id(0) => 85]);
+        $this->setOpen(false);
+
+        $this->recorder()->lockPeriod($this->school, $this->term1, $this->principal);
+
+        self::assertSame(1, $this->em->getRepository(GradeLock::class)->count([]));
+    }
+
+    public function testUnlockAndRelockClassRefusals(): void
+    {
+        $this->setOpen(true);
+        $recorder = $this->recorder();
+
+        self::assertSame('Term 1 is not locked.', $this->refusal(fn () => $recorder->unlockClass($this->honest, $this->math, $this->term1, $this->principal)));
+        self::assertSame('This class is not unlocked.', $this->refusal(fn () => $recorder->lockClass($this->honest, $this->math, $this->term1)));
+
+        $recorder->lockPeriod($this->school, $this->term1, $this->principal);
+        $recorder->unlockClass($this->honest, $this->math, $this->term1, $this->principal);
+        self::assertSame('This class is already unlocked.', $this->refusal(fn () => $recorder->unlockClass($this->honest, $this->math, $this->term1, $this->principal)));
+
+        $recorder->lockClass($this->honest, $this->math, $this->term1);
+        self::assertSame(0, $this->em->getRepository(GradeUnlock::class)->count([]));
+        self::assertTrue($this->logged('Locked Term 1 grades of Mathematics – Grade 8 – HONEST again'));
+    }
+
+    public function testUnlockPeriod(): void
+    {
+        $this->setOpen(true);
+        $recorder = $this->recorder();
+        self::assertSame('Term 1 is not locked.', $this->refusal(fn () => $recorder->unlockPeriod($this->school, $this->term1)));
+
+        $recorder->lockPeriod($this->school, $this->term1, $this->principal);
+        $recorder->unlockClass($this->honest, $this->math, $this->term1, $this->principal);
+        $recorder->unlockPeriod($this->school, $this->term1);
+
+        self::assertSame(0, $this->em->getRepository(GradeLock::class)->count([]));
+        self::assertSame(0, $this->em->getRepository(GradeUnlock::class)->count([]));
+        self::assertTrue($this->logged('Unlocked Term 1 grades'));
+        self::assertSame(1, $this->save([$this->id(0) => 85]));
+    }
+}
