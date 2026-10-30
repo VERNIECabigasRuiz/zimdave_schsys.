@@ -1,0 +1,86 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{# A class's grade sheet for a period. Needs load, period, periods, learners (SheetLearner list), saved
+   (Grade by enrollment id), status (nullable ClassGradeStatus), refusal (nullable), form (nullable) and editable. #}
+
+{% block title %}{{ period.label }} grades · {{ load.subject.name }} · {{ load.section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    {% set section = load.section %}
+    <div class="page-head">
+        <div>
+            <h1>{{ load.subject.name }} · {{ section.label }}</h1>
+            <p>{{ period.label }} grades · {{ section.school.name }} · S.Y. {{ section.schoolYear.name }}</p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--ghost" href="{{ path('teacher_grades') }}">All my classes</a>
+        </div>
+    </div>
+
+    <nav class="filters grade-tabs" aria-label="Grading period">
+        {% for other in periods %}
+            <a class="btn btn--sm {{ other == period ? 'btn--primary' : 'btn--ghost' }}"
+               href="{{ path('teacher_grades_sheet', {load: load.id, period: other.id}) }}"{{ other == period ? ' aria-current="page"' }}>{{ other.label }}</a>
+        {% endfor %}
+    </nav>
+
+    <p class="grade-status">
+        {% if status %}
+            {% set tone = {open: 'badge--green', locked: 'badge--rose', unlocked: 'badge--amber'}[status.value] ?? '' %}
+            <span class="badge {{ tone }}">{{ status.label }}</span>
+        {% endif %}
+        {% if refusal %}<span class="muted">{{ refusal }}</span>{% elseif editable %}<span class="muted">Whole numbers from 60 to 100. Leave a box empty for a learner not graded yet.</span>{% endif %}
+    </p>
+
+    <div class="card table-card grade-sheet">
+        {% if form %}
+            {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+        {% endif %}
+        <table class="table roll-call__table">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>LRN</th>
+                    <th>Learner</th>
+                    <th>Grade</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for learner in learners %}
+                    {% if loop.first or learner.male != learners[loop.index0 - 1].male %}
+                        <tr class="roll-call__group"><th colspan="5">{{ learner.male ? 'Male' : 'Female' }}</th></tr>
+                    {% endif %}
+                    {% set id = learner.enrollment.id %}
+                    {% set field = editable and learner.editable ? (form.grades[id] ?? null) : null %}
+                    {% set grade = saved[id] ?? null %}
+                    <tr{% if not learner.editable %} class="roll-call__out"{% endif %}>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ learner.lrn ?? '—' }}</td>
+                        <td class="grade-sheet__name">{{ learner.name }}</td>
+                        <td>
+                            {% if field %}
+                                {{ form_widget(field, {attr: {'aria-label': 'Grade of ' ~ learner.name, inputmode: 'numeric', min: 60, max: 100}}) }}
+                                {{ form_errors(field) }}
+                            {% else %}
+                                {{ grade ? grade.value : '—' }}
+                            {% endif %}
+                        </td>
+                        <td>{{ learner.status }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">No learners in this section.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if form %}
+            {% if editable %}
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Save grades</button>
+                </div>
+            {% endif %}
+            {{ form_end(form, {render_rest: editable}) }}
+        {% endif %}
+    </div>
+{% endblock %}

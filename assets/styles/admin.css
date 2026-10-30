@@ -1758,6 +1758,16 @@ span.sf2-cell {
     width: 12rem;
 }
 
+.grade-sheet input[type="number"] {
+    width: 5.5rem;
+}
+
+.grade-status {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
 @media (max-width: 900px) {
     .nutrition-cards {
         grid-template-columns: 1fr;

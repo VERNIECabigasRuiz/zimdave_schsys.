@@ -23,6 +23,7 @@
                 {{ _self.nav_link('Dashboard', path('teacher_dashboard'), route == 'teacher_dashboard') }}
                 {% if has_teaching_load(app.user) %}
                     {{ _self.nav_link('My Teaching Load', path('teacher_load'), route starts with 'teacher_load') }}
+                    {{ _self.nav_link('My Grades', path('teacher_grades'), route starts with 'teacher_grades') }}
                 {% endif %}
                 {% if advises_section(app.user) %}
                     {% set attendance_route = route starts with 'teacher_class_attendance' or route == 'teacher_class_sf2' %}
