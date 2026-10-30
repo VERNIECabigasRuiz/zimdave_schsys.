@@ -49,8 +49,18 @@ class GradeRules
     /** A principal's lock wins over the period being open; a class unlocked for corrections stays so however the period is set. */
     public function status(Section $section, Subject $subject, GradingPeriod $period): ClassGradeStatus
     {
-        if (null !== $this->locks->findFor($section->getSchool(), $period)) {
-            return null !== $this->unlocks->findFor($section, $subject, $period) ? ClassGradeStatus::Unlocked : ClassGradeStatus::Locked;
+        if (null === $this->locks->findFor($section->getSchool(), $period)) {
+            return self::statusFor($period, locked: false, unlocked: false);
+        }
+
+        return self::statusFor($period, locked: true, unlocked: null !== $this->unlocks->findFor($section, $subject, $period));
+    }
+
+    /** status() from a lock and an unlock already loaded: whether the school has locked the period, and whether the class is unlocked. */
+    public static function statusFor(GradingPeriod $period, bool $locked, bool $unlocked): ClassGradeStatus
+    {
+        if ($locked) {
+            return $unlocked ? ClassGradeStatus::Unlocked : ClassGradeStatus::Locked;
         }
 
         return $period->isOpen() ? ClassGradeStatus::Open : ClassGradeStatus::Closed;

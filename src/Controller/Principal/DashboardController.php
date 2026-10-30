@@ -122,6 +122,17 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('school_nutrition', ['id' => $school->getId()]);
     }
 
+    #[Route('/grades', name: 'principal_grades', methods: ['GET'])]
+    public function grades(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_grades', ['id' => $school->getId()]);
+    }
+
     #[Route('/subjects', name: 'principal_subjects', methods: ['GET'])]
     public function subjects(#[CurrentUser] User $user): Response
     {

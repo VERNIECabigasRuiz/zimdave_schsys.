@@ -1,0 +1,98 @@
+{% extends layout %}
+
+{# The school's grades for a period: lock status, every gradable class's progress, and the principal's
+   lock controls. Needs school, school_year, periods, period (nullable), lock (nullable), classes
+   (list of ClassProgress), complete, can_lock and lock_form (nullable). #}
+
+{% block title %}Grades · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Grades</h1>
+            <p>{{ school.name }} · S.Y. {{ school_year.name }}{% if period %} · {{ period.label }}{% endif %}</p>
+        </div>
+    </div>
+
+    {% if period %}
+        <nav class="filters grade-tabs" aria-label="Grading period">
+            {% for other in periods %}
+                <a class="btn btn--sm {{ other == period ? 'btn--primary' : 'btn--ghost' }}"
+                   href="{{ path('school_grades', {id: school.id, period: other.id}) }}"{{ other == period ? ' aria-current="page"' }}>{{ other.label }}</a>
+            {% endfor %}
+        </nav>
+
+        <div class="card form-card grade-lock">
+            <p class="grade-lock-status">
+                {% if lock %}
+                    <span class="badge badge--rose">Locked</span>
+                    Locked on {{ lock.lockedAt|date('M j, Y') }} by {{ lock.lockedBy.fullName }}
+                {% elseif period.open %}
+                    <span class="badge badge--green">Open</span>
+                    Open · not locked
+                {% else %}
+                    <span class="badge">Closed</span>
+                    Closed for grading
+                {% endif %}
+            </p>
+            {% if lock_form %}
+                {{ form_start(lock_form, {attr: {class: 'form'}}) }}
+                    {{ form_row(lock_form.confirm) }}
+                    <div class="form-actions">
+                        <button class="btn btn--primary" type="submit">Lock {{ period.label }}</button>
+                    </div>
+                {{ form_end(lock_form) }}
+                <p class="muted">Locking stops every teacher from changing {{ period.label }} grades. You can unlock one class for a correction, or the whole period.</p>
+            {% elseif lock and can_lock %}
+                <form method="post" action="{{ path('school_grades_unlock', {id: school.id, period: period.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('grade-unlock-' ~ period.id) }}">
+                    <button class="btn btn--ghost" type="submit">Unlock {{ period.label }}</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="card table-card">
+            <table class="table grade-classes">
+                <thead>
+                    <tr>
+                        <th>Grade</th>
+                        <th>Section</th>
+                        <th>Subject</th>
+                        <th>Teacher</th>
+                        <th>Graded / listed</th>
+                        <th>Status</th>
+                        {% if can_lock and lock %}<th><span class="sr-only">Actions</span></th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class in classes %}
+                        {% set status = class.status.value %}
+                        <tr data-class="{{ class.section.id }}-{{ class.subject.id }}">
+                            <td>{{ class.section.gradeLevel.label }}</td>
+                            <td><a href="{{ path('school_grades_section', {id: school.id, section: class.section.id, period: period.id}) }}">{{ class.section.label }}</a></td>
+                            <td>{{ class.subject.name }}</td>
+                            <td>{{ class.teacherName ?? '—' }}</td>
+                            <td>{{ class.graded }} / {{ class.listed }}</td>
+                            <td><span class="badge grade-status {{ status == 'open' ? 'badge--green' : (status == 'unlocked' ? 'badge--amber' : (status == 'locked' ? 'badge--rose' : '')) }}">{{ class.status.label }}</span></td>
+                            {% if can_lock and lock %}
+                                <td class="table__actions">
+                                    {% set action = status == 'unlocked' ? 'lock' : 'unlock' %}
+                                    <form method="post" action="{{ path('school_grades_' ~ action ~ '_class', {id: school.id, section: class.section.id, subject: class.subject.id, period: period.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('grade-' ~ action ~ '-class-' ~ class.section.id ~ '-' ~ class.subject.id ~ '-' ~ period.id) }}">
+                                        <button class="btn btn--ghost btn--sm" type="submit">{{ action == 'lock' ? 'Lock again' : 'Unlock' }}</button>
+                                    </form>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="{{ can_lock and lock ? 7 : 6 }}" class="empty">No classes are graded here this school year.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="grade-summary">{{ complete }} of {{ classes|length }} classes complete</p>
+        <p class="muted">A class is complete when every learner who can be graded has a grade. Grades 1 to 10 only; a subject with components is graded through its components.</p>
+    {% else %}
+        <div class="card empty">This school year has no grading periods yet.</div>
+    {% endif %}
+{% endblock %}

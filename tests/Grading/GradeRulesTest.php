@@ -164,6 +164,19 @@ class GradeRulesTest extends KernelTestCase
         self::assertSame('unlocked', ClassGradeStatus::Unlocked->value);
     }
 
+    public function testStatusFromLoadedLocks(): void
+    {
+        $this->setOpen(false);
+        self::assertSame(ClassGradeStatus::Closed, GradeRules::statusFor($this->term1, locked: false, unlocked: false));
+        self::assertSame(ClassGradeStatus::Locked, GradeRules::statusFor($this->term1, locked: true, unlocked: false));
+        self::assertSame(ClassGradeStatus::Unlocked, GradeRules::statusFor($this->term1, locked: true, unlocked: true));
+        // an unlock without the school's lock means nothing
+        self::assertSame(ClassGradeStatus::Closed, GradeRules::statusFor($this->term1, locked: false, unlocked: true));
+        $this->setOpen(true);
+        self::assertSame(ClassGradeStatus::Open, GradeRules::statusFor($this->term1, locked: false, unlocked: true));
+        self::assertSame(ClassGradeStatus::Locked, GradeRules::statusFor($this->term1, locked: true, unlocked: false));
+    }
+
     public function testRefusalMessages(): void
     {
         $rules = $this->rules();

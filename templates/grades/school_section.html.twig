@@ -1,0 +1,24 @@
+{% extends layout %}
+
+{# A section's grades for the school side, read-only. Needs school, section, periods, period (nullable) and grid (nullable). #}
+
+{% block title %}Grades · {{ section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Grades · {{ section.label }}</h1>
+            <p>{{ school.name }} · S.Y. {{ section.schoolYear.name }}{% if period %} · {{ period.label }}{% endif %}</p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--ghost" href="{{ path('school_grades', period ? {id: school.id, period: period.id} : {id: school.id}) }}">All classes</a>
+        </div>
+    </div>
+
+    {% if period and grid %}
+        {% include 'grades/_grid.html.twig' with {tab_route: 'school_grades_section', tab_params: {id: school.id, section: section.id}} %}
+        <p class="muted">Blank boxes are grades not entered yet. Each subject's teacher enters the grades.</p>
+    {% else %}
+        <div class="card empty">This school year has no grading periods yet.</div>
+    {% endif %}
+{% endblock %}

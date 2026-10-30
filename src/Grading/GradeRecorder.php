@@ -166,7 +166,7 @@ class GradeRecorder
     }
 
     /** "Mathematics – Grade 8 – HONEST" */
-    private static function classLabel(Section $section, Subject $subject): string
+    public static function classLabel(Section $section, Subject $subject): string
     {
         return $subject->getName().' – '.AttendanceRecorder::label($section);
     }
