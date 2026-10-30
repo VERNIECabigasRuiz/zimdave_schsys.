@@ -1,0 +1,24 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{# The adviser's read-only grades of their class. Needs section, periods, period (nullable) and grid (nullable). #}
+
+{% block title %}Class grades · {{ section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Class grades · {{ section.label }}</h1>
+            <p>{{ section.school.name }} · S.Y. {{ section.schoolYear.name }}{% if period %} · {{ period.label }}{% endif %}</p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--ghost" href="{{ path('teacher_class') }}">Class list</a>
+        </div>
+    </div>
+
+    {% if period and grid %}
+        {% include 'grades/_grid.html.twig' with {tab_route: 'teacher_class_grades'} %}
+        <p class="muted">Blank boxes are grades not entered yet. Each subject's teacher enters the grades.</p>
+    {% else %}
+        <div class="card empty">This school year has no grading periods yet.</div>
+    {% endif %}
+{% endblock %}

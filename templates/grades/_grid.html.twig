@@ -1,0 +1,55 @@
+{# A section's grades for a period, one column per subject. Needs grid (SectionGradeGrid::build), period,
+   periods, and tab_route (+ optional tab_params) for the period tabs, which get ?period=<id> added.
+   Read-only: reused by the adviser's and the principal's class pages. #}
+{% set tab_params = tab_params ?? {} %}
+
+<nav class="filters grade-tabs" aria-label="Grading period">
+    {% for other in periods %}
+        <a class="btn btn--sm {{ other == period ? 'btn--primary' : 'btn--ghost' }}"
+           href="{{ path(tab_route, tab_params|merge({period: other.id})) }}"{{ other == period ? ' aria-current="page"' }}>{{ other.label }}</a>
+    {% endfor %}
+</nav>
+
+<div class="card table-card">
+    <table class="table grade-grid">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Learner</th>
+                {% for column in grid.columns %}
+                    <th class="grade-grid__col{{ column.average ? ' grade-grid__col--average' }}">
+                        {{ column.label }}{% if column.average %} <span class="muted">(average)</span>{% endif %}
+                        {% if column.teacherName %}<span class="grade-grid__teacher">{{ column.teacherName }}</span>{% endif %}
+                        <span class="grade-grid__count">{{ column.graded }} / {{ column.listed }}</span>
+                    </th>
+                {% endfor %}
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in grid.rows %}
+                {% set learner = row.learner %}
+                {% if loop.first or learner.male != grid.rows[loop.index0 - 1].learner.male %}
+                    <tr class="roll-call__group"><th colspan="{{ grid.columns|length + 3 }}">{{ learner.male ? 'Male' : 'Female' }}</th></tr>
+                {% endif %}
+                <tr data-learner="{{ learner.enrollment.id }}"{% if not learner.editable %} class="roll-call__out"{% endif %}>
+                    <td>{{ loop.index }}</td>
+                    <td class="grade-sheet__name">{{ learner.name }}</td>
+                    {% for column in grid.columns %}
+                        {% set value = row.cells[column.key] ?? null %}
+                        {% if value is not null %}
+                            <td class="grade-grid__cell">{{ value }}</td>
+                        {% elseif learner.editable %}
+                            <td class="grade-grid__cell grade-grid__blank" title="Not graded yet">—</td>
+                        {% else %}
+                            <td class="grade-grid__cell">—</td>
+                        {% endif %}
+                    {% endfor %}
+                    <td>{{ learner.status }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="{{ grid.columns|length + 3 }}" class="empty">No learners in this section.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

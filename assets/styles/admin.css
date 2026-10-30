@@ -1773,3 +1773,24 @@ span.sf2-cell {
         grid-template-columns: 1fr;
     }
 }
+
+.grade-grid__teacher,
+.grade-grid__count {
+    display: block;
+    font-weight: normal;
+    font-size: .8em;
+    color: var(--ink-500);
+}
+
+.grade-grid__cell {
+    text-align: center;
+}
+
+.grade-grid__col--average {
+    border-left: 2px solid var(--line);
+}
+
+.grade-grid__blank {
+    background: #fef3c7;
+    color: #92400e;
+}

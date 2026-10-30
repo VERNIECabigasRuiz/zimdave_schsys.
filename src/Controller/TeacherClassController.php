@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\GradingPeriod;
 use App\Entity\User;
+use App\Grading\SectionGradeGrid;
+use App\Security\Voter\GradeVoter;
 use App\Security\Voter\LearnerVoter;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +37,34 @@ class TeacherClassController extends AbstractLearnerController
     public function sf1(#[CurrentUser] User $user): Response
     {
         return $this->downloadSf1($this->scope($user)->fixedSection);
+    }
+
+    #[Route('/grades', name: 'teacher_class_grades', methods: ['GET'])]
+    public function grades(#[CurrentUser] User $user, SectionGradeGrid $grid, #[MapQueryParameter] ?int $period = null): Response
+    {
+        $schoolYear = $this->schoolYears->findCurrent();
+        $section = null === $schoolYear ? null : $this->sections->findAdvisory($user, $schoolYear);
+        if (null === $section) {
+            throw $this->createAccessDeniedException('You do not advise a section this school year.');
+        }
+        $this->denyAccessUnlessGranted(GradeVoter::VIEW_SECTION, $section);
+
+        $periods = $schoolYear->getGradingPeriods();
+        if (null === $period) {
+            $selected = $grid->defaultPeriod($schoolYear);
+        } else {
+            $selected = $periods->findFirst(static fn (int $i, GradingPeriod $p) => $p->getId() === $period);
+            if (null === $selected) {
+                throw $this->createNotFoundException('No such grading period.');
+            }
+        }
+
+        return $this->render('grades/class.html.twig', [
+            'section' => $section,
+            'periods' => $periods,
+            'period' => $selected,
+            'grid' => null === $selected ? null : $grid->build($section, $selected),
+        ]);
     }
 
     #[Route('/ids', name: 'teacher_class_ids', methods: ['GET'])]

@@ -294,4 +294,66 @@ class TeacherGradeControllerTest extends AdminTestCase
         $this->client->request('GET', '/teacher/grades/999999/'.$this->term1->getId());
         self::assertResponseStatusCodeSame(404);
     }
+
+    private function adviser(): User
+    {
+        $ada = $this->createUser('ada', User::ROLE_TEACHER, 'Ada Lim');
+        $this->assign($this->school, $this->sy, $ada, User::ROLE_TEACHER);
+        $this->honest->setAdviser($ada);
+        $this->em->flush();
+
+        return $ada;
+    }
+
+    public function testAdviserSeesTheClassGradesGridWithBlanksHighlighted(): void
+    {
+        $this->client->loginUser($this->adviser());
+        $this->em->persist(new Grade($this->enrollments['Abad'], $this->math, $this->term1, 91, $this->teacher, new \DateTimeImmutable('2025-08-21')));
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', '/teacher/class/grades');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.grade-grid thead', 'Mathematics');
+        self::assertSelectorTextContains('.grade-grid thead', 'Tess Reyes');
+        self::assertSelectorTextContains('.grade-grid thead', '1 / 3');
+        self::assertCount(3, $crawler->filter('.grade-grid tbody tr[data-learner]'));
+        self::assertSelectorTextContains('.grade-grid', '91');
+        self::assertCount(2, $crawler->filter('.grade-grid td.grade-grid__blank'));
+        self::assertSelectorTextContains('.grade-tabs .btn--primary', 'Term 1');
+        // the period tabs point back at this page
+        self::assertSelectorExists('.grade-tabs a[href*="/teacher/class/grades?period="]');
+    }
+
+    public function testClassGradesPeriodDefaultsToTheOpenOne(): void
+    {
+        $this->client->loginUser($this->adviser());
+        $this->term1->setOpen(false);
+        $term2 = $this->sy->getGradingPeriod(2);
+        $term2->setOpen(true);
+        $this->em->flush();
+
+        $this->client->request('GET', '/teacher/class/grades');
+        self::assertSelectorTextContains('.grade-tabs .btn--primary', $term2->getLabel());
+
+        $this->client->request('GET', '/teacher/class/grades?period='.$this->term1->getId());
+        self::assertSelectorTextContains('.grade-tabs .btn--primary', $this->term1->getLabel());
+    }
+
+    public function testClassGradesAreRefusedToANonAdviser(): void
+    {
+        // Tess teaches the class but does not advise it
+        $this->client->request('GET', '/teacher/class/grades');
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testClassListOffersTheClassGradesButtonToTheAdviser(): void
+    {
+        $this->client->loginUser($this->adviser());
+
+        $this->client->request('GET', '/teacher/class');
+
+        self::assertSelectorExists('a[href="/teacher/class/grades"]');
+    }
 }
