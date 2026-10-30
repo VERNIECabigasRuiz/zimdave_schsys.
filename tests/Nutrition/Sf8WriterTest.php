@@ -241,6 +241,21 @@ class Sf8WriterTest extends TestCase
         }
     }
 
+    public function testTemplateHasNoComments(): void
+    {
+        $sheet = $this->written($this->report());
+
+        self::assertSame([], $sheet->getComments());
+    }
+
+    public function testHeaderRowsAreTall(): void
+    {
+        $sheet = $this->written($this->report());
+
+        self::assertSame(24.0, $sheet->getRowDimension(9)->getRowHeight());
+        self::assertSame(30.0, $sheet->getRowDimension(10)->getRowHeight());
+    }
+
     public function testFilename(): void
     {
         self::assertSame('SF8_303196_Grade 8-ARTISTIC_Baseline_2025-2026.xlsx', $this->writer()->filename($this->report()));
