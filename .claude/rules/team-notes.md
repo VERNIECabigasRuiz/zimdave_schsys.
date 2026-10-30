@@ -50,6 +50,10 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Before moving or deleting a folder, check what reads, writes, clears or links to it (including redirects and URLs).
 - With staged changes, use `git stash --index` (or test another way) for quick before/after checks.
 - Take server names and paths from the notes, not from files found during a task.
+- Don't judge account permissions from a visible menu; open the actual settings page first.
+- Test a new config rule against a real case right after adding it.
+- Before documenting a command, check the project notes for rules against it.
+- Check expected numbers against a reference instead of guessing.
 
 ## Plans / Specs
 
