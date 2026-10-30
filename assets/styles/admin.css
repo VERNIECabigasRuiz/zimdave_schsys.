@@ -1723,3 +1723,43 @@ span.sf2-cell {
 .attendance-follow-ups {
     border-left: 4px solid var(--rose);
 }
+
+/* Nutrition: the adviser's SF8 weighing sheet */
+.nutrition-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.nutrition-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.nutrition-sheet__date {
+    max-width: 22rem;
+}
+
+.nutrition-table td {
+    vertical-align: top;
+}
+
+.nutrition-table__name {
+    min-width: 12rem;
+}
+
+.nutrition-table input[type="text"] {
+    width: 6rem;
+}
+
+.nutrition-table input[name$="[remarks]"] {
+    width: 12rem;
+}
+
+@media (max-width: 900px) {
+    .nutrition-cards {
+        grid-template-columns: 1fr;
+    }
+}

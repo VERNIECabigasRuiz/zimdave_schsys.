@@ -1,0 +1,34 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{% block title %}Nutrition · {{ section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Nutritional status</h1>
+            <p>SF8 · {{ section.label }} · {{ section.school.name }} · S.Y. {{ section.schoolYear.name }}</p>
+        </div>
+    </div>
+
+    <div class="nutrition-cards">
+        {% for report in reports %}
+            {% set s = report.summary %}
+            <div class="card form-card">
+                <div class="nutrition-card__head">
+                    <h2 class="section-title section-title--flush">{{ report.period.label }}</h2>
+                    <span class="badge {{ report.status.value == 'submitted' ? 'badge--green' : (report.status.value == 'draft' ? 'badge--amber' : '') }}">{{ report.status.label }}</span>
+                </div>
+                <p>
+                    {{ report.dateSet ? 'Weighed ' ~ report.weighedOn|date('M j, Y') : 'No date of weighing yet' }}
+                    · {{ s.weighed }} of {{ s.onRoster }} weighed
+                    {% if report.submission %}<br><small class="muted">Submitted {{ report.submission.submittedAt|date('M j, Y') }} by {{ report.submission.submittedBy.fullName }}</small>{% endif %}
+                </p>
+                {% include 'nutrition/_summary.html.twig' with {summary: s} only %}
+                <div class="form-actions">
+                    <a class="btn btn--primary" href="{{ path('teacher_class_nutrition_period', {period: report.period.value}) }}">{{ report.status.value == 'submitted' ? 'View' : 'Open' }} {{ report.period.label|lower }}</a>
+                    <a class="btn btn--ghost" href="{{ path('teacher_class_sf8', {period: report.period.value}) }}" data-turbo="false">Download SF8</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

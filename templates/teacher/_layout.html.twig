@@ -26,8 +26,10 @@
                 {% endif %}
                 {% if advises_section(app.user) %}
                     {% set attendance_route = route starts with 'teacher_class_attendance' or route == 'teacher_class_sf2' %}
-                    {{ _self.nav_link('My class', path('teacher_class'), route starts with 'teacher_class' and not attendance_route) }}
+                    {% set nutrition_route = route starts with 'teacher_class_nutrition' or route == 'teacher_class_sf8' %}
+                    {{ _self.nav_link('My class', path('teacher_class'), route starts with 'teacher_class' and not attendance_route and not nutrition_route) }}
                     {{ _self.nav_link('Attendance', path('teacher_class_attendance'), attendance_route) }}
+                    {{ _self.nav_link('Nutrition', path('teacher_class_nutrition'), nutrition_route) }}
                 {% endif %}
                 {{ _self.nav_link('My Profile', path('profile_show'), route starts with 'profile_') }}
             </nav>

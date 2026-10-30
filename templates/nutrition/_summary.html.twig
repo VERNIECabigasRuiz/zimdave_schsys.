@@ -1,0 +1,40 @@
+{# SF8's summary table by sex. Needs summary (an Sf8Summary). #}
+{% macro figure(label, m, f) %}
+    <tr>
+        <th scope="row">{{ label }}</th>
+        <td>{{ m }}</td>
+        <td>{{ f }}</td>
+        <td>{{ m + f }}</td>
+    </tr>
+{% endmacro %}
+
+<table class="table sf2-summary">
+    <thead>
+        <tr>
+            <th>Nutritional status (BMI-for-age)</th>
+            <th>M</th>
+            <th>F</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category in enum_cases('App\\Nutrition\\BmiCategory') %}
+            {{ _self.figure(category.label, summary.bmi(category, true), summary.bmi(category, false)) }}
+        {% endfor %}
+    </tbody>
+    <thead>
+        <tr>
+            <th>Height-for-age</th>
+            <th>M</th>
+            <th>F</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category in enum_cases('App\\Nutrition\\HfaCategory') %}
+            {{ _self.figure(category.label, summary.hfa(category, true), summary.hfa(category, false)) }}
+        {% endfor %}
+        {{ _self.figure('Weighed', summary.weighed(true), summary.weighed(false)) }}
+        {{ _self.figure('On the roster', summary.onRoster(true), summary.onRoster(false)) }}
+    </tbody>
+</table>

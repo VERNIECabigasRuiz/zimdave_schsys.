@@ -1,0 +1,53 @@
+{# A section's SF8 rows for a period. Needs report; with form (the weighing sheet's view) the
+   weight, height and remarks are inputs, without it the table is read-only. #}
+{% set form = form ?? null %}
+
+<table class="table nutrition-table">
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>LRN</th>
+            <th>Learner</th>
+            <th>Birthdate</th>
+            <th>Age</th>
+            <th>Weight (kg)</th>
+            <th>Height (m)</th>
+            <th>Remarks</th>
+            <th>BMI</th>
+            <th>Nutritional status</th>
+            <th>Height-for-age</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in report.rows %}
+            {% if loop.first or row.entry.male != report.rows[loop.index0 - 1].entry.male %}
+                <tr class="roll-call__group"><th colspan="11">{{ row.entry.male ? 'Male' : 'Female' }}</th></tr>
+            {% endif %}
+            {% set entry = form ? (form.entries[loop.index0] ?? null) : null %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.lrn ?? '—' }}</td>
+                <td class="nutrition-table__name">
+                    {{ row.entry.name }}
+                    {% if entry %}{{ form_widget(entry.enrollmentId) }}{{ form_errors(entry) }}{% endif %}
+                </td>
+                <td>{{ row.birthDate ? row.birthDate|date('M j, Y') : '—' }}</td>
+                <td>{{ row.result.ageYears ?? '—' }}</td>
+                {% if entry %}
+                    <td>{{ form_widget(entry.weightKg, {attr: {'aria-label': 'Weight of ' ~ row.entry.name, inputmode: 'decimal'}}) }}{{ form_errors(entry.weightKg) }}</td>
+                    <td>{{ form_widget(entry.heightM, {attr: {'aria-label': 'Height of ' ~ row.entry.name, inputmode: 'decimal'}}) }}{{ form_errors(entry.heightM) }}</td>
+                    <td>{{ form_widget(entry.remarks, {attr: {'aria-label': 'Remarks for ' ~ row.entry.name}}) }}{{ form_errors(entry.remarks) }}</td>
+                {% else %}
+                    <td>{{ row.weightKg is null ? '—' : row.weightKg|number_format(2) }}</td>
+                    <td>{{ row.heightM is null ? '—' : row.heightM|number_format(2) }}</td>
+                    <td>{{ row.remarks }}</td>
+                {% endif %}
+                <td>{{ row.result.bmi is null ? '—' : row.result.bmi|number_format(2) }}</td>
+                <td>{{ row.result.bmiCategory ? row.result.bmiCategory.label : '—' }}</td>
+                <td>{{ row.result.hfaCategory ? row.result.hfaCategory.label : '—' }}</td>
+            </tr>
+        {% else %}
+            <tr><td colspan="11" class="empty">No learners in this section on the date of weighing.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>

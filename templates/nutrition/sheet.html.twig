@@ -1,0 +1,80 @@
+{% extends layout %}
+
+{# A section's SF8 page for a period. Needs section, period, report, period_route, sf8_route, route_params,
+   index_route (nullable), form (nullable weighing sheet), editable, submit_form and reopen_url (nullable). #}
+
+{% block title %}SF8 {{ period.label }} · {{ section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ period.label }} weighing</h1>
+            <p>
+                SF8 · {{ section.label }} · {{ section.school.name }}
+                {% if section.adviser %} · Adviser: {{ section.adviser.fullName }}{% endif %}
+                {% if report.dateSet %} · Weighed {{ report.weighedOn|date('M j, Y') }}{% endif %}
+            </p>
+        </div>
+        <div class="row-actions">
+            {% for other in enum_cases('App\\Nutrition\\NutritionPeriod') %}
+                {% if other != period %}
+                    <a class="btn btn--ghost btn--sm" href="{{ path(period_route, route_params|merge({period: other.value})) }}">{{ other.label }} →</a>
+                {% endif %}
+            {% endfor %}
+            {% if index_route %}
+                <a class="btn btn--ghost" href="{{ path(index_route, route_params) }}">Both periods</a>
+            {% endif %}
+            <a class="btn btn--primary" href="{{ path(sf8_route, route_params|merge({period: period.value})) }}" data-turbo="false">Download SF8</a>
+        </div>
+    </div>
+
+    {% if report.submission %}
+        <div class="alert alert--success sf2-status" role="status">
+            <span>Submitted {{ report.submission.submittedAt|date('M j, Y') }} by {{ report.submission.submittedBy.fullName }} · locked</span>
+            {% if reopen_url %}
+                <form method="post" action="{{ reopen_url }}" onsubmit="return confirm('Reopen the {{ period.label|lower }} so the adviser can change it?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('nutrition-reopen-' ~ section.id ~ '-' ~ period.value) }}">
+                    <button class="btn btn--ghost btn--sm" type="submit">Reopen</button>
+                </form>
+            {% endif %}
+        </div>
+    {% elseif submit_form %}
+        <div class="card form-card sf2-submit">
+            {{ form_start(submit_form, {attr: {class: 'form'}}) }}
+                <p>Submit the {{ period.label|lower }} SF8 to the principal; the weights are then locked.</p>
+                {% if submit_form.confirm_unweighed is defined %}
+                    {{ form_row(submit_form.confirm_unweighed) }}
+                {% endif %}
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Submit {{ period.label }}</button>
+                </div>
+            {{ form_end(submit_form) }}
+        </div>
+    {% else %}
+        <p class="muted">{{ report.status.label }}{% if not report.dateSet %} · nothing saved yet{% endif %}</p>
+    {% endif %}
+
+    <div class="card table-card nutrition-sheet">
+        {% if form and editable %}
+            {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+                {{ form_errors(form) }}
+                <div class="nutrition-sheet__date">
+                    {{ form_row(form.weighedOn) }}
+                    <p class="muted">Weight in kilograms (e.g. 32.5), height in metres (e.g. 1.32). Leave both empty for a learner not weighed.</p>
+                </div>
+                {% include 'nutrition/_table.html.twig' with {report: report, form: form} only %}
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Save weights</button>
+                </div>
+            {{ form_end(form) }}
+        {% else %}
+            {% if form %}{{ form_errors(form) }}{% endif %}
+            {% include 'nutrition/_table.html.twig' with {report: report} only %}
+        {% endif %}
+    </div>
+
+    <h2 class="section-title">Summary</h2>
+    <div class="card table-card">
+        {% include 'nutrition/_summary.html.twig' with {summary: report.summary} only %}
+    </div>
+{% endblock %}
