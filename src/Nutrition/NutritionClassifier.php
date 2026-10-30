@@ -79,7 +79,9 @@ class NutritionClassifier
             $months,
             $bmi,
             null !== $months && null !== $bmi ? $this->bmiCategory($male, $months, $bmi) : null,
-            null !== $months && null !== $heightM ? $this->hfaCategory($male, $months, $heightM * 100) : null,
+            // Rounded so float noise (1.09 * 100 = 109.00000000000001) cannot lift an on-bound height into the
+            // next category; Excel's 15-digit precision gives the template the same result. Bounds have <= 2 dp.
+            null !== $months && null !== $heightM ? $this->hfaCategory($male, $months, round($heightM * 100, 2)) : null,
         );
     }
 

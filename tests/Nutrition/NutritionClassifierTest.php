@@ -81,6 +81,20 @@ class NutritionClassifierTest extends TestCase
         self::assertSame(HfaCategory::SeverelyStunted, $this->classifier->hfaCategory(true, 228, 154.5));
     }
 
+    /** Metres to cm must not push an on-bound height into the next category (1.09 * 100 = 109.00000000000001). */
+    public function testHeightOnBoundThroughClassify(): void
+    {
+        $on = new \DateTimeImmutable('2025-08-22');
+
+        $boy79 = $this->classifier->classify(true, new \DateTimeImmutable('2019-01-22'), $on, 18.0, 1.09);
+        self::assertSame(79, $boy79->ageMonths);
+        self::assertSame(HfaCategory::Stunted, $boy79->hfaCategory);
+
+        $boy69 = $this->classifier->classify(true, new \DateTimeImmutable('2019-11-22'), $on, 22.0, 1.241);
+        self::assertSame(69, $boy69->ageMonths);
+        self::assertSame(HfaCategory::Normal, $boy69->hfaCategory);
+    }
+
     public function testAgeInMonths(): void
     {
         self::assertSame(60, $this->classifier->ageInMonths(new \DateTimeImmutable('2020-08-22'), new \DateTimeImmutable('2025-08-22')));
