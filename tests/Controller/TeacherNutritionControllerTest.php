@@ -8,8 +8,10 @@ use App\Entity\NutritionMeasurement;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
+use App\Entity\Sf1Remark;
 use App\Entity\Sf8Submission;
 use App\Entity\User;
+use App\Form\NutritionSheetFormType;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DomCrawler\Crawler;
@@ -22,6 +24,8 @@ class TeacherNutritionControllerTest extends AdminTestCase
     private School $school;
     private User $teacher;
     private Section $artistic;
+    /** @var array<string, Enrollment> by last name */
+    private array $enrollments = [];
 
     protected function setUp(): void
     {
@@ -33,7 +37,7 @@ class TeacherNutritionControllerTest extends AdminTestCase
         $this->assign($this->school, $this->sy, $this->teacher, User::ROLE_TEACHER);
         $this->artistic = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Artistic')->setAdviser($this->teacher);
         foreach (['Abad', 'Bautista', 'Cruz'] as $i => $last) {
-            $this->em->persist(new Enrollment($this->learner('12001717000'.$i, $last, 'Ana'), $this->sy, $this->artistic, $this->teacher, new \DateTimeImmutable('2025-05-20')));
+            $this->em->persist($this->enrollments[$last] = new Enrollment($this->learner('12001717000'.$i, $last, 'Ana'), $this->sy, $this->artistic, $this->teacher, new \DateTimeImmutable('2025-05-20')));
         }
         $this->em->flush();
         $this->client->loginUser($this->teacher);
@@ -43,13 +47,44 @@ class TeacherNutritionControllerTest extends AdminTestCase
     private function sheet(array $measures, string $date = '2025-08-20'): Crawler
     {
         $crawler = $this->client->request('GET', '/teacher/class/nutrition/baseline');
+
+        return $this->client->submit($crawler->selectButton('Save weights')->form($this->values($crawler, $measures, $date)));
+    }
+
+    /**
+     * The sheet's form values for weight and height by row, as the page names its inputs.
+     *
+     * @param array<int, array{0: ?string, 1: ?string}> $measures
+     *
+     * @return array<string, string>
+     */
+    private function values(Crawler $page, array $measures, string $date = '2025-08-20'): array
+    {
+        $keys = self::rowKeys($page);
         $values = ['nutrition_sheet_form[weighedOn]' => $date];
         foreach ($measures as $i => [$weight, $height]) {
-            $values["nutrition_sheet_form[entries][$i][weightKg]"] = $weight ?? '';
-            $values["nutrition_sheet_form[entries][$i][heightM]"] = $height ?? '';
+            $values["nutrition_sheet_form[entries][$keys[$i]][weightKg]"] = $weight ?? '';
+            $values["nutrition_sheet_form[entries][$keys[$i]][heightM]"] = $height ?? '';
         }
 
-        return $this->client->submit($crawler->selectButton('Save weights')->form($values));
+        return $values;
+    }
+
+    /** @return list<string> the sheet's entry keys, row by row */
+    private static function rowKeys(Crawler $page): array
+    {
+        return $page->filter('input[name^="nutrition_sheet_form[entries]"][name$="[weightKg]"]')
+            ->each(static fn (Crawler $input) => (string) preg_replace('/^nutrition_sheet_form\[entries\]\[([^\]]+)\]\[weightKg\]$/', '$1', (string) $input->attr('name')));
+    }
+
+    private static function weightName(Enrollment $enrollment): string
+    {
+        return 'nutrition_sheet_form[entries]['.$enrollment->getId().'][weightKg]';
+    }
+
+    private static function weightInput(Enrollment $enrollment): string
+    {
+        return 'input[name="'.self::weightName($enrollment).'"]';
     }
 
     /** @return list<NutritionMeasurement> */
@@ -91,7 +126,7 @@ class TeacherNutritionControllerTest extends AdminTestCase
         self::assertSelectorTextContains('.alert--success', 'Saved Baseline weights for 2 learners.');
         self::assertSelectorTextContains('.nutrition-sheet', 'Normal');
         self::assertSame('2025-08-20', $crawler->filter('input[name="nutrition_sheet_form[weighedOn]"]')->attr('value'));
-        self::assertSame('40.00', $crawler->filter('input[name="nutrition_sheet_form[entries][0][weightKg]"]')->attr('value'));
+        self::assertSame('40.00', $crawler->filter(self::weightInput($this->enrollments['Abad']))->attr('value'));
 
         $this->client->request('GET', '/teacher/class/nutrition');
         self::assertSelectorTextContains('main', 'Draft');
@@ -107,6 +142,11 @@ class TeacherNutritionControllerTest extends AdminTestCase
         $this->sheet([0 => ['40', null]]);
         self::assertResponseStatusCodeSame(422);
         self::assertSelectorTextContains('.nutrition-sheet', 'Enter both weight and height, or neither.');
+
+        // weight typed in grams
+        $this->sheet([0 => ['40000', '1.50']]);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.nutrition-sheet', 'Enter weight in kilograms, between 5 and 200.');
 
         self::assertSame([], $this->measurements());
     }
@@ -124,6 +164,7 @@ class TeacherNutritionControllerTest extends AdminTestCase
         $this->sheet([0 => ['40', '1.50'], 1 => ['42.5', '1.55']]);
         $crawler = $this->client->followRedirect();
         self::assertSelectorTextContains('form[name="sf8_submit_form"]', '1 learner has no weight and height.');
+        self::assertSelectorTextContains('.sf2-submit', 'Save your changes before submitting.');
 
         $this->client->submit($crawler->selectButton('Submit Baseline')->form());
         self::assertResponseRedirects('/teacher/class/nutrition/baseline');
@@ -147,7 +188,7 @@ class TeacherNutritionControllerTest extends AdminTestCase
     {
         $this->sheet([0 => ['40', '1.50'], 1 => ['42.5', '1.55'], 2 => ['39', '1.48']]);
         $crawler = $this->client->followRedirect();
-        $stale = $crawler->selectButton('Save weights')->form(['nutrition_sheet_form[entries][0][weightKg]' => '55']);
+        $stale = $crawler->selectButton('Save weights')->form([self::weightName($this->enrollments['Abad']) => '55']);
         $this->client->submit($crawler->selectButton('Submit Baseline')->form());
         self::assertSame(1, $this->em->getRepository(Sf8Submission::class)->count([]));
 
@@ -157,6 +198,68 @@ class TeacherNutritionControllerTest extends AdminTestCase
         $weights = array_map(static fn (NutritionMeasurement $m) => $m->getWeightKg(), $this->measurements());
         sort($weights);
         self::assertSame(['39.00', '40.00', '42.50'], $weights);
+    }
+
+    public function testStaleSheetAfterALearnerLeftSavesNothing(): void
+    {
+        $crawler = $this->client->request('GET', '/teacher/class/nutrition/baseline');
+        $stale = $crawler->selectButton('Save weights')->form($this->values($crawler, [0 => ['40', '1.50'], 1 => ['42.5', '1.55'], 2 => ['39', '1.48']]));
+        // Abad drops out while the adviser is typing
+        $this->em->clear();
+        $this->em->find(Enrollment::class, $this->enrollments['Abad']->getId())->setRemarkCode(Sf1Remark::Dropped)->setRemarkDate(new \DateTimeImmutable('2025-07-01'));
+        $this->em->flush();
+
+        $crawler = $this->client->submit($stale);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.nutrition-sheet', NutritionSheetFormType::ROSTER_CHANGED);
+        self::assertSame([], $this->measurements());
+        // each row left keeps its own learner's typed values
+        self::assertStringNotContainsString('Abad', $crawler->filter('.nutrition-table')->text());
+        self::assertCount(0, $crawler->filter(self::weightInput($this->enrollments['Abad'])));
+        self::assertSame('42.50', $crawler->filter(self::weightInput($this->enrollments['Bautista']))->attr('value'));
+        self::assertSame('39.00', $crawler->filter(self::weightInput($this->enrollments['Cruz']))->attr('value'));
+    }
+
+    public function testStaleSheetAfterALearnerJoinedSavesNothing(): void
+    {
+        $crawler = $this->client->request('GET', '/teacher/class/nutrition/baseline');
+        $stale = $crawler->selectButton('Save weights')->form($this->values($crawler, [0 => ['40', '1.50'], 1 => ['42.5', '1.55'], 2 => ['39', '1.48']]));
+        // Dizon is enrolled while the adviser is typing
+        $this->em->clear();
+        $dizon = new Enrollment($this->learner('120017170009', 'Dizon', 'Ana'), $this->em->find(SchoolYear::class, $this->sy->getId()), $this->em->find(Section::class, $this->artistic->getId()), $this->em->find(User::class, $this->teacher->getId()), new \DateTimeImmutable('2025-05-20'));
+        $this->em->persist($dizon);
+        $this->em->flush();
+
+        $crawler = $this->client->submit($stale);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.nutrition-sheet', NutritionSheetFormType::ROSTER_CHANGED);
+        self::assertSame([], $this->measurements());
+        self::assertSame('40.00', $crawler->filter(self::weightInput($this->enrollments['Abad']))->attr('value'));
+        self::assertSame('42.50', $crawler->filter(self::weightInput($this->enrollments['Bautista']))->attr('value'));
+        self::assertSame('39.00', $crawler->filter(self::weightInput($this->enrollments['Cruz']))->attr('value'));
+        self::assertSame('', (string) $crawler->filter(self::weightInput($dizon))->attr('value'));
+
+        // saved again from the refreshed rows, every learner's values land on that learner
+        $this->client->submit($crawler->selectButton('Save weights')->form());
+        self::assertResponseRedirects('/teacher/class/nutrition/baseline');
+        $weights = [];
+        foreach ($this->measurements() as $m) {
+            $weights[$m->getEnrollment()->getLearner()->getLastName()] = $m->getWeightKg();
+        }
+        ksort($weights);
+        self::assertSame(['Abad' => '40.00', 'Bautista' => '42.50', 'Cruz' => '39.00'], $weights);
+    }
+
+    public function testStudentIs403(): void
+    {
+        $this->client->loginUser($this->createUser('sam', User::ROLE_STUDENT));
+
+        $this->client->request('GET', '/teacher/class/nutrition');
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('GET', '/teacher/class/nutrition/baseline');
+        self::assertResponseStatusCodeSame(403);
     }
 
     public function testSf8Download(): void

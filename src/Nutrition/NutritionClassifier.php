@@ -77,8 +77,11 @@ class NutritionClassifier
 
         return new NutritionResult(
             $months,
+            // the BMI itself stays unrounded (pages show 2 dp, the Excel 4 dp)
             $bmi,
-            null !== $months && null !== $bmi ? $this->bmiCategory($male, $months, $bmi) : null,
+            // classified on 10 dp so float noise (43.2 / 1.5² = 19.200000000000003) cannot lift an on-bound BMI
+            // into the next category, as Excel's 15-digit precision keeps it on the bound in the template
+            null !== $months && null !== $bmi ? $this->bmiCategory($male, $months, round($bmi, 10)) : null,
             // Rounded so float noise (1.09 * 100 = 109.00000000000001) cannot lift an on-bound height into the
             // next category; Excel's 15-digit precision gives the template the same result. Bounds have <= 2 dp.
             null !== $months && null !== $heightM ? $this->hfaCategory($male, $months, round($heightM * 100, 2)) : null,

@@ -1,5 +1,5 @@
-{# A section's SF8 rows for a period. Needs report; with form (the weighing sheet's view) the
-   weight, height and remarks are inputs, without it the table is read-only. #}
+{# A section's SF8 rows for a period. Needs report; with form (the weighing sheet's view, entries keyed
+   by enrollment id) the weight, height and remarks are inputs, without it the table is read-only. #}
 {% set form = form ?? null %}
 
 <table class="table nutrition-table">
@@ -23,13 +23,13 @@
             {% if loop.first or row.entry.male != report.rows[loop.index0 - 1].entry.male %}
                 <tr class="roll-call__group"><th colspan="11">{{ row.entry.male ? 'Male' : 'Female' }}</th></tr>
             {% endif %}
-            {% set entry = form ? (form.entries[loop.index0] ?? null) : null %}
+            {% set entry = form ? (form.entries[row.entry.enrollment.id] ?? null) : null %}
             <tr>
                 <td>{{ loop.index }}</td>
                 <td>{{ row.lrn ?? '—' }}</td>
                 <td class="nutrition-table__name">
                     {{ row.entry.name }}
-                    {% if entry %}{{ form_widget(entry.enrollmentId) }}{{ form_errors(entry) }}{% endif %}
+                    {% if entry %}{{ form_errors(entry) }}{% endif %}
                 </td>
                 <td>{{ row.birthDate ? row.birthDate|date('M j, Y') : '—' }}</td>
                 <td>{{ row.result.ageYears ?? '—' }}</td>

@@ -60,7 +60,7 @@ class Sf8WriterTest extends TestCase
     }
 
     /** @param list<Sf8Row>|null $males */
-    private function report(?array $males = null, NutritionPeriod $period = NutritionPeriod::Baseline): Sf8Report
+    private function report(?array $males = null, NutritionPeriod $period = NutritionPeriod::Baseline, bool $dateSet = true): Sf8Report
     {
         $males ??= [
             $this->row('ARNOL, GERALD JAMES, MOLINA', true, 31.5, 1.45, bmi: BmiCategory::Normal, hfa: HfaCategory::Normal, remarks: 'Dewormed'),
@@ -76,7 +76,7 @@ class Sf8WriterTest extends TestCase
             section: $this->section,
             period: $period,
             weighedOn: new \DateTimeImmutable('2025-08-20'),
-            dateSet: true,
+            dateSet: $dateSet,
             rows: $rows,
             summary: Sf8Summary::fromRows($rows),
             status: Sf8Status::Draft,
@@ -204,6 +204,15 @@ class Sf8WriterTest extends TestCase
         self::assertSame('School Nurse', $sheet->getCell('I125')->getValue());
         self::assertSame('RENE PETANCIO', $sheet->getCell('M124')->getValue());
         self::assertSame('School Principal', $sheet->getCell('M125')->getValue());
+    }
+
+    public function testNoDateOfWeighingWhenNoneIsSaved(): void
+    {
+        // the report's weighedOn is today when nothing is saved; the form must not show it as the date of weighing
+        $sheet = $this->written($this->report(dateSet: false));
+
+        self::assertNull($sheet->getCell('A124')->getValue());
+        self::assertSame('DAVE SOSMEÑA', $sheet->getCell('E124')->getValue());
     }
 
     public function testOverflowInsertsRows(): void

@@ -205,6 +205,18 @@ class SchoolNutritionControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
+    public function testStudentIs403(): void
+    {
+        $student = $this->enrollment->getLearner()->getUser()->setMustChangePassword(false);
+        $this->em->flush();
+        $this->client->loginUser($student);
+
+        $this->client->request('GET', $this->url('/nutrition'));
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('GET', $this->sectionUrl());
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testUnknownPeriodIs404(): void
     {
         $this->client->request('GET', $this->sectionUrl('', 'midline'));

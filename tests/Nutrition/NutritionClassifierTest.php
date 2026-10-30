@@ -95,6 +95,16 @@ class NutritionClassifierTest extends TestCase
         self::assertSame(HfaCategory::Normal, $boy69->hfaCategory);
     }
 
+    public function testBmiOnBoundThroughClassify(): void
+    {
+        // boy 87 months: normalTo 19.2; 43.2 / 1.50² is 19.200000000000003 in floats
+        $boy87 = $this->classifier->classify(true, new \DateTimeImmutable('2018-05-22'), new \DateTimeImmutable('2025-08-22'), 43.2, 1.50);
+
+        self::assertSame(87, $boy87->ageMonths);
+        self::assertSame(BmiCategory::Normal, $boy87->bmiCategory);
+        self::assertEqualsWithDelta(19.2, $boy87->bmi, 1e-9);
+    }
+
     public function testAgeInMonths(): void
     {
         self::assertSame(60, $this->classifier->ageInMonths(new \DateTimeImmutable('2020-08-22'), new \DateTimeImmutable('2025-08-22')));

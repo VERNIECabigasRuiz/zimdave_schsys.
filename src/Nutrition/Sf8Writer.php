@@ -179,8 +179,11 @@ class Sf8Writer
     {
         $name = self::SIGNATURE + $shift;
         $position = self::POSITION + $shift;
-        $sheet->setCellValue('A'.$name, Date::PHPToExcel($report->weighedOn));
-        $sheet->getStyle('A'.$name)->getNumberFormat()->setFormatCode('mm/dd/yyyy');
+        // without a saved date the report's weighedOn is only today, so the date of weighing stays blank
+        if ($report->dateSet) {
+            $sheet->setCellValue('A'.$name, Date::PHPToExcel($report->weighedOn));
+            $sheet->getStyle('A'.$name)->getNumberFormat()->setFormatCode('mm/dd/yyyy');
+        }
         $sheet->setCellValue('E'.$name, $report->adviserName);
         $sheet->setCellValue('E'.$position, 'Adviser');
         $sheet->setCellValue('I'.$name, $report->certifierName);
