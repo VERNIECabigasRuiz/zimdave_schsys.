@@ -48,24 +48,22 @@ admin see the grades read-only. This is the base for report cards (SF9) and the 
 - **Gradable load:** a `TeachingLoad` whose section is in the current school year and whose grade
   level is Grade 1–10 (not Kinder, not 11–12), on a subject without components.
 - **Class status for (section, subject, period)**, one of:
-  - `NotOpen` — the admin has not opened the period (`GradingPeriod::isOpen()` false) and the school
-    has no lock for it;
+  - `Closed` — the admin's switch is off (`GradingPeriod::isOpen()` false) and the school has no lock
+    for it (not opened yet, or closed again after grading);
   - `Open` — the period is open and the school has no lock;
   - `Locked` — the school has a lock and the class has no unlock;
   - `Unlocked` — the school has a lock and the class has an unlock (editable even if the admin has
     since closed the period — the principal reopened it on purpose).
 - **Teacher may edit** when they hold the load, the load is gradable, and the status is `Open` or `Unlocked`.
 - **Principal actions** (principal of the school only; admin cannot):
-  - *Lock period* — allowed when the period has been opened by the admin at least once or is open now
-    (refused for `NotOpen`: "Term 1 isn't open for grading yet."); creates the `GradeLock` and deletes
-    all of that period's `GradeUnlock`s for the school.
+  - *Lock period* — allowed when the period is open now or the school already has grades in it
+    (otherwise refused: "Term 1 hasn't been opened for grading yet."); creates the `GradeLock` and
+    deletes all of that period's `GradeUnlock`s for the school.
   - *Unlock period* — deletes the `GradeLock` and its `GradeUnlock`s.
   - *Unlock class* — only while locked; creates a `GradeUnlock`.
   - *Lock class again* — deletes that class's `GradeUnlock`.
   - Refusals: "Term 1 is already locked.", "Term 1 is not locked.", "This class is already unlocked.",
     "This class is not unlocked."
-  - "Opened at least once": the period is open now or has any `Grade` rows or an earlier lock; kept
-    simple as `open || has grades in this school`.
 - **Learners on a grade sheet:** the section's class list (`findClassList`) plus learners transferred
   out of the section (as SF2 reads them). Learners who are dropped (SF1 DRP) or transferred out are
   listed greyed with their status ("Dropped", "Transferred out"); their existing grades show
@@ -78,7 +76,7 @@ admin see the grades read-only. This is the base for report cards (SF9) and the 
 
 - `saveSheet(TeachingLoad, GradingPeriod, array<int enrollmentId, ?int> $values, User $by)` — under
   a Symfony lock `grades-{sectionId}-{subjectId}`; refuses with the status message when not editable
-  ("Term 1 is locked by the principal." / "Term 1 isn't open for grading yet."); ignores enrollment
+  ("Term 1 is locked by the principal." / "Term 1 isn't open for grading."); ignores enrollment
   ids not on the sheet or not editable; upserts or deletes rows; logs "Saved Term 1 grades of {Math 8 –
   HONEST}" via `ActivityLogger`.
 - `lockPeriod(School, GradingPeriod, User)`, `unlockPeriod(School, GradingPeriod)`,
@@ -97,7 +95,7 @@ principal only).
 
 **Teacher — "My Grades"** (nav item after "My Teaching Load"; `/teacher/grades`, `TeacherGradeController`)
 - `teacher_grades` (GET): one row per gradable load (subject – section), per period a progress
-  "graded / listed" and a status chip (Open, Locked, Unlocked for you, Not open yet). SHS and Kinder
+  "graded / listed" and a status chip (Open, Locked, Unlocked for you, Closed). SHS and Kinder
   loads are listed under "Not graded here yet" without links.
 - `teacher_grades_sheet` (GET|POST `/{load}/{period}`): no., LRN, name, grade box (60–100) per
   learner, males then females; greyed rows for dropped / transferred out; period tabs. Symfony Form
@@ -115,7 +113,7 @@ principal only).
 **Principal and admin — "Grades"** (`/schools/{id}/grades`, `SchoolGradeController`, `SchoolVoter::MANAGE`;
 principal nav item "Grades"; admin school list button "Grades"; `principal_grades` redirect)
 - `school_grades` (GET `?period=`): period switch; status line ("Open · not locked", "Locked on Oct 30,
-  2026 by …", "Not opened for grading yet"); **Lock Term 1 / Unlock Term 1** (principal only, confirm);
+  2026 by …", "Closed for grading"); **Lock Term 1 / Unlock Term 1** (principal only, confirm);
   table grade → section → subject: teacher, graded / listed, class status; per class **Unlock** or
   **Lock again** while the period is locked (principal only); summary "182 of 200 classes complete".
 - `school_grades_section` (GET `/sections/{section}/grades?period=`): the adviser's grid, read-only.
