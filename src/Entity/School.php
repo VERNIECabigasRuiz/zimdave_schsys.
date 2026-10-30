@@ -89,6 +89,15 @@ class School
     #[Assert\Length(max: 255, groups: ['Default', self::PROFILE])]
     private ?string $facebookUrl = null;
 
+    /** Who certifies the SF8 (the "Certified Correct" block). */
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
+    private ?string $sf8CertifierName = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
+    private ?string $sf8CertifierPosition = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -273,6 +282,30 @@ class School
     public function setFacebookUrl(?string $facebookUrl): static
     {
         $this->facebookUrl = self::blankToNull($facebookUrl);
+
+        return $this;
+    }
+
+    public function getSf8CertifierName(): ?string
+    {
+        return $this->sf8CertifierName;
+    }
+
+    public function setSf8CertifierName(?string $name): static
+    {
+        $this->sf8CertifierName = self::blankToNull($name);
+
+        return $this;
+    }
+
+    public function getSf8CertifierPosition(): ?string
+    {
+        return $this->sf8CertifierPosition;
+    }
+
+    public function setSf8CertifierPosition(?string $position): static
+    {
+        $this->sf8CertifierPosition = self::blankToNull($position);
 
         return $this;
     }
