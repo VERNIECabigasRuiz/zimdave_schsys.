@@ -54,6 +54,9 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Test a new config rule against a real case right after adding it.
 - Before documenting a command, check the project notes for rules against it.
 - Check expected numbers against a reference instead of guessing.
+- After a scripted copy or rewrite, check the files aren't empty before trusting a diff.
+- When checking a length limit, measure the full stored value, prefixes included.
+- For a new project, run Base's `init-makefile` and set the hooks path before the first commit.
 
 ## Plans / Specs
 
@@ -125,6 +128,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Prefer `docker compose up --build -d` (detached) over the bare foreground form when starting a stack non-interactively (via automation, not a real terminal) — checking `docker ps` on an attached run can look like a container is stuck at `Created` when it's actually just mid-startup and about to finish on its own; detached mode returns control only once containers are actually up, removing the ambiguity.
 - If a published port resets but the site answers inside the container, the fix is a Docker Desktop restart, not recreating containers.
 - Before choosing a Docker image's PHP extensions, grep the code for extension functions it relies on (e.g. `function_exists` checks), not just `composer.json`.
+- Never prune Docker machine-wide; remove only this project's images, by name.
 
 ## Git
 
