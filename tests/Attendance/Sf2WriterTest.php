@@ -101,7 +101,10 @@ class Sf2WriterTest extends TestCase
         self::assertNull($sheet->getCell('X11')->getValue());
         self::assertSame(1, $sheet->getCell('A14')->getValue());
         self::assertSame('ARNOL, GERALD JAMES, MOLINA', $sheet->getCell('B14')->getValue());
-        self::assertSame('x', $sheet->getCell('D14')->getValue());
+        // absent fills the whole box
+        self::assertNull($sheet->getCell('D14')->getValue());
+        self::assertSame(Fill::FILL_SOLID, $sheet->getStyle('D14')->getFill()->getFillType());
+        self::assertSame('FF808080', $sheet->getStyle('D14')->getFill()->getStartColor()->getARGB());
         self::assertSame(Fill::FILL_GRADIENT_LINEAR, $sheet->getStyle('E14')->getFill()->getFillType());
         self::assertSame(Fill::FILL_GRADIENT_LINEAR, $sheet->getStyle('F14')->getFill()->getFillType());
         self::assertNotSame(Fill::FILL_GRADIENT_LINEAR, $sheet->getStyle('G14')->getFill()->getFillType());

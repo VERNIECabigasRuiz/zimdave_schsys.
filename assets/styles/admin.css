@@ -1661,7 +1661,7 @@ span.sf2-cell {
     line-height: 1.1rem;
 }
 
-.sf2-cell--absent { color: #b4233f; font-weight: 700; }
+.sf2-cell--absent { background: #8a94a6; }
 .sf2-cell--late { background: linear-gradient(135deg, #8a94a6 50%, transparent 50%); }
 .sf2-cell--cutting { background: linear-gradient(135deg, transparent 50%, #8a94a6 50%); }
 .sf2-cell--untaken { color: var(--ink-500); }

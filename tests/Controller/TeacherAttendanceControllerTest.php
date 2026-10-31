@@ -127,7 +127,9 @@ class TeacherAttendanceControllerTest extends AdminTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'August 2025');
-        self::assertSelectorTextContains('.sf2-grid', 'x');
+        // absent fills the whole box, no x
+        self::assertCount(1, $crawler->filter('.sf2-grid .sf2-cell--absent[title="Absent"]'));
+        self::assertSame('', trim($crawler->filter('.sf2-grid .sf2-cell--absent')->text()));
         self::assertSelectorTextContains('main', 'Average Daily Attendance');
         self::assertSelectorTextContains('main', 'Aug 21 – Ninoy Aquino Day');
         self::assertCount(1, $crawler->filter('a[href="/teacher/class/attendance/month/2025-08/sf2"]'));

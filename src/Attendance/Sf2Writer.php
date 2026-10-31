@@ -177,11 +177,12 @@ class Sf2Writer
         $style->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_GENERAL);
     }
 
+    /** Absent shades the whole cell. */
     private function absent(Worksheet $sheet, string $coordinate): void
     {
-        $sheet->setCellValue($coordinate, 'x');
-        $sheet->getStyle($coordinate)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
-        $sheet->getStyle($coordinate)->getFont()->setBold(true);
+        $sheet->getStyle($coordinate)->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->setStartColor(new Color(self::SHADE));
     }
 
     /** Late shades the upper half of the cell, cutting classes the lower half (see sharpenHalfFills). */

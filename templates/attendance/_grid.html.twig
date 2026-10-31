@@ -7,7 +7,7 @@
             {% for i, cell in row.cells %}
                 {% set day = report.days[i] %}
                 {% if cell == 'x' %}
-                    <td class="sf2-cell sf2-cell--absent">x</td>
+                    <td class="sf2-cell sf2-cell--absent" title="Absent"></td>
                 {% elseif cell == 'L' %}
                     <td class="sf2-cell sf2-cell--late" title="Late"></td>
                 {% elseif cell == 'C' %}
