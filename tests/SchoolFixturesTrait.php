@@ -10,6 +10,8 @@ use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeLevel;
 use App\Entity\GradeLock;
+use App\Entity\GradeOpening;
+use App\Entity\GradingPeriod;
 use App\Entity\GradeUnlock;
 use App\Entity\Learner;
 use App\Entity\NutritionAssessment;
@@ -41,7 +43,7 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([GradeUnlock::class, GradeLock::class, Grade::class, NutritionMeasurement::class, NutritionAssessment::class, Sf8Submission::class, AttendanceMark::class, RollCall::class, Sf2Submission::class, SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
+        foreach ([GradeUnlock::class, GradeOpening::class, GradeLock::class, Grade::class, NutritionMeasurement::class, NutritionAssessment::class, Sf8Submission::class, AttendanceMark::class, RollCall::class, Sf2Submission::class, SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
             $this->em->createQuery('DELETE FROM '.$class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test
@@ -165,5 +167,14 @@ trait SchoolFixturesTrait
         $this->em->flush();
 
         return $enrollment;
+    }
+
+    protected function openGrading(School $school, GradingPeriod $period): GradeOpening
+    {
+        $opening = new GradeOpening($school, $period, null, new \DateTimeImmutable());
+        $this->em->persist($opening);
+        $this->em->flush();
+
+        return $opening;
     }
 }
