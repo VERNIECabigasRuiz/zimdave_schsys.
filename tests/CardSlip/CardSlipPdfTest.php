@@ -70,6 +70,8 @@ class CardSlipPdfTest extends KernelTestCase
 
         self::assertStringNotContainsString('DRAFT – grades not final', $pdf->html([self::slip()]));
         self::assertSame(1, substr_count($pdf->html([self::slip(), self::slip(draft: true)]), 'DRAFT – grades not final'));
+        // dark enough to survive a light laser print, still behind the content
+        self::assertMatchesRegularExpression('/\.draft \{[^}]*z-index: -1;[^}]*color: #c3cad4;/', $pdf->html([self::slip(draft: true)]));
     }
 
     public function testRenderedPdfHasOnePagePerTwoSlips(): void

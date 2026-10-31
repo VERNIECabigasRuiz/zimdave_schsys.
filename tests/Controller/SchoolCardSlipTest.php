@@ -136,5 +136,7 @@ class SchoolCardSlipTest extends AdminTestCase
         $link = $crawler->selectLink('Card slips (PDF)');
         self::assertCount(1, $link);
         self::assertSame($this->pdfUrl(), $link->attr('href'));
+        // a file download, not a Turbo visit
+        self::assertSame('false', $link->attr('data-turbo'));
     }
 }

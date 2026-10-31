@@ -14,7 +14,7 @@ final class Version20261031035212 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Card slip comments per learner and grading period';
     }
 
     public function up(Schema $schema): void
