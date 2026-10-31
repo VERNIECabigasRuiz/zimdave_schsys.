@@ -8,7 +8,10 @@
 
 {% block content %}
     <style>
-        .card-slips__comments { min-width: 22rem; }
+        .card-slips__comments { min-width: 22rem; max-width: 34rem; }
+        .card-slips__picker summary { cursor: pointer; font-size: .85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .card-slips__picker[open] summary { white-space: normal; margin-bottom: .5rem; }
+        .card-slips__chosen { color: var(--muted, #5b6472); }
         .card-slips__group { margin: 0 0 .5rem; padding: 0; border: 0; }
         .card-slips__group legend { font-weight: 600; font-size: .8rem; padding: 0; }
         .card-slip-choice { display: flex; gap: .4rem; align-items: baseline; font-size: .85rem; }
@@ -70,22 +73,30 @@
                                 <td>{{ slip.averageText() }}</td>
                                 <td>{{ slip.attendance ? slip.attendance.absent : '—' }}</td>
                                 <td class="card-slips__comments">
-                                    {{ form_errors(entry.codes) }}
-                                    {% for group, codes in groups %}
-                                        <fieldset class="card-slips__group">
-                                            <legend>{{ group }}</legend>
-                                            {% for code in codes|filter(code => row.labels[code] is defined) %}
-                                                {% set box = entry.codes[code] %}
-                                                <div class="card-slip-choice">
-                                                    {{ form_widget(box) }}
-                                                    <label for="{{ box.vars.id }}">{{ row.labels[code] }}</label>
-                                                    {% if code in slip.suggestedCodes %}<span class="badge">suggested</span>{% endif %}
-                                                </div>
-                                            {% endfor %}
-                                        </fieldset>
-                                    {% endfor %}
-                                    {% do entry.codes.setRendered %}
-                                    {{ form_row(entry.text, {label: 'Typed comment (optional, up to 300 characters)'}) }}
+                                    {% set chosen = (entry.codes.vars.data ?? [])|filter(code => row.labels[code] is defined) %}
+                                    {% set typed = entry.text.vars.value is not empty %}
+                                    <details class="card-slips__picker" data-controller="comment-picker" data-action="change->comment-picker#update input->comment-picker#update"{{ entry.vars.valid ? '' : ' open' }}>
+                                        <summary>
+                                            <strong data-comment-picker-target="count">{{ chosen|length }} {{ chosen|length == 1 ? 'comment' : 'comments' }}{{ typed ? ' + typed' }}:</strong>
+                                            <span class="card-slips__chosen" data-comment-picker-target="chosen">{{ chosen|map(code => row.labels[code])|join(' · ') ?: 'none' }}</span>
+                                        </summary>
+                                        {{ form_errors(entry.codes) }}
+                                        {% for group, codes in groups %}
+                                            <fieldset class="card-slips__group">
+                                                <legend>{{ group }}</legend>
+                                                {% for code in codes|filter(code => row.labels[code] is defined) %}
+                                                    {% set box = entry.codes[code] %}
+                                                    <div class="card-slip-choice">
+                                                        {{ form_widget(box) }}
+                                                        <label for="{{ box.vars.id }}">{{ row.labels[code] }}</label>
+                                                        {% if code in slip.suggestedCodes %}<span class="badge">suggested</span>{% endif %}
+                                                    </div>
+                                                {% endfor %}
+                                            </fieldset>
+                                        {% endfor %}
+                                        {% do entry.codes.setRendered %}
+                                        {{ form_row(entry.text, {label: 'Typed comment (optional, up to 300 characters)'}) }}
+                                    </details>
                                 </td>
                                 <td class="table__actions">
                                     <a class="btn btn--ghost btn--sm" href="{{ path('teacher_class_card_slip_pdf', {period: period.id, enrollment: slip.enrollmentId}) }}" data-turbo="false">Print</a>

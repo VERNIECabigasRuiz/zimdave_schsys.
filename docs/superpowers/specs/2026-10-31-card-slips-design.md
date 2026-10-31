@@ -91,7 +91,9 @@ average (if any). Output: ordered list of codes, **at most 3**, in this priority
 4. If fewer than 3 codes so far and any grade < 75 or absences ≥ 5: `see_adviser`; otherwise if no
    academic code was added (average < 80 without a failing grade): `study_home`.
 
-Truncate to 3. Behaviour comments are never suggested (the adviser knows the learner; the data doesn't).
+5. Top up to exactly 3 from `read_daily`, `study_home`, `see_adviser` (in that order, skipping ones already in).
+
+Truncate to 3, so every learner gets exactly 3. Behaviour comments are never suggested (the adviser knows the learner; the data doesn't). On the page each learner's comments sit in a closed dropdown whose summary lists the ticked ones; it opens by itself when that learner has an error.
 
 ## The slip — `CardSlipBuilder` (service) → `CardSlip` (readonly DTO)
 

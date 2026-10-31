@@ -4,7 +4,9 @@ namespace App\CardSlip;
 
 final class CardSlipSuggester
 {
-    /** @return list<string> at most 3 comment codes */
+    private const TOP_UP = ['read_daily', 'study_home', 'see_adviser'];
+
+    /** @return list<string> exactly 3 comment codes */
     public function suggest(TermFacts $facts): array
     {
         $codes = [];
@@ -45,6 +47,16 @@ final class CardSlipSuggester
                 $codes[] = 'see_adviser';
             } elseif (!$academicAdded) {
                 $codes[] = 'study_home';
+            }
+        }
+
+        // always 3: top up with the parent suggestions, which fit any learner
+        foreach (self::TOP_UP as $code) {
+            if (\count($codes) >= 3) {
+                break;
+            }
+            if (!\in_array($code, $codes, true)) {
+                $codes[] = $code;
             }
         }
 

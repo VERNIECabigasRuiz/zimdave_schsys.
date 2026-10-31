@@ -204,7 +204,7 @@ class TeacherCardSlipControllerTest extends AdminTestCase
         $grade->change(92, $this->em->find(User::class, $this->teacher->getId()), new \DateTimeImmutable('2025-08-22'));
         $this->em->flush();
         $crawler = $this->client->request('GET', $this->pageUrl());
-        self::assertSame(['excellent', 'perfect_attendance'], array_values($this->formValues($crawler)['card_slip_comments_form']['entries'][$abad->getId()]['codes']));
+        self::assertSame(['excellent', 'perfect_attendance', 'read_daily'], array_values($this->formValues($crawler)['card_slip_comments_form']['entries'][$abad->getId()]['codes']));
     }
 
     public function testNeedsImprovementHiddenWithoutAFailingSubject(): void
@@ -248,6 +248,27 @@ class TeacherCardSlipControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(422);
         self::assertSelectorTextContains('.card-slips', 'Choose at most 3 comments for ABAD, ANA, -.');
         self::assertSame([], $this->saved());
+        // the learner with the error has the dropdown open, the others stay closed
+        $crawler = $this->client->getCrawler();
+        self::assertNotNull(self::picker($crawler, $abad)->attr('open'));
+        self::assertNull(self::picker($crawler, $this->enrollments['Bautista'])->attr('open'));
+    }
+
+    public function testCommentsAreInAClosedDropdownSummarisingTheChoice(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        $picker = self::picker($crawler, $this->enrollments['Abad']);
+        self::assertNull($picker->attr('open'));
+        $summary = $picker->filter('summary')->text();
+        self::assertStringContainsString('3 comments:', $summary);
+        self::assertStringContainsString('Needs to improve in Mathematics.', $summary);
+        self::assertStringContainsString('Perfect attendance this term!', $summary);
+    }
+
+    private static function picker(Crawler $crawler, Enrollment $enrollment): Crawler
+    {
+        return $crawler->filter(\sprintf('input[type=checkbox][name="%s"]', self::codesName($enrollment)))->first()->closest('details.card-slips__picker');
     }
 
     public function testTypedTooLong(): void
