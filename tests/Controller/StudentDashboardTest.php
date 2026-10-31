@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\Entity\Weekday;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\DomCrawler\Crawler;
 
 class StudentDashboardTest extends AdminTestCase
 {
@@ -97,6 +98,20 @@ class StudentDashboardTest extends AdminTestCase
         self::assertSelectorTextContains('body', 'Mandaue City');
         self::assertSelectorTextContains('body', 'Face to Face');
         self::assertCount(0, $crawler->filter('form[name="learner_form"]'));
+    }
+
+    public function testCardsCollapseByTheirHeadings(): void
+    {
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Mabini');
+        $this->enroll($this->learner, $this->sy, $section, $this->maria);
+        $this->client->loginUser($this->learner->getUser());
+
+        $crawler = $this->client->request('GET', '/student');
+
+        $cards = $crawler->filter('details.collapsible-card');
+        self::assertSame(['My class', 'My information', 'My timetable'], $cards->each(static fn (Crawler $card) => $card->filter('summary')->text()));
+        // the long "My information" starts closed, the others open
+        self::assertSame([true, false, true], $cards->each(static fn (Crawler $card) => null !== $card->attr('open')));
     }
 
     public function testShowsIdPhoto(): void

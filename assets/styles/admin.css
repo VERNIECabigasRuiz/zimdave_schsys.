@@ -1512,16 +1512,95 @@ body.admin-page {
     margin-top: 1.2rem;
 }
 
-/* The student's class details on their dashboard */
-.class-info-card {
-    max-width: 640px;
-    padding: 1.5rem 2rem;
+/* Cards that open and close by their heading (the student's dashboard) */
+.collapsible-card {
     margin-bottom: 1.2rem;
 }
 
-.class-info-card h2 {
-    margin: 0 0 1rem;
-    font-size: 1.2rem;
+.collapsible-card > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.5rem;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 16px;
+}
+
+.collapsible-card > summary::-webkit-details-marker {
+    display: none;
+}
+
+.collapsible-card > summary h2 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.collapsible-card > summary::after {
+    content: "";
+    flex: none;
+    width: .55rem;
+    height: .55rem;
+    border-right: 2px solid var(--ink-500);
+    border-bottom: 2px solid var(--ink-500);
+    transform: rotate(45deg);
+    transition: transform .15s;
+}
+
+.collapsible-card[open] > summary::after {
+    transform: rotate(-135deg);
+}
+
+.collapsible-card > summary:hover {
+    background: #f6f8fc;
+}
+
+.collapsible-card > summary:focus-visible {
+    outline: 2px solid var(--navy-900);
+    outline-offset: 2px;
+}
+
+.collapsible-card[open] > summary {
+    border-bottom: 1px solid #eef1f7;
+    border-radius: 16px 16px 0 0;
+}
+
+.collapsible-card__body {
+    padding: 1.2rem 1.5rem 1.5rem;
+}
+
+.collapsible-card__body h3 {
+    margin: 1.5rem 0 .75rem;
+    font-size: 1rem;
+}
+
+.collapsible-card__scroll {
+    overflow-x: auto;
+}
+
+.student-info {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+}
+
+.student-info > div > h3:first-child {
+    margin-top: 0;
+}
+
+@media (max-width: 800px) {
+    .collapsible-card > summary,
+    .collapsible-card__body {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .student-info {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
 }
 
 /* "Now" cards on the dashboards */
