@@ -5,6 +5,7 @@ namespace App\Tests\Controller\Admin;
 use App\Entity\Grade;
 use App\Entity\GradeLevel;
 use App\Entity\GradeLock;
+use App\Entity\GradeOpening;
 use App\Entity\GradingPeriod;
 use App\Entity\GradingSystem;
 use App\Entity\SchoolYear;
@@ -41,9 +42,7 @@ class SchoolYearControllerTest extends AdminTestCase
         self::assertTrue($sy->isCurrent());
         self::assertSame(GradingSystem::Terms, $sy->getGradingSystem());
         self::assertCount(3, $sy->getGradingPeriods());
-        foreach ($sy->getGradingPeriods() as $period) {
-            self::assertFalse($period->isOpen());
-        }
+        self::assertSame(0, $this->em->getRepository(GradeOpening::class)->count([]));
 
         self::assertSelectorTextContains('.sy-card', 'Current');
         self::assertSame(['Term 1', 'Term 2', 'Term 3'], $crawler->filter('.quarter__name')->each(static fn ($n) => $n->text()));
@@ -268,18 +267,18 @@ class SchoolYearControllerTest extends AdminTestCase
         self::assertCount(3, $crawler->filter('[data-grading-periods-target="rows"] .periods__row'));
     }
 
-    public function testSwitchingIsBlockedWhileGradingIsOpen(): void
+    public function testSwitchingSystemRefusedWhileASchoolHasAPeriodOpen(): void
     {
         $this->createSchoolYear('2026-2027');
-        $crawler = $this->client->followRedirect();
-        $this->client->submit($crawler->selectButton('Open grading')->first()->form());
-        $id = $this->findSchoolYear('2026-2027')->getId();
+        $sy = $this->findSchoolYear('2026-2027');
+        $this->openGrading($this->school('303196', 'Pagsabungan NHS'), $sy->getGradingPeriod(2));
+        $id = $sy->getId();
 
         $this->client->request('GET', '/admin/school-years/'.$id.'/edit');
         $this->client->submitForm('Save changes', ['school_year_form[gradingSystem]' => 'quarters']);
 
         self::assertResponseStatusCodeSame(422);
-        self::assertSelectorTextContains('.form-card', 'Close grading for every period before switching between terms and quarters.');
+        self::assertSelectorTextContains('.form-card', 'Close grading in every school before switching between terms and quarters.');
         self::assertSame(GradingSystem::Terms, $this->findSchoolYear('2026-2027')->getGradingSystem());
         self::assertCount(3, $this->findSchoolYear('2026-2027')->getGradingPeriods());
     }
@@ -362,20 +361,24 @@ class SchoolYearControllerTest extends AdminTestCase
         self::assertSame(1, $this->em->getRepository(GradeLock::class)->count([]));
     }
 
-    public function testOpenAndCloseQuarterGrading(): void
+    public function testShowsSchoolsOpenCount(): void
     {
         $this->createSchoolYear('2026-2027');
-        $crawler = $this->client->followRedirect();
-
-        $this->client->submit($crawler->selectButton('Open grading')->first()->form());
-        $this->client->followRedirect();
-
-        self::assertTrue($this->findSchoolYear('2026-2027')->getGradingPeriod(1)->isOpen());
-        self::assertContains('Opened Term 1 grading (2026-2027)', $this->activityActions());
+        $sy = $this->findSchoolYear('2026-2027');
+        $pagsabungan = $this->school('303196', 'Pagsabungan NHS');
+        $this->school('303197', 'Other NHS');
+        $this->openGrading($pagsabungan, $sy->getGradingPeriod(1));
 
         $crawler = $this->client->request('GET', '/admin/school-years');
-        $this->client->submit($crawler->selectButton('Close grading')->form());
-        self::assertFalse($this->findSchoolYear('2026-2027')->getGradingPeriod(1)->isOpen());
+
+        self::assertResponseIsSuccessful();
+        $quarters = $crawler->filter('.quarter');
+        self::assertStringContainsString('Open in 1 of 2 schools', $quarters->eq(0)->text());
+        self::assertStringContainsString('Open in 0 of 2 schools', $quarters->eq(1)->text());
+        self::assertStringContainsString('Each school opens grading on its Grades page.', $crawler->text());
+        self::assertCount(0, $crawler->filter('form[action*="/grading-periods/"]'));
+        self::assertCount(0, $crawler->selectButton('Open grading'));
+        self::assertCount(0, $crawler->selectButton('Close grading'));
     }
 
     public function testOnlyOneSchoolYearIsCurrent(): void

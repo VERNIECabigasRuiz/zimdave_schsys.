@@ -16,6 +16,7 @@ use App\Grading\GradingException;
 use App\Grading\SchoolGradeOverview;
 use App\Grading\SectionGradeGrid;
 use App\Repository\GradeLockRepository;
+use App\Repository\GradeOpeningRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
@@ -45,6 +46,7 @@ class SchoolGradeController extends AbstractController
         private readonly SectionRepository $sections,
         private readonly SubjectRepository $subjects,
         private readonly GradeLockRepository $locks,
+        private readonly GradeOpeningRepository $openings,
         private readonly GradeRules $rules,
         private readonly GradeRecorder $recorder,
         private readonly SectionGradeGrid $grid,
@@ -55,7 +57,7 @@ class SchoolGradeController extends AbstractController
     public function overview(School $school, SchoolGradeOverview $overview, #[MapQueryParameter] ?int $period = null): Response
     {
         $schoolYear = $this->currentYear();
-        $selected = $this->selectPeriod($schoolYear, $period);
+        $selected = $this->selectPeriod($school, $schoolYear, $period);
         $classes = null === $selected ? [] : $overview->build($school, $schoolYear, $selected);
         $lock = null === $selected ? null : $this->locks->findFor($school, $selected);
         $canLock = $this->isGranted(GradeVoter::LOCK, $school);
@@ -67,6 +69,7 @@ class SchoolGradeController extends AbstractController
             'periods' => $schoolYear->getGradingPeriods(),
             'period' => $selected,
             'lock' => $lock,
+            'opening' => null === $selected ? null : $this->openings->findFor($school, $selected),
             'classes' => $classes,
             'complete' => \count(array_filter($classes, static fn (ClassProgress $c) => $c->isComplete())),
             'can_lock' => $canLock,
@@ -80,7 +83,7 @@ class SchoolGradeController extends AbstractController
         $section = $this->requireSection($school, $section);
         $this->denyAccessUnlessGranted(GradeVoter::VIEW_SECTION, $section);
         $schoolYear = $section->getSchoolYear();
-        $selected = $this->selectPeriod($schoolYear, $period);
+        $selected = $this->selectPeriod($school, $schoolYear, $period);
 
         return $this->render('grades/school_section.html.twig', [
             'layout' => $this->layout(),
@@ -96,7 +99,7 @@ class SchoolGradeController extends AbstractController
     public function lock(Request $request, School $school, int $period, #[CurrentUser] User $user): Response
     {
         $this->denyAccessUnlessGranted(GradeVoter::LOCK, $school);
-        $period = $this->requirePeriod($period);
+        $period = $this->requirePeriod($school, $period);
 
         $form = $this->lockForm($school, $period)->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -119,7 +122,7 @@ class SchoolGradeController extends AbstractController
     public function unlock(School $school, int $period): Response
     {
         $this->denyAccessUnlessGranted(GradeVoter::LOCK, $school);
-        $period = $this->requirePeriod($period);
+        $period = $this->requirePeriod($school, $period);
 
         try {
             $this->recorder->unlockPeriod($school, $period);
@@ -137,7 +140,7 @@ class SchoolGradeController extends AbstractController
     {
         $this->denyAccessUnlessGranted(GradeVoter::LOCK, $school);
         [$section, $subject] = $this->requireClass($school, $section, $subject);
-        $period = $this->requirePeriod($period);
+        $period = $this->requirePeriod($school, $period);
 
         try {
             $this->recorder->unlockClass($section, $subject, $period, $user);
@@ -155,7 +158,7 @@ class SchoolGradeController extends AbstractController
     {
         $this->denyAccessUnlessGranted(GradeVoter::LOCK, $school);
         [$section, $subject] = $this->requireClass($school, $section, $subject);
-        $period = $this->requirePeriod($period);
+        $period = $this->requirePeriod($school, $period);
 
         try {
             $this->recorder->lockClass($section, $subject, $period);
@@ -181,10 +184,10 @@ class SchoolGradeController extends AbstractController
     }
 
     /** The asked-for period of the school year (404 if it isn't one), or the one the grid opens on. */
-    private function selectPeriod(SchoolYear $schoolYear, ?int $id): ?GradingPeriod
+    private function selectPeriod(School $school, SchoolYear $schoolYear, ?int $id): ?GradingPeriod
     {
         if (null === $id) {
-            return $this->grid->defaultPeriod($schoolYear);
+            return $this->grid->defaultPeriod($school, $schoolYear);
         }
 
         return $schoolYear->getGradingPeriods()->findFirst(static fn (int $i, GradingPeriod $p) => $p->getId() === $id)
@@ -192,9 +195,9 @@ class SchoolGradeController extends AbstractController
     }
 
     /** A grading period of the current school year; only those can be locked. */
-    private function requirePeriod(int $id): GradingPeriod
+    private function requirePeriod(School $school, int $id): GradingPeriod
     {
-        return $this->selectPeriod($this->currentYear(), $id) ?? throw $this->createNotFoundException();
+        return $this->selectPeriod($school, $this->currentYear(), $id) ?? throw $this->createNotFoundException();
     }
 
     private function requireSection(School $school, int $id): Section

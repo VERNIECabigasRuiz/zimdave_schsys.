@@ -6,6 +6,7 @@ use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeLevel;
 use App\Entity\GradeLock;
+use App\Entity\GradeOpening;
 use App\Entity\GradeUnlock;
 use App\Entity\GradingPeriod;
 use App\Entity\School;
@@ -42,12 +43,12 @@ class SchoolGradeControllerTest extends AdminTestCase
         $this->sy = $this->schoolYear(2025, current: true);
         $this->sy->rebuildGradingPeriods();
         $this->term1 = $this->sy->getGradingPeriod(1);
-        $this->term1->setOpen(true);
         $this->em->flush();
         $this->school = $this->school('303196', 'Pagsabungan NHS', planValidUntil: new \DateTimeImmutable('2026-04-30'));
         $this->other = $this->school('303197', 'Other NHS', planValidUntil: new \DateTimeImmutable('2026-04-30'));
         $this->principal = $this->createUser('rosa', User::ROLE_PRINCIPAL, 'Rosa Cruz');
         $this->assign($this->school, $this->sy, $this->principal);
+        $this->em->persist(new GradeOpening($this->school, $this->term1, $this->principal, new \DateTimeImmutable('2025-08-22 09:00')));
         $this->teacher = $this->createUser('tess', User::ROLE_TEACHER, 'Tess Reyes');
         $this->assign($this->school, $this->sy, $this->teacher, User::ROLE_TEACHER);
         $this->honest = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Honest');
@@ -142,7 +143,7 @@ class SchoolGradeControllerTest extends AdminTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Grades');
         self::assertSelectorTextContains('.sidebar__link.is-active', 'Grades');
-        self::assertSelectorTextContains('.grade-lock-status', 'Open · not locked');
+        self::assertSelectorTextContains('.grade-lock-status', 'Open for grading since Aug 22 by Rosa Cruz');
         self::assertSelectorTextContains('.grade-tabs', 'Term 2');
 
         $math = $this->classRow($crawler, $this->math);
@@ -212,8 +213,9 @@ class SchoolGradeControllerTest extends AdminTestCase
 
     public function testLockRefusedWhenNeverOpened(): void
     {
-        $this->em->find(GradingPeriod::class, $this->term1->getId())->setOpen(false);
-        $this->em->flush();
+        $this->em->remove($this->em->getRepository(GradeOpening::class)->findOneBy(['school' => $this->school, 'gradingPeriod' => $this->term1]));
+        // another school having it open changes nothing here
+        $this->openGrading($this->other, $this->term1);
 
         $crawler = $this->client->request('GET', $this->overviewUrl());
         self::assertSelectorTextContains('.grade-lock-status', 'Closed for grading');

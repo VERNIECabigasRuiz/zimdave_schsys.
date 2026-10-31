@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeLevel;
+use App\Entity\GradeOpening;
 use App\Entity\GradeUnlock;
 use App\Entity\GradingPeriod;
 use App\Entity\School;
@@ -45,9 +46,9 @@ class TeacherGradeControllerTest extends AdminTestCase
         $this->sy = $this->schoolYear(2025, current: true);
         $this->sy->rebuildGradingPeriods();
         $this->term1 = $this->sy->getGradingPeriod(1);
-        $this->term1->setOpen(true);
         $this->em->flush();
         $this->school = $this->school('303196', 'Pagsabungan NHS', planValidUntil: new \DateTimeImmutable('2026-04-30'));
+        $this->openGrading($this->school, $this->term1);
         $this->teacher = $this->createUser('tess', User::ROLE_TEACHER, 'Tess Reyes');
         $this->assign($this->school, $this->sy, $this->teacher, User::ROLE_TEACHER);
         $this->principal = $this->createUser('rosa', User::ROLE_PRINCIPAL, 'Rosa Cruz');
@@ -358,10 +359,12 @@ class TeacherGradeControllerTest extends AdminTestCase
     public function testClassGradesPeriodDefaultsToTheOpenOne(): void
     {
         $this->client->loginUser($this->adviser());
-        $this->term1->setOpen(false);
-        $term2 = $this->sy->getGradingPeriod(2);
-        $term2->setOpen(true);
+        $this->em->remove($this->em->getRepository(GradeOpening::class)->findOneBy(['school' => $this->school, 'gradingPeriod' => $this->term1]));
         $this->em->flush();
+        $term2 = $this->sy->getGradingPeriod(2);
+        $this->openGrading($this->school, $term2);
+        // another school having Term 1 open doesn't move this school's grid
+        $this->openGrading($this->school('303197', 'Other NHS'), $this->term1);
 
         $this->client->request('GET', '/teacher/class/grades');
         self::assertSelectorTextContains('.grade-tabs .btn--primary', $term2->getLabel());

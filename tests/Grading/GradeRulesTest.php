@@ -4,6 +4,7 @@ namespace App\Tests\Grading;
 
 use App\Entity\Enrollment;
 use App\Entity\Grade;
+use App\Entity\GradeOpening;
 use App\Entity\GradeLevel;
 use App\Entity\GradeLock;
 use App\Entity\GradeUnlock;
@@ -23,6 +24,7 @@ use App\Grading\GradeRules;
 use App\Grading\SheetLearner;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeLockRepository;
+use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Repository\TransferRequestRepository;
@@ -79,6 +81,7 @@ class GradeRulesTest extends KernelTestCase
             $c->get(GradeUnlockRepository::class),
             $c->get(EnrollmentRepository::class),
             $c->get(TransferRequestRepository::class),
+            $c->get(GradeOpeningRepository::class),
         );
     }
 
@@ -122,10 +125,17 @@ class GradeRulesTest extends KernelTestCase
         $this->em->flush();
     }
 
-    private function setOpen(bool $open): void
+    /** Opens or closes Term 1 for grading at the school (this one unless given), as its principal would. */
+    private function setGradingOpen(bool $open, ?School $school = null): void
     {
-        $this->term1->setOpen($open);
-        $this->em->flush();
+        $school ??= $this->school;
+        $opening = $this->em->getRepository(GradeOpening::class)->findOneBy(['school' => $school, 'gradingPeriod' => $this->term1]);
+        if ($open && null === $opening) {
+            $this->openGrading($school, $this->term1);
+        } elseif (!$open && null !== $opening) {
+            $this->em->remove($opening);
+            $this->em->flush();
+        }
     }
 
     private function classStatus(): ClassGradeStatus
@@ -135,22 +145,22 @@ class GradeRulesTest extends KernelTestCase
 
     public function testStatusMatrix(): void
     {
-        $this->setOpen(false);
+        $this->setGradingOpen(false);
         self::assertSame(ClassGradeStatus::Closed, $this->classStatus());
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         self::assertSame(ClassGradeStatus::Open, $this->classStatus());
 
         $this->lock();
         self::assertSame(ClassGradeStatus::Locked, $this->classStatus());
-        $this->setOpen(false);
+        $this->setGradingOpen(false);
         self::assertSame(ClassGradeStatus::Locked, $this->classStatus());
 
         $this->unlock();
         self::assertSame(ClassGradeStatus::Unlocked, $this->classStatus());
-        // the admin closing the period doesn't take away a principal's unlock
-        $this->setOpen(true);
+        // the school closing the period doesn't take away a principal's unlock
+        $this->setGradingOpen(true);
         self::assertSame(ClassGradeStatus::Unlocked, $this->classStatus());
-        $this->setOpen(false);
+        $this->setGradingOpen(false);
         self::assertSame(ClassGradeStatus::Unlocked, $this->classStatus());
 
         // another subject of the same class stays locked
@@ -166,15 +176,29 @@ class GradeRulesTest extends KernelTestCase
 
     public function testStatusFromLoadedLocks(): void
     {
-        $this->setOpen(false);
-        self::assertSame(ClassGradeStatus::Closed, GradeRules::statusFor($this->term1, locked: false, unlocked: false));
-        self::assertSame(ClassGradeStatus::Locked, GradeRules::statusFor($this->term1, locked: true, unlocked: false));
-        self::assertSame(ClassGradeStatus::Unlocked, GradeRules::statusFor($this->term1, locked: true, unlocked: true));
+        self::assertSame(ClassGradeStatus::Closed, GradeRules::statusFor(false, locked: false, unlocked: false));
+        self::assertSame(ClassGradeStatus::Locked, GradeRules::statusFor(false, locked: true, unlocked: false));
+        self::assertSame(ClassGradeStatus::Unlocked, GradeRules::statusFor(false, locked: true, unlocked: true));
         // an unlock without the school's lock means nothing
-        self::assertSame(ClassGradeStatus::Closed, GradeRules::statusFor($this->term1, locked: false, unlocked: true));
-        $this->setOpen(true);
-        self::assertSame(ClassGradeStatus::Open, GradeRules::statusFor($this->term1, locked: false, unlocked: true));
-        self::assertSame(ClassGradeStatus::Locked, GradeRules::statusFor($this->term1, locked: true, unlocked: false));
+        self::assertSame(ClassGradeStatus::Closed, GradeRules::statusFor(false, locked: false, unlocked: true));
+        self::assertSame(ClassGradeStatus::Open, GradeRules::statusFor(true, locked: false, unlocked: true));
+        self::assertSame(ClassGradeStatus::Locked, GradeRules::statusFor(true, locked: true, unlocked: false));
+    }
+
+    public function testOpenInOneSchoolOnly(): void
+    {
+        $other = $this->school('303197', 'Other National High School');
+        $honest = $this->newSection($other, $this->sy, GradeLevel::Grade8, 'Honest');
+        $otherMath = $this->subject($other, $this->sy, GradeLevel::Grade8, 'MATH8', 'Mathematics');
+        $this->setGradingOpen(true);
+
+        $rules = $this->rules();
+        self::assertTrue($rules->isOpenFor($this->school, $this->term1));
+        self::assertFalse($rules->isOpenFor($other, $this->term1));
+        self::assertSame(ClassGradeStatus::Open, $this->classStatus());
+        self::assertSame(ClassGradeStatus::Closed, $rules->status($honest, $otherMath, $this->term1));
+        self::assertTrue($rules->canLock($this->school, $this->term1));
+        self::assertFalse($rules->canLock($other, $this->term1));
     }
 
     public function testRefusalMessages(): void
@@ -306,18 +330,19 @@ class GradeRulesTest extends KernelTestCase
     public function testCanLock(): void
     {
         $rules = $this->rules();
-        $this->setOpen(false);
+        $this->setGradingOpen(false);
         self::assertFalse($rules->canLock($this->school, $this->term1));
 
         $this->em->persist(new Grade($this->enrolled('Arnol', 'Gerald'), $this->math, $this->term1, 90, $this->teacher, new \DateTimeImmutable('2025-08-22 10:00')));
         $this->em->flush();
         self::assertTrue($rules->canLock($this->school, $this->term1));
 
-        $this->setOpen(true);
-        self::assertTrue($rules->canLock($this->school, $this->term1));
+        // a school without grades can lock only while it has the period open
         $other = $this->school('303197', 'Other National High School');
+        self::assertFalse($rules->canLock($other, $this->term1));
+        $this->setGradingOpen(true, $other);
         self::assertTrue($rules->canLock($other, $this->term1));
-        $this->setOpen(false);
+        $this->setGradingOpen(false, $other);
         self::assertFalse($rules->canLock($other, $this->term1));
     }
 }

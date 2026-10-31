@@ -3,9 +3,11 @@
 namespace App\Grading;
 
 use App\Entity\GradingPeriod;
+use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
+use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
@@ -22,15 +24,17 @@ class SectionGradeGrid
         private readonly TeachingLoadRepository $loads,
         private readonly GradeRepository $grades,
         private readonly GradeRules $rules,
+        private readonly GradeOpeningRepository $openings,
     ) {
     }
 
-    /** The period a grid opens on: the open one (the earliest if several), else the last. */
-    public function defaultPeriod(SchoolYear $schoolYear): ?GradingPeriod
+    /** The period a grid opens on: the one the school has open (the earliest if several), else the last. */
+    public function defaultPeriod(School $school, SchoolYear $schoolYear): ?GradingPeriod
     {
         $periods = $schoolYear->getGradingPeriods()->getValues();
+        $openIds = $this->openings->findOpenPeriodIds($school, $schoolYear);
         foreach ($periods as $period) {
-            if ($period->isOpen()) {
+            if (\in_array($period->getId(), $openIds, true)) {
                 return $period;
             }
         }

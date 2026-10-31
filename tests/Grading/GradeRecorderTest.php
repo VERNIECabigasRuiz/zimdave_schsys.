@@ -7,6 +7,7 @@ use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeLevel;
 use App\Entity\GradeLock;
+use App\Entity\GradeOpening;
 use App\Entity\GradeUnlock;
 use App\Entity\GradingPeriod;
 use App\Entity\School;
@@ -24,6 +25,7 @@ use App\Grading\GradeRules;
 use App\Grading\GradingException;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeLockRepository;
+use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Repository\TransferRequestRepository;
@@ -102,6 +104,7 @@ class GradeRecorderTest extends KernelTestCase
             $c->get(GradeUnlockRepository::class),
             $c->get(EnrollmentRepository::class),
             $c->get(TransferRequestRepository::class),
+            $c->get(GradeOpeningRepository::class),
         );
 
         return new GradeRecorder(
@@ -143,10 +146,16 @@ class GradeRecorderTest extends KernelTestCase
         $this->em->flush();
     }
 
-    private function setOpen(bool $open): void
+    /** Opens or closes Term 1 for grading at the school, as its principal would. */
+    private function setGradingOpen(bool $open): void
     {
-        $this->term1->setOpen($open);
-        $this->em->flush();
+        $opening = $this->em->getRepository(GradeOpening::class)->findOneBy(['school' => $this->school, 'gradingPeriod' => $this->term1]);
+        if ($open && null === $opening) {
+            $this->openGrading($this->school, $this->term1);
+        } elseif (!$open && null !== $opening) {
+            $this->em->remove($opening);
+            $this->em->flush();
+        }
     }
 
     private function gradeCount(): int
@@ -167,7 +176,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testSaveUpsertsAndDeletes(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
 
         self::assertSame(2, $this->save([$this->id(0) => 85, $this->id(1) => 90, $this->id(2) => null]));
         self::assertSame(2, $this->gradeCount());
@@ -185,7 +194,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testSaveRejectsOutOfRangeValue(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
 
         self::assertSame('Enter a grade from 60 to 100.', $this->refusal(fn () => $this->save([$this->id(0) => 59])));
         self::assertSame(0, $this->gradeCount());
@@ -193,7 +202,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testSaveRefusedWhenLocked(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $this->save([$this->id(0) => 85]);
         $this->lock();
 
@@ -208,18 +217,38 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testSaveRefusedWhenClosed(): void
     {
-        $this->setOpen(false);
+        $this->setGradingOpen(false);
 
         self::assertSame("Term 1 isn't open for grading.", $this->refusal(fn () => $this->save([$this->id(0) => 85])));
         self::assertSame(0, $this->gradeCount());
     }
 
-    public function testSaveAllowedWhenUnlockedAfterAdminClosed(): void
+    public function testOtherSchoolCannotSaveWhenOnlyOneIsOpen(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
+        $other = $this->school('303197', 'Other National High School');
+        $otherTeacher = $this->plainUser('lina', User::ROLE_TEACHER);
+        $brilliant = $this->newSection($other, $this->sy, GradeLevel::Grade8, 'Brilliant');
+        $otherMath = (new Subject($other, $this->sy))->setGradeLevel(GradeLevel::Grade8)->setCode('MATH8')->setName('Mathematics')->setPosition(1);
+        $otherMath->setMeetingsPerWeek(5);
+        $this->em->persist($otherMath);
+        $otherLoad = new TeachingLoad($brilliant, $otherMath, $otherTeacher);
+        $this->em->persist($otherLoad);
+        $learner = $this->enrolled('Zamora', $brilliant);
+        $this->em->flush();
+
+        self::assertSame("Term 1 isn't open for grading.", $this->refusal(fn () => $this->recorder()->saveSheet($otherLoad, $this->term1, [$learner->getId() => 85], $otherTeacher)));
+        self::assertSame(0, $this->gradeCount());
+        // the school that opened it still saves
+        self::assertSame(1, $this->save([$this->id(0) => 85]));
+    }
+
+    public function testSaveAllowedWhenUnlockedAfterSchoolClosed(): void
+    {
+        $this->setGradingOpen(true);
         $this->save([$this->id(0) => 85]);
         $this->lock();
-        $this->setOpen(false);
+        $this->setGradingOpen(false);
         $this->recorder()->unlockClass($this->honest, $this->math, $this->term1, $this->principal);
 
         self::assertSame(2, $this->save([$this->id(0) => 86, $this->id(1) => 91]));
@@ -228,7 +257,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testIgnoresDroppedAndOffSheetIds(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $this->enrolled[2]->setRemarkCode(Sf1Remark::Dropped);
         $other = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Brilliant');
         $stranger = $this->enrolled('Zamora', $other);
@@ -242,7 +271,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testLockClearsUnlocks(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $this->em->persist(new GradeUnlock($this->honest, $this->math, $this->term1, $this->principal, new \DateTimeImmutable('2025-08-22 11:00')));
         $this->em->persist(new GradeUnlock($this->honest, $this->math, $this->sy->getGradingPeriod(2), $this->principal, new \DateTimeImmutable('2025-08-22 11:00')));
         $this->em->flush();
@@ -259,7 +288,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testLockRefusedWhenNeverOpened(): void
     {
-        $this->setOpen(false);
+        $this->setGradingOpen(false);
 
         self::assertSame("Term 1 hasn't been opened for grading yet.", $this->refusal(fn () => $this->recorder()->lockPeriod($this->school, $this->term1, $this->principal)));
         self::assertSame(0, $this->em->getRepository(GradeLock::class)->count([]));
@@ -267,9 +296,9 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testLockAllowedAfterAdminClosedWithGrades(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $this->save([$this->id(0) => 85]);
-        $this->setOpen(false);
+        $this->setGradingOpen(false);
 
         $this->recorder()->lockPeriod($this->school, $this->term1, $this->principal);
 
@@ -278,7 +307,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testUnlockAndRelockClassRefusals(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $recorder = $this->recorder();
 
         self::assertSame('Term 1 is not locked.', $this->refusal(fn () => $recorder->unlockClass($this->honest, $this->math, $this->term1, $this->principal)));
@@ -295,7 +324,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testUnlockPeriod(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $recorder = $this->recorder();
         self::assertSame('Term 1 is not locked.', $this->refusal(fn () => $recorder->unlockPeriod($this->school, $this->term1)));
 
@@ -334,7 +363,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testTransferredOutAndDroppedLearnersKeepTheirGrades(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $this->save([$this->id(0) => 85, $this->id(1) => 90, $this->id(2) => 95]);
         $this->transfer($this->enrolled[1], $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Brilliant'));
         $this->enrolled[2]->setRemarkCode(Sf1Remark::Dropped);
@@ -354,7 +383,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testOutOfRangeValueChangesNoOtherGrade(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $this->save([$this->id(0) => 80]);
 
         // the first row is valid and comes before the bad one
@@ -367,7 +396,7 @@ class GradeRecorderTest extends KernelTestCase
 
     public function testSaveIsRefusedWhileThePrincipalIsLocking(): void
     {
-        $this->setOpen(true);
+        $this->setGradingOpen(true);
         $locking = static::getContainer()->get(LockFactory::class)->createLock('grade-lock-'.$this->school->getId());
         self::assertTrue($locking->acquire());
 

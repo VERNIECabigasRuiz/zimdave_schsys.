@@ -6,7 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * A term or quarter of a school year. Teachers can only enter grades while it is open.
+ * A term or quarter of a school year. Each school opens it for grading on its own (GradeOpening).
  */
 #[ORM\Entity]
 #[ORM\UniqueConstraint(columns: ['school_year_id', 'number'])]
@@ -16,9 +16,6 @@ class GradingPeriod
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column]
-    private bool $open = false;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $startDate = null;
@@ -53,18 +50,6 @@ class GradingPeriod
     public function getLabel(): string
     {
         return $this->schoolYear->getGradingSystem()->periodName().' '.$this->number;
-    }
-
-    public function isOpen(): bool
-    {
-        return $this->open;
-    }
-
-    public function setOpen(bool $open): static
-    {
-        $this->open = $open;
-
-        return $this;
     }
 
     public function getStartDate(): ?\DateTimeImmutable

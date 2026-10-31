@@ -51,7 +51,7 @@ class TeacherClassController extends AbstractLearnerController
 
         $periods = $schoolYear->getGradingPeriods();
         if (null === $period) {
-            $selected = $grid->defaultPeriod($schoolYear);
+            $selected = $grid->defaultPeriod($section->getSchool(), $schoolYear);
         } else {
             $selected = $periods->findFirst(static fn (int $i, GradingPeriod $p) => $p->getId() === $period);
             if (null === $selected) {

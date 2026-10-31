@@ -6,7 +6,7 @@
     <div class="page-head">
         <div>
             <h1>School Year</h1>
-            <p>School years and their grading periods (terms or quarters). Teachers can only enter grades for an open period.</p>
+            <p>School years and their grading periods (terms or quarters). Each school opens grading on its Grades page.</p>
         </div>
         <a class="btn btn--primary" href="{{ path('admin_school_year_new') }}">+ New school year</a>
     </div>
@@ -34,7 +34,8 @@
 
             <div class="quarters">
                 {% for period in sy.gradingPeriods %}
-                    <div class="quarter{{ period.open ? ' is-open' }}">
+                    {% set open_in = open_counts[period.id] ?? 0 %}
+                    <div class="quarter{{ open_in > 0 ? ' is-open' }}">
                         <span class="quarter__name">{{ period.label }}</span>
                         <span class="quarter__dates muted">
                             {%- if period.startDate and period.endDate -%}
@@ -43,13 +44,7 @@
                                 Dates not set
                             {%- endif -%}
                         </span>
-                        <span class="badge {{ period.open ? 'badge--green' : '' }}">{{ period.open ? 'Grading open' : 'Closed' }}</span>
-                        <form method="post" action="{{ path('admin_grading_period_toggle', {id: period.id}) }}">
-                            <input type="hidden" name="_token" value="{{ csrf_token('grading-period-' ~ period.id) }}">
-                            <button class="btn btn--sm {{ period.open ? 'btn--ghost' : 'btn--primary' }}" type="submit">
-                                {{ period.open ? 'Close grading' : 'Open grading' }}
-                            </button>
-                        </form>
+                        <span class="badge {{ open_in > 0 ? 'badge--green' : '' }}">Open in {{ open_in }} of {{ school_count }} school{{ school_count == 1 ? '' : 's' }}</span>
                     </div>
                 {% endfor %}
             </div>

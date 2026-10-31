@@ -7,7 +7,9 @@ use App\Entity\SchoolYear;
 use App\Entity\User;
 use App\Form\SchoolYearFormType;
 use App\Repository\GradeLockRepository;
+use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
+use App\Repository\SchoolRepository;
 use App\Repository\SchoolYearRepository;
 use App\Service\ActivityLogger;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,14 +32,26 @@ class SchoolYearController extends AbstractController
         private readonly ActivityLogger $activityLogger,
         private readonly GradeRepository $grades,
         private readonly GradeLockRepository $locks,
+        private readonly GradeOpeningRepository $openings,
+        private readonly SchoolRepository $schools,
     ) {
     }
 
     #[Route('', name: 'admin_school_years', methods: ['GET'])]
     public function index(): Response
     {
+        $schoolYears = $this->schoolYears->findAllNewestFirst();
+        $openCounts = [];
+        foreach ($schoolYears as $schoolYear) {
+            foreach ($schoolYear->getGradingPeriods() as $period) {
+                $openCounts[$period->getId()] = $this->openings->countSchoolsOpen($period);
+            }
+        }
+
         return $this->render('admin/school_years/index.html.twig', [
-            'school_years' => $this->schoolYears->findAllNewestFirst(),
+            'school_years' => $schoolYears,
+            'open_counts' => $openCounts,
+            'school_count' => $this->schools->count([]),
         ]);
     }
 
@@ -81,14 +95,14 @@ class SchoolYearController extends AbstractController
     public function edit(Request $request, SchoolYear $schoolYear): Response
     {
         $originalSystem = $schoolYear->getGradingSystem();
-        $hadOpenPeriod = $schoolYear->hasOpenGradingPeriod();
+        $hadOpenPeriod = $this->openings->existsForSchoolYear($schoolYear);
         $periodsBefore = $schoolYear->getGradingPeriods()->toArray();
         $form = $this->createForm(SchoolYearFormType::class, $schoolYear, ['with_periods' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid() && $schoolYear->getGradingSystem() !== $originalSystem) {
             if ($hadOpenPeriod) {
-                $form->get('gradingSystem')->addError(new FormError('Close grading for every period before switching between terms and quarters.'));
+                $form->get('gradingSystem')->addError(new FormError('Close grading in every school before switching between terms and quarters.'));
             } elseif (!$schoolYear->hasMatchingGradingPeriods()) {
                 // The page normally redraws the period rows for the new system; without that, split evenly
                 $schoolYear->rebuildGradingPeriods();
@@ -128,29 +142,6 @@ class SchoolYearController extends AbstractController
         $this->entityManager->flush();
 
         $this->addFlash('success', \sprintf('%s is now the current school year.', $schoolYear->getName()));
-
-        return $this->redirectToRoute('admin_school_years');
-    }
-
-    #[Route('/grading-periods/{id}/toggle', name: 'admin_grading_period_toggle', requirements: ['id' => '\d+'], methods: ['POST'])]
-    #[IsCsrfTokenValid(new Expression('"grading-period-" ~ args["period"].getId()'), tokenKey: '_token')]
-    public function toggleGradingPeriod(GradingPeriod $period): Response
-    {
-        $period->setOpen(!$period->isOpen());
-        $this->activityLogger->log(\sprintf(
-            '%s %s grading (%s)',
-            $period->isOpen() ? 'Opened' : 'Closed',
-            $period->getLabel(),
-            $period->getSchoolYear()->getName(),
-        ));
-        $this->entityManager->flush();
-
-        $this->addFlash('success', \sprintf(
-            '%s grading for %s is now %s.',
-            $period->getLabel(),
-            $period->getSchoolYear()->getName(),
-            $period->isOpen() ? 'open' : 'closed',
-        ));
 
         return $this->redirectToRoute('admin_school_years');
     }

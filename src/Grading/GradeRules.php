@@ -13,6 +13,7 @@ use App\Entity\Subject;
 use App\Entity\TeachingLoad;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeLockRepository;
+use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Repository\TransferRequestRepository;
@@ -26,6 +27,7 @@ class GradeRules
         private readonly GradeUnlockRepository $unlocks,
         private readonly EnrollmentRepository $enrollments,
         private readonly TransferRequestRepository $transfers,
+        private readonly GradeOpeningRepository $openings,
     ) {
     }
 
@@ -46,24 +48,32 @@ class GradeRules
             && !$subject->hasComponents();
     }
 
+    /** Whether the school has opened the period for grading. Each school opens and closes its own. */
+    public function isOpenFor(School $school, GradingPeriod $period): bool
+    {
+        return null !== $this->openings->findFor($school, $period);
+    }
+
     /** A principal's lock wins over the period being open; a class unlocked for corrections stays so however the period is set. */
     public function status(Section $section, Subject $subject, GradingPeriod $period): ClassGradeStatus
     {
-        if (null === $this->locks->findFor($section->getSchool(), $period)) {
-            return self::statusFor($period, locked: false, unlocked: false);
+        $school = $section->getSchool();
+        if (null === $this->locks->findFor($school, $period)) {
+            return self::statusFor($this->isOpenFor($school, $period), locked: false, unlocked: false);
         }
 
-        return self::statusFor($period, locked: true, unlocked: null !== $this->unlocks->findFor($section, $subject, $period));
+        // once locked, being open no longer matters
+        return self::statusFor(false, locked: true, unlocked: null !== $this->unlocks->findFor($section, $subject, $period));
     }
 
-    /** status() from a lock and an unlock already loaded: whether the school has locked the period, and whether the class is unlocked. */
-    public static function statusFor(GradingPeriod $period, bool $locked, bool $unlocked): ClassGradeStatus
+    /** status() from what is already loaded: whether the school has the period open, has locked it, and has unlocked the class. */
+    public static function statusFor(bool $open, bool $locked, bool $unlocked): ClassGradeStatus
     {
         if ($locked) {
             return $unlocked ? ClassGradeStatus::Unlocked : ClassGradeStatus::Locked;
         }
 
-        return $period->isOpen() ? ClassGradeStatus::Open : ClassGradeStatus::Closed;
+        return $open ? ClassGradeStatus::Open : ClassGradeStatus::Closed;
     }
 
     /** Why grades with this status can't be changed, or null when they can. */
@@ -142,10 +152,10 @@ class GradeRules
         return (int) round($sum / \count($components));
     }
 
-    /** A period can be locked while it is open, or once it has grades. */
+    /** A period can be locked while the school has it open, or once the school has grades in it. */
     public function canLock(School $school, GradingPeriod $period): bool
     {
-        return $period->isOpen() || $this->grades->countForSchool($school, $period) > 0;
+        return $this->isOpenFor($school, $period) || $this->grades->countForSchool($school, $period) > 0;
     }
 
     private function row(Enrollment $enrollment, bool $editable, ?string $status): SheetLearner

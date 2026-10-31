@@ -21,6 +21,7 @@ use App\Grading\GridColumn;
 use App\Grading\SectionGradeGrid;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeLockRepository;
+use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Repository\SubjectRepository;
@@ -109,9 +110,10 @@ class SectionGradeGridTest extends KernelTestCase
             $c->get(GradeUnlockRepository::class),
             $c->get(EnrollmentRepository::class),
             $c->get(TransferRequestRepository::class),
+            $c->get(GradeOpeningRepository::class),
         );
 
-        return new SectionGradeGrid($c->get(SubjectRepository::class), $c->get(TeachingLoadRepository::class), $c->get(GradeRepository::class), $rules);
+        return new SectionGradeGrid($c->get(SubjectRepository::class), $c->get(TeachingLoadRepository::class), $c->get(GradeRepository::class), $rules, $c->get(GradeOpeningRepository::class));
     }
 
     /** @param list<GridColumn> $columns */

@@ -14,7 +14,7 @@ use App\Repository\TeachingLoadRepository;
 
 /**
  * Every gradable class of a school for one period, with its teacher, progress and status. The school's
- * lock and unlocks are read once and each section's grades once, so the page doesn't query per class.
+ * opening, lock and unlocks are read once and each section's grades once, so the page doesn't query per class.
  */
 class SchoolGradeOverview
 {
@@ -33,6 +33,7 @@ class SchoolGradeOverview
     public function build(School $school, SchoolYear $schoolYear, GradingPeriod $period): array
     {
         $locked = null !== $this->locks->findFor($school, $period);
+        $open = !$locked && $this->rules->isOpenFor($school, $period);
         $unlocked = [];
         if ($locked) {
             foreach ($this->unlocks->findForSchool($school, $period) as $unlock) {
@@ -70,7 +71,7 @@ class SchoolGradeOverview
                     $teachers[$subject->getId()] ?? null,
                     $graded,
                     \count($editable),
-                    GradeRules::statusFor($period, $locked, isset($unlocked[$section->getId().'-'.$subject->getId()])),
+                    GradeRules::statusFor($open, $locked, isset($unlocked[$section->getId().'-'.$subject->getId()])),
                 );
             }
         }
