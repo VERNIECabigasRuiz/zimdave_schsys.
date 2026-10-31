@@ -2,7 +2,8 @@
 
 {# A class's grade sheet for a period. Needs load, period, periods, learners (SheetLearner list), saved
    (Grade by enrollment id), status (nullable ClassGradeStatus), refusal (nullable), form (nullable), editable,
-   change_requests (this class's, newest first), pending (one of them waits) and can_request. #}
+   change_requests (this class's, newest first), pending (one of them waits), own_pending (the waiting one is the
+   current user's) and can_request. #}
 
 {% block title %}{{ period.label }} grades · {{ load.subject.name }} · {{ load.section.label }} · ZIM School{% endblock %}
 
@@ -34,7 +35,7 @@
             <span class="badge {{ tone }}">{{ status.label }}</span>
         {% endif %}
         {% if refusal %}<span class="muted">{{ refusal }}</span>{% elseif editable %}<span class="muted">Whole numbers from 60 to 100. Leave a box empty for a learner not graded yet.</span>{% endif %}
-        {% if pending %}<span class="muted">Your change request is waiting for the principal.</span>{% endif %}
+        {% if own_pending %}<span class="muted">Your change request is waiting for the principal.</span>{% elseif pending %}<span class="muted">A change request for this class is waiting for the principal.</span>{% endif %}
     </p>
 
     <div class="card table-card grade-sheet">

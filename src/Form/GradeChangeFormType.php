@@ -34,12 +34,10 @@ class GradeChangeFormType extends AbstractType
             ])
             ->add('reason', TextareaType::class, [
                 'label' => 'Reason for the change',
+                // a blank reason arrives as '' (trimmed), which Length alone reports, so the message shows once
                 'empty_data' => '',
                 'attr' => ['rows' => 4, 'maxlength' => 1000],
-                'constraints' => [
-                    new Assert\NotBlank(message: self::REASON),
-                    new Assert\Length(min: 10, max: 1000, minMessage: self::REASON, maxMessage: self::REASON),
-                ],
+                'constraints' => [new Assert\Length(min: 10, max: 1000, minMessage: self::REASON, maxMessage: self::REASON)],
             ])
             ->addEventListener(FormEvents::PRE_SUBMIT, GradeSheetFormType::matchRoster(...));
     }

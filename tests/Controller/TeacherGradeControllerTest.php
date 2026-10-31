@@ -360,7 +360,7 @@ class TeacherGradeControllerTest extends AdminTestCase
             $values['grade_change_form[grades]['.$this->enrollments[$last]->getId().']'] = $grade;
         }
 
-        return $this->client->submit($page->selectButton('Send request')->form($values));
+        return $this->client->submit($page->selectButton('Send to principal')->form($values));
     }
 
     private function sendViaManager(): GradeChangeRequest
@@ -408,6 +408,7 @@ class TeacherGradeControllerTest extends AdminTestCase
         $crawler = $this->client->followRedirect();
         self::assertSelectorTextContains('.alert--success', 'Your change request was sent to the principal.');
         self::assertSelectorTextContains('.grade-status', 'Your change request is waiting for the principal.');
+        self::assertSelectorTextNotContains('.grade-status', 'A change request for this class is waiting for the principal.');
         $card = $crawler->filter('.change-requests');
         self::assertStringContainsString('ABAD', $card->text());
         self::assertStringContainsString('78 → 82', $card->text());
@@ -442,6 +443,19 @@ class TeacherGradeControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(422);
         self::assertSelectorTextContains('main', 'Enter at least one corrected grade.');
 
+        self::assertSame(0, $this->requestCount());
+    }
+
+    public function testBlankReasonIsReportedOnce(): void
+    {
+        $this->gradeAbad78AndLock();
+        $crawler = $this->client->request('GET', $this->changeUrl());
+
+        foreach (['', "   \n  "] as $reason) {
+            $this->sendChange($crawler, ['Abad' => '82'], $reason);
+            self::assertResponseStatusCodeSame(422);
+            self::assertSame(1, substr_count($this->client->getResponse()->getContent(), 'Write the reason for the change (at least 10 characters).'));
+        }
         self::assertSame(0, $this->requestCount());
     }
 
@@ -481,6 +495,47 @@ class TeacherGradeControllerTest extends AdminTestCase
         self::assertStringContainsString('Withdrawn', $crawler->filter('.change-requests .badge')->text());
         self::assertCount(0, $crawler->filter('.change-requests button:contains("Withdraw")'));
         self::assertCount(1, $crawler->filter('a:contains("Request grade change")'));
+    }
+
+    /** Tess sent the request, then the class moved to Owen. */
+    private function handLoadToOwen(): User
+    {
+        $owen = $this->createUser('owen', User::ROLE_TEACHER, 'Owen Lim');
+        $this->assign($this->school, $this->sy, $owen, User::ROLE_TEACHER);
+        $this->em->find(TeachingLoad::class, $this->load->getId())->setTeacher($owen);
+        $this->em->flush();
+
+        return $owen;
+    }
+
+    public function testTeacherWhoTookOverSeesTheNeutralPendingLine(): void
+    {
+        $this->gradeAbad78AndLock();
+        $this->sendViaManager();
+        $this->client->loginUser($this->handLoadToOwen());
+
+        $this->client->request('GET', $this->sheetUrl());
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.grade-status', 'A change request for this class is waiting for the principal.');
+        self::assertSelectorTextNotContains('.grade-status', 'Your change request is waiting for the principal.');
+    }
+
+    public function testWithdrawAfterTheClassMovedGoesToMyClasses(): void
+    {
+        $this->gradeAbad78AndLock();
+        $request = $this->sendViaManager();
+        $this->handLoadToOwen();
+        $this->client->request('GET', '/teacher/grades');
+
+        $this->client->request('POST', '/teacher/grades/changes/'.$request->getId().'/withdraw', ['_token' => $this->csrfToken('grade-change-withdraw-'.$request->getId())]);
+
+        self::assertResponseRedirects('/teacher/grades');
+        $this->client->followRedirect();
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.alert--success', 'Your change request was withdrawn.');
+        $this->em->clear();
+        self::assertFalse($this->em->find(GradeChangeRequest::class, $request->getId())->isPending());
     }
 
     public function testDeclinedShowsNote(): void

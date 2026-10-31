@@ -129,7 +129,10 @@ class TeacherGradeController extends AbstractController
         }
 
         $changeRequests = $this->changeRequests->findForClass($section, $subject, $period);
-        $pending = [] !== array_filter($changeRequests, static fn (GradeChangeRequest $r): bool => $r->isPending());
+        $waiting = array_filter($changeRequests, static fn (GradeChangeRequest $r): bool => $r->isPending());
+        $pending = [] !== $waiting;
+        // "your" request only for the teacher who sent it, not the adviser or a teacher who took over the class
+        $ownPending = [] !== array_filter($waiting, static fn (GradeChangeRequest $r): bool => $r->getRequestedBy()->getId() === $user->getId());
 
         return $this->render('grades/sheet.html.twig', [
             'load' => $load,
@@ -143,6 +146,7 @@ class TeacherGradeController extends AbstractController
             'editable' => null !== $form && null === $refusal,
             'change_requests' => $changeRequests,
             'pending' => $pending,
+            'own_pending' => $ownPending,
             'can_request' => $canEdit && ClassGradeStatus::Locked === $status && !$pending,
         ]);
     }
@@ -199,12 +203,12 @@ class TeacherGradeController extends AbstractController
             $this->addFlash('error', $e->getMessage());
         }
 
-        // back to the class's sheet, which may have moved to another teacher since
+        // back to the class's sheet, unless it has moved to another teacher the requester may no longer view
         $load = $this->loads->findOne($request->getSection(), $request->getSubject());
 
-        return null === $load
-            ? $this->redirectToRoute('teacher_grades')
-            : $this->redirectToRoute('teacher_grades_sheet', ['load' => $load->getId(), 'period' => $request->getGradingPeriod()->getId()]);
+        return null !== $load && $this->isGranted(GradeVoter::VIEW, $load)
+            ? $this->redirectToRoute('teacher_grades_sheet', ['load' => $load->getId(), 'period' => $request->getGradingPeriod()->getId()])
+            : $this->redirectToRoute('teacher_grades');
     }
 
     /** @return array{TeachingLoad, GradingPeriod} */
