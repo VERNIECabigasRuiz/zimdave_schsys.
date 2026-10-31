@@ -99,13 +99,17 @@ class CardSlipBuilder
             $facts = new TermFacts($grades, $average, $previousAverages[$id] ?? null, $tally?->absent, $tally?->late, $tally->schoolDays ?? 0);
             $suggested = $this->suggester->suggest($facts);
             $comment = $saved[$id] ?? null;
-            // a saved row is used as it is, even with no codes; a code no longer in the catalog is skipped
+            $failing = $facts->failingSubjects();
+            $incomplete = $facts->isIncomplete();
+            // a saved row is used as it is, even with no codes; a code no longer in the catalog is skipped, and
+            // so is one the grades now contradict: no failing subject left, or every grade in
             $chosen = null === $comment
                 ? $suggested
-                : array_values(array_filter($comment->getCodes(), static fn (string $code) => CardSlipComments::isKnown($code)));
+                : array_values(array_filter($comment->getCodes(), static fn (string $code) => CardSlipComments::isKnown($code)
+                    && !('needs_improvement' === $code && [] === $failing)
+                    && !('incomplete' === $code && !$incomplete)));
             $customText = $comment?->getCustomText();
 
-            $failing = $facts->failingSubjects();
             $texts = array_map(static fn (string $code) => CardSlipComments::text($code, $failing), $chosen);
             if (null !== $customText && '' !== trim($customText)) {
                 $texts[] = trim($customText);
@@ -131,6 +135,7 @@ class CardSlipBuilder
                 suggestedCodes: $suggested,
                 chosenCodes: $chosen,
                 customText: $customText,
+                commentsSaved: null !== $comment,
             );
         }
 

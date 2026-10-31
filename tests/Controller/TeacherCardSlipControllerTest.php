@@ -168,8 +168,8 @@ class TeacherCardSlipControllerTest extends AdminTestCase
         self::assertSame(['needs_improvement', 'participates', 'perfect_attendance'], self::sorted($saved['Abad']->getCodes()));
         self::assertSame('Active in class.', $saved['Abad']->getCustomText());
         self::assertSame('tess', $saved['Abad']->getUpdatedBy()?->getUsername());
-        // the untouched learner gets their suggestions saved as they were shown
-        self::assertNull($saved['Bautista']->getCustomText());
+        // the untouched learner keeps following the suggestions: no row
+        self::assertSame(['Abad'], array_keys($saved));
 
         $section = $this->em->find(Section::class, $this->honest->getId());
         $period = $this->em->find(GradingPeriod::class, $this->term1->getId());
@@ -180,6 +180,60 @@ class TeacherCardSlipControllerTest extends AdminTestCase
         self::assertStringContainsString(CardSlipComments::text('perfect_attendance'), $html);
         self::assertStringContainsString('Active in class.', $html);
         self::assertStringNotContainsString(CardSlipComments::text('see_adviser'), $html);
+    }
+
+    public function testSavingTheSuggestionsStoresNoRowSoSlipsFollowNewGrades(): void
+    {
+        $abad = $this->enrollments['Abad'];
+        // a row that matches the suggestions (in another order) is dropped on save too
+        $comment = new CardSlipComment($abad, $this->term1);
+        $comment->update(['see_adviser', 'needs_improvement', 'perfect_attendance'], null, $this->teacher, new \DateTimeImmutable('2025-08-21'));
+        $this->em->persist($comment);
+        $this->em->flush();
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        $this->postForm($crawler, $this->formValues($crawler));
+
+        self::assertResponseRedirects($this->pageUrl());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert', 'Comments saved for 2 learners.');
+        self::assertSame([], $this->saved());
+
+        // Abad's Math grade goes up: her slip now follows the new suggestion
+        $grade = $this->em->getRepository(Grade::class)->findOneBy(['enrollment' => $abad->getId()]);
+        $grade->change(92, $this->em->find(User::class, $this->teacher->getId()), new \DateTimeImmutable('2025-08-22'));
+        $this->em->flush();
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        self::assertSame(['excellent', 'perfect_attendance'], array_values($this->formValues($crawler)['card_slip_comments_form']['entries'][$abad->getId()]['codes']));
+    }
+
+    public function testNeedsImprovementHiddenWithoutAFailingSubject(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        $bautista = $crawler->filter(\sprintf('input[type=checkbox][name="%s"]', self::codesName($this->enrollments['Bautista'])));
+        self::assertGreaterThan(0, $bautista->count());
+        self::assertCount(0, $bautista->filter('[value="needs_improvement"]'));
+        self::assertStringNotContainsString('{subjects}', $crawler->filter('.card-slips')->text());
+        $abad = $crawler->filter(\sprintf('input[type=checkbox][name="%s"][value="needs_improvement"]', self::codesName($this->enrollments['Abad'])));
+        self::assertSame('Needs to improve in Mathematics. Please attend remedial sessions.', $crawler->filter('label[for="'.$abad->attr('id').'"]')->text());
+    }
+
+    public function testResetOnlyForLearnersWithSavedComments(): void
+    {
+        $abad = $this->enrollments['Abad'];
+        $comment = new CardSlipComment($abad, $this->term1);
+        $comment->update(['participates'], null, $this->teacher, new \DateTimeImmutable('2025-08-21'));
+        $this->em->persist($comment);
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        $buttons = $crawler->filter('button[form^="card-slip-reset-"]');
+        self::assertCount(1, $buttons);
+        self::assertSame('card-slip-reset-'.$abad->getId(), $buttons->attr('form'));
+        self::assertSame('Reset to suggestions', trim($buttons->text()));
+        self::assertCount(1, $crawler->filter('form[id^="card-slip-reset-"]'));
     }
 
     public function testMoreThanThreeRefused(): void

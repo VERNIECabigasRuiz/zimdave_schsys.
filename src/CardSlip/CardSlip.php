@@ -10,6 +10,7 @@ final readonly class CardSlip
      * @param list<string>       $comments       rendered comment texts, the typed one last
      * @param list<string>       $suggestedCodes what CardSlipSuggester proposes for this learner
      * @param list<string>       $chosenCodes    the codes the comments come from (saved, else suggested)
+     * @param bool               $commentsSaved  whether the adviser saved comments of their own (else the suggestions print)
      */
     public function __construct(
         public string $schoolName,
@@ -31,6 +32,7 @@ final readonly class CardSlip
         public array $suggestedCodes,
         public array $chosenCodes,
         public ?string $customText,
+        public bool $commentsSaved = false,
     ) {
     }
 

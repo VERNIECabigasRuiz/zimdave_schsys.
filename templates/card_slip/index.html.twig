@@ -1,7 +1,7 @@
 {% extends 'teacher/_layout.html.twig' %}
 
 {# The adviser's card slips for a term. Needs section, periods, period (nullable), locked, rows (list of
-   {slip: CardSlip, labels: checkbox label by code}), groups (CardSlipComments::GROUPS) and form (nullable,
+   {slip: CardSlip, labels: checkbox label by code, a code without a label has no checkbox}), groups (CardSlipComments::GROUPS) and form (nullable,
    null when there is no learner to print a slip for). #}
 
 {% block title %}Card slips · {{ section.label }} · ZIM School{% endblock %}
@@ -74,7 +74,7 @@
                                     {% for group, codes in groups %}
                                         <fieldset class="card-slips__group">
                                             <legend>{{ group }}</legend>
-                                            {% for code in codes %}
+                                            {% for code in codes|filter(code => row.labels[code] is defined) %}
                                                 {% set box = entry.codes[code] %}
                                                 <div class="card-slip-choice">
                                                     {{ form_widget(box) }}
@@ -89,7 +89,9 @@
                                 </td>
                                 <td class="table__actions">
                                     <a class="btn btn--ghost btn--sm" href="{{ path('teacher_class_card_slip_pdf', {period: period.id, enrollment: slip.enrollmentId}) }}" data-turbo="false">Print</a>
-                                    <button class="btn btn--ghost btn--sm" type="submit" form="card-slip-reset-{{ slip.enrollmentId }}" title="Forget the saved comments and use the suggested ones">Reset to suggestions</button>
+                                    {% if slip.commentsSaved %}
+                                        <button class="btn btn--ghost btn--sm" type="submit" form="card-slip-reset-{{ slip.enrollmentId }}" title="Forget the saved comments and use the suggested ones">Reset to suggestions</button>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -101,7 +103,7 @@
                 {{ form_end(form) }}
 
                 {# outside the comments form: a form can't hold another #}
-                {% for row in rows %}
+                {% for row in rows|filter(row => row.slip.commentsSaved) %}
                     {% set id = row.slip.enrollmentId %}
                     <form id="card-slip-reset-{{ id }}" method="post" action="{{ path('teacher_class_card_slip_reset', {period: period.id, enrollment: id}) }}" hidden>
                         <input type="hidden" name="_token" value="{{ csrf_token('card-slip-reset-' ~ id) }}">

@@ -25,13 +25,16 @@ class CardSlipCommentRecorder
 
     /**
      * Upserts the comments of the section's editable learners; entries for anyone else are skipped,
-     * and so are codes not in the catalog. A blank typed comment is stored as none.
+     * and so are codes not in the catalog. A blank typed comment is stored as none. A learner whose
+     * ticked codes are their current suggestions (in any order) with no typed comment gets no row, and
+     * loses a saved one, so their slip keeps following the suggestions as the grades change.
      *
-     * @param array<int, array{codes: list<string>, text: ?string}> $entries by enrollment id
+     * @param array<int, array{codes: list<string>, text: ?string}> $entries   by enrollment id
+     * @param array<int, list<string>>                              $suggested each learner's suggested codes now, by enrollment id
      *
-     * @return int the number of learners saved
+     * @return int the number of learners saved, counting those left on the suggestions
      */
-    public function save(Section $section, GradingPeriod $period, array $entries, User $by): int
+    public function save(Section $section, GradingPeriod $period, array $entries, array $suggested, User $by): int
     {
         $editable = [];
         foreach ($this->rules->sheet($section) as $learner) {
@@ -52,6 +55,12 @@ class CardSlipCommentRecorder
             $text = trim((string) ($entry['text'] ?? ''));
 
             $comment = $saved[$id] ?? null;
+            if ('' === $text && self::sameCodes($codes, $suggested[$id] ?? null)) {
+                if (null !== $comment) {
+                    $this->entityManager->remove($comment);
+                }
+                continue;
+            }
             if (null === $comment) {
                 $comment = new CardSlipComment($editable[$id]->enrollment, $period);
                 $this->entityManager->persist($comment);
@@ -61,6 +70,22 @@ class CardSlipCommentRecorder
         $this->entityManager->flush();
 
         return \count($ids);
+    }
+
+    /**
+     * @param list<string>  $codes
+     * @param ?list<string> $suggested
+     */
+    private static function sameCodes(array $codes, ?array $suggested): bool
+    {
+        if (null === $suggested) {
+            return false;
+        }
+        sort($codes);
+        $suggested = array_values(array_unique($suggested));
+        sort($suggested);
+
+        return $codes === $suggested;
     }
 
     /** Deletes the learner's saved comments, so the slip prints the suggested ones again. */

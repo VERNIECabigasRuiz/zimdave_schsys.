@@ -24,6 +24,9 @@ final class CardSlipSuggesterTest extends TestCase
         yield 'boundary 85' => [new TermFacts(['Math' => 85], 85.0, null, 1, 0, 50), ['very_good']];
         yield 'boundary 80' => [new TermFacts(['Math' => 80], 80.0, null, 1, 0, 50), ['good']];
         yield 'rise of exactly 3' => [new TermFacts(['Math' => 83], 83.0, 80.0, 1, 0, 50), ['good', 'improved']];
+        // 449/7 - 428/7 computes as 2.999999999999993 in floating point
+        $seven = ['A' => 64, 'B' => 64, 'C' => 64, 'D' => 64, 'E' => 64, 'F' => 64, 'G' => 65];
+        yield 'rise of 3 over 7 subjects' => [new TermFacts($seven, 449 / 7, 428 / 7, 1, 0, 50), ['needs_improvement', 'improved', 'see_adviser']];
         yield 'capped at 3' => [new TermFacts(['Math' => 70, 'Sci' => 70], 70.0, 60.0, 9, 0, 50), ['needs_improvement', 'improved', 'absences']];
     }
 

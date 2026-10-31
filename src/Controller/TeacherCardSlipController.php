@@ -65,15 +65,17 @@ class TeacherCardSlipController extends AbstractController
         $form = null;
         if ([] !== $slips) {
             $names = [];
+            $suggested = [];
             foreach ($slips as $slip) {
                 $names[$slip->enrollmentId] = $slip->learnerName;
+                $suggested[$slip->enrollmentId] = $slip->suggestedCodes;
             }
             $form = $this->createForm(CardSlipCommentsFormType::class, CardSlipCommentsData::of($slips), ['names' => $names]);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var CardSlipCommentsData $data */
                 $data = $form->getData();
-                $count = $this->recorder->save($section, $selected, $data->entries, $user);
+                $count = $this->recorder->save($section, $selected, $data->entries, $suggested, $user);
                 $this->addFlash('success', \sprintf('Comments saved for %d %s.', $count, 1 === $count ? 'learner' : 'learners'));
 
                 return $this->redirectToRoute('teacher_class_card_slips', ['period' => $selected->getId()]);
@@ -184,7 +186,10 @@ class TeacherCardSlipController extends AbstractController
         return end($periods) ?: null;
     }
 
-    /** @return array<string, string> checkbox label by code; "needs improvement" names the learner's failing subjects */
+    /**
+     * @return array<string, string> checkbox label by code; "needs improvement" names the learner's failing subjects,
+     *                               and is left out (so its checkbox is not shown) when the learner fails none
+     */
     private static function labels(CardSlip $slip): array
     {
         $failing = array_values(array_map(
@@ -194,9 +199,10 @@ class TeacherCardSlipController extends AbstractController
         $labels = [];
         foreach (CardSlipComments::GROUPS as $codes) {
             foreach ($codes as $code) {
-                $labels[$code] = 'needs_improvement' === $code && [] === $failing
-                    ? CardSlipComments::text($code, ['{subjects}'])
-                    : CardSlipComments::text($code, $failing);
+                if ('needs_improvement' === $code && [] === $failing) {
+                    continue;
+                }
+                $labels[$code] = CardSlipComments::text($code, $failing);
             }
         }
 

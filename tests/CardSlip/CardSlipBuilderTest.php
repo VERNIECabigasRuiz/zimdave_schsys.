@@ -237,6 +237,44 @@ class CardSlipBuilderTest extends KernelTestCase
         self::assertNotSame([], $slip->suggestedCodes);
     }
 
+    public function testSavedNeedsImprovementDroppedWithoutAFailingSubject(): void
+    {
+        $abad = $this->enrolled('Abad');
+        $this->grades($abad, ['Filipino' => 85, 'Mathematics' => 86, 'Music' => 85, 'Arts' => 88, 'PE' => 90, 'Health' => 86]);
+        $this->saveComment($abad, ['needs_improvement', 'participates'], null);
+
+        $slip = $this->slip($abad);
+
+        self::assertSame(['participates'], $slip->chosenCodes);
+        self::assertSame([CardSlipComments::text('participates')], $slip->comments);
+        foreach ($slip->comments as $text) {
+            self::assertStringNotContainsString('{subjects}', $text);
+            self::assertStringNotContainsString('Needs to improve', $text);
+        }
+    }
+
+    public function testSavedNeedsImprovementKeptWhileFailing(): void
+    {
+        $abad = $this->enrolled('Abad');
+        $this->grades($abad, ['Filipino' => 70, 'Mathematics' => 86, 'Music' => 85, 'Arts' => 88, 'PE' => 90, 'Health' => 86]);
+        $this->saveComment($abad, ['needs_improvement'], null);
+
+        self::assertSame(['Needs to improve in Filipino. Please attend remedial sessions.'], $this->slip($abad)->comments);
+    }
+
+    public function testSavedIncompleteDroppedOnceAllGradesAreIn(): void
+    {
+        $abad = $this->enrolled('Abad');
+        $this->saveComment($abad, ['incomplete', 'responsible'], null);
+        self::assertSame(['incomplete', 'responsible'], $this->slip($abad)->chosenCodes);
+
+        $this->grades($abad, ['Filipino' => 85, 'Mathematics' => 86, 'Music' => 85, 'Arts' => 88, 'PE' => 90, 'Health' => 86]);
+        $slip = $this->slip($abad);
+
+        self::assertSame(['responsible'], $slip->chosenCodes);
+        self::assertNotContains(CardSlipComments::text('incomplete'), $slip->comments);
+    }
+
     public function testCustomTextLast(): void
     {
         $abad = $this->enrolled('Abad');

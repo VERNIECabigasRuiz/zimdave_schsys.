@@ -26,7 +26,7 @@ final class CardSlipSuggester
         }
         $academicAdded = [] !== $codes;
 
-        if (null !== $facts->previousAverage && null !== $average && $average - $facts->previousAverage >= 3) {
+        if (null !== $facts->previousAverage && null !== $average && round($average - $facts->previousAverage, 2) >= 3) {
             $codes[] = 'improved';
         }
 
