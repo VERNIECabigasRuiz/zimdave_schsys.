@@ -1,7 +1,8 @@
 {% extends 'teacher/_layout.html.twig' %}
 
 {# A class's grade sheet for a period. Needs load, period, periods, learners (SheetLearner list), saved
-   (Grade by enrollment id), status (nullable ClassGradeStatus), refusal (nullable), form (nullable) and editable. #}
+   (Grade by enrollment id), status (nullable ClassGradeStatus), refusal (nullable), form (nullable), editable,
+   change_requests (this class's, newest first), pending (one of them waits) and can_request. #}
 
 {% block title %}{{ period.label }} grades · {{ load.subject.name }} · {{ load.section.label }} · ZIM School{% endblock %}
 
@@ -13,6 +14,9 @@
             <p>{{ period.label }} grades · {{ section.school.name }} · S.Y. {{ section.schoolYear.name }}</p>
         </div>
         <div class="row-actions">
+            {% if can_request %}
+                <a class="btn btn--primary" href="{{ path('teacher_grades_change', {load: load.id, period: period.id}) }}">Request grade change</a>
+            {% endif %}
             <a class="btn btn--ghost" href="{{ path('teacher_grades') }}">All my classes</a>
         </div>
     </div>
@@ -30,6 +34,7 @@
             <span class="badge {{ tone }}">{{ status.label }}</span>
         {% endif %}
         {% if refusal %}<span class="muted">{{ refusal }}</span>{% elseif editable %}<span class="muted">Whole numbers from 60 to 100. Leave a box empty for a learner not graded yet.</span>{% endif %}
+        {% if pending %}<span class="muted">Your change request is waiting for the principal.</span>{% endif %}
     </p>
 
     <div class="card table-card grade-sheet">
@@ -83,4 +88,6 @@
             {{ form_end(form, {render_rest: editable}) }}
         {% endif %}
     </div>
+
+    {{ include('grades/_change_requests.html.twig', {requests: change_requests, can_withdraw: true}) }}
 {% endblock %}

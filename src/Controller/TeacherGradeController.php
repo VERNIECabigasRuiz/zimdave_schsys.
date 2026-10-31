@@ -2,29 +2,40 @@
 
 namespace App\Controller;
 
+use App\Entity\GradeChangeRequest;
 use App\Entity\GradingPeriod;
 use App\Entity\TeachingLoad;
 use App\Entity\User;
+use App\Form\GradeChange;
+use App\Form\GradeChangeFormType;
 use App\Form\GradeSheet;
 use App\Form\GradeSheetFormType;
+use App\Grading\ClassGradeStatus;
+use App\Grading\GradeChangeManager;
 use App\Grading\GradeRecorder;
 use App\Grading\GradeRules;
 use App\Grading\GradingException;
 use App\Grading\SheetLearner;
+use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TeachingLoadRepository;
 use App\Security\Voter\GradeVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/** A subject teacher's grades: the classes they grade this school year, and a class's grade sheet for a period. */
+/**
+ * A subject teacher's grades: the classes they grade this school year, a class's grade sheet for a period, and their
+ * change requests for the grades of a locked period.
+ */
 #[IsGranted(User::ROLE_TEACHER)]
 #[Route('/teacher/grades')]
 class TeacherGradeController extends AbstractController
@@ -36,6 +47,8 @@ class TeacherGradeController extends AbstractController
         private readonly GradeRules $rules,
         private readonly GradeRecorder $recorder,
         private readonly EntityManagerInterface $entityManager,
+        private readonly GradeChangeManager $changes,
+        private readonly GradeChangeRequestRepository $changeRequests,
     ) {
     }
 
@@ -80,11 +93,7 @@ class TeacherGradeController extends AbstractController
     #[Route('/{load}/{period}', name: 'teacher_grades_sheet', requirements: ['load' => '\d+', 'period' => '\d+'], methods: ['GET', 'POST'])]
     public function sheet(Request $request, #[CurrentUser] User $user, int $load, int $period): Response
     {
-        $load = $this->loads->find($load);
-        $period = $this->entityManager->find(GradingPeriod::class, $period);
-        if (null === $load || null === $period || $period->getSchoolYear() !== $load->getSection()->getSchoolYear()) {
-            throw $this->createNotFoundException('No such class or grading period.');
-        }
+        [$load, $period] = $this->findClass($load, $period);
         $this->denyAccessUnlessGranted(GradeVoter::VIEW, $load);
         $canEdit = $this->isGranted(GradeVoter::EDIT, $load);
         if ($request->isMethod('POST') && !$canEdit) {
@@ -119,6 +128,9 @@ class TeacherGradeController extends AbstractController
             }
         }
 
+        $changeRequests = $this->changeRequests->findForClass($section, $subject, $period);
+        $pending = [] !== array_filter($changeRequests, static fn (GradeChangeRequest $r): bool => $r->isPending());
+
         return $this->render('grades/sheet.html.twig', [
             'load' => $load,
             'period' => $period,
@@ -129,7 +141,101 @@ class TeacherGradeController extends AbstractController
             'refusal' => $refusal,
             'form' => $form,
             'editable' => null !== $form && null === $refusal,
+            'change_requests' => $changeRequests,
+            'pending' => $pending,
+            'can_request' => $canEdit && ClassGradeStatus::Locked === $status && !$pending,
         ]);
+    }
+
+    #[Route('/{load}/{period}/change', name: 'teacher_grades_change', requirements: ['load' => '\d+', 'period' => '\d+'], methods: ['GET', 'POST'])]
+    public function change(Request $request, #[CurrentUser] User $user, int $load, int $period): Response
+    {
+        [$load, $period] = $this->findClass($load, $period);
+        $this->denyAccessUnlessGranted(GradeVoter::EDIT, $load);
+        $sheet = ['load' => $load->getId(), 'period' => $period->getId()];
+
+        $refusal = $this->refusalToRequest($load, $period);
+        if (null !== $refusal) {
+            $this->addFlash('error', $refusal);
+
+            return $this->redirectToRoute('teacher_grades_sheet', $sheet);
+        }
+
+        $learners = $this->rules->sheet($load->getSection());
+        $saved = $this->grades->findForEnrollments(GradeRules::enrollmentIds($learners), $load->getSubject(), $period);
+        $form = $this->createForm(GradeChangeFormType::class, GradeChange::of($learners));
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var GradeChange $change */
+            $change = $form->getData();
+            try {
+                $this->changes->request($load, $period, $change->grades, $change->reason, $user);
+                $this->addFlash('success', 'Your change request was sent to the principal.');
+
+                return $this->redirectToRoute('teacher_grades_sheet', $sheet);
+            } catch (GradingException $e) {
+                $form->addError(new FormError($e->getMessage()));
+            }
+        }
+
+        return $this->render('grades/change.html.twig', [
+            'load' => $load,
+            'period' => $period,
+            'learners' => $learners,
+            'saved' => $saved,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/changes/{request}/withdraw', name: 'teacher_grades_change_withdraw', requirements: ['request' => '\d+'], methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression('"grade-change-withdraw-" ~ args["request"].getId()'), tokenKey: '_token')]
+    public function withdraw(GradeChangeRequest $request, #[CurrentUser] User $user): Response
+    {
+        $this->denyAccessUnlessGranted(GradeVoter::CHANGE_WITHDRAW, $request);
+        try {
+            $this->changes->withdraw($request, $user);
+            $this->addFlash('success', 'Your change request was withdrawn.');
+        } catch (GradingException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        // back to the class's sheet, which may have moved to another teacher since
+        $load = $this->loads->findOne($request->getSection(), $request->getSubject());
+
+        return null === $load
+            ? $this->redirectToRoute('teacher_grades')
+            : $this->redirectToRoute('teacher_grades_sheet', ['load' => $load->getId(), 'period' => $request->getGradingPeriod()->getId()]);
+    }
+
+    /** @return array{TeachingLoad, GradingPeriod} */
+    private function findClass(int $loadId, int $periodId): array
+    {
+        $load = $this->loads->find($loadId);
+        $period = $this->entityManager->find(GradingPeriod::class, $periodId);
+        if (null === $load || null === $period || $period->getSchoolYear() !== $load->getSection()->getSchoolYear()) {
+            throw $this->createNotFoundException('No such class or grading period.');
+        }
+
+        return [$load, $period];
+    }
+
+    /** Why a change request can't be sent for the class now, as the manager would refuse it; null when it can. */
+    private function refusalToRequest(TeachingLoad $load, GradingPeriod $period): ?string
+    {
+        $section = $load->getSection();
+        $subject = $load->getSubject();
+        $status = $this->rules->status($section, $subject, $period);
+        if (ClassGradeStatus::Open === $status || ClassGradeStatus::Unlocked === $status) {
+            return \sprintf("%s isn't locked — change the grades on the sheet.", $period->getLabel());
+        }
+        if (ClassGradeStatus::Locked !== $status) {
+            return $this->rules->refusalToEdit($status, $period) ?? \sprintf("%s isn't open for grading.", $period->getLabel());
+        }
+        if (null !== $this->changeRequests->findPendingFor($section, $subject, $period)) {
+            return 'You already have a pending change request for this class.';
+        }
+
+        return null;
     }
 
     /** @return array{int, string, int, string} grade level, section, subject position, subject */

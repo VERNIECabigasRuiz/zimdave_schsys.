@@ -1,0 +1,35 @@
+{# Grade change requests, newest first. Needs requests (GradeChangeRequest list) and can_withdraw: whether this page
+   offers Withdraw on a pending request (still only to whoever may withdraw it). #}
+{% if requests is not empty %}
+    <section class="card form-card change-requests" aria-label="Change requests">
+        <h2 class="section-title section-title--flush">Change requests</h2>
+        <ul class="change-requests__list">
+            {% for change in requests %}
+                {% set tone = {pending: 'badge--amber', approved: 'badge--green', declined: 'badge--rose'}[change.status.value] ?? '' %}
+                <li class="change-requests__item">
+                    <p>
+                        <span class="badge {{ tone }}">{{ change.status.label }}</span>
+                        <span class="muted">{{ change.gradingPeriod.label }} · sent {{ change.createdAt|date('M j, g:i A') }} by {{ change.requestedBy.fullName }}</span>
+                    </p>
+                    <ul>
+                        {% for line in change.lines %}
+                            <li>{{ line.enrollment.learner.sf1Name }} · {{ line.fromValue ?? '—' }} → {{ line.toValue }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p>{{ change.reason }}</p>
+                    {% if change.decidedAt %}
+                        <p class="muted">
+                            {{ change.status.label }} {{ change.decidedAt|date('M j, g:i A') }}{% if change.decidedBy %} by {{ change.decidedBy.fullName }}{% endif %}{% if change.decisionNote %}: {{ change.decisionNote }}{% endif %}
+                        </p>
+                    {% endif %}
+                    {% if can_withdraw and change.pending and is_granted('GRADE_CHANGE_WITHDRAW', change) %}
+                        <form method="post" action="{{ path('teacher_grades_change_withdraw', {request: change.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('grade-change-withdraw-' ~ change.id) }}">
+                            <button class="btn btn--sm btn--ghost" type="submit">Withdraw</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endif %}

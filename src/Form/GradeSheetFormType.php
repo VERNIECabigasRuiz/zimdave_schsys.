@@ -43,7 +43,7 @@ class GradeSheetFormType extends AbstractType
     }
 
     /** Drops grades for learners no longer editable and keeps the saved grades of learners who joined. */
-    private static function matchRoster(FormEvent $event): void
+    public static function matchRoster(FormEvent $event): void
     {
         $data = $event->getData();
         if (!\is_array($data)) {

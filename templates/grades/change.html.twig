@@ -1,0 +1,73 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{# A change request for a locked grade sheet. Needs load, period, learners (SheetLearner list), saved (Grade by
+   enrollment id) and form (GradeChangeFormType). #}
+
+{% block title %}Request grade change · {{ period.label }} · {{ load.subject.name }} · {{ load.section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    {% set section = load.section %}
+    {% set sheet_url = path('teacher_grades_sheet', {load: load.id, period: period.id}) %}
+    <div class="page-head">
+        <div>
+            <h1>Request grade change</h1>
+            <p>{{ load.subject.name }} · {{ section.label }} · {{ period.label }} · {{ section.school.name }}</p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--ghost" href="{{ sheet_url }}">Back to the sheet</a>
+        </div>
+    </div>
+
+    <p class="grade-status"><span class="muted">{{ period.label }} is locked. Type the corrected grade only for the learners to change; the principal approves or declines the request.</span></p>
+
+    {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+    <div class="card table-card grade-sheet">
+        {{ form_errors(form) }}
+        <table class="table roll-call__table">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>LRN</th>
+                    <th>Learner</th>
+                    <th>Current grade</th>
+                    <th>Corrected grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for learner in learners %}
+                    {% if loop.first or learner.male != learners[loop.index0 - 1].male %}
+                        <tr class="roll-call__group"><th colspan="5">{{ learner.male ? 'Male' : 'Female' }}</th></tr>
+                    {% endif %}
+                    {% set id = learner.enrollment.id %}
+                    {% set field = learner.editable ? (form.grades[id] ?? null) : null %}
+                    {% set grade = saved[id] ?? null %}
+                    <tr{% if not learner.editable %} class="roll-call__out"{% endif %}>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ learner.lrn ?? '—' }}</td>
+                        <td class="grade-sheet__name">{{ learner.name }}</td>
+                        <td>{{ grade ? grade.value : '—' }}</td>
+                        <td>
+                            {% if field %}
+                                {{ form_widget(field, {attr: {'aria-label': 'Corrected grade of ' ~ learner.name, inputmode: 'numeric', min: 60, max: 100}}) }}
+                                {{ form_errors(field) }}
+                            {% else %}
+                                {{ learner.status }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">No learners in this section.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card form-card">
+        {{ form_row(form.reason, {help: 'Why the grades should change, e.g. an encoding error. The principal sees this.'}) }}
+        <div class="form-actions">
+            <button class="btn btn--primary" type="submit">Send request</button>
+            <a class="link-muted" href="{{ sheet_url }}">Cancel</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+{% endblock %}

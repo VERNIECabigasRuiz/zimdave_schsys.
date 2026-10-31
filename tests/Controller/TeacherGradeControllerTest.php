@@ -4,6 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\Enrollment;
 use App\Entity\Grade;
+use App\Entity\GradeChangeRequest;
 use App\Entity\GradeLevel;
 use App\Entity\GradeOpening;
 use App\Entity\GradeUnlock;
@@ -18,6 +19,7 @@ use App\Entity\TeachingLoad;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Entity\User;
+use App\Grading\GradeChangeManager;
 use App\Grading\GradeRecorder;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Doctrine\ORM\EntityManagerInterface;
@@ -336,6 +338,180 @@ class TeacherGradeControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(404);
         $this->client->request('GET', '/teacher/grades/999999/'.$this->term1->getId());
         self::assertResponseStatusCodeSame(404);
+    }
+
+    private function changeUrl(): string
+    {
+        return $this->sheetUrl().'/change';
+    }
+
+    private function gradeAbad78AndLock(): void
+    {
+        $this->em->persist(new Grade($this->enrollments['Abad'], $this->math, $this->term1, 78, $this->teacher, new \DateTimeImmutable('2025-08-21')));
+        $this->em->flush();
+        $this->lockTerm1();
+    }
+
+    /** @param array<string, string> $grades by last name */
+    private function sendChange(Crawler $page, array $grades, string $reason): Crawler
+    {
+        $values = ['grade_change_form[reason]' => $reason];
+        foreach ($grades as $last => $grade) {
+            $values['grade_change_form[grades]['.$this->enrollments[$last]->getId().']'] = $grade;
+        }
+
+        return $this->client->submit($page->selectButton('Send request')->form($values));
+    }
+
+    private function sendViaManager(): GradeChangeRequest
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+
+        return static::getContainer()->get(GradeChangeManager::class)->request(
+            $em->find(TeachingLoad::class, $this->load->getId()),
+            $em->find(GradingPeriod::class, $this->term1->getId()),
+            [(int) $this->enrollments['Abad']->getId() => 82],
+            "Encoding error on Abad's quiz total",
+            $em->find(User::class, $this->teacher->getId()),
+        );
+    }
+
+    private function requestCount(): int
+    {
+        $this->em->clear();
+
+        return \count($this->em->getRepository(GradeChangeRequest::class)->findAll());
+    }
+
+    public function testRequestButtonOnlyWhenLocked(): void
+    {
+        $crawler = $this->client->request('GET', $this->sheetUrl());
+        self::assertCount(0, $crawler->filter('a:contains("Request grade change")'));
+
+        $this->lockTerm1();
+        $crawler = $this->client->request('GET', $this->sheetUrl());
+        self::assertSame($this->changeUrl(), $crawler->filter('a:contains("Request grade change")')->attr('href'));
+    }
+
+    public function testSendChangeRequest(): void
+    {
+        $this->gradeAbad78AndLock();
+
+        $crawler = $this->client->request('GET', $this->changeUrl());
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('78', $crawler->filter('tr:contains("ABAD")')->text());
+        self::assertCount(3, $crawler->filter('input[name^="grade_change_form[grades]"]'));
+
+        $this->sendChange($crawler, ['Abad' => '82'], "Encoding error on Abad's quiz total");
+
+        self::assertResponseRedirects($this->sheetUrl());
+        $crawler = $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--success', 'Your change request was sent to the principal.');
+        self::assertSelectorTextContains('.grade-status', 'Your change request is waiting for the principal.');
+        $card = $crawler->filter('.change-requests');
+        self::assertStringContainsString('ABAD', $card->text());
+        self::assertStringContainsString('78 → 82', $card->text());
+        self::assertStringContainsString('Pending', $card->filter('.badge')->text());
+        self::assertStringContainsString("Encoding error on Abad's quiz total", $card->text());
+        self::assertCount(0, $crawler->filter('a:contains("Request grade change")'));
+        // the grade itself waits for the principal
+        self::assertSame(['Abad' => 78], $this->grades());
+
+        // a second one is refused while the first waits
+        $this->client->request('GET', $this->changeUrl());
+        self::assertResponseRedirects($this->sheetUrl());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert', 'You already have a pending change request for this class.');
+    }
+
+    public function testChangeFormValidation(): void
+    {
+        $this->gradeAbad78AndLock();
+        $crawler = $this->client->request('GET', $this->changeUrl());
+
+        $this->sendChange($crawler, ['Abad' => '82'], 'short');
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('main', 'Write the reason for the change (at least 10 characters).');
+
+        $this->sendChange($crawler, ['Abad' => '101'], 'Encoding error on the quiz');
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('main', 'Enter a grade from 60 to 100.');
+
+        // the current grade again is no change
+        $this->sendChange($crawler, ['Abad' => '78'], 'Encoding error on the quiz');
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('main', 'Enter at least one corrected grade.');
+
+        self::assertSame(0, $this->requestCount());
+    }
+
+    public function testChangeFormRefusedWhenClassListChanged(): void
+    {
+        $this->gradeAbad78AndLock();
+        $crawler = $this->client->request('GET', $this->changeUrl());
+        $this->enroll($this->learner('120017170099', 'Dela Cruz', 'Ben'), $this->sy, $this->em->find(Section::class, $this->honest->getId()), $this->teacher);
+
+        $this->sendChange($crawler, ['Abad' => '82'], 'Encoding error on the quiz');
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('main', 'The class list changed while you were editing. Check the rows and save again.');
+        self::assertSame(0, $this->requestCount());
+    }
+
+    public function testChangeFormRedirectsWhenNotLocked(): void
+    {
+        $this->client->request('GET', $this->changeUrl());
+
+        self::assertResponseRedirects($this->sheetUrl());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert', "Term 1 isn't locked — change the grades on the sheet.");
+    }
+
+    public function testWithdraw(): void
+    {
+        $this->gradeAbad78AndLock();
+        $this->sendViaManager();
+
+        $crawler = $this->client->request('GET', $this->sheetUrl());
+        $this->client->submit($crawler->selectButton('Withdraw')->form());
+
+        self::assertResponseRedirects($this->sheetUrl());
+        $crawler = $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--success', 'Your change request was withdrawn.');
+        self::assertStringContainsString('Withdrawn', $crawler->filter('.change-requests .badge')->text());
+        self::assertCount(0, $crawler->filter('.change-requests button:contains("Withdraw")'));
+        self::assertCount(1, $crawler->filter('a:contains("Request grade change")'));
+    }
+
+    public function testDeclinedShowsNote(): void
+    {
+        $this->gradeAbad78AndLock();
+        $request = $this->sendViaManager();
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        static::getContainer()->get(GradeChangeManager::class)->decline($request, $em->find(User::class, $this->principal->getId()), 'Attach the class record, please.');
+
+        $crawler = $this->client->request('GET', $this->sheetUrl());
+
+        $card = $crawler->filter('.change-requests');
+        self::assertStringContainsString('Declined', $card->filter('.badge')->text());
+        self::assertStringContainsString('Attach the class record, please.', $card->text());
+        self::assertCount(1, $crawler->filter('a:contains("Request grade change")'));
+    }
+
+    public function testOtherTeacherCannotRequestOrWithdraw(): void
+    {
+        $this->gradeAbad78AndLock();
+        $request = $this->sendViaManager();
+        $other = $this->createUser('owen', User::ROLE_TEACHER, 'Owen Lim');
+        $this->assign($this->school, $this->sy, $other, User::ROLE_TEACHER);
+        $this->client->loginUser($other);
+
+        $this->client->request('GET', $this->changeUrl());
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('POST', '/teacher/grades/changes/'.$request->getId().'/withdraw', ['_token' => $this->csrfToken('grade-change-withdraw-'.$request->getId())]);
+        self::assertResponseStatusCodeSame(403);
+        $this->em->clear();
+        self::assertTrue($this->em->find(GradeChangeRequest::class, $request->getId())->isPending());
     }
 
     private function adviser(): User
