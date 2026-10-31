@@ -8,6 +8,8 @@ use App\Entity\AttendanceMark;
 use App\Entity\ClassPeriod;
 use App\Entity\Enrollment;
 use App\Entity\Grade;
+use App\Entity\GradeChangeLine;
+use App\Entity\GradeChangeRequest;
 use App\Entity\GradeLevel;
 use App\Entity\GradeLock;
 use App\Entity\GradeOpening;
@@ -43,7 +45,7 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([GradeUnlock::class, GradeOpening::class, GradeLock::class, Grade::class, NutritionMeasurement::class, NutritionAssessment::class, Sf8Submission::class, AttendanceMark::class, RollCall::class, Sf2Submission::class, SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
+        foreach ([GradeChangeLine::class, GradeChangeRequest::class, GradeUnlock::class, GradeOpening::class, GradeLock::class, Grade::class, NutritionMeasurement::class, NutritionAssessment::class, Sf8Submission::class, AttendanceMark::class, RollCall::class, Sf2Submission::class, SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
             $this->em->createQuery('DELETE FROM '.$class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test
