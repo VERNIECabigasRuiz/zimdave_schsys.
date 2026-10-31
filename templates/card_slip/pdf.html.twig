@@ -1,0 +1,161 @@
+{# Card slips for Dompdf: US Letter portrait, two 8.5 × 5.5 in slips per page, a dashed cut line between them.
+   Every slip is absolutely placed with a fixed height, so a long slip is clipped instead of pushing onto the next. #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Card slips</title>
+    <style>
+        @page { size: 8.5in 11in; margin: 0; }
+        * { margin: 0; padding: 0; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 8.5pt; line-height: 1.1; color: #1f2933; }
+        table { border-collapse: collapse; }
+        td, th { vertical-align: top; }
+
+        .page { position: relative; width: 8.5in; height: 10.95in; page-break-after: always; }
+        .page--last { page-break-after: auto; }
+        .slip { position: absolute; left: 0; width: 8.5in; height: 5.5in; overflow: hidden; }
+        .slip--top { top: 0; }
+        .slip--bottom { top: 5.5in; }
+        .cut { position: absolute; left: 0.3in; top: 5.5in; width: 7.9in; border-top: 0.75pt dashed #7b8794; }
+        .cut__label { position: absolute; left: 0.3in; top: 5.42in; padding: 0 3pt 0 0; background: #ffffff; color: #9aa5b1; font-size: 6pt; }
+
+        .inner { position: absolute; left: 0.3in; top: 0.28in; width: 7.9in; height: 4.92in; }
+        .draft { position: absolute; z-index: -1; left: 0; top: 2.1in; width: 7.9in; text-align: center; white-space: nowrap; color: #dfe3e8; font-size: 30pt; font-weight: bold; transform: rotate(-20deg); }
+
+        .head { width: 7.9in; border-bottom: 1.25pt solid #0b3d91; }
+        .head td { padding-bottom: 4pt; vertical-align: middle; }
+        .head__logo { width: 0.55in; }
+        .head__logo img { width: 0.48in; height: 0.48in; }
+        .school { color: #0b3d91; font-size: 11pt; font-weight: bold; line-height: 1.15; }
+        .address { color: #52606d; font-size: 8pt; }
+        .title { text-align: right; white-space: nowrap; }
+        .title__name { color: #0b3d91; font-size: 11pt; font-weight: bold; letter-spacing: 0.3pt; }
+        .title__sy { color: #52606d; font-size: 8.5pt; }
+
+        .who { width: 7.9in; margin-top: 5pt; font-size: 8.5pt; }
+        .who td { padding: 0.5pt 8pt 0.5pt 0; }
+        .who b { color: #0b3d91; }
+        .label { color: #52606d; }
+        .sep { color: #9aa5b1; }
+
+        .body { width: 7.9in; margin-top: 5pt; }
+        .body__grades { width: 4.2in; padding-right: 0.18in; }
+        .body__side { width: 3.3in; padding-left: 0.18in; border-left: 0.5pt solid #c9d2e3; }
+
+        .grades { width: 100%; }
+        .grades th { color: #52606d; font-size: 7.5pt; font-weight: bold; text-align: left; border-bottom: 0.75pt solid #9aa5b1; padding: 0 0 2pt; }
+        .grades td { padding: 0.9pt 0; border-bottom: 0.25pt solid #e4e7eb; }
+        .grades .area { width: 2.55in; }
+        .grades .num { width: 0.75in; text-align: center; }
+        .grades .rem { width: 0.9in; }
+        .components { display: block; color: #52606d; font-size: 7.5pt; }
+        .failed { color: #b42318; }
+        .grades tr.avg td { border-top: 0.75pt solid #9aa5b1; border-bottom: 0; padding-top: 3pt; font-weight: bold; }
+
+        .side__title { color: #0b3d91; font-size: 7.5pt; font-weight: bold; letter-spacing: 0.3pt; margin-bottom: 2pt; }
+        .attendance { width: 100%; margin-bottom: 7pt; }
+        .attendance td { width: 25%; text-align: center; border: 0.5pt solid #c9d2e3; padding: 2pt 0; }
+        .attendance .attendance__head td { color: #52606d; font-size: 7.5pt; background: #f2f4f8; }
+        .attendance .attendance__value td { font-size: 10pt; font-weight: bold; }
+        .comments { font-size: 8pt; }
+        .comments td { padding-bottom: 1.5pt; }
+        .comments .bullet { width: 9pt; color: #0b3d91; }
+
+        .signs { position: absolute; left: 0; top: 4.52in; width: 7.9in; font-size: 7.5pt; color: #52606d; }
+        .signs td { vertical-align: bottom; padding-right: 0.25in; }
+        .signer { color: #1f2933; font-size: 8pt; text-align: center; padding-bottom: 1pt; }
+        .line { border-top: 0.75pt solid #1f2933; padding-top: 2pt; }
+    </style>
+</head>
+<body>
+{% for page in pages %}
+    <div class="page{{ loop.last ? ' page--last' }}">
+        {% for slip in page %}
+            <div class="slip {{ loop.first ? 'slip--top' : 'slip--bottom' }}">
+                <div class="inner">
+                    {% if slip.draft %}<div class="draft">DRAFT – grades not final</div>{% endif %}
+
+                    <table class="head">
+                        <tr>
+                            {% set logo = slip.logoPath is not null ? logos[slip.logoPath] : null %}
+                            {% if logo %}<td class="head__logo"><img src="{{ logo }}" alt=""></td>{% endif %}
+                            <td>
+                                <div class="school">{{ slip.schoolName }}</div>
+                                {% if slip.schoolAddress %}<div class="address">{{ slip.schoolAddress }}</div>{% endif %}
+                            </td>
+                            <td class="title">
+                                <div class="title__name">CARD SLIP · {{ slip.periodLabel }}</div>
+                                <div class="title__sy">S.Y. {{ slip.schoolYear }}</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="who">
+                        <tr>
+                            <td style="width: 5.4in;"><span class="label">Name:</span> <b>{{ slip.learnerName }}</b></td>
+                            <td><span class="label">LRN:</span> {{ slip.lrn ?? '—' }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">{{ slip.gradeSection }}&nbsp;&nbsp;<span class="sep">·</span>&nbsp;&nbsp;<span class="label">Adviser:</span> {{ slip.adviserName }}</td>
+                        </tr>
+                    </table>
+
+                    <table class="body">
+                        <tr>
+                            <td class="body__grades">
+                                <table class="grades">
+                                    <tr><th class="area">LEARNING AREA</th><th class="num">GRADE</th><th class="rem">REMARKS</th></tr>
+                                    {% for line in slip.lines %}
+                                        <tr>
+                                            <td>{{ line.label }}{% if line.components is not null %}<span class="components">{{ line.components }}</span>{% endif %}</td>
+                                            <td class="num">{{ line.grade ?? '—' }}</td>
+                                            <td class="rem{{ line.remarks == 'Failed' ? ' failed' }}">{{ line.remarks }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr class="avg">
+                                        <td>TERM AVERAGE</td>
+                                        <td class="num">{{ slip.averageText }}</td>
+                                        <td class="rem">{{ slip.descriptor }}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="body__side">
+                                <div class="side__title">ATTENDANCE ({{ slip.periodLabel }})</div>
+                                {% set a = slip.attendance %}
+                                <table class="attendance">
+                                    <tr class="attendance__head"><td>School days</td><td>Present</td><td>Absent</td><td>Late</td></tr>
+                                    <tr class="attendance__value">
+                                        <td>{{ a ? a.schoolDays : '—' }}</td>
+                                        <td>{{ a ? a.present : '—' }}</td>
+                                        <td>{{ a ? a.absent : '—' }}</td>
+                                        <td>{{ a ? a.late : '—' }}</td>
+                                    </tr>
+                                </table>
+
+                                <div class="side__title">ADVISER'S COMMENTS</div>
+                                <table class="comments">
+                                    {% for comment in slip.comments %}
+                                        <tr><td class="bullet">•</td><td>{{ comment }}</td></tr>
+                                    {% endfor %}
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="signs">
+                        <tr>
+                            <td style="width: 2.1in;"><div class="signer">{{ slip.adviserName }}</div><div class="line">Adviser</div></td>
+                            <td style="width: 3.6in;"><div class="line">Parent/Guardian (signature over printed name)</div></td>
+                            <td style="padding-right: 0;">Date: ________________</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="cut"></div>
+        <div class="cut__label">✂ cut here</div>
+    </div>
+{% endfor %}
+</body>
+</html>
