@@ -20,6 +20,7 @@ use App\Entity\TeachingLoad;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Entity\User;
+use App\Grading\GradeLocks;
 use App\Grading\GradeRecorder;
 use App\Grading\GradeRules;
 use App\Grading\GradingException;
@@ -109,7 +110,7 @@ class GradeRecorderTest extends KernelTestCase
 
         return new GradeRecorder(
             $this->em,
-            $c->get(LockFactory::class),
+            new GradeLocks($c->get(LockFactory::class)),
             $rules,
             $c->get(GradeRepository::class),
             $c->get(GradeLockRepository::class),

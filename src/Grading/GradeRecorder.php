@@ -18,17 +18,15 @@ use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Service\ActivityLogger;
-use App\Service\LearnerLock;
 use App\Service\SchoolClock;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Lock\LockFactory;
 
 /** Saves grade sheets and applies the principal's locks. A class's grades, and a school's locks, change one request at a time; a save and a lock never overlap. */
 class GradeRecorder
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly LockFactory $lockFactory,
+        private readonly GradeLocks $gradeLocks,
         private readonly GradeRules $rules,
         private readonly GradeRepository $grades,
         private readonly GradeLockRepository $locks,
@@ -56,7 +54,7 @@ class GradeRecorder
 
         // the class's own lock keeps two saves of the class apart; a shared hold on the school's grade lock keeps
         // the principal from locking the period, or relocking the class, while this save is past its check
-        return $this->locked(\sprintf('grades-%d-%d', $section->getId(), $subject->getId()), fn (): int => $this->locked('grade-lock-'.$section->getSchool()->getId(), function () use ($load, $section, $subject, $period, $values, $by): int {
+        return $this->gradeLocks->class($section, $subject, fn (): int => $this->gradeLocks->school($section->getSchool(), function () use ($load, $section, $subject, $period, $values, $by): int {
             if (!$this->rules->isGradable($load)) {
                 throw new GradingException("This class isn't graded here.");
             }
@@ -114,7 +112,7 @@ class GradeRecorder
      */
     public function openPeriod(School $school, GradingPeriod $period, User $by): void
     {
-        $this->locked('grade-lock-'.$school->getId(), function () use ($school, $period, $by): void {
+        $this->gradeLocks->school($school, function () use ($school, $period, $by): void {
             $this->refuseWhenLocked($school, $period);
             if (null !== $this->openings->findFor($school, $period)) {
                 throw new GradingException(\sprintf('%s is already open.', $period->getLabel()));
@@ -129,7 +127,7 @@ class GradeRecorder
     /** @throws GradingException */
     public function closePeriod(School $school, GradingPeriod $period, User $by): void
     {
-        $this->locked('grade-lock-'.$school->getId(), function () use ($school, $period, $by): void {
+        $this->gradeLocks->school($school, function () use ($school, $period, $by): void {
             $this->refuseWhenLocked($school, $period);
             $opening = $this->openings->findFor($school, $period);
             if (null === $opening) {
@@ -158,7 +156,7 @@ class GradeRecorder
     /** @throws GradingException */
     public function lockPeriod(School $school, GradingPeriod $period, User $by): void
     {
-        $this->locked('grade-lock-'.$school->getId(), function () use ($school, $period, $by): void {
+        $this->gradeLocks->school($school, function () use ($school, $period, $by): void {
             if (null !== $this->locks->findFor($school, $period)) {
                 throw new GradingException(\sprintf('%s is already locked.', $period->getLabel()));
             }
@@ -176,7 +174,7 @@ class GradeRecorder
     /** @throws GradingException */
     public function unlockPeriod(School $school, GradingPeriod $period): void
     {
-        $this->locked('grade-lock-'.$school->getId(), function () use ($school, $period): void {
+        $this->gradeLocks->school($school, function () use ($school, $period): void {
             $lock = $this->locks->findFor($school, $period);
             if (null === $lock) {
                 throw new GradingException(\sprintf('%s is not locked.', $period->getLabel()));
@@ -196,7 +194,7 @@ class GradeRecorder
      */
     public function unlockClass(Section $section, Subject $subject, GradingPeriod $period, User $by): void
     {
-        $this->locked('grade-lock-'.$section->getSchool()->getId(), function () use ($section, $subject, $period, $by): void {
+        $this->gradeLocks->school($section->getSchool(), function () use ($section, $subject, $period, $by): void {
             if (null === $this->locks->findFor($section->getSchool(), $period)) {
                 throw new GradingException(\sprintf('%s is not locked.', $period->getLabel()));
             }
@@ -213,7 +211,7 @@ class GradeRecorder
     /** @throws GradingException */
     public function lockClass(Section $section, Subject $subject, GradingPeriod $period): void
     {
-        $this->locked('grade-lock-'.$section->getSchool()->getId(), function () use ($section, $subject, $period): void {
+        $this->gradeLocks->school($section->getSchool(), function () use ($section, $subject, $period): void {
             $unlock = $this->unlocks->findFor($section, $subject, $period);
             if (null === $unlock) {
                 throw new GradingException('This class is not unlocked.');
@@ -229,28 +227,5 @@ class GradeRecorder
     public static function classLabel(Section $section, Subject $subject): string
     {
         return $subject->getName().' – '.AttendanceRecorder::label($section);
-    }
-
-    /**
-     * Runs $change holding the lock, exclusively or, when $shared, alongside other shared holders (never blocking).
-     *
-     * @template T
-     *
-     * @param callable(): T $change
-     *
-     * @return T
-     */
-    private function locked(string $key, callable $change, bool $shared = false): mixed
-    {
-        $lock = $this->lockFactory->createLock($key);
-        if (!($shared ? $lock->acquireRead() : $lock->acquire())) {
-            throw new GradingException(LearnerLock::BUSY);
-        }
-
-        try {
-            return $change();
-        } finally {
-            $lock->release();
-        }
     }
 }
