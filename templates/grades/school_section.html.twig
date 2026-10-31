@@ -11,6 +11,9 @@
             <p>{{ school.name }} · S.Y. {{ section.schoolYear.name }}{% if period %} · {{ period.label }}{% endif %}</p>
         </div>
         <div class="row-actions">
+            {% if period %}
+                <a class="btn" href="{{ path('school_section_card_slips_pdf', {id: school.id, section: section.id, period: period.id}) }}">Card slips (PDF)</a>
+            {% endif %}
             <a class="btn btn--ghost" href="{{ path('school_grades', period ? {id: school.id, period: period.id} : {id: school.id}) }}">All classes</a>
         </div>
     </div>

@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\CardSlip\CardSlipBuilder;
+use App\CardSlip\CardSlipPdf;
 use App\Entity\GradingPeriod;
 use App\Entity\School;
 use App\Entity\SchoolYear;
@@ -21,11 +23,13 @@ use App\Repository\GradeOpeningRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
+use App\Security\Voter\CardSlipVoter;
 use App\Security\Voter\GradeVoter;
 use App\Security\Voter\SchoolVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -95,6 +99,29 @@ class SchoolGradeController extends AbstractController
             'periods' => $schoolYear->getGradingPeriods(),
             'period' => $selected,
             'grid' => null === $selected ? null : $this->grid->build($section, $selected),
+        ]);
+    }
+
+    /** The section's card slips for a term as PDF, read-only: what the adviser saved, else the suggestions. */
+    #[Route('/sections/{section}/card-slips/{period}.pdf', name: 'school_section_card_slips_pdf', methods: ['GET'])]
+    public function cardSlips(School $school, int $section, int $period, CardSlipBuilder $builder, CardSlipPdf $pdf): Response
+    {
+        $section = $this->requireSection($school, $section);
+        $this->denyAccessUnlessGranted(CardSlipVoter::PRINT, $section);
+        $term = $this->selectPeriod($school, $section->getSchoolYear(), $period) ?? throw $this->createNotFoundException();
+
+        $slips = $builder->forSection($section, $term);
+        if ([] === $slips) {
+            $this->addFlash('error', 'No learners to print slips for.');
+
+            return $this->redirectToRoute('school_grades_section', ['id' => $school->getId(), 'section' => $section->getId(), 'period' => $term->getId()]);
+        }
+
+        $fileName = CardSlipPdf::filename($section, $term);
+
+        return new Response($pdf->render($slips), Response::HTTP_OK, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $fileName, preg_replace('/[^\x20-\x7E]/', '_', $fileName)),
         ]);
     }
 
