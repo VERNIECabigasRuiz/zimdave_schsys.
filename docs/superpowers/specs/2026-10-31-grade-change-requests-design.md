@@ -1,0 +1,144 @@
+# Grade Change Requests — Teacher Requests, Principal Decides — Design
+
+Date: 2026-10-31 · Branch: `feature/grade-changes` (off `feature/grades`)
+
+## Goal
+
+Once the principal locks a grading period, a subject teacher who finds a mistake asks for the
+specific grade changes with a reason. The principal sees exactly which grades change, from what to
+what, and approves (the changes are applied at once) or declines with a note. Every request — with
+its old and new values, reason and decision — stays as the grade's change history. This replaces
+"tell the principal, who unlocks the whole class" as the normal way to correct a locked grade.
+
+## Decisions (from the user)
+
+- The teacher requests **the specific grade changes** (learner, current grade → corrected grade),
+  not an unlock of the class. Approving applies them; the sheet never opens.
+- The principal decides **the whole request**: approve all, or decline with a note. No line-by-line.
+- Agreed defaults (design part 1, approved):
+  - Only on a **Locked** class (when Open or Unlocked the teacher edits directly).
+  - The reason is required; a decline note is required.
+  - **One pending request** per class (section × subject) and period; the teacher may withdraw it.
+  - A request can add a missing grade; it can't clear a grade.
+  - Approving is refused if any grade changed since the request was sent ("stale").
+  - The admin views requests but can't decide them; only the school's principal decides.
+  - The principal's direct lock / unlock buttons stay as they are.
+  - Sending, approving, declining and withdrawing go into the activity log.
+
+## Existing pieces this builds on
+
+- `Grade` (enrollment, subject, gradingPeriod, value, updatedBy, updatedAt; `change()`),
+  `GradeRepository::findForEnrollments()`.
+- `GradeRules`: `status()` (`ClassGradeStatus::Locked`), `sheet(Section)` (`SheetLearner`, `editable`),
+  `enrollmentIds()`, `isGradable()`.
+- `GradeRecorder`: Symfony locks `grades-{sectionId}-{subjectId}` and `grade-lock-{schoolId}`
+  (shared hold while saving), `ActivityLogger`, `ClockInterface`, `classLabel()`.
+- `GradeVoter`: `GRADE_EDIT` / `GRADE_VIEW` on `TeachingLoad`, `GRADE_LOCK` on `School`.
+- `GradeSheetFormType` / `GradeSheet` (form keyed by enrollment id, class-list-changed check).
+- The transfer request pattern: `TransferRequest` + `TransferStatus` (Pending / Approved / Declined /
+  Cancelled), `transfers/_waiting_card.html.twig` on the principal dashboard.
+
+## Data (through `make:migration` + `doctrine:migrations:migrate`)
+
+- **`GradeChangeStatus`** (enum, string): `pending`, `approved`, `declined`, `withdrawn`; `label()`.
+- **`GradeChangeRequest`** — section (`CASCADE`), subject (`RESTRICT`), gradingPeriod (`CASCADE`),
+  requestedBy (User, `RESTRICT`), reason (text), status (default `pending`), createdAt,
+  decidedBy (User, nullable, `SET NULL`), decidedAt (nullable), decisionNote (text, nullable),
+  lines (one-to-many `GradeChangeLine`, cascade persist). Index on (section, subject, gradingPeriod, status).
+  Methods `approve(User, at)`, `decline(User, at, note)`, `withdraw(at)` — each only from `pending`.
+- **`GradeChangeLine`** — request (`CASCADE`), enrollment (`CASCADE`), fromValue (smallint, nullable:
+  null = no grade before), toValue (smallint, 60–100). Unique (request, enrollment).
+- "One pending per class and period" is checked in the service under the class lock (MariaDB has no
+  partial unique index).
+
+## Rules and writes — `GradeChangeManager` (service, `App\Grading`)
+
+- `request(TeachingLoad, GradingPeriod, array<int enrollmentId, ?int> $values, string $reason, User $by): GradeChangeRequest`
+  - Under `grades-{sectionId}-{subjectId}`, then a shared hold on `grade-lock-{schoolId}` (as `saveSheet`).
+  - Refusals (`GradingException`, exact messages):
+    - not gradable → "This class isn't graded here."
+    - status not `Locked` → "Term 1 isn't locked — change the grades on the sheet." (Open/Unlocked)
+      or "Term 1 isn't open for grading." (Closed)
+    - a pending request exists → "You already have a pending change request for this class."
+    - a value outside 60–100 → "Enter a grade from 60 to 100."
+    - no line differs from the current grade → "Enter at least one corrected grade."
+    - reason shorter than 10 characters after trim → "Write the reason for the change (at least 10 characters)."
+      (max 1000)
+  - Lines: only learners on the sheet that are `editable`; blank = no change; a value equal to the
+    current grade is ignored. `fromValue` is the current grade (or null).
+  - Logs "Requested a change of Term 1 grades of Math 8 – HONEST".
+- `approve(GradeChangeRequest, User $by)` — under the same two locks (exclusive on `grade-lock-{schoolId}`):
+  - not pending → "This request has already been decided."
+  - stale: any line whose enrollment's current grade ≠ `fromValue`, or whose learner is no longer
+    `editable` on the sheet → "Grades have changed since this request was sent. Decline it so the
+    teacher can send a new one." Nothing is applied.
+  - Otherwise creates or changes each `Grade` (`updatedBy` = the requesting teacher, `updatedAt` =
+    now), marks the request approved, logs "Approved the change of Term 1 grades of Math 8 – HONEST",
+    one flush.
+  - Works whatever the period's lock state is (the stale check guards the values).
+- `decline(GradeChangeRequest, User $by, string $note)` — pending only; note required, 5–1000
+  characters after trim → "Write a note for the teacher (at least 5 characters)."; logs "Declined …".
+- `withdraw(GradeChangeRequest, User $by)` — pending only; logs "Withdrew …".
+- Locking or unlocking a period doesn't touch requests.
+
+## Access — `GradeVoter`
+
+- Sending a request: `GRADE_EDIT` on the `TeachingLoad` (the load's teacher, gradable).
+- New `GRADE_CHANGE_WITHDRAW` on `GradeChangeRequest`: only its `requestedBy`.
+- New `GRADE_CHANGE_DECIDE` on `GradeChangeRequest`: the principal of the request's school (same
+  check as `GRADE_LOCK`; admin cannot).
+- Viewing a school's requests: `SchoolVoter::MANAGE` (principal of the school, admin), as the grades pages.
+
+## Screens
+
+**Teacher — grade sheet** (`teacher_grades_sheet`)
+- When the status is `Locked` and the teacher may edit: button **Request grade change** (hidden
+  while a request is pending; the sheet says "Your change request is waiting for the principal.").
+- A **Change requests** card below the sheet lists this class's requests for the period, newest
+  first: date, status badge (Pending amber, Approved green, Declined rose, Withdrawn grey), reason,
+  lines ("DELA CRUZ, JUAN · 78 → 82", "— → 85" for a new grade), and the principal's note on a decline.
+  A pending one has **Withdraw** (CSRF POST).
+
+**Teacher — request form** (`teacher_grades_change`, GET|POST `/teacher/grades/{load}/{period}/change`)
+- Table: no., LRN, learner, current grade, **corrected grade** box (editable learners only; greyed
+  rows for dropped / transferred out), then a **Reason** textarea and **Send to principal**.
+- `GradeChangeFormType` keyed by enrollment id, with the class-list-changed check from the sheet form.
+- Success → back to the sheet, flash "Your change request was sent to the principal."
+- Not locked or a pending request exists → back to the sheet with the refusal as a flash.
+- `teacher_grades_change_withdraw` (POST `/teacher/grades/changes/{request}/withdraw`) → flash
+  "Your change request was withdrawn."
+
+**Principal and admin — Change requests** (`school_grade_changes`, GET `/schools/{id}/grade-changes?status=`)
+- Tabs **Pending** (default, oldest first) and **Decided** (newest first, current school year).
+- Each request: class (subject – grade – section), period, teacher, date, reason, lines table
+  (LRN, learner, from → to). Principal only: **Approve** (CSRF POST) and a **Decline** form with
+  a note box. Decided ones show the decision, who, when and the note.
+- `school_grade_change_approve` (POST `/schools/{id}/grade-changes/{request}/approve`) → flash
+  "Approved. The new grades are in." or the stale refusal as an error flash.
+- `school_grade_change_decline` (POST `/schools/{id}/grade-changes/{request}/decline`,
+  `GradeChangeDeclineFormType` with the note) → flash "Declined. The teacher will see your note."
+- A request of another school → 404; admin POST → 403.
+- The grades page (`school_grades`) gets a **Change requests** button with the pending count.
+- The principal dashboard gets a card "{n} grade change request(s) waiting" when n > 0, as the
+  transfers card.
+
+## Tests
+
+- **`GradeChangeManagerTest`** (KernelTestCase): request creates lines only for changed editable
+  learners with correct `fromValue`; each refusal message (not locked, open, closed, pending exists,
+  out of range, nothing changed, short reason); approve applies grades (new and changed) with
+  `updatedBy` = teacher; approve refused when stale (grade edited, learner dropped) and nothing
+  applied; approve/decline/withdraw refused when not pending; decline needs a note; activity log entries.
+- **`GradeVoterTest`**: withdraw (requester vs other teacher); decide (principal, other school's
+  principal, admin, teacher).
+- **`TeacherGradeControllerTest`**: button shown only when locked; send a request; validation
+  errors; pending request hides the button and lists the request; withdraw; other teacher 403.
+- **`SchoolGradeChangeControllerTest`**: pending list; approve applies and flashes; stale approve
+  refused; decline with and without note; decided tab; admin sees no buttons and POST 403; other
+  school's request 404; dashboard card count.
+
+## Out of scope
+
+Line-by-line approval, attachments (scanned class record), email or push notifications, clearing a
+grade through a request, requests from advisers on others' subjects, requests while the class is open
+or unlocked, SHS, SF9/SF10.
