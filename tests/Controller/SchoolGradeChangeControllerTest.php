@@ -128,6 +128,9 @@ class SchoolGradeChangeControllerTest extends AdminTestCase
         self::assertStringContainsString("Encoding error on Arnol's quiz total", $card->text());
         self::assertStringContainsString('ARNOL', $card->text());
         self::assertStringContainsString('78 → 82', $card->text());
+        $line = $card->filter('.change-requests__lines tbody tr');
+        self::assertCount(1, $line);
+        self::assertSame([$this->enrollments['Arnol']->getLearner()->getLrn(), 'ARNOL, ANA, -', '78 → 82'], $line->filter('td')->each(static fn ($td) => $td->text()));
         self::assertStringContainsString('Pending', $card->filter('.badge')->text());
         self::assertCount(1, $card->selectButton('Approve'));
         self::assertCount(1, $card->selectButton('Decline'));
