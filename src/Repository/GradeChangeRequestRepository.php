@@ -48,7 +48,7 @@ class GradeChangeRequestRepository extends ServiceEntityRepository
     /** @return list<GradeChangeRequest> oldest first */
     public function findPendingForSchool(School $school, SchoolYear $schoolYear): array
     {
-        return $this->forSchool($school, $schoolYear)
+        return $this->withDetails($this->forSchool($school, $schoolYear))
             ->andWhere('r.status = :pending')->setParameter('pending', GradeChangeStatus::Pending)
             ->orderBy('r.createdAt', 'ASC')->addOrderBy('r.id', 'ASC')
             ->getQuery()->getResult();
@@ -57,7 +57,7 @@ class GradeChangeRequestRepository extends ServiceEntityRepository
     /** @return list<GradeChangeRequest> newest first */
     public function findDecidedForSchool(School $school, SchoolYear $schoolYear): array
     {
-        return $this->forSchool($school, $schoolYear)
+        return $this->withDetails($this->forSchool($school, $schoolYear))
             ->andWhere('r.status != :pending')->setParameter('pending', GradeChangeStatus::Pending)
             ->orderBy('r.decidedAt', 'DESC')->addOrderBy('r.id', 'DESC')
             ->getQuery()->getResult();
@@ -69,6 +69,33 @@ class GradeChangeRequestRepository extends ServiceEntityRepository
             ->select('COUNT(r.id)')
             ->andWhere('r.status = :pending')->setParameter('pending', GradeChangeStatus::Pending)
             ->getQuery()->getSingleScalarResult();
+    }
+
+    /** Change requests for the subject or one of its components, which keep it from being deleted. */
+    public function countForSubject(Subject $subject): int
+    {
+        return (int) $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->join('r.subject', 'sub')
+            ->andWhere('sub = :subject OR sub.parent = :subject')->setParameter('subject', $subject)
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * Fetch-joins what a listed request shows, so a list renders in one query. It joins the lines collection, so it is
+     * never used with setMaxResults (nor with a COUNT).
+     */
+    private function withDetails(QueryBuilder $qb): QueryBuilder
+    {
+        return $qb
+            ->addSelect('s', 'sub', 'p', 'rb', 'db', 'l', 'e', 'lr')
+            ->innerJoin('r.subject', 'sub')
+            ->innerJoin('r.gradingPeriod', 'p')
+            ->innerJoin('r.requestedBy', 'rb')
+            ->leftJoin('r.decidedBy', 'db')
+            ->leftJoin('r.lines', 'l')
+            ->leftJoin('l.enrollment', 'e')
+            ->leftJoin('e.learner', 'lr');
     }
 
     private function forSchool(School $school, SchoolYear $schoolYear): QueryBuilder

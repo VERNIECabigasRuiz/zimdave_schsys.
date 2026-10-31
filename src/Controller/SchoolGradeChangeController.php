@@ -70,6 +70,12 @@ class SchoolGradeChangeController extends AbstractController
     {
         $change = $this->requireRequest($school, $request);
         $this->denyAccessUnlessGranted(GradeVoter::CHANGE_DECIDE, $change);
+        if (!$change->isPending()) {
+            // decided meanwhile: its decline form is gone from the page, so the note's errors have nowhere to show
+            $this->addFlash('error', 'This request has already been decided.');
+
+            return $this->redirectToRoute('school_grade_changes', ['id' => $school->getId()]);
+        }
 
         $form = $this->declineForm($school, $change)->handleRequest($httpRequest);
         if (!$form->isSubmitted() || !$form->isValid()) {

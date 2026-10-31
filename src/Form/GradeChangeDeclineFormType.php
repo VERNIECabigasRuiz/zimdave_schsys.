@@ -17,13 +17,11 @@ class GradeChangeDeclineFormType extends AbstractType
     {
         $builder->add('note', TextareaType::class, [
             'label' => 'Note for the teacher',
+            // a blank note arrives as '' (trimmed), which Length alone reports, so the message shows once
             'empty_data' => '',
             'trim' => true,
             'attr' => ['rows' => 2, 'maxlength' => 1000],
-            'constraints' => [
-                new Assert\NotBlank(message: self::NOTE),
-                new Assert\Length(min: 5, max: 1000, minMessage: self::NOTE, maxMessage: self::NOTE),
-            ],
+            'constraints' => [new Assert\Length(min: 5, max: 1000, minMessage: self::NOTE, maxMessage: self::NOTE)],
         ]);
     }
 

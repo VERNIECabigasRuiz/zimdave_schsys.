@@ -202,6 +202,37 @@ class SchoolGradeChangeControllerTest extends AdminTestCase
         self::assertStringContainsString('Attach the class record', $card->text());
     }
 
+    public function testBlankDeclineNoteIsReportedOnce(): void
+    {
+        $request = $this->sendRequest();
+        $crawler = $this->client->request('GET', $this->url('/grade-changes'));
+        $field = 'decline_'.$request->getId().'[note]';
+
+        foreach (['', "   \n  "] as $note) {
+            $this->client->submit($crawler->selectButton('Decline')->form([$field => $note]));
+            self::assertResponseStatusCodeSame(422);
+            self::assertSame(1, substr_count($this->client->getResponse()->getContent(), 'Write a note for the teacher (at least 5 characters).'));
+        }
+        self::assertTrue($this->isPending($request));
+    }
+
+    public function testDeclineOfADecidedRequestRedirects(): void
+    {
+        $request = $this->sendRequest();
+        $crawler = $this->client->request('GET', $this->url('/grade-changes'));
+        $form = $crawler->selectButton('Decline')->form(['decline_'.$request->getId().'[note]' => 'ok']);
+        $this->client->submit($crawler->selectButton('Approve')->form());
+        self::assertSame(82, $this->arnolsGrade());
+
+        // the decline form left open in another tab, sent with a too-short note
+        $this->client->submit($form);
+
+        self::assertResponseRedirects($this->url('/grade-changes'));
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--error', 'This request has already been decided.');
+        self::assertSame(82, $this->arnolsGrade());
+    }
+
     public function testAdminSeesButCannotDecide(): void
     {
         $request = $this->sendRequest();

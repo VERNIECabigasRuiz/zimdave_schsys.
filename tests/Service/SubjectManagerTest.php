@@ -4,6 +4,7 @@ namespace App\Tests\Service;
 
 use App\Entity\ActivityLog;
 use App\Entity\Grade;
+use App\Entity\GradeChangeRequest;
 use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolType;
@@ -46,6 +47,7 @@ class SubjectManagerTest extends KernelTestCase
             $container->get(ActivityLogger::class),
             $container->get(\App\Repository\TeachingLoadRepository::class),
             $container->get(\App\Repository\GradeRepository::class),
+            $container->get(\App\Repository\GradeChangeRequestRepository::class),
         );
         $this->clearSchoolData();
         $this->last = $this->schoolYear(2025, current: false);
@@ -140,6 +142,30 @@ class SubjectManagerTest extends KernelTestCase
         } catch (InUseException $e) {
             self::assertSame("Mathematics has grades in 1 learner's record.", $e->getMessage());
         }
+    }
+
+    public function testDeleteRefusedWhileItHasGradeChangeRequests(): void
+    {
+        $this->sy->rebuildGradingPeriods();
+        $this->em->flush();
+        $teacher = $this->plainUser('dave', User::ROLE_TEACHER);
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade7, 'Rizal');
+        $math = $this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics');
+        $enrollment = $this->enroll($this->learner('120017170001', 'Arnol', 'Ana'), $this->sy, $section, $teacher);
+        // no load and no grade left, only a change request (its subject is RESTRICT)
+        $request = new GradeChangeRequest($section, $math, $this->sy->getGradingPeriod(1), $teacher, 'Encoding error on the quiz', new \DateTimeImmutable('2026-10-16'));
+        $request->addLine($enrollment, null, 85);
+        $request->withdraw(new \DateTimeImmutable('2026-10-16 09:00'));
+        $this->em->persist($request);
+        $this->em->flush();
+
+        try {
+            $this->manager->delete($math);
+            self::fail('Expected the subject with change requests to be refused');
+        } catch (InUseException $e) {
+            self::assertSame('Mathematics has grade change requests.', $e->getMessage());
+        }
+        self::assertSame(['MATH7'], $this->codes());
     }
 
     public function testAddDepEdSetForGrade7(): void

@@ -7,6 +7,7 @@ use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Subject;
+use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
@@ -28,6 +29,7 @@ class SubjectManager
         private readonly ActivityLogger $activityLogger,
         private readonly TeachingLoadRepository $loads,
         private readonly GradeRepository $grades,
+        private readonly GradeChangeRequestRepository $changeRequests,
     ) {
     }
 
@@ -66,6 +68,9 @@ class SubjectManager
         }
         if (0 < $graded = $this->grades->countForSubject($subject)) {
             throw new InUseException(\sprintf('%s has grades in %d %s.', $subject->getName(), $graded, 1 === $graded ? "learner's record" : "learners' records"));
+        }
+        if (0 < $this->changeRequests->countForSubject($subject)) {
+            throw new InUseException(\sprintf('%s has grade change requests.', $subject->getName()));
         }
         $count = $subject->getComponents()->count();
         $this->activityLogger->log('Deleted subject '.$subject->getLabel().($count > 0 ? \sprintf(' with %d components', $count) : ''));
