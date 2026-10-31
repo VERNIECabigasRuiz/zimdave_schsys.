@@ -2,6 +2,7 @@
 
 namespace App\Tests\Security;
 
+use App\Entity\GradeChangeRequest;
 use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;
@@ -139,6 +140,29 @@ class GradeVoterTest extends KernelTestCase
     {
         $this->assertRoles(GradeVoter::OPEN, $this->school, [
             'principal' => true, 'admin' => true, 'otherPrincipal' => false, 'adviser' => false, 'teacher' => false, 'student' => false,
+        ]);
+    }
+
+    private function changeRequest(): GradeChangeRequest
+    {
+        $this->sy->rebuildGradingPeriods();
+
+        return new GradeChangeRequest($this->section, $this->load->getSubject(), $this->sy->getGradingPeriod(1), $this->users['teacher'], 'Encoding mistake in the sheet', new \DateTimeImmutable('2025-08-22 10:00:00'));
+    }
+
+    public function testChangeWithdraw(): void
+    {
+        $request = $this->changeRequest();
+        $this->load->setTeacher($this->users['other']);
+        $this->assertRoles(GradeVoter::CHANGE_WITHDRAW, $request, [
+            'teacher' => true, 'other' => false, 'principal' => false, 'admin' => false, 'otherPrincipal' => false, 'student' => false,
+        ]);
+    }
+
+    public function testChangeDecide(): void
+    {
+        $this->assertRoles(GradeVoter::CHANGE_DECIDE, $this->changeRequest(), [
+            'principal' => true, 'otherPrincipal' => false, 'admin' => false, 'teacher' => false, 'adviser' => false, 'student' => false,
         ]);
     }
 

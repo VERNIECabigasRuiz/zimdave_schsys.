@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\GradeChangeRequest;
 use App\Entity\School;
 use App\Entity\Section;
 use App\Entity\TeachingLoad;
@@ -18,7 +19,9 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  * gradable class; the adviser, the principal and administrators view; only the principal locks; the principal and administrators open and close grading.
  * Whether a period is open or locked is GradeRules' question.
  *
- * @extends Voter<string, TeachingLoad|Section|School>
+ * A grade change request is withdrawn only by whoever sent it, and decided only by its school's principal.
+ *
+ * @extends Voter<string, TeachingLoad|Section|School|GradeChangeRequest>
  */
 final class GradeVoter extends Voter
 {
@@ -27,6 +30,8 @@ final class GradeVoter extends Voter
     public const VIEW_SECTION = 'GRADE_VIEW_SECTION';
     public const LOCK = 'GRADE_LOCK';
     public const OPEN = 'GRADE_OPEN';
+    public const CHANGE_WITHDRAW = 'GRADE_CHANGE_WITHDRAW';
+    public const CHANGE_DECIDE = 'GRADE_CHANGE_DECIDE';
 
     public function __construct(
         private readonly SchoolYearRepository $schoolYears,
@@ -41,6 +46,7 @@ final class GradeVoter extends Voter
             self::EDIT, self::VIEW => $subject instanceof TeachingLoad,
             self::VIEW_SECTION => $subject instanceof Section,
             self::LOCK, self::OPEN => $subject instanceof School,
+            self::CHANGE_WITHDRAW, self::CHANGE_DECIDE => $subject instanceof GradeChangeRequest,
             default => false,
         };
     }
@@ -61,6 +67,14 @@ final class GradeVoter extends Voter
             return match ($attribute) {
                 self::EDIT => !$isAdmin && $teaches && $this->rules->isGradable($subject),
                 self::VIEW => $isAdmin || $teaches || $this->advises($user, $section) || $this->isPrincipalOf($user, $section->getSchool()),
+                default => false,
+            };
+        }
+
+        if ($subject instanceof GradeChangeRequest) {
+            return match ($attribute) {
+                self::CHANGE_WITHDRAW => $subject->getRequestedBy()->getId() === $user->getId(),
+                self::CHANGE_DECIDE => !$isAdmin && $this->isPrincipalOf($user, $subject->getSection()->getSchool()),
                 default => false,
             };
         }
