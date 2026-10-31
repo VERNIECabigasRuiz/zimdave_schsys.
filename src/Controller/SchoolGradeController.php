@@ -73,6 +73,7 @@ class SchoolGradeController extends AbstractController
             'classes' => $classes,
             'complete' => \count(array_filter($classes, static fn (ClassProgress $c) => $c->isComplete())),
             'can_lock' => $canLock,
+            'can_open' => $this->isGranted(GradeVoter::OPEN, $school),
             'lock_form' => $canLock && null !== $selected && null === $lock ? $this->lockForm($school, $selected)->createView() : null,
         ]);
     }
@@ -93,6 +94,40 @@ class SchoolGradeController extends AbstractController
             'period' => $selected,
             'grid' => null === $selected ? null : $this->grid->build($section, $selected),
         ]);
+    }
+
+    #[Route('/grades/{period}/open', name: 'school_grades_open', methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression('"grade-open-" ~ args["period"]'), tokenKey: '_token')]
+    public function open(School $school, int $period, #[CurrentUser] User $user): Response
+    {
+        $this->denyAccessUnlessGranted(GradeVoter::OPEN, $school);
+        $period = $this->requirePeriod($school, $period);
+
+        try {
+            $this->recorder->openPeriod($school, $period, $user);
+            $this->addFlash('success', \sprintf('%s is open for grading.', $period->getLabel()));
+        } catch (GradingException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->backTo($school, $period);
+    }
+
+    #[Route('/grades/{period}/close', name: 'school_grades_close', methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression('"grade-close-" ~ args["period"]'), tokenKey: '_token')]
+    public function close(School $school, int $period, #[CurrentUser] User $user): Response
+    {
+        $this->denyAccessUnlessGranted(GradeVoter::OPEN, $school);
+        $period = $this->requirePeriod($school, $period);
+
+        try {
+            $this->recorder->closePeriod($school, $period, $user);
+            $this->addFlash('success', \sprintf('%s grading is closed.', $period->getLabel()));
+        } catch (GradingException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->backTo($school, $period);
     }
 
     #[Route('/grades/{period}/lock', name: 'school_grades_lock', methods: ['POST'])]

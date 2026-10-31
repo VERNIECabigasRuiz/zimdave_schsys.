@@ -135,6 +135,13 @@ class GradeVoterTest extends KernelTestCase
         ]);
     }
 
+    public function testOpen(): void
+    {
+        $this->assertRoles(GradeVoter::OPEN, $this->school, [
+            'principal' => true, 'admin' => true, 'otherPrincipal' => false, 'adviser' => false, 'teacher' => false, 'student' => false,
+        ]);
+    }
+
     public function testAttributesMatchTheirSubjectType(): void
     {
         $this->assertRoles(GradeVoter::LOCK, $this->section, ['principal' => false, 'admin' => false]);

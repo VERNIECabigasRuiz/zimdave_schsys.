@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
  * Who may enter, view and lock grades. Only a load's current teacher enters grades, and only for a
- * gradable class; the adviser, the principal and administrators view; only the principal locks.
+ * gradable class; the adviser, the principal and administrators view; only the principal locks; the principal and administrators open and close grading.
  * Whether a period is open or locked is GradeRules' question.
  *
  * @extends Voter<string, TeachingLoad|Section|School>
@@ -26,6 +26,7 @@ final class GradeVoter extends Voter
     public const VIEW = 'GRADE_VIEW';
     public const VIEW_SECTION = 'GRADE_VIEW_SECTION';
     public const LOCK = 'GRADE_LOCK';
+    public const OPEN = 'GRADE_OPEN';
 
     public function __construct(
         private readonly SchoolYearRepository $schoolYears,
@@ -39,7 +40,7 @@ final class GradeVoter extends Voter
         return match ($attribute) {
             self::EDIT, self::VIEW => $subject instanceof TeachingLoad,
             self::VIEW_SECTION => $subject instanceof Section,
-            self::LOCK => $subject instanceof School,
+            self::LOCK, self::OPEN => $subject instanceof School,
             default => false,
         };
     }
@@ -69,7 +70,11 @@ final class GradeVoter extends Voter
                 && ($isAdmin || $this->advises($user, $subject) || $this->isPrincipalOf($user, $subject->getSchool()));
         }
 
-        return self::LOCK === $attribute && !$isAdmin && $this->isPrincipalOf($user, $subject);
+        return match ($attribute) {
+            self::LOCK => !$isAdmin && $this->isPrincipalOf($user, $subject),
+            self::OPEN => $isAdmin || $this->isPrincipalOf($user, $subject),
+            default => false,
+        };
     }
 
     private function advises(User $user, Section $section): bool

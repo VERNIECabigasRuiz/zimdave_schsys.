@@ -114,6 +114,7 @@ class GradeRecorderTest extends KernelTestCase
             $c->get(GradeRepository::class),
             $c->get(GradeLockRepository::class),
             $c->get(GradeUnlockRepository::class),
+            $c->get(GradeOpeningRepository::class),
             $c->get(ActivityLogger::class),
             new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
         );
@@ -320,6 +321,50 @@ class GradeRecorderTest extends KernelTestCase
         $recorder->lockClass($this->honest, $this->math, $this->term1);
         self::assertSame(0, $this->em->getRepository(GradeUnlock::class)->count([]));
         self::assertTrue($this->logged('Locked Term 1 grades of Mathematics – Grade 8 – HONEST again'));
+    }
+
+    public function testOpenAndClosePeriod(): void
+    {
+        $recorder = $this->recorder();
+
+        $recorder->openPeriod($this->school, $this->term1, $this->principal);
+
+        $opening = $this->em->getRepository(GradeOpening::class)->findOneBy(['school' => $this->school, 'gradingPeriod' => $this->term1]);
+        self::assertNotNull($opening);
+        self::assertSame($this->principal->getId(), $opening->getOpenedBy()?->getId());
+        self::assertTrue($this->logged('Opened Term 1 grading'));
+        self::assertSame(1, $this->save([$this->id(0) => 85]));
+
+        $recorder->closePeriod($this->school, $this->term1, $this->principal);
+
+        self::assertSame(0, $this->em->getRepository(GradeOpening::class)->count([]));
+        self::assertTrue($this->logged('Closed Term 1 grading'));
+    }
+
+    public function testAdminOpeningLogsTheSchool(): void
+    {
+        $admin = $this->plainUser('zim', User::ROLE_ADMIN);
+        $recorder = $this->recorder();
+
+        $recorder->openPeriod($this->school, $this->term1, $admin);
+        $recorder->closePeriod($this->school, $this->term1, $admin);
+
+        self::assertTrue($this->logged('Opened Term 1 grading at Pagsabungan National High School'));
+        self::assertTrue($this->logged('Closed Term 1 grading at Pagsabungan National High School'));
+    }
+
+    public function testOpenRefusals(): void
+    {
+        $recorder = $this->recorder();
+        self::assertSame('Term 1 is already closed.', $this->refusal(fn () => $recorder->closePeriod($this->school, $this->term1, $this->principal)));
+
+        $recorder->openPeriod($this->school, $this->term1, $this->principal);
+        self::assertSame('Term 1 is already open.', $this->refusal(fn () => $recorder->openPeriod($this->school, $this->term1, $this->principal)));
+
+        $this->lock();
+        self::assertSame('Term 1 is locked. Unlock it first.', $this->refusal(fn () => $recorder->openPeriod($this->school, $this->term1, $this->principal)));
+        self::assertSame('Term 1 is locked. Unlock it first.', $this->refusal(fn () => $recorder->closePeriod($this->school, $this->term1, $this->principal)));
+        self::assertSame(1, $this->em->getRepository(GradeOpening::class)->count([]));
     }
 
     public function testUnlockPeriod(): void

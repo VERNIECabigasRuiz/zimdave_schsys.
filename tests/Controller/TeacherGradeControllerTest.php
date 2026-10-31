@@ -200,6 +200,18 @@ class TeacherGradeControllerTest extends AdminTestCase
         self::assertSame([], $this->grades());
     }
 
+    public function testSaveRefusedWhenClosedWhileEditing(): void
+    {
+        $crawler = $this->client->request('GET', $this->sheetUrl());
+        static::getContainer()->get(GradeRecorder::class)->closePeriod($this->school, $this->term1, $this->principal);
+
+        $this->post($crawler, ['Abad' => '90']);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.grade-sheet', "Term 1 isn't open for grading.");
+        self::assertSame([], $this->grades());
+    }
+
     public function testLockedWhileEditing(): void
     {
         $crawler = $this->client->request('GET', $this->sheetUrl());

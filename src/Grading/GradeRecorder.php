@@ -5,6 +5,7 @@ namespace App\Grading;
 use App\Attendance\AttendanceRecorder;
 use App\Entity\Grade;
 use App\Entity\GradeLock;
+use App\Entity\GradeOpening;
 use App\Entity\GradeUnlock;
 use App\Entity\GradingPeriod;
 use App\Entity\School;
@@ -13,6 +14,7 @@ use App\Entity\Subject;
 use App\Entity\TeachingLoad;
 use App\Entity\User;
 use App\Repository\GradeLockRepository;
+use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Service\ActivityLogger;
@@ -31,6 +33,7 @@ class GradeRecorder
         private readonly GradeRepository $grades,
         private readonly GradeLockRepository $locks,
         private readonly GradeUnlockRepository $unlocks,
+        private readonly GradeOpeningRepository $openings,
         private readonly ActivityLogger $activityLogger,
         private readonly SchoolClock $clock,
     ) {
@@ -102,6 +105,54 @@ class GradeRecorder
 
             return $graded;
         }, shared: true));
+    }
+
+    /**
+     * Opens the period for grading at the school. A locked period must be unlocked first.
+     *
+     * @throws GradingException
+     */
+    public function openPeriod(School $school, GradingPeriod $period, User $by): void
+    {
+        $this->locked('grade-lock-'.$school->getId(), function () use ($school, $period, $by): void {
+            $this->refuseWhenLocked($school, $period);
+            if (null !== $this->openings->findFor($school, $period)) {
+                throw new GradingException(\sprintf('%s is already open.', $period->getLabel()));
+            }
+
+            $this->entityManager->persist(new GradeOpening($school, $period, $by, $this->clock->now()));
+            $this->activityLogger->log(\sprintf('Opened %s grading%s', $period->getLabel(), $this->atSchool($school, $by)));
+            $this->entityManager->flush();
+        });
+    }
+
+    /** @throws GradingException */
+    public function closePeriod(School $school, GradingPeriod $period, User $by): void
+    {
+        $this->locked('grade-lock-'.$school->getId(), function () use ($school, $period, $by): void {
+            $this->refuseWhenLocked($school, $period);
+            $opening = $this->openings->findFor($school, $period);
+            if (null === $opening) {
+                throw new GradingException(\sprintf('%s is already closed.', $period->getLabel()));
+            }
+
+            $this->entityManager->remove($opening);
+            $this->activityLogger->log(\sprintf('Closed %s grading%s', $period->getLabel(), $this->atSchool($school, $by)));
+            $this->entityManager->flush();
+        });
+    }
+
+    private function refuseWhenLocked(School $school, GradingPeriod $period): void
+    {
+        if (null !== $this->locks->findFor($school, $period)) {
+            throw new GradingException(\sprintf('%s is locked. Unlock it first.', $period->getLabel()));
+        }
+    }
+
+    /** An administrator works across schools, so their log entries say which. */
+    private function atSchool(School $school, User $by): string
+    {
+        return \in_array(User::ROLE_ADMIN, $by->getRoles(), true) ? ' at '.$school->getName() : '';
     }
 
     /** @throws GradingException */

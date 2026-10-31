@@ -2,7 +2,7 @@
 
 {# The school's grades for a period: lock status, every gradable class's progress, and the principal's
    lock controls. Needs school, school_year, periods, period (nullable), lock (nullable), opening (nullable), classes
-   (list of ClassProgress), complete, can_lock and lock_form (nullable). #}
+   (list of ClassProgress), complete, can_lock, can_open and lock_form (nullable). #}
 
 {% block title %}Grades · {{ school.name }} · ZIM School{% endblock %}
 
@@ -35,6 +35,16 @@
                     Closed for grading
                 {% endif %}
             </p>
+            {% if can_open and not lock %}
+                <form method="post" action="{{ path(opening ? 'school_grades_close' : 'school_grades_open', {id: school.id, period: period.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token((opening ? 'grade-close-' : 'grade-open-') ~ period.id) }}">
+                    {% if opening %}
+                        <button class="btn btn--ghost" type="submit">Close {{ period.label }} grading</button>
+                    {% else %}
+                        <button class="btn btn--primary" type="submit">Open {{ period.label }} for grading</button>
+                    {% endif %}
+                </form>
+            {% endif %}
             {% if lock_form %}
                 {{ form_start(lock_form, {attr: {class: 'form'}}) }}
                     {{ form_row(lock_form.confirm) }}

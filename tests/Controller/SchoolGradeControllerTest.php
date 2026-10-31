@@ -257,7 +257,9 @@ class SchoolGradeControllerTest extends AdminTestCase
         self::assertResponseIsSuccessful();
         self::assertCount(1, $this->classRow($crawler, $this->math));
         self::assertSelectorNotExists('form[name="grade_lock_form"]');
-        self::assertCount(0, $crawler->filter('main button'));
+        // the only control is the open/close switch
+        self::assertCount(1, $crawler->filter('main button'));
+        self::assertCount(1, $crawler->selectButton('Close Term 1 grading'));
 
         $this->client->request('POST', $this->url('/grades/'.$this->term1->getId().'/lock'), ['grade_lock_form' => ['confirm' => '1']]);
         self::assertResponseStatusCodeSame(403);
@@ -275,6 +277,95 @@ class SchoolGradeControllerTest extends AdminTestCase
 
         self::assertSelectorTextContains('.grade-lock-status', 'Locked on Aug 22, 2025 by Rosa Cruz');
         self::assertCount(0, $crawler->filter('main button'));
+    }
+
+    private function openUrl(string $action): string
+    {
+        return $this->url('/grades/'.$this->term1->getId().'/'.$action);
+    }
+
+    private function openingCount(): int
+    {
+        $this->em->clear();
+
+        return $this->em->getRepository(GradeOpening::class)->count(['school' => $this->school]);
+    }
+
+    private function closeGrading(): void
+    {
+        $this->em->remove($this->em->getRepository(GradeOpening::class)->findOneBy(['school' => $this->school, 'gradingPeriod' => $this->term1]));
+        $this->em->flush();
+    }
+
+    public function testPrincipalOpensAndCloses(): void
+    {
+        $this->closeGrading();
+
+        $crawler = $this->client->request('GET', $this->overviewUrl());
+        self::assertSelectorTextContains('.grade-lock-status', 'Closed for grading');
+        $this->client->submit($crawler->selectButton('Open Term 1 for grading')->form());
+
+        self::assertResponseRedirects($this->overviewUrl());
+        self::assertSame(1, $this->openingCount());
+        $crawler = $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--success', 'Term 1 is open for grading.');
+        self::assertSelectorTextContains('.grade-lock-status', 'Open for grading since Aug 22 by Rosa Cruz');
+        self::assertCount(0, $crawler->selectButton('Open Term 1 for grading'));
+
+        $this->client->submit($crawler->selectButton('Close Term 1 grading')->form());
+
+        self::assertResponseRedirects($this->overviewUrl());
+        self::assertSame(0, $this->openingCount());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--success', 'Term 1 grading is closed.');
+        self::assertSelectorTextContains('.grade-lock-status', 'Closed for grading');
+    }
+
+    public function testAdminOpens(): void
+    {
+        $this->closeGrading();
+        $this->client->loginUser($this->admin);
+
+        $crawler = $this->client->request('GET', $this->overviewUrl());
+        $this->client->submit($crawler->selectButton('Open Term 1 for grading')->form());
+
+        self::assertSame(1, $this->openingCount());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--success', 'Term 1 is open for grading.');
+        self::assertSelectorTextContains('.grade-lock-status', 'by '.$this->admin->getFullName());
+    }
+
+    public function testOpenButtonsHiddenWhileLocked(): void
+    {
+        $this->lockTerm1();
+
+        $crawler = $this->client->request('GET', $this->overviewUrl());
+
+        self::assertCount(0, $crawler->selectButton('Open Term 1 for grading'));
+        self::assertCount(0, $crawler->selectButton('Close Term 1 grading'));
+    }
+
+    public function testOpenRefusalAndBadTokenChangeNothing(): void
+    {
+        $this->client->request('GET', $this->overviewUrl());
+        $this->client->request('POST', $this->openUrl('open'), ['_token' => $this->csrfToken('grade-open-'.$this->term1->getId())]);
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert--error', 'Term 1 is already open.');
+
+        $this->client->request('POST', $this->openUrl('close'), ['_token' => 'nope']);
+        self::assertSame(1, $this->openingCount());
+    }
+
+    public function testTeacherCannotOpen(): void
+    {
+        $this->closeGrading();
+        $this->client->loginUser($this->teacher);
+        $this->client->request('GET', '/teacher');
+
+        $this->client->request('POST', $this->openUrl('open'), ['_token' => $this->csrfToken('grade-open-'.$this->term1->getId())]);
+
+        self::assertResponseStatusCodeSame(403);
+        self::assertSame(0, $this->openingCount());
     }
 
     public function testSectionGrid(): void
