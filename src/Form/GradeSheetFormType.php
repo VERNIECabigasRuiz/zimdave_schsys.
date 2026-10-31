@@ -45,25 +45,41 @@ class GradeSheetFormType extends AbstractType
     /** Drops grades for learners no longer editable and keeps the saved grades of learners who joined. */
     public static function matchRoster(FormEvent $event): void
     {
+        self::matchRosterOf($event, 'grades');
+    }
+
+    /**
+     * The same check for any collection keyed by enrollment id (a PRE_SUBMIT listener's body): entries for
+     * learners no longer listed are dropped, learners who joined keep what the form holds, and the form gets
+     * ROSTER_CHANGED either way.
+     */
+    public static function matchRosterOf(FormEvent $event, string $collection): void
+    {
         $data = $event->getData();
         if (!\is_array($data)) {
             return;
         }
-        $posted = \is_array($data['grades'] ?? null) ? $data['grades'] : [];
-        $grades = [];
+        $posted = \is_array($data[$collection] ?? null) ? $data[$collection] : [];
+        $entries = [];
         $changed = false;
-        foreach ($event->getForm()->get('grades') as $key => $field) {
+        foreach ($event->getForm()->get($collection) as $key => $field) {
             if (\array_key_exists($key, $posted)) {
-                $grades[$key] = $posted[$key];
+                $entries[$key] = $posted[$key];
                 continue;
             }
             $changed = true;
-            $grades[$key] = $field->getViewData();
+            if ($field->getConfig()->getCompound()) {
+                foreach ($field as $name => $child) {
+                    $entries[$key][$name] = $child->getViewData();
+                }
+            } else {
+                $entries[$key] = $field->getViewData();
+            }
         }
-        if ($changed || \count($posted) !== \count($grades)) {
+        if ($changed || \count($posted) !== \count($entries)) {
             $event->getForm()->addError(new FormError(self::ROSTER_CHANGED));
         }
-        $data['grades'] = $grades;
+        $data[$collection] = $entries;
         $event->setData($data);
     }
 }

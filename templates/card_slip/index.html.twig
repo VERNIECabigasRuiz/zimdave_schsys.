@@ -1,0 +1,113 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{# The adviser's card slips for a term. Needs section, periods, period (nullable), locked, rows (list of
+   {slip: CardSlip, labels: checkbox label by code}), groups (CardSlipComments::GROUPS) and form (nullable,
+   null when there is no learner to print a slip for). #}
+
+{% block title %}Card slips · {{ section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    <style>
+        .card-slips__comments { min-width: 22rem; }
+        .card-slips__group { margin: 0 0 .5rem; padding: 0; border: 0; }
+        .card-slips__group legend { font-weight: 600; font-size: .8rem; padding: 0; }
+        .card-slip-choice { display: flex; gap: .4rem; align-items: baseline; font-size: .85rem; }
+        .card-slip-choice label { font-weight: normal; }
+        .card-slips textarea { width: 100%; }
+    </style>
+
+    <div class="page-head">
+        <div>
+            <h1>Card slips · {{ section.label }}</h1>
+            <p>{{ section.school.name }} · S.Y. {{ section.schoolYear.name }}{% if period %} · {{ period.label }}{% endif %}</p>
+        </div>
+        <div class="row-actions">
+            {% if period and rows %}
+                <a class="btn btn--primary" href="{{ path('teacher_class_card_slips_pdf', {period: period.id}) }}" data-turbo="false" title="One PDF, two slips per short bond page">Print all slips</a>
+            {% endif %}
+            <a class="btn btn--ghost" href="{{ path('teacher_class') }}">Class list</a>
+        </div>
+    </div>
+
+    {% if not period %}
+        <div class="card empty">This school year has no grading periods yet.</div>
+    {% else %}
+        <nav class="filters grade-tabs" aria-label="Grading period">
+            {% for other in periods %}
+                <a class="btn btn--sm {{ other == period ? 'btn--primary' : 'btn--ghost' }}"
+                   href="{{ path('teacher_class_card_slips', {period: other.id}) }}"{{ other == period ? ' aria-current="page"' }}>{{ other.label }}</a>
+            {% endfor %}
+        </nav>
+
+        {% if not locked %}
+            <p class="alert alert--warning card-slips-notice">{{ period.label }} isn't locked yet. Slips will print as DRAFT until the principal locks the grades.</p>
+        {% endif %}
+
+        <div class="card table-card card-slips">
+            {% if not form %}
+                <div class="empty">No learners to print slips for.</div>
+            {% else %}
+                {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+                {{ form_errors(form) }}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Learner</th>
+                            <th>Term average</th>
+                            <th>Absences</th>
+                            <th>Comments <span class="muted">(at most 3)</span></th>
+                            <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                            {% set slip = row.slip %}
+                            {% set entry = form.entries[slip.enrollmentId] %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ slip.learnerName }}</td>
+                                <td>{{ slip.averageText() }}</td>
+                                <td>{{ slip.attendance ? slip.attendance.absent : '—' }}</td>
+                                <td class="card-slips__comments">
+                                    {{ form_errors(entry.codes) }}
+                                    {% for group, codes in groups %}
+                                        <fieldset class="card-slips__group">
+                                            <legend>{{ group }}</legend>
+                                            {% for code in codes %}
+                                                {% set box = entry.codes[code] %}
+                                                <div class="card-slip-choice">
+                                                    {{ form_widget(box) }}
+                                                    <label for="{{ box.vars.id }}">{{ row.labels[code] }}</label>
+                                                    {% if code in slip.suggestedCodes %}<span class="badge">suggested</span>{% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </fieldset>
+                                    {% endfor %}
+                                    {% do entry.codes.setRendered %}
+                                    {{ form_row(entry.text, {label: 'Typed comment (optional, up to 300 characters)'}) }}
+                                </td>
+                                <td class="table__actions">
+                                    <a class="btn btn--ghost btn--sm" href="{{ path('teacher_class_card_slip_pdf', {period: period.id, enrollment: slip.enrollmentId}) }}" data-turbo="false">Print</a>
+                                    <button class="btn btn--ghost btn--sm" type="submit" form="card-slip-reset-{{ slip.enrollmentId }}" title="Forget the saved comments and use the suggested ones">Reset to suggestions</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Save comments</button>
+                </div>
+                {{ form_end(form) }}
+
+                {# outside the comments form: a form can't hold another #}
+                {% for row in rows %}
+                    {% set id = row.slip.enrollmentId %}
+                    <form id="card-slip-reset-{{ id }}" method="post" action="{{ path('teacher_class_card_slip_reset', {period: period.id, enrollment: id}) }}" hidden>
+                        <input type="hidden" name="_token" value="{{ csrf_token('card-slip-reset-' ~ id) }}">
+                    </form>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

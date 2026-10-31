@@ -26,6 +26,7 @@
             <a class="btn btn--ghost" href="{{ path(routes ~ '_sf1', section_params) }}" data-turbo="false">Download SF1</a>
             {% if routes == 'teacher_class' %}
                 <a class="btn btn--ghost" href="{{ path('teacher_class_grades') }}">Class grades</a>
+                <a class="btn btn--ghost" href="{{ path('teacher_class_card_slips') }}">Card slips</a>
                 <a class="btn btn--ghost" href="{{ path('teacher_class_attendance_month') }}">Attendance · SF2</a>
                 <a class="btn btn--ghost" href="{{ path('teacher_class_nutrition') }}">Nutrition · SF8</a>
             {% else %}
