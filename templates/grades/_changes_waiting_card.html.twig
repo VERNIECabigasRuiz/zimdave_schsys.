@@ -1,0 +1,8 @@
+{# Dashboard card: grade change requests waiting for the principal's decision. Needs count and school. #}
+<a class="stat card" href="{{ path('school_grade_changes', {id: school.id}) }}">
+    <span class="avatar avatar--amber">G</span>
+    <span>
+        <strong>Grade change requests waiting: {{ count|number_format }}</strong>
+        <small>Approve or decline</small>
+    </span>
+</a>

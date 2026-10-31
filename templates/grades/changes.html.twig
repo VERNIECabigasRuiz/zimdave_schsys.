@@ -1,0 +1,52 @@
+{% extends layout %}
+
+{# The school's grade change requests. Needs school, school_year, status ('pending' or 'decided'), requests
+   (GradeChangeRequest list), class_labels (by request id), decline_forms (form views by request id, only for those the
+   user may decide) and pending_count. #}
+
+{% import 'grades/_change_request_macros.html.twig' as change_request %}
+
+{% block title %}Change requests · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Change requests</h1>
+            <p>{{ school.name }} · S.Y. {{ school_year.name }}</p>
+        </div>
+        <a class="btn btn--ghost" href="{{ path('school_grades', {id: school.id}) }}">Back to grades</a>
+    </div>
+
+    <nav class="filters grade-tabs" aria-label="Change requests">
+        {% for tab, label in {pending: 'Pending (' ~ pending_count ~ ')', decided: 'Decided'} %}
+            <a class="btn btn--sm {{ tab == status ? 'btn--primary' : 'btn--ghost' }}"
+               href="{{ path('school_grade_changes', tab == 'pending' ? {id: school.id} : {id: school.id, status: tab}) }}"{{ tab == status ? ' aria-current="page"' }}>{{ label }}</a>
+        {% endfor %}
+    </nav>
+
+    {% if requests is empty %}
+        <div class="card empty">{{ status == 'pending' ? 'No change requests are waiting.' : 'No change requests have been decided this school year.' }}</div>
+    {% else %}
+        <div class="change-requests">
+            {% for change in requests %}
+                <article class="card form-card change-requests__item">
+                    <h2 class="section-title section-title--flush">{{ class_labels[change.id] }}</h2>
+                    {{ change_request.details(change) }}
+                    {% set decline_form = decline_forms[change.id] ?? null %}
+                    {% if decline_form %}
+                        <form method="post" action="{{ path('school_grade_change_approve', {id: school.id, request: change.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('grade-change-approve-' ~ change.id) }}">
+                            <button class="btn btn--primary" type="submit">Approve</button>
+                        </form>
+                        {{ form_start(decline_form, {attr: {class: 'form'}}) }}
+                            {{ form_row(decline_form.note) }}
+                            <div class="form-actions">
+                                <button class="btn btn--ghost" type="submit">Decline</button>
+                            </div>
+                        {{ form_end(decline_form) }}
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

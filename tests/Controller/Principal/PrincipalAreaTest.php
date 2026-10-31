@@ -2,9 +2,11 @@
 
 namespace App\Tests\Controller\Principal;
 
+use App\Entity\GradeChangeRequest;
 use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;
+use App\Entity\Subject;
 use App\Entity\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
@@ -137,5 +139,27 @@ class PrincipalAreaTest extends AdminTestCase
         $this->client->request('GET', '/admin');
 
         self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testGradeChangeCard(): void
+    {
+        $this->makePrincipal();
+        $crawler = $this->client->request('GET', '/principal');
+        self::assertCount(0, $crawler->filter('.stat:contains("Grade change requests waiting")'));
+
+        $this->sy->rebuildGradingPeriods();
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Honest');
+        $math = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade8)->setCode('MATH8')->setName('Mathematics')->setPosition(1)->setMeetingsPerWeek(5);
+        $this->em->persist($math);
+        $this->em->persist(new GradeChangeRequest($section, $math, $this->sy->getGradingPeriod(1), $this->createUser('tess', User::ROLE_TEACHER), 'Encoding error on a quiz', new \DateTimeImmutable('2026-10-16')));
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', '/principal');
+
+        $card = $crawler->filter('.stat:contains("Grade change requests waiting")');
+        self::assertCount(1, $card);
+        self::assertSame('Grade change requests waiting: 1', $card->filter('strong')->text());
+        self::assertSame('Approve or decline', $card->filter('small')->text());
+        self::assertSame('/schools/'.$this->school->getId().'/grade-changes', $card->attr('href'));
     }
 }

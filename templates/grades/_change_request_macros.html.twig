@@ -1,0 +1,19 @@
+{# Shared rendering of a grade change request: the status line, its corrected grades, the reason and the decision. #}
+{% macro details(change) %}
+    {% set tone = {pending: 'badge--amber', approved: 'badge--green', declined: 'badge--rose'}[change.status.value] ?? '' %}
+    <p>
+        <span class="badge {{ tone }}">{{ change.status.label }}</span>
+        <span class="muted">{{ change.gradingPeriod.label }} · sent {{ change.createdAt|date('M j, g:i A') }} by {{ change.requestedBy.fullName }}</span>
+    </p>
+    <ul>
+        {% for line in change.lines %}
+            <li>{{ line.enrollment.learner.sf1Name }} · {{ line.fromValue ?? '—' }} → {{ line.toValue }}</li>
+        {% endfor %}
+    </ul>
+    <p>{{ change.reason }}</p>
+    {% if change.decidedAt %}
+        <p class="muted">
+            {{ change.status.label }} {{ change.decidedAt|date('M j, g:i A') }}{% if change.decidedBy %} by {{ change.decidedBy.fullName }}{% endif %}{% if change.decisionNote %}: {{ change.decisionNote }}{% endif %}
+        </p>
+    {% endif %}
+{% endmacro %}

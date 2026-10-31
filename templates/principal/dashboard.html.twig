@@ -35,6 +35,9 @@
         {% if transfers_waiting > 0 %}
             {% include 'transfers/_waiting_card.html.twig' with {count: transfers_waiting, school: school} only %}
         {% endif %}
+        {% if grade_changes_waiting > 0 %}
+            {% include 'grades/_changes_waiting_card.html.twig' with {count: grade_changes_waiting, school: school} only %}
+        {% endif %}
         <a class="stat card" href="{{ path('school_attendance', {id: school.id}) }}">
             <span class="avatar avatar--blue">✓</span>
             <span>

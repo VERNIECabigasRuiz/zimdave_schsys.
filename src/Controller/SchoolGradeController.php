@@ -15,6 +15,7 @@ use App\Grading\GradeRules;
 use App\Grading\GradingException;
 use App\Grading\SchoolGradeOverview;
 use App\Grading\SectionGradeGrid;
+use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeLockRepository;
 use App\Repository\GradeOpeningRepository;
 use App\Repository\SchoolYearRepository;
@@ -54,7 +55,7 @@ class SchoolGradeController extends AbstractController
     }
 
     #[Route('/grades', name: 'school_grades', methods: ['GET'])]
-    public function overview(School $school, SchoolGradeOverview $overview, #[MapQueryParameter] ?int $period = null): Response
+    public function overview(School $school, SchoolGradeOverview $overview, GradeChangeRequestRepository $changeRequests, #[MapQueryParameter] ?int $period = null): Response
     {
         $schoolYear = $this->currentYear();
         $selected = $this->selectPeriod($school, $schoolYear, $period);
@@ -75,6 +76,7 @@ class SchoolGradeController extends AbstractController
             'can_lock' => $canLock,
             'can_open' => $this->isGranted(GradeVoter::OPEN, $school),
             'lock_form' => $canLock && null !== $selected && null === $lock ? $this->lockForm($school, $selected)->createView() : null,
+            'pending_changes' => $changeRequests->countPendingForSchool($school, $schoolYear),
         ]);
     }
 

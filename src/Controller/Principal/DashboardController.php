@@ -5,6 +5,7 @@ namespace App\Controller\Principal;
 use App\Attendance\AttendanceStatistics;
 use App\Entity\School;
 use App\Entity\User;
+use App\Repository\GradeChangeRequestRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
@@ -29,6 +30,7 @@ class DashboardController extends AbstractController
         private readonly SchoolClock $clock,
         private readonly TransferRequestRepository $transferRequests,
         private readonly AttendanceStatistics $attendance,
+        private readonly GradeChangeRequestRepository $gradeChanges,
     ) {
     }
 
@@ -49,6 +51,7 @@ class DashboardController extends AbstractController
             'blocked_reason' => $this->planLimits->blockedReason($school),
             'transfers_waiting' => $this->transferRequests->countPendingOutgoing($school, $schoolYear),
             'attendance_today' => $this->attendance->today($school, $schoolYear),
+            'grade_changes_waiting' => $this->gradeChanges->countPendingForSchool($school, $schoolYear),
         ]);
     }
 

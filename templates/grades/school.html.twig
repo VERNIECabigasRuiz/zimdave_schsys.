@@ -2,7 +2,7 @@
 
 {# The school's grades for a period: lock status, every gradable class's progress, and the principal's
    lock controls. Needs school, school_year, periods, period (nullable), lock (nullable), opening (nullable), classes
-   (list of ClassProgress), complete, can_lock, can_open and lock_form (nullable). #}
+   (list of ClassProgress), complete, can_lock, can_open, lock_form (nullable) and pending_changes. #}
 
 {% block title %}Grades · {{ school.name }} · ZIM School{% endblock %}
 
@@ -12,6 +12,7 @@
             <h1>Grades</h1>
             <p>{{ school.name }} · S.Y. {{ school_year.name }}{% if period %} · {{ period.label }}{% endif %}</p>
         </div>
+        <a class="btn {{ pending_changes > 0 ? 'btn--primary' : 'btn--ghost' }}" href="{{ path('school_grade_changes', {id: school.id}) }}">Change requests ({{ pending_changes }})</a>
     </div>
 
     {% if period %}
