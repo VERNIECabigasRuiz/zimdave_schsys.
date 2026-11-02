@@ -374,6 +374,42 @@ class ServiceRecordControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(403);
     }
 
+    public function testTeachersPageLinksToTheRecord(): void
+    {
+        $crawler = $this->client->request('GET', '/schools/'.$this->school->getId().'/teachers');
+
+        self::assertCount(1, $crawler->filter('a[href="'.$this->url($this->tess).'"]'));
+    }
+
+    public function testAdminTeachersPageLinksToThePdf(): void
+    {
+        $this->client->loginUser($this->admin);
+
+        $crawler = $this->client->request('GET', '/schools/'.$this->school->getId().'/teachers');
+
+        self::assertCount(1, $crawler->filter('a[href="'.$this->url($this->tess, '/service-record.pdf').'"]'));
+        self::assertCount(0, $crawler->filter('a[href="'.$this->url($this->tess).'"]'));
+    }
+
+    public function testAdminSchoolListLinksToThePrincipalsPdf(): void
+    {
+        $this->client->loginUser($this->admin);
+
+        $crawler = $this->client->request('GET', '/admin/schools');
+
+        self::assertCount(1, $crawler->filter('a[href="'.$this->url($this->rosa, '/service-record.pdf').'"]'));
+    }
+
+    public function testMenuHasMyServiceRecord(): void
+    {
+        $this->client->request('GET', $this->url($this->rosa));
+        self::assertSelectorTextContains('.sidebar__link.is-active', 'My Service Record');
+
+        $this->client->request('GET', $this->url($this->tess));
+        self::assertSelectorExists('.sidebar a[href="/principal/service-record"]');
+        self::assertSelectorTextContains('.sidebar__link.is-active', 'Teachers');
+    }
+
     public function testTransferredTeacherFollowsTheNewSchool(): void
     {
         $this->entry($this->tess, '2025-01-01', null);

@@ -89,6 +89,9 @@
                                         {% if school.active %}
                                             <a class="btn btn--ghost btn--sm" href="{{ path('admin_schools_principal', {id: school.id, sy: school_year.id}) }}">Change</a>
                                         {% endif %}
+                                        {% if school_year.current %}
+                                            <a class="btn btn--ghost btn--sm" href="{{ path('service_record_pdf', {id: school.id, employee: assignment.user.id}) }}" data-turbo="false">Service record (PDF)</a>
+                                        {% endif %}
                                         <form method="post" action="{{ path('admin_schools_principal_remove', {id: school.id, sy: school_year.id}) }}"
                                               data-turbo-confirm="Remove {{ assignment.user.fullName }} as principal of {{ school.name }}?">
                                             <input type="hidden" name="_token" value="{{ csrf_token('school-principal-' ~ school.id) }}">
