@@ -60,6 +60,16 @@ class AppExtension
         return false !== $school?->getPlan()?->includesPrincipal();
     }
 
+    /** Whether the person has a school this S.Y. as teacher or principal, so they can print their ID. */
+    #[AsTwigFunction('has_id')]
+    public function hasId(User $user): bool
+    {
+        $schoolYear = $this->schoolYears->findCurrent();
+        $role = null === $schoolYear ? null : $this->assignments->findForUser($user, $schoolYear)?->getRole();
+
+        return \in_array($role, [User::ROLE_TEACHER, User::ROLE_PRINCIPAL], true);
+    }
+
     /** Whether the teacher advises a section this S.Y. (they then have a "My class" page). */
     #[AsTwigFunction('advises_section')]
     public function advisesSection(User $teacher): bool

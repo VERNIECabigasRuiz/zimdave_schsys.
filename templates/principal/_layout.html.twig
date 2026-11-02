@@ -31,6 +31,7 @@
                 {{ _self.nav_link('Class Periods', path('principal_class_periods'), route starts with 'school_class_periods') }}
                 {{ _self.nav_link('School Profile', path('principal_school'), route == 'principal_school') }}
                 {{ _self.nav_link('My Profile', path('profile_show'), route starts with 'profile_') }}
+                {% if has_id(app.user) %}{{ _self.nav_link('My ID', path('my_id'), route starts with 'my_id') }}{% endif %}
                 {# a principal with no school this S.Y. has no record to keep #}
                 {% if not (not_assigned ?? false) %}{{ _self.nav_link('My Service Record', path('principal_service_record'), route starts with 'service_record' and app.request.attributes.get('employee') == app.user.id) }}{% endif %}
             </nav>

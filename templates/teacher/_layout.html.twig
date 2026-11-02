@@ -33,6 +33,7 @@
                     {{ _self.nav_link('Nutrition', path('teacher_class_nutrition'), nutrition_route) }}
                 {% endif %}
                 {{ _self.nav_link('My Profile', path('profile_show'), route starts with 'profile_') }}
+                {% if has_id(app.user) %}{{ _self.nav_link('My ID', path('my_id'), route starts with 'my_id') }}{% endif %}
             </nav>
 
             <a class="sidebar__me" href="{{ path('app_change_password') }}" title="Change password">
