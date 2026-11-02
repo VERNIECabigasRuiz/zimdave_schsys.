@@ -12,7 +12,9 @@
             <p>{{ school.name }}</p>
         </div>
         <div class="row-actions">
-
+            {% if can_edit %}
+                <a class="btn btn--primary" href="{{ path('service_record_row_new', {id: school.id, employee: employee.id}) }}">Add row</a>
+            {% endif %}
             <a class="btn btn--ghost" href="{{ path('school_teachers', {id: school.id}) }}">Teachers</a>
         </div>
     </div>
@@ -70,7 +72,17 @@
                         <td>{{ row.separationDate ? row.separationDate|date('m/d/Y') }}{{ row.separationCause ? ' ' ~ row.separationCause }}</td>
                         <td>{{ row.remarks }}</td>
                         {% if can_edit %}
-                            <td class="table__actions"></td>
+                            <td class="table__actions">
+                                <a class="btn btn--ghost btn--sm" href="{{ path('service_record_row_edit', {id: school.id, employee: employee.id, entry: row.id}) }}">Edit</a>
+                                <form method="post" action="{{ path('service_record_row_delete', {id: school.id, employee: employee.id, entry: row.id}) }}"
+                                      data-turbo-confirm="Delete the row from {{ row.fromDate|date('m/d/Y') }}?">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('service-row-' ~ row.id) }}">
+                                    <button class="btn btn--ghost btn--sm" type="submit">Delete</button>
+                                </form>
+                                {% if row.updatedBy %}
+                                    <small class="muted service-record__changed">Last changed by {{ row.updatedBy.fullName }} on {{ row.updatedAt|date('M j, Y') }}</small>
+                                {% endif %}
+                            </td>
                         {% endif %}
                     </tr>
                 {% else %}
