@@ -98,6 +98,23 @@ class School
     #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
     private ?string $sf8CertifierPosition = null;
 
+    /** Service record signatories: "Prepared by", and "Certified correct" (the principal when empty). */
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $srPreparedByName = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $srPreparedByDesignation = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $srCertifiedByName = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $srCertifiedByDesignation = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -306,6 +323,54 @@ class School
     public function setSf8CertifierPosition(?string $position): static
     {
         $this->sf8CertifierPosition = self::blankToNull($position);
+
+        return $this;
+    }
+
+    public function getSrPreparedByName(): ?string
+    {
+        return $this->srPreparedByName;
+    }
+
+    public function setSrPreparedByName(?string $name): static
+    {
+        $this->srPreparedByName = self::blankToNull($name);
+
+        return $this;
+    }
+
+    public function getSrPreparedByDesignation(): ?string
+    {
+        return $this->srPreparedByDesignation;
+    }
+
+    public function setSrPreparedByDesignation(?string $designation): static
+    {
+        $this->srPreparedByDesignation = self::blankToNull($designation);
+
+        return $this;
+    }
+
+    public function getSrCertifiedByName(): ?string
+    {
+        return $this->srCertifiedByName;
+    }
+
+    public function setSrCertifiedByName(?string $name): static
+    {
+        $this->srCertifiedByName = self::blankToNull($name);
+
+        return $this;
+    }
+
+    public function getSrCertifiedByDesignation(): ?string
+    {
+        return $this->srCertifiedByDesignation;
+    }
+
+    public function setSrCertifiedByDesignation(?string $designation): static
+    {
+        $this->srCertifiedByDesignation = self::blankToNull($designation);
 
         return $this;
     }
