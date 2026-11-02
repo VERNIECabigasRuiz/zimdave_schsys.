@@ -59,6 +59,25 @@ class SchoolProfileFormType extends AbstractType
                 'label' => 'Position',
                 'required' => false,
                 'attr' => ['placeholder' => 'e.g. School Nurse'],
+            ])
+            ->add('srPreparedByName', TextType::class, [
+                'label' => 'Service record prepared by',
+                'required' => false,
+            ])
+            ->add('srPreparedByDesignation', TextType::class, [
+                'label' => 'Designation',
+                'required' => false,
+                'attr' => ['placeholder' => 'e.g. Teacher III'],
+            ])
+            ->add('srCertifiedByName', TextType::class, [
+                'label' => 'Service record certified correct by',
+                'required' => false,
+                'help' => 'Left empty, the principal signs.',
+            ])
+            ->add('srCertifiedByDesignation', TextType::class, [
+                'label' => 'Designation',
+                'required' => false,
+                'attr' => ['placeholder' => 'e.g. Administrative Officer V'],
             ]);
     }
 

@@ -89,6 +89,37 @@ class SchoolProfileTest extends AdminTestCase
         self::assertContains('Updated school profile Pagsabungan NHS', $this->activityActions());
     }
 
+    public function testSavesServiceRecordSignatories(): void
+    {
+        $this->assign($this->school, $this->sy, $this->maria);
+        $this->client->request('GET', '/principal/school');
+
+        $this->client->submitForm('Save school profile', [
+            'school_profile_form[srPreparedByName]' => 'JANET T. BIHAG',
+            'school_profile_form[srPreparedByDesignation]' => 'Teacher III',
+            'school_profile_form[srCertifiedByName]' => 'EDGAR C. ESPINA JR., DevEdD',
+            'school_profile_form[srCertifiedByDesignation]' => 'Administrative Officer V',
+        ]);
+
+        self::assertResponseRedirects('/principal/school');
+        $school = $this->reloadSchool();
+        self::assertSame('JANET T. BIHAG', $school->getSrPreparedByName());
+        self::assertSame('Teacher III', $school->getSrPreparedByDesignation());
+        self::assertSame('EDGAR C. ESPINA JR., DevEdD', $school->getSrCertifiedByName());
+        self::assertSame('Administrative Officer V', $school->getSrCertifiedByDesignation());
+
+        $this->client->request('GET', '/principal/school');
+        $this->client->submitForm('Save school profile', [
+            'school_profile_form[srPreparedByName]' => '',
+            'school_profile_form[srPreparedByDesignation]' => '',
+            'school_profile_form[srCertifiedByName]' => ' ',
+            'school_profile_form[srCertifiedByDesignation]' => '',
+        ]);
+        $school = $this->reloadSchool();
+        self::assertNull($school->getSrPreparedByName());
+        self::assertNull($school->getSrCertifiedByName());
+    }
+
     public function testTamperedLockedFieldsAreNotSaved(): void
     {
         $this->assign($this->school, $this->sy, $this->maria);
