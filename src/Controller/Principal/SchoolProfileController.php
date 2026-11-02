@@ -51,6 +51,10 @@ class SchoolProfileController extends AbstractController
                 if ($logo instanceof UploadedFile) {
                     $school->setLogoPath($this->images->storeLogo($logo, $school->getLogoPath()));
                 }
+                $signature = $form->get('idSignature')->getData();
+                if ($signature instanceof UploadedFile) {
+                    $school->setIdSignaturePath($this->images->storeSignature($signature, $school->getIdSignaturePath()));
+                }
                 $this->activityLogger->log('Updated school profile '.$school->getName());
                 $this->entityManager->flush();
                 $this->addFlash('success', 'School profile saved.');

@@ -177,6 +177,23 @@ class SchoolProfileTest extends AdminTestCase
         unlink($absolute);
     }
 
+    public function testPrincipalUploadsIdSignature(): void
+    {
+        $this->assign($this->school, $this->sy, $this->maria);
+        $crawler = $this->client->request('GET', '/principal/school');
+        $form = $crawler->selectButton('Save school profile')->form();
+        $form['school_profile_form[idSignature]']->upload($this->pngFile());
+
+        $this->client->submit($form);
+
+        self::assertResponseRedirects('/principal/school');
+        $signature = $this->reloadSchool()->getIdSignaturePath();
+        self::assertMatchesRegularExpression('#^uploads/signatures/[0-9a-f]{32}\.webp$#', (string) $signature);
+        $absolute = static::getContainer()->getParameter('app.upload_root').'/'.$signature;
+        self::assertFileExists($absolute);
+        unlink($absolute);
+    }
+
     public function testInvalidEmailShowsError(): void
     {
         $this->assign($this->school, $this->sy, $this->maria);

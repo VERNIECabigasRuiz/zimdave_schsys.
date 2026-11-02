@@ -75,6 +75,10 @@ class School
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logoPath = null;
 
+    /** The principal's signature for their teachers' IDs, relative to public/. */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $idSignaturePath = null;
+
     #[ORM\Column(length: 30, nullable: true)]
     #[Assert\Length(max: 30, groups: ['Default', self::PROFILE])]
     private ?string $contactNumber = null;
@@ -263,6 +267,18 @@ class School
     public function setLogoPath(?string $logoPath): static
     {
         $this->logoPath = $logoPath;
+
+        return $this;
+    }
+
+    public function getIdSignaturePath(): ?string
+    {
+        return $this->idSignaturePath;
+    }
+
+    public function setIdSignaturePath(?string $idSignaturePath): static
+    {
+        $this->idSignaturePath = $idSignaturePath;
 
         return $this;
     }

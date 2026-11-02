@@ -57,6 +57,12 @@
                     </div>
                 </fieldset>
 
+                <fieldset class="periods">
+                    <legend>IDs</legend>
+                    {% if school.idSignaturePath %}<p><img src="{{ asset(school.idSignaturePath) }}" alt="Current ID signature" style="max-height: 60px"></p>{% endif %}
+                    {{ form_row(form.idSignature) }}
+                </fieldset>
+
                 <div class="form-actions">
                     <button class="btn btn--primary" type="submit">Save school profile</button>
                 </div>

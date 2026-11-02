@@ -78,6 +78,14 @@ class SchoolProfileFormType extends AbstractType
                 'label' => 'Designation',
                 'required' => false,
                 'attr' => ['placeholder' => 'e.g. Administrative Officer V'],
+            ])
+            ->add('idSignature', FileType::class, [
+                'label' => 'Your ID signature',
+                'mapped' => false,
+                'required' => false,
+                'help' => 'PNG with a transparent background works best. Printed on your teachers\' IDs.',
+                'attr' => ['accept' => 'image/jpeg,image/png,image/webp'],
+                'constraints' => [ImageUploadFormType::imageConstraint()],
             ]);
     }
 
