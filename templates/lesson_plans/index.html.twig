@@ -33,6 +33,7 @@
                         <td>{{ plan.sessionCount }}</td>
                         <td class="table__actions">
                             <a class="btn btn--ghost btn--sm" href="{{ path('teacher_lesson_plan_edit', {id: plan.id}) }}">Open</a>
+                            <a class="btn btn--ghost btn--sm" href="{{ path('lesson_plan_pdf', {id: plan.id}) }}" data-turbo="false">PDF</a>
                         </td>
                     </tr>
                 {% else %}

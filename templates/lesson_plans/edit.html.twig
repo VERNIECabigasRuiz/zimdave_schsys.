@@ -13,6 +13,7 @@
             <p>{{ load.subject.name }} · {{ load.section.gradeLevel ? load.section.gradeLevel.label }} {{ load.section.name }} · week of {{ plan.weekStart|date('F j, Y') }} · {{ plan.sessionCount }} session{{ plan.sessionCount == 1 ? '' : 's' }}</p>
         </div>
         <div class="row-actions">
+            <a class="btn" href="{{ path('lesson_plan_pdf', {id: plan.id}) }}" data-turbo="false">Download PDF</a>
             <a class="btn btn--ghost" href="{{ path('teacher_lesson_plans') }}">My Lesson Plans</a>
         </div>
     </div>
