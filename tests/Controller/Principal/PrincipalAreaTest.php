@@ -127,7 +127,7 @@ class PrincipalAreaTest extends AdminTestCase
 
         $crawler = $this->client->request('GET', '/schools/'.$this->school->getId().'/teachers');
 
-        self::assertSame(['Dashboard', 'Teachers', 'Sections', 'Learners', 'Attendance', 'Nutrition', 'Grades', 'Subjects', 'Class Periods', 'School Profile', 'My Profile', 'My ID', 'My Service Record'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()));
+        self::assertSame(['Dashboard', 'Teachers', 'Sections', 'Learners', 'Attendance', 'Nutrition', 'Grades', 'Lesson Plans', 'Subjects', 'Class Periods', 'School Profile', 'My Profile', 'My ID', 'My Service Record'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()));
         self::assertSelectorTextContains('.sidebar__link.is-active', 'Teachers');
         self::assertSelectorNotExists('.topbar__search');
     }
