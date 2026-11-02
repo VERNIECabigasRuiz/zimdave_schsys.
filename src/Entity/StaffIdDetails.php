@@ -31,6 +31,11 @@ class StaffIdDetails
     #[Assert\Length(max: 30)]
     private ?string $gsisPolicyNo = null;
 
+    /** The big name on the Big ID, e.g. "Sir Jun"; empty means Sir/Ma'am and the first name. */
+    #[ORM\Column(length: 30, nullable: true)]
+    #[Assert\Length(max: 30)]
+    private ?string $callName = null;
+
     public function __construct(User $user)
     {
         $this->user = $user;
@@ -78,6 +83,18 @@ class StaffIdDetails
     public function setGsisPolicyNo(?string $gsisPolicyNo): static
     {
         $this->gsisPolicyNo = self::blankToNull($gsisPolicyNo);
+
+        return $this;
+    }
+
+    public function getCallName(): ?string
+    {
+        return $this->callName;
+    }
+
+    public function setCallName(?string $callName): static
+    {
+        $this->callName = self::blankToNull($callName);
 
         return $this;
     }

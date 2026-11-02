@@ -2,7 +2,10 @@
 
 namespace App\StaffId;
 
+use App\Data\PhilippineDivisions;
+use App\Entity\PersonalDataSheet;
 use App\Entity\School;
+use App\Entity\SexAtBirth;
 use App\Entity\User;
 use App\Repository\DivisionRepository;
 use App\Repository\PersonalDataSheetRepository;
@@ -49,6 +52,7 @@ class StaffIdCardBuilder
             fullName: $fullName,
             surname: $surname,
             givenNames: $givenNames,
+            callName: $details->getCallName() ?? $this->callName($sheet, $person),
             position: $this->entries->findCurrent($person)?->getDesignation(),
             employeeNo: $sheet?->agencyEmployeeNo,
             tin: $sheet?->tin,
@@ -59,6 +63,7 @@ class StaffIdCardBuilder
             emergencyName: $details->getEmergencyName(),
             emergencyContact: $details->getEmergencyContact(),
             region: $school->getRegion(),
+            regionLabel: mb_strtoupper(str_replace('–', '-', PhilippineDivisions::label($school->getRegion()))),
             division: $school->getDivision(),
             schoolName: $school->getName(),
             schoolAddress: $school->getAddress(),
@@ -115,6 +120,22 @@ class StaffIdCardBuilder
             $surname,
             trim($first.' '.$extension),
         ]);
+    }
+
+    /** "Sir JUAN" / "Ma'am ANA" by the PDS sex; just the first name when it isn't filled in. */
+    private function callName(?PersonalDataSheet $sheet, User $person): string
+    {
+        $first = trim((string) $sheet?->firstName);
+        if ('' === $first) {
+            $first = explode(' ', trim($person->getFullName()))[0];
+        }
+        $first = mb_strtoupper($first);
+
+        return match ($sheet?->sexAtBirth) {
+            SexAtBirth::Male => 'Sir '.$first,
+            SexAtBirth::Female => "Ma'am ".$first,
+            default => $first,
+        };
     }
 
     /** @return array{0: ?string, 1: ?string, 2: ?string} name, position, signature of whoever signs this person's ID */

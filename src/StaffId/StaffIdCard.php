@@ -12,6 +12,8 @@ final readonly class StaffIdCard
         public string $surname,
         /** "JUAN A." (with the extension: "JUAN A. JR.") */
         public string $givenNames,
+        /** the big name on the Big ID: "Sir JUAN", "Ma'am ANA", or what the person typed */
+        public string $callName,
         public ?string $position,
         public ?string $employeeNo,
         public ?string $tin,
@@ -22,6 +24,8 @@ final readonly class StaffIdCard
         public ?string $emergencyName,
         public ?string $emergencyContact,
         public string $region,
+        /** "REGION VII - CENTRAL VISAYAS" */
+        public string $regionLabel,
         public string $division,
         public string $schoolName,
         public ?string $schoolAddress,

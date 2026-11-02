@@ -7,6 +7,7 @@ use App\Entity\PersonalDataSheet;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\ServiceRecordEntry;
+use App\Entity\SexAtBirth;
 use App\Entity\User;
 use App\Repository\DivisionRepository;
 use App\Repository\PersonalDataSheetRepository;
@@ -202,6 +203,28 @@ class StaffIdCardBuilderTest extends KernelTestCase
         self::assertSame('JUAN A. PEÑA JR.', $card->fullName);
         self::assertSame('PEÑA', $card->surname);
         self::assertSame('JUAN A. JR.', $card->givenNames);
+    }
+
+    public function testCallNameAndRegionLabel(): void
+    {
+        $sheet = $this->pds($this->tess, 'Dela Cruz', 'Juan', 'Abad');
+
+        self::assertSame('JUAN', $this->builder()->build($this->tess, $this->school)->callName);
+
+        $sheet->sexAtBirth = SexAtBirth::Male;
+        $this->em->flush();
+        $card = $this->builder()->build($this->tess, $this->school);
+        self::assertSame('Sir JUAN', $card->callName);
+        self::assertSame('REGION VII - CENTRAL VISAYAS', $card->regionLabel);
+
+        $sheet->sexAtBirth = SexAtBirth::Female;
+        $this->em->flush();
+        self::assertSame("Ma'am JUAN", $this->builder()->build($this->tess, $this->school)->callName);
+
+        $details = static::getContainer()->get(StaffIdDetailsRepository::class)->findOrNew($this->tess)->setCallName('Sir Jun');
+        $this->em->persist($details);
+        $this->em->flush();
+        self::assertSame('Sir Jun', $this->builder()->build($this->tess, $this->school)->callName);
     }
 
     public function testMissing(): void
