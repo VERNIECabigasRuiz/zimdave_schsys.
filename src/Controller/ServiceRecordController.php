@@ -14,9 +14,11 @@ use App\Repository\ServiceRecordEntryRepository;
 use App\Repository\ServiceRecordRepository;
 use App\Security\Voter\ServiceRecordVoter;
 use App\ServiceRecord\ServiceRecordKeeper;
+use App\ServiceRecord\ServiceRecordPdf;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -82,6 +84,19 @@ class ServiceRecordController extends AbstractController
         $this->addFlash('success', 'BP number saved.');
 
         return $this->redirectToRoute('service_record_show', ['id' => $school->getId(), 'employee' => $employee->getId()]);
+    }
+
+    /** The record as a PDF; administrators may print it too. Never writes. */
+    #[Route('/service-record.pdf', name: 'service_record_pdf', methods: ['GET'])]
+    #[IsGranted(ServiceRecordVoter::VIEW, 'school')]
+    public function pdf(School $school, int $employee, ServiceRecordPdf $pdf): Response
+    {
+        $employee = $this->requireEmployee($school, $employee);
+
+        return new Response($pdf->render($employee, $school), headers: [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $pdf->filename($employee), $pdf->asciiFilename($employee)),
+        ]);
     }
 
     #[Route('/rows/new', name: 'service_record_row_new', methods: ['GET', 'POST'])]

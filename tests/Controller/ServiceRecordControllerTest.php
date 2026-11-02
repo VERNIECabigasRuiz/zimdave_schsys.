@@ -330,6 +330,50 @@ class ServiceRecordControllerTest extends AdminTestCase
         self::assertCount(1, $this->rows($this->tess));
     }
 
+    public function testDownloadPdf(): void
+    {
+        $this->pds($this->tess);
+        $this->entry($this->tess, '2025-01-01', null);
+
+        $this->client->request('GET', $this->url($this->tess, '/service-record.pdf'));
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/pdf');
+        self::assertStringContainsString('Service record - DELA CRUZ, JUAN.pdf', (string) $this->client->getResponse()->headers->get('Content-Disposition'));
+        $this->client->request('GET', $this->url($this->tess));
+        self::assertSelectorExists('a[href="'.$this->url($this->tess, '/service-record.pdf').'"]');
+    }
+
+    public function testPdfOfANameWithEnye(): void
+    {
+        $this->pds($this->tess)->surname = 'Peña';
+        $this->em->flush();
+
+        $this->client->request('GET', $this->url($this->tess, '/service-record.pdf'));
+
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('filename="Service record - PENA, JUAN.pdf"', (string) $this->client->getResponse()->headers->get('Content-Disposition'));
+    }
+
+    public function testAdminDownloadsPdf(): void
+    {
+        $this->client->loginUser($this->admin);
+
+        $this->client->request('GET', $this->url($this->rosa, '/service-record.pdf'));
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/pdf');
+    }
+
+    public function testTeacherCannotDownloadOwnPdf(): void
+    {
+        $this->client->loginUser($this->tess);
+
+        $this->client->request('GET', $this->url($this->tess, '/service-record.pdf'));
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testTransferredTeacherFollowsTheNewSchool(): void
     {
         $this->entry($this->tess, '2025-01-01', null);

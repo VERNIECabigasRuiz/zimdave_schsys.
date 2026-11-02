@@ -15,6 +15,7 @@
             {% if can_edit %}
                 <a class="btn btn--primary" href="{{ path('service_record_row_new', {id: school.id, employee: employee.id}) }}">Add row</a>
             {% endif %}
+            <a class="btn" href="{{ path('service_record_pdf', {id: school.id, employee: employee.id}) }}" data-turbo="false">Download PDF</a>
             <a class="btn btn--ghost" href="{{ path('school_teachers', {id: school.id}) }}">Teachers</a>
         </div>
     </div>

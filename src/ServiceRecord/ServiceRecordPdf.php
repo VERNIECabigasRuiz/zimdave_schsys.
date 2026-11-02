@@ -1,0 +1,105 @@
+<?php
+
+namespace App\ServiceRecord;
+
+use App\Entity\PersonalDataSheet;
+use App\Entity\School;
+use App\Entity\User;
+use App\Repository\PersonalDataSheetRepository;
+use App\Repository\SchoolAssignmentRepository;
+use App\Repository\SchoolYearRepository;
+use App\Repository\ServiceRecordEntryRepository;
+use App\Repository\ServiceRecordRepository;
+use App\Service\SchoolClock;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Twig\Environment;
+
+use function Symfony\Component\String\u;
+
+/**
+ * The DepEd service record as a PDF on long bond (8.5 × 13 in, portrait): header from the PDS, the rows, and the
+ * school's signatories ("Certified correct" falls back to the school's principal).
+ */
+class ServiceRecordPdf
+{
+    /** 8.5 × 13 in in points. */
+    private const LONG_BOND = [0, 0, 612, 936];
+    private const SEAL = '/assets/images/deped-seal.png';
+
+    public function __construct(
+        private readonly Environment $twig,
+        private readonly PersonalDataSheetRepository $sheets,
+        private readonly ServiceRecordRepository $records,
+        private readonly ServiceRecordEntryRepository $entries,
+        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolClock $clock,
+        #[Autowire('%kernel.project_dir%')]
+        private readonly string $projectDir,
+    ) {
+    }
+
+    public function render(User $employee, School $school): string
+    {
+        $options = new Options();
+        $options->setIsRemoteEnabled(false);
+        $options->setDefaultFont('DejaVu Sans');
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($this->html($employee, $school));
+        $dompdf->setPaper(self::LONG_BOND);
+        $dompdf->render();
+
+        return (string) $dompdf->output();
+    }
+
+    public function html(User $employee, School $school): string
+    {
+        $certifiedName = $school->getSrCertifiedByName();
+        $certifiedDesignation = $school->getSrCertifiedByDesignation();
+        if (null === $certifiedName) {
+            $schoolYear = $this->schoolYears->findCurrent();
+            $principal = null === $schoolYear ? null : $this->assignments->findPrincipal($school, $schoolYear)?->getUser();
+            $certifiedName = null === $principal ? null : mb_strtoupper($principal->getFullName());
+            $certifiedDesignation ??= null === $principal ? null : 'School Principal';
+        }
+        $seal = $this->projectDir.self::SEAL;
+
+        return $this->twig->render('service_record/pdf.html.twig', [
+            'school' => $school,
+            'sheet' => $this->sheet($employee),
+            'record' => $this->records->findOrNew($employee),
+            'rows' => $this->entries->findForEmployee($employee),
+            'certified_name' => $certifiedName,
+            'certified_designation' => $certifiedDesignation,
+            'printed_on' => $this->clock->now(),
+            'seal' => is_file($seal) ? 'data:image/png;base64,'.base64_encode((string) file_get_contents($seal)) : null,
+        ]);
+    }
+
+    /** "Service record - DELA CRUZ, JUAN.pdf"; "Service record.pdf" while the PDS has no name. */
+    public function filename(User $employee): string
+    {
+        $sheet = $this->sheet($employee);
+        $name = implode(', ', array_filter([
+            mb_strtoupper(trim((string) $sheet?->surname)),
+            mb_strtoupper(trim((string) $sheet?->firstName)),
+        ]));
+        $name = (string) preg_replace('/[\/\\\\%"]/', '-', $name);
+
+        return '' === $name ? 'Service record.pdf' : 'Service record - '.$name.'.pdf';
+    }
+
+    /** filename() in plain ASCII ("PEÑA" → "PENA"), for browsers that ignore the UTF-8 name. */
+    public function asciiFilename(User $employee): string
+    {
+        return (string) u($this->filename($employee))->ascii();
+    }
+
+    private function sheet(User $employee): ?PersonalDataSheet
+    {
+        return $this->sheets->findOneBy(['user' => $employee]);
+    }
+}

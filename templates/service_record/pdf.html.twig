@@ -1,0 +1,179 @@
+{# The DepEd service record for Dompdf, long bond portrait. Needs school, sheet (nullable PDS), record (ServiceRecord),
+   rows (ServiceRecordEntry list, oldest first), certified_name, certified_designation (nullable), printed_on and seal
+   (nullable data URI). The table headings repeat on every page; the signatures come once, after the table. #}
+{% set region = school.region|upper starts with 'REGION' ? school.region|upper : 'REGION ' ~ school.region|upper %}
+{% set division = school.division|upper starts with 'SCHOOLS DIVISION' ? school.division|upper : 'SCHOOLS DIVISION OF ' ~ school.division|upper %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Service record</title>
+    <style>
+        @page { margin: 0.45in 0.4in 0.75in 0.4in; }
+        body, div, p, table { margin: 0; padding: 0; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 7pt; line-height: 1.15; color: #000; }
+        table { border-collapse: collapse; }
+
+        .head { text-align: center; }
+        .head img { width: 0.62in; height: 0.62in; }
+        .head__republic { font-family: 'DejaVu Serif', serif; font-size: 8pt; margin-top: 2pt; }
+        .head__deped { font-family: 'DejaVu Serif', serif; font-size: 11pt; font-weight: bold; }
+        .head__unit { font-size: 6.5pt; font-weight: bold; }
+        .rule { border-top: 2pt solid #000; margin: 3pt 0 4pt; }
+        .title { text-align: center; font-size: 14pt; font-weight: bold; letter-spacing: 0.5pt; }
+        .subtitle { text-align: center; font-size: 6.5pt; }
+
+        .ids { width: 100%; margin-top: 6pt; }
+        .ids td { width: 50%; font-size: 7pt; }
+        .ids b { display: block; text-decoration: underline; font-size: 7.5pt; }
+        .ids__right { text-align: right; }
+
+        .who { width: 100%; margin-top: 8pt; }
+        .who td { padding: 0 3pt; vertical-align: bottom; }
+        .who__label { width: 0.55in; font-weight: bold; }
+        .who__value { border-bottom: 0.6pt solid #000; text-align: center; font-weight: bold; }
+        .who__cap td { text-align: center; font-size: 6pt; vertical-align: top; padding-top: 1pt; }
+        .who__note { font-size: 6pt; }
+
+        .certify { margin: 7pt 0 4pt; font-size: 6.5pt; }
+
+        .rows { width: 100%; }
+        .rows th, .rows td { border: 0.6pt solid #000; padding: 1.5pt 2pt; text-align: center; }
+        .rows th { font-size: 6.5pt; font-weight: bold; }
+        .rows td { font-size: 6.8pt; }
+        .rows thead { display: table-header-group; }
+        .rows tr { page-break-inside: avoid; }
+        .rows .num { text-align: right; }
+        .rows .nowrap { white-space: nowrap; }
+        .rows .remarks { width: 1.05in; }
+        .rows .nothing td { border: none; border-top: 0.6pt solid #000; padding-top: 2pt; letter-spacing: 1pt; }
+
+        .issued { margin-top: 6pt; font-size: 6.5pt; }
+        .sign { width: 100%; margin-top: 16pt; page-break-inside: avoid; }
+        .sign td { width: 50%; vertical-align: top; padding-right: 0.4in; }
+        .sign__label { font-size: 6.5pt; }
+        .sign__name { margin-top: 18pt; border-bottom: 0.6pt solid #000; text-align: center; font-weight: bold; font-size: 7.5pt; min-height: 9pt; }
+        .sign__cap { text-align: center; font-size: 6.5pt; }
+        .date { width: 2.2in; margin: 12pt auto 0; text-align: center; }
+        .date__value { border-bottom: 0.6pt solid #000; }
+
+        .footer { position: fixed; left: 0; right: 0; bottom: -0.5in; border-top: 0.6pt solid #000; padding-top: 3pt; text-align: right; font-size: 6.5pt; }
+    </style>
+</head>
+<body>
+    <div class="footer">
+        {% if school.address %}Address: {{ school.address }}<br>{% endif %}
+        {% if school.contactNumber or school.email %}{{ school.contactNumber ? 'Tel No.: ' ~ school.contactNumber }}{{ school.contactNumber and school.email ? ' · ' }}{{ school.email }}<br>{% endif %}
+        {% if school.facebookUrl %}{{ school.facebookUrl }}{% endif %}
+    </div>
+
+    <div class="head">
+        {% if seal %}<img src="{{ seal }}" alt="">{% endif %}
+        <div class="head__republic">Republic of the Philippines</div>
+        <div class="head__deped">Department of Education</div>
+        <div class="head__unit">{{ region }}</div>
+        <div class="head__unit">{{ division }}</div>
+        <div class="head__unit">{{ school.name|upper }}</div>
+    </div>
+    <div class="rule"></div>
+    <div class="title">SERVICE RECORD</div>
+    <div class="subtitle">(To Be Accomplished By Employer)</div>
+
+    <table class="ids">
+        <tr>
+            <td><b>{{ record.bpNumber ?: ' ' }}</b>BP NUMBER</td>
+            <td class="ids__right"><b>{{ sheet and sheet.agencyEmployeeNo ? sheet.agencyEmployeeNo : ' ' }}</b>EMPLOYEE NUMBER</td>
+        </tr>
+    </table>
+
+    <table class="who">
+        <tr>
+            <td class="who__label">NAME</td>
+            <td class="who__value">{{ sheet ? sheet.surname|upper }}</td>
+            <td class="who__value">{{ sheet ? sheet.firstName|upper }}{{ sheet and sheet.nameExtension ? ' ' ~ sheet.nameExtension|upper }}</td>
+            <td class="who__value">{{ sheet ? sheet.middleName|upper }}</td>
+            <td class="who__note">(If married woman give also full maiden name)</td>
+        </tr>
+        <tr class="who__cap"><td></td><td>(Surname)</td><td>(Given Name)</td><td>(Middle Name)</td><td></td></tr>
+        <tr>
+            <td class="who__label">BIRTH</td>
+            <td class="who__value">{{ sheet and sheet.dateOfBirth ? sheet.dateOfBirth|date('F j, Y') }}</td>
+            <td class="who__value">{{ sheet ? sheet.placeOfBirth }}</td>
+            <td></td>
+            <td class="who__note">(Data herein should be checked from birth or baptismal certificate or some other reliable documents)</td>
+        </tr>
+        <tr class="who__cap"><td></td><td>DATE</td><td>PLACE</td><td></td><td></td></tr>
+    </table>
+
+    <p class="certify">This is to certify that the employee named hereinabove actually rendered services in this Office as shown by the service record below, each line of which is supported by appointment and other papers actually issued by this Office and approved by the authorities concerned.</p>
+
+    <table class="rows">
+        <thead>
+            <tr>
+                <th colspan="2">SERVICE<br>(Inclusive Dates)</th>
+                <th colspan="3">RECORD OF APPOINTMENT</th>
+                <th colspan="2">OFFICE ENTITY/DIVISION</th>
+                <th colspan="2">LEAVE<br>W/O PAY</th>
+                <th colspan="2">SEPARATION</th>
+                <th rowspan="2" class="remarks">REMARKS</th>
+            </tr>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Designation</th>
+                <th>Status</th>
+                <th>Salary</th>
+                <th>Station/Place of Assignment</th>
+                <th>Branch</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Date</th>
+                <th>Cause</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td class="nowrap">{{ row.fromDate|date('m/d/Y') }}</td>
+                    <td class="nowrap">{{ row.toDate ? row.toDate|date('m/d/Y') : 'Present' }}</td>
+                    <td class="nowrap">{{ row.designation }}</td>
+                    <td>{{ row.status }}</td>
+                    <td class="num nowrap">{{ row.annualSalary|number_format(2) }}</td>
+                    <td>{{ row.station }}</td>
+                    <td>{{ row.branch }}</td>
+                    <td>{{ row.lwopFrom ? row.lwopFrom|date('m/d/Y') }}</td>
+                    <td>{{ row.lwopTo ? row.lwopTo|date('m/d/Y') }}</td>
+                    <td>{{ row.separationDate ? row.separationDate|date('m/d/Y') }}</td>
+                    <td>{{ row.separationCause }}</td>
+                    <td class="remarks">{{ row.remarks }}</td>
+                </tr>
+            {% endfor %}
+            <tr class="nothing"><td colspan="12">x-x-x-x-x-x-x-x-x-x NOTHING FOLLOWS x-x-x-x-x-x-x-x-x-x</td></tr>
+        </tbody>
+    </table>
+
+    <p class="issued">Issued in compliance with Executive Order No. 54 dated August 10, 1954 and in accordance with Circular No. 58 dated August 10, 1954 of the System.</p>
+
+    <table class="sign">
+        <tr>
+            <td>
+                <div class="sign__label">PREPARED BY</div>
+                <div class="sign__name">{{ school.srPreparedByName ?: ' ' }}</div>
+                <div class="sign__cap">{{ school.srPreparedByDesignation ?: ' ' }}</div>
+                <div class="sign__cap">(Designation)</div>
+            </td>
+            <td>
+                <div class="sign__label">CERTIFIED CORRECT</div>
+                <div class="sign__name">{{ certified_name ?: ' ' }}</div>
+                <div class="sign__cap">(Chief or Head of Office)</div>
+                <div class="sign__cap">{{ certified_designation ?: ' ' }}</div>
+                <div class="sign__cap">(Designation)</div>
+            </td>
+        </tr>
+    </table>
+    <div class="date">
+        <div class="date__value">{{ printed_on|date('F j, Y') }}</div>
+        <div class="sign__cap">Date</div>
+    </div>
+</body>
+</html>
