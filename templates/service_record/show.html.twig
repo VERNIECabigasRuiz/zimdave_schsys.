@@ -1,0 +1,82 @@
+{% extends 'principal/_layout.html.twig' %}
+
+{# An employee's service record for the principal. Needs school, employee, sheet (nullable PDS), missing (labels of
+   empty PDS fields), record (ServiceRecord), rows (ServiceRecordEntry list, oldest first) and can_edit. #}
+
+{% block title %}Service record · {{ employee.fullName }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Service record · {{ employee.fullName }}</h1>
+            <p>{{ school.name }}</p>
+        </div>
+        <div class="row-actions">
+
+            <a class="btn btn--ghost" href="{{ path('school_teachers', {id: school.id}) }}">Teachers</a>
+        </div>
+    </div>
+
+    {% if missing is not empty %}
+        <div class="alert alert--warning" role="alert">
+            Missing in {{ employee.id == app.user.id ? 'your' : 'their' }} PDS: {{ missing|join(', ') }}. These print as blank lines.
+        </div>
+    {% endif %}
+
+    <div class="card form-card service-record__header">
+        <dl class="details">
+            <div><dt>Name</dt><dd>{{ sheet and sheet.surname ? sheet.surname|upper ~ ', ' ~ sheet.firstName|upper ~ (sheet.middleName ? ' ' ~ sheet.middleName|upper) : '—' }}</dd></div>
+            <div><dt>Birth</dt><dd>{{ sheet and sheet.dateOfBirth ? sheet.dateOfBirth|date('F j, Y') : '—' }}{% if sheet and sheet.placeOfBirth %} · {{ sheet.placeOfBirth }}{% endif %}</dd></div>
+            <div><dt>Employee no.</dt><dd>{{ sheet and sheet.agencyEmployeeNo ? sheet.agencyEmployeeNo : '—' }}</dd></div>
+        </dl>
+        {% if can_edit %}
+            <form class="form service-record__bp" method="post" action="{{ path('service_record_bp', {id: school.id, employee: employee.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('service-record-bp') }}">
+                <label for="bp_number">BP number (GSIS)</label>
+                <input id="bp_number" name="bp_number" maxlength="30" value="{{ record.bpNumber }}">
+                <button class="btn btn--ghost btn--sm" type="submit">Save</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <div class="card table-card">
+        <table class="table service-record__rows">
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Designation</th>
+                    <th>Status</th>
+                    <th>Salary</th>
+                    <th>Station</th>
+                    <th>Branch</th>
+                    <th>LWOP</th>
+                    <th>Separation</th>
+                    <th>Remarks</th>
+                    {% if can_edit %}<th><span class="sr-only">Actions</span></th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr data-entry="{{ row.id }}">
+                        <td>{{ row.fromDate|date('m/d/Y') }}</td>
+                        <td>{{ row.toDate ? row.toDate|date('m/d/Y') : 'Present' }}</td>
+                        <td>{{ row.designation }}</td>
+                        <td>{{ row.status }}</td>
+                        <td class="num">{{ row.annualSalary|number_format(2) }}</td>
+                        <td>{{ row.station }}</td>
+                        <td>{{ row.branch }}</td>
+                        <td>{{ row.lwopFrom ? row.lwopFrom|date('m/d/Y') ~ ' – ' ~ row.lwopTo|date('m/d/Y') : '' }}</td>
+                        <td>{{ row.separationDate ? row.separationDate|date('m/d/Y') }}{{ row.separationCause ? ' ' ~ row.separationCause }}</td>
+                        <td>{{ row.remarks }}</td>
+                        {% if can_edit %}
+                            <td class="table__actions"></td>
+                        {% endif %}
+                    </tr>
+                {% else %}
+                    <tr><td colspan="{{ can_edit ? 11 : 10 }}" class="empty">No rows yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
