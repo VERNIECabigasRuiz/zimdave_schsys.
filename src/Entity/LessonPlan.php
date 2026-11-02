@@ -41,7 +41,8 @@ class LessonPlan
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $classNotes = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    /** "references" is a reserved word in MySQL/MariaDB. */
+    #[ORM\Column(name: 'reference_list', type: Types::TEXT, nullable: true)]
     private ?string $references = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
