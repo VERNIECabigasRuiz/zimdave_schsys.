@@ -377,9 +377,9 @@ class TeacherCardSlipControllerTest extends AdminTestCase
 
     public function testDefaultPeriodIsLatestLocked(): void
     {
-        // nothing locked or open: the last term
+        // nothing locked or open: the term today (Aug 22) falls in
         $this->client->request('GET', '/teacher/class/card-slips');
-        self::assertSelectorTextContains('.grade-tabs [aria-current=page]', 'Term 3');
+        self::assertSelectorTextContains('.grade-tabs [aria-current=page]', 'Term 1');
 
         // open term 2 only: the open one
         $this->openTerm(2);

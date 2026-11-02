@@ -11,6 +11,7 @@ use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
+use App\Service\SchoolClock;
 
 /**
  * Every subject's grades of one section for one period: a column per gradable subject, and after
@@ -25,10 +26,14 @@ class SectionGradeGrid
         private readonly GradeRepository $grades,
         private readonly GradeRules $rules,
         private readonly GradeOpeningRepository $openings,
+        private readonly SchoolClock $clock,
     ) {
     }
 
-    /** The period a grid opens on: the one the school has open (the earliest if several), else the last. */
+    /**
+     * The period a grid opens on: the one the school has open for grading (the earliest if several), else the one
+     * today falls in, else the latest one already started (between periods, or after the year), else the first.
+     */
     public function defaultPeriod(School $school, SchoolYear $schoolYear): ?GradingPeriod
     {
         $periods = $schoolYear->getGradingPeriods()->getValues();
@@ -39,7 +44,21 @@ class SectionGradeGrid
             }
         }
 
-        return [] === $periods ? null : end($periods);
+        $today = $this->clock->now()->format('Y-m-d');
+        $started = null;
+        foreach ($periods as $period) {
+            $start = $period->getStartDate()?->format('Y-m-d');
+            if (null === $start || $start > $today) {
+                continue;
+            }
+            $end = $period->getEndDate()?->format('Y-m-d');
+            if (null !== $end && $today <= $end) {
+                return $period;
+            }
+            $started = $period;
+        }
+
+        return $started ?? ($periods[0] ?? null);
     }
 
     /**

@@ -27,6 +27,7 @@ use App\Repository\GradeUnlockRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
 use App\Repository\TransferRequestRepository;
+use App\Service\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -113,7 +114,7 @@ class SectionGradeGridTest extends KernelTestCase
             $c->get(GradeOpeningRepository::class),
         );
 
-        return new SectionGradeGrid($c->get(SubjectRepository::class), $c->get(TeachingLoadRepository::class), $c->get(GradeRepository::class), $rules, $c->get(GradeOpeningRepository::class));
+        return new SectionGradeGrid($c->get(SubjectRepository::class), $c->get(TeachingLoadRepository::class), $c->get(GradeRepository::class), $rules, $c->get(GradeOpeningRepository::class), $c->get(SchoolClock::class));
     }
 
     /** @param list<GridColumn> $columns */
@@ -125,6 +126,40 @@ class SectionGradeGridTest extends KernelTestCase
         }
 
         return $byKey;
+    }
+
+    // S.Y. 2025-2026 terms: Term 1 Jun 1 – Sep 19, Term 2 Sep 20 – Jan 8, Term 3 Jan 9 – Apr 30
+
+    public function testDefaultPeriodIsTheOneOpenForGrading(): void
+    {
+        $this->openGrading($this->school, $this->sy->getGradingPeriod(3));
+
+        self::assertSame(3, $this->grid()->defaultPeriod($this->school, $this->sy)?->getNumber());
+    }
+
+    public function testDefaultPeriodIsTheOneTodayFallsIn(): void
+    {
+        static::mockTime('2025-11-02 10:00:00');
+
+        self::assertSame(2, $this->grid()->defaultPeriod($this->school, $this->sy)?->getNumber());
+    }
+
+    public function testDefaultPeriodBetweenPeriodsIsTheLatestStarted(): void
+    {
+        $this->sy->getGradingPeriod(2)->setStartDate(new \DateTimeImmutable('2025-10-01'));
+        static::mockTime('2025-09-25 10:00:00');
+
+        self::assertSame(1, $this->grid()->defaultPeriod($this->school, $this->sy)?->getNumber());
+
+        static::mockTime('2026-05-15 10:00:00');
+        self::assertSame(3, $this->grid()->defaultPeriod($this->school, $this->sy)?->getNumber());
+    }
+
+    public function testDefaultPeriodBeforeTheYearIsTheFirst(): void
+    {
+        static::mockTime('2025-05-15 10:00:00');
+
+        self::assertSame(1, $this->grid()->defaultPeriod($this->school, $this->sy)?->getNumber());
     }
 
     public function testColumnsFollowReportCardOrderWithAnAverageColumnForAParent(): void

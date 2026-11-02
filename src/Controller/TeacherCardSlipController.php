@@ -14,8 +14,8 @@ use App\Entity\User;
 use App\Form\CardSlipCommentsData;
 use App\Form\CardSlipCommentsFormType;
 use App\Grading\GradeRules;
+use App\Grading\SectionGradeGrid;
 use App\Repository\GradeLockRepository;
-use App\Repository\GradeOpeningRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Security\Voter\CardSlipVoter;
@@ -49,8 +49,8 @@ class TeacherCardSlipController extends AbstractController
         private readonly CardSlipCommentRecorder $recorder,
         private readonly CardSlipPdf $pdf,
         private readonly GradeLockRepository $locks,
-        private readonly GradeOpeningRepository $openings,
         private readonly GradeRules $rules,
+        private readonly SectionGradeGrid $grid,
     ) {
     }
 
@@ -166,7 +166,7 @@ class TeacherCardSlipController extends AbstractController
         return $period;
     }
 
-    /** The latest locked term, else the earliest open one, else the last; null without terms. */
+    /** The latest locked term, else what the grade grid opens on (the open term, else today's); null without terms. */
     private function defaultPeriod(Section $section): ?GradingPeriod
     {
         $periods = $section->getSchoolYear()->getGradingPeriods()->getValues();
@@ -176,14 +176,8 @@ class TeacherCardSlipController extends AbstractController
         if ([] !== $locked) {
             return end($locked);
         }
-        $open = $this->openings->findOpenPeriodIds($section->getSchool(), $section->getSchoolYear());
-        foreach ($periods as $p) {
-            if (\in_array($p->getId(), $open, true)) {
-                return $p;
-            }
-        }
 
-        return end($periods) ?: null;
+        return $this->grid->defaultPeriod($section->getSchool(), $section->getSchoolYear());
     }
 
     /**
