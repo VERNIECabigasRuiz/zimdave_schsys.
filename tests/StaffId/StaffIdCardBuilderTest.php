@@ -143,6 +143,27 @@ class StaffIdCardBuilderTest extends KernelTestCase
         self::assertNotNull($card->seal);
     }
 
+    public function testOnlyTheCurrentPrincipalsSignaturePrints(): void
+    {
+        $path = 'uploads/signatures/'.bin2hex(random_bytes(16)).'.webp';
+        $absolute = static::getContainer()->getParameter('app.upload_root').'/'.$path;
+        @mkdir(\dirname($absolute), 0o777, true);
+        imagewebp(imagecreatetruecolor(60, 20), $absolute);
+        $this->school->setIdSignaturePath($path)->setIdSignatureBy($this->rosa);
+        $this->em->flush();
+
+        self::assertNotNull($this->builder()->build($this->tess, $this->school)->headSignature);
+
+        // last year's principal uploaded it; the new principal hasn't yet
+        $this->school->setIdSignatureBy($this->plainUser('oldhead', User::ROLE_PRINCIPAL));
+        $this->em->flush();
+        $card = $this->builder()->build($this->tess, $this->school);
+        unlink($absolute);
+
+        self::assertSame('ROSA CRUZ', $card->headName);
+        self::assertNull($card->headSignature);
+    }
+
     public function testPrincipalWithoutPresentRowFallsBack(): void
     {
         $card = $this->builder()->build($this->tess, $this->school);

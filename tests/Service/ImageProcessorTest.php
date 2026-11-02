@@ -84,6 +84,17 @@ class ImageProcessorTest extends KernelTestCase
         $this->images->remove($new);
     }
 
+    public function testReplacingASignatureDeletesTheOldOne(): void
+    {
+        $old = $this->images->storeSignature($this->transparentPng(900, 150), null);
+        $new = $this->images->storeSignature($this->transparentPng(900, 150), $old);
+
+        self::assertMatchesRegularExpression('#^uploads/signatures/[0-9a-f]{32}\.webp$#', $new);
+        self::assertSame(600, getimagesize($this->images->absolutePath($new))[0]);
+        self::assertFileDoesNotExist($this->images->absolutePath($old));
+        $this->images->remove($new);
+    }
+
     public function testRemoveDeletesFile(): void
     {
         $path = $this->images->storePhoto($this->jpeg(400, 400), null);

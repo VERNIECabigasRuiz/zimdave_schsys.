@@ -187,8 +187,10 @@ class SchoolProfileTest extends AdminTestCase
         $this->client->submit($form);
 
         self::assertResponseRedirects('/principal/school');
-        $signature = $this->reloadSchool()->getIdSignaturePath();
+        $school = $this->reloadSchool();
+        $signature = $school->getIdSignaturePath();
         self::assertMatchesRegularExpression('#^uploads/signatures/[0-9a-f]{32}\.webp$#', (string) $signature);
+        self::assertSame($this->maria->getId(), $school->getIdSignatureBy()?->getId());
         $absolute = static::getContainer()->getParameter('app.upload_root').'/'.$signature;
         self::assertFileExists($absolute);
         unlink($absolute);

@@ -70,6 +70,16 @@ class StaffIdPdfTest extends KernelTestCase
         }
     }
 
+    /** A fixed height with a capped width squashes a wide signature; both limits must be maxima. */
+    public function testSignatureKeepsItsShape(): void
+    {
+        foreach (StaffIdSize::cases() as $size) {
+            $html = $this->pdf()->html(self::card(), $size);
+
+            self::assertMatchesRegularExpression('/\.signature img \{ max-width: [\d.]+mm; max-height: [\d.]+mm; \}/', $html, $size->value);
+        }
+    }
+
     public function testRenderIsPdf(): void
     {
         self::assertStringStartsWith('%PDF-', $this->pdf()->render(self::card(), StaffIdSize::Big));

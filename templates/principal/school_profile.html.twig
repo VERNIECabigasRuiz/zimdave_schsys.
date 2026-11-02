@@ -59,7 +59,8 @@
 
                 <fieldset class="periods">
                     <legend>IDs</legend>
-                    {% if school.idSignaturePath %}<p><img src="{{ asset(school.idSignaturePath) }}" alt="Current ID signature" style="max-height: 60px"></p>{% endif %}
+                    {# a signature left by an earlier principal doesn't print, so it isn't shown as theirs #}
+                    {% if school.idSignaturePath and school.idSignatureBy == app.user %}<p><img src="{{ asset(school.idSignaturePath) }}" alt="Current ID signature" style="max-height: 60px"></p>{% endif %}
                     {{ form_row(form.idSignature) }}
                 </fieldset>
 

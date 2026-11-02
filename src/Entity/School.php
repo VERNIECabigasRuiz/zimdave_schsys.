@@ -79,6 +79,11 @@ class School
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $idSignaturePath = null;
 
+    /** Who uploaded the ID signature: it prints only while they are the school's principal. */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $idSignatureBy = null;
+
     #[ORM\Column(length: 30, nullable: true)]
     #[Assert\Length(max: 30, groups: ['Default', self::PROFILE])]
     private ?string $contactNumber = null;
@@ -279,6 +284,18 @@ class School
     public function setIdSignaturePath(?string $idSignaturePath): static
     {
         $this->idSignaturePath = $idSignaturePath;
+
+        return $this;
+    }
+
+    public function getIdSignatureBy(): ?User
+    {
+        return $this->idSignatureBy;
+    }
+
+    public function setIdSignatureBy(?User $idSignatureBy): static
+    {
+        $this->idSignatureBy = $idSignatureBy;
 
         return $this;
     }

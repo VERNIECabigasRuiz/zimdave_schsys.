@@ -7,7 +7,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
- * Stores profile photos and school logos as small WebP files.
+ * Stores profile photos, school logos and ID signatures as small WebP files.
  *
  * Every upload is decoded and re-encoded with GD, which drops EXIF/GPS data and
  * anything hidden in the original file. Stored paths are relative to the public
@@ -22,7 +22,7 @@ class ImageProcessor
     public const SIGNATURE_MAX = 600;
     public const MAX_PIXELS = 25_000_000;
 
-    private const STORED_PATH = '#^uploads/(photos|logos)/[0-9a-f]{32}\.webp$#';
+    private const STORED_PATH = '#^uploads/(photos|logos|signatures)/[0-9a-f]{32}\.webp$#';
 
     public function __construct(
         #[Autowire('%app.upload_root%')]

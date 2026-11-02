@@ -160,7 +160,8 @@ class StaffIdCardBuilder
         return [
             mb_strtoupper($principal->getFullName()),
             $this->entries->findCurrent($principal)?->getDesignation() ?? self::PRINCIPAL_FALLBACK,
-            $this->image($school->getIdSignaturePath()),
+            // a signature left by an earlier principal must not print under the new one's name
+            $school->getIdSignatureBy() === $principal ? $this->image($school->getIdSignaturePath()) : null,
         ];
     }
 
