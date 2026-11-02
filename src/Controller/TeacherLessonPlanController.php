@@ -97,6 +97,8 @@ class TeacherLessonPlanController extends AbstractController
 
             $draft = $form->get('draft');
             if ($draft instanceof SubmitButton && $draft->isClicked()) {
+                // the AI may take up to its 110 s limit; leave PHP room to save and answer after it
+                set_time_limit(150);
                 try {
                     $this->ai->draft($plan, $user);
                     $this->addFlash('success', 'Draft ready. Check every cell before you print.');

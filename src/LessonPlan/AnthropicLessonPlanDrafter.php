@@ -5,12 +5,15 @@ namespace App\LessonPlan;
 use Anthropic\Client;
 use Anthropic\Core\Exceptions\AnthropicException;
 use Anthropic\Core\Exceptions\APIConnectionException;
-use Anthropic\Core\Exceptions\APITimeoutException;
 use Anthropic\Core\Exceptions\AuthenticationException;
 use Anthropic\Core\Exceptions\RateLimitException;
 use App\Entity\LessonPlan;
+use Psr\Http\Client\ClientInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\Psr18Client;
 
 /**
  * Drafts a week's ILAW cells with Claude through the official SDK. The answer is constrained to a JSON schema with
@@ -19,7 +22,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 #[AsAlias(LessonPlanDrafter::class)]
 class AnthropicLessonPlanDrafter implements LessonPlanDrafter
 {
-    private const TIMEOUT_SECONDS = 120.0;
+    /** Under XAMPP's 120 s max_execution_time, which the controller raises for drafts. */
+    private const TIMEOUT_SECONDS = 110.0;
 
     /** What a cell is for, shown to the model in the schema. */
     private const FIELD_HINTS = [
@@ -57,11 +61,18 @@ class AnthropicLessonPlanDrafter implements LessonPlanDrafter
           Do not invent URLs.
         TXT;
 
+    /**
+     * @param ?ClientInterface $transporter only tests pass one (a simulated API); otherwise an HTTP client with the
+     *                                     time limits above is used
+     */
     public function __construct(
         #[Autowire(env: 'ANTHROPIC_API_KEY')]
         private readonly string $apiKey,
         #[Autowire(env: 'AI_MODEL')]
         private readonly string $model,
+        private readonly LoggerInterface $logger,
+        #[Autowire(expression: 'null')]
+        private readonly ?ClientInterface $transporter = null,
     ) {
     }
 
@@ -72,7 +83,10 @@ class AnthropicLessonPlanDrafter implements LessonPlanDrafter
         }
 
         try {
-            $client = new Client(apiKey: $this->apiKey, requestOptions: ['timeout' => self::TIMEOUT_SECONDS, 'maxRetries' => 1]);
+            // The SDK leaves time limits to the HTTP client. No retry: a second wait would pass PHP's time limit
+            // and could bill a second draft.
+            $transporter = $this->transporter ?? new Psr18Client(HttpClient::create(['timeout' => self::TIMEOUT_SECONDS, 'max_duration' => self::TIMEOUT_SECONDS]));
+            $client = new Client(apiKey: $this->apiKey, requestOptions: ['transporter' => $transporter, 'maxRetries' => 0]);
             $message = $client->messages->create(
                 maxTokens: 16000,
                 messages: [['role' => 'user', 'content' => self::prompt($request)]],
@@ -83,16 +97,14 @@ class AnthropicLessonPlanDrafter implements LessonPlanDrafter
                     'format' => ['type' => 'json_schema', 'schema' => self::schema(\count($request->dates))],
                 ],
             );
-        } catch (APITimeoutException $e) {
-            throw new AiDraftFailed('the AI did not answer in time', $e);
         } catch (APIConnectionException $e) {
-            throw new AiDraftFailed('the server could not reach the AI', $e);
+            throw $this->failed('the AI did not answer in time or could not be reached', $e);
         } catch (AuthenticationException $e) {
-            throw new AiDraftFailed('the AI key on this server is not valid', $e);
+            throw $this->failed('the AI key on this server is not valid', $e);
         } catch (RateLimitException $e) {
-            throw new AiDraftFailed('the AI is busy right now', $e);
+            throw $this->failed('the AI is busy right now', $e);
         } catch (AnthropicException $e) {
-            throw new AiDraftFailed('the AI returned an error', $e);
+            throw $this->failed('the AI returned an error', $e);
         }
 
         if ('refusal' === $message->stopReason) {
@@ -114,6 +126,19 @@ class AnthropicLessonPlanDrafter implements LessonPlanDrafter
         return new DraftResult($parsed['references'], $parsed['days'], $message->model, $message->usage->inputTokens, $message->usage->outputTokens);
     }
 
+    /** Logs what went wrong for the owner (never the key), and returns the teacher's message. */
+    private function failed(string $reason, AnthropicException $e): AiDraftFailed
+    {
+        $this->logger->warning('AI lesson plan draft failed: {reason}', [
+            'reason' => $reason,
+            'error' => $e::class,
+            'message' => $e->getMessage(),
+            'model' => $this->model,
+        ]);
+
+        return new AiDraftFailed($reason, $e);
+    }
+
     /** @return array<string, mixed> JSON schema: references, and exactly $days day objects with every ILAW cell */
     public static function schema(int $days): array
     {
@@ -129,9 +154,8 @@ class AnthropicLessonPlanDrafter implements LessonPlanDrafter
                 'references' => $bullets('Books, modules, websites and toolkits for the whole week.'),
                 'days' => [
                     'type' => 'array',
-                    'description' => 'One object per school day, in the order given.',
-                    'minItems' => $days,
-                    'maxItems' => $days,
+                    // structured outputs accept no maxItems and minItems of only 0 or 1; parse() checks the count
+                    'description' => \sprintf('One object per school day, in the order given: exactly %d objects.', $days),
                     'items' => [
                         'type' => 'object',
                         'properties' => $properties,
