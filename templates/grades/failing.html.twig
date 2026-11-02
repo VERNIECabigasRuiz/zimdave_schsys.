@@ -1,0 +1,60 @@
+{% extends layout %}
+
+{# The school's learners who failed the general average of a term, with their adviser. Needs school, school_year,
+   periods, period (nullable) and learners (list of FailingLearner). #}
+
+{% block title %}Failed general average · {{ school.name }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Failed general average</h1>
+            <p>{{ school.name }} · S.Y. {{ school_year.name }}{% if period %} · {{ period.label }}{% endif %}</p>
+        </div>
+        <a class="btn btn--ghost" href="{{ path('school_grades', period ? {id: school.id, period: period.id} : {id: school.id}) }}">All classes</a>
+    </div>
+
+    {% if period %}
+        <nav class="filters grade-tabs" aria-label="Grading period">
+            {% for other in periods %}
+                <a class="btn btn--sm {{ other == period ? 'btn--primary' : 'btn--ghost' }}"
+                   href="{{ path('school_grades_failing', {id: school.id, period: other.id}) }}"{{ other == period ? ' aria-current="page"' }}>{{ other.label }}</a>
+            {% endfor %}
+        </nav>
+
+        <div class="card table-card">
+            <table class="table failing-learners">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Learner</th>
+                        <th>LRN</th>
+                        <th>Grade &amp; Section</th>
+                        <th>Adviser</th>
+                        <th>Gen. average</th>
+                        <th>Failed subjects</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for failing in learners %}
+                        <tr data-learner="{{ failing.learner.enrollment.id }}">
+                            <td>{{ loop.index }}</td>
+                            <td class="grade-sheet__name">{{ failing.learner.name }}</td>
+                            <td>{{ failing.learner.lrn ?? '—' }}</td>
+                            <td><a href="{{ path('school_grades_section', {id: school.id, section: failing.section.id, period: period.id}) }}">{{ failing.section.label }}</a></td>
+                            <td>{{ failing.section.adviser ? failing.section.adviser.fullName : '—' }}</td>
+                            <td class="failing-learners__average">{{ failing.average|number_format(2) }}</td>
+                            <td>{{ failing.failedSubjects|map((grade, label) => label ~ ' ' ~ grade)|join(', ') ?: '—' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if learners is empty %}
+                <p class="empty">No learner failed the general average in {{ period.label }}.</p>
+            {% endif %}
+        </div>
+        <p class="muted">The general average is the one on the card slip: the mean of the subjects' grades, failing below 75 once rounded. A learner with a subject not graded yet isn't listed.</p>
+    {% else %}
+        <div class="card empty">This school year has no grading periods yet.</div>
+    {% endif %}
+{% endblock %}

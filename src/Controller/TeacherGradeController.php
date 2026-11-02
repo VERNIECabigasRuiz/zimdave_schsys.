@@ -15,6 +15,8 @@ use App\Grading\GradeChangeManager;
 use App\Grading\GradeRecorder;
 use App\Grading\GradeRules;
 use App\Grading\GradingException;
+use App\Grading\GridColumn;
+use App\Grading\SectionGradeGrid;
 use App\Grading\SheetLearner;
 use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeRepository;
@@ -49,6 +51,7 @@ class TeacherGradeController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly GradeChangeManager $changes,
         private readonly GradeChangeRequestRepository $changeRequests,
+        private readonly SectionGradeGrid $grid,
     ) {
     }
 
@@ -128,6 +131,16 @@ class TeacherGradeController extends AbstractController
             }
         }
 
+        // for comparison only: this subject's previous period, and the other subjects' grades this period
+        $previousPeriod = $section->getSchoolYear()->getGradingPeriod($period->getNumber() - 1);
+        $previous = null === $previousPeriod ? [] : $this->grades->findForEnrollments(GradeRules::enrollmentIds($learners), $subject, $previousPeriod);
+        $grid = $this->grid->build($section, $period);
+        $others = array_values(array_filter($grid['columns'], static fn (GridColumn $c): bool => 's'.$subject->getId() !== $c->key));
+        $otherCells = [];
+        foreach ($grid['rows'] as $row) {
+            $otherCells[$row['learner']->enrollment->getId()] = $row['cells'];
+        }
+
         $changeRequests = $this->changeRequests->findForClass($section, $subject, $period);
         $waiting = array_filter($changeRequests, static fn (GradeChangeRequest $r): bool => $r->isPending());
         $pending = [] !== $waiting;
@@ -140,6 +153,10 @@ class TeacherGradeController extends AbstractController
             'periods' => $section->getSchoolYear()->getGradingPeriods(),
             'learners' => $learners,
             'saved' => $saved,
+            'previous_period' => $previousPeriod,
+            'previous' => $previous,
+            'other_columns' => $others,
+            'other_cells' => $otherCells,
             'status' => $status,
             'refusal' => $refusal,
             'form' => $form,

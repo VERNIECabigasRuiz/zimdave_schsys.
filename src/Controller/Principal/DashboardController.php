@@ -5,6 +5,8 @@ namespace App\Controller\Principal;
 use App\Attendance\AttendanceStatistics;
 use App\Entity\School;
 use App\Entity\User;
+use App\Grading\FailingLearners;
+use App\Grading\SectionGradeGrid;
 use App\Repository\GradeChangeRequestRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
@@ -31,6 +33,8 @@ class DashboardController extends AbstractController
         private readonly TransferRequestRepository $transferRequests,
         private readonly AttendanceStatistics $attendance,
         private readonly GradeChangeRequestRepository $gradeChanges,
+        private readonly FailingLearners $failingLearners,
+        private readonly SectionGradeGrid $grid,
     ) {
     }
 
@@ -42,6 +46,7 @@ class DashboardController extends AbstractController
         if (null === $school) {
             return $this->notAssigned();
         }
+        $gradingPeriod = $this->grid->defaultPeriod($school, $schoolYear);
 
         return $this->render('principal/dashboard.html.twig', [
             'school' => $school,
@@ -52,6 +57,8 @@ class DashboardController extends AbstractController
             'transfers_waiting' => $this->transferRequests->countPendingOutgoing($school, $schoolYear),
             'attendance_today' => $this->attendance->today($school, $schoolYear),
             'grade_changes_waiting' => $this->gradeChanges->countPendingForSchool($school, $schoolYear),
+            'grading_period' => $gradingPeriod,
+            'failing' => null === $gradingPeriod ? 0 : \count($this->failingLearners->forSchool($school, $schoolYear, $gradingPeriod)),
         ]);
     }
 

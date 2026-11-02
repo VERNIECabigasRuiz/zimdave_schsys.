@@ -569,6 +569,67 @@ class TeacherGradeControllerTest extends AdminTestCase
         self::assertTrue($this->em->find(GradeChangeRequest::class, $request->getId())->isPending());
     }
 
+    private function grade(string $last, Subject $subject, GradingPeriod $period, int $value): void
+    {
+        $this->em->persist(new Grade($this->enrollments[$last], $subject, $period, $value, $this->teacher, new \DateTimeImmutable('2025-08-21')));
+    }
+
+    private function row(Crawler $page, string $last): Crawler
+    {
+        return $page->filter('.grade-sheet tr[data-learner="'.$this->enrollments[$last]->getId().'"]');
+    }
+
+    public function testSheetComparesWithThePreviousPeriod(): void
+    {
+        $term2 = $this->sy->getGradingPeriod(2);
+        $this->grade('Abad', $this->math, $this->term1, 85);
+        $this->grade('Abad', $this->math, $term2, 90);
+        $this->grade('Bautista', $this->math, $this->term1, 88);
+        $this->grade('Bautista', $this->math, $term2, 86);
+        $this->grade('Cruz', $this->math, $this->term1, 80);
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', $this->sheetUrl($term2));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.grade-sheet thead', 'Term 1');
+        self::assertSame('85', $this->row($crawler, 'Abad')->filter('.grade-sheet__prev')->text());
+        self::assertSame('▲ +5', $this->row($crawler, 'Abad')->filter('.grade-change--up')->text());
+        self::assertSame('▼ −2', $this->row($crawler, 'Bautista')->filter('.grade-change--down')->text());
+        self::assertSame('80', $this->row($crawler, 'Cruz')->filter('.grade-sheet__prev')->text());
+        self::assertSame('—', $this->row($crawler, 'Cruz')->filter('.grade-sheet__change')->text());
+    }
+
+    public function testFirstPeriodHasNoPreviousColumn(): void
+    {
+        $crawler = $this->client->request('GET', $this->sheetUrl());
+
+        self::assertResponseIsSuccessful();
+        self::assertCount(0, $crawler->filter('.grade-sheet__prev'));
+        self::assertCount(0, $crawler->filter('.grade-sheet__change'));
+    }
+
+    public function testSheetShowsOtherSubjectsReadOnly(): void
+    {
+        $science = $this->subject(GradeLevel::Grade8, 'SCI8', 'Science', 2);
+        $owen = $this->createUser('owen', User::ROLE_TEACHER, 'Owen Tan');
+        $this->assign($this->school, $this->sy, $owen, User::ROLE_TEACHER);
+        $this->em->persist(new TeachingLoad($this->honest, $science, $owen));
+        $this->grade('Abad', $science, $this->term1, 92);
+        $this->grade('Abad', $this->math, $this->term1, 88);
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', $this->sheetUrl());
+
+        $others = $crawler->filter('.grade-sheet thead th.grade-sheet__other');
+        self::assertSame(['Science'], $others->each(static fn (Crawler $th) => $th->text()));
+        self::assertStringContainsString('Owen Tan', $others->attr('title'));
+        self::assertSame('92', $this->row($crawler, 'Abad')->filter('td.grade-sheet__other')->text());
+        self::assertSame('—', $this->row($crawler, 'Cruz')->filter('td.grade-sheet__other')->text());
+        // still only this subject's boxes can be filled in
+        self::assertCount(3, $crawler->filter('.grade-sheet input[name^="grade_sheet_form[grades]"]'));
+    }
+
     private function adviser(): User
     {
         $ada = $this->createUser('ada', User::ROLE_TEACHER, 'Ada Lim');

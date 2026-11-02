@@ -4,6 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\Enrollment;
 use App\Entity\GradeLevel;
+use App\Entity\LearnerMark;
 use App\Entity\RollCall;
 use App\Entity\School;
 use App\Entity\SchoolDayOff;
@@ -184,7 +185,38 @@ class SchoolAttendanceControllerTest extends AdminTestCase
         self::assertResponseRedirects($this->url('/attendance'));
 
         $this->client->request('GET', '/principal');
-        self::assertSelectorTextContains('main', 'Attendance today');
+        self::assertSelectorTextContains('main', 'Students present today');
+    }
+
+    public function testDashboardTotalsStudentsPresentToday(): void
+    {
+        $absent = new Enrollment($this->learner('120017170002', 'Bautista', 'Ben'), $this->sy, $this->artistic, $this->adviser, new \DateTimeImmutable('2025-05-20'));
+        $bonifacio = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Bonifacio');
+        $this->em->persist($absent);
+        $this->em->persist(new Enrollment($this->learner('120017170003', 'Cruz', 'Carla'), $this->sy, $bonifacio, $this->principal, new \DateTimeImmutable('2025-05-20')));
+        $this->em->flush();
+        $rollCall = new RollCall($this->artistic, new \DateTimeImmutable('2025-08-22'), $this->adviser, new \DateTimeImmutable());
+        $rollCall->replaceMarks([$absent->getId() => [$absent, LearnerMark::Absent]]);
+        $this->em->persist($rollCall);
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', '/principal');
+
+        $card = $crawler->filter('.stat')->reduce(static fn ($node) => str_contains($node->text(), 'present today'));
+        self::assertSame('1 / 3', $card->filter('strong')->text());
+        self::assertSame('Students present today · 1 absent', $card->filter('small')->first()->text());
+        self::assertStringContainsString('1 section not taken yet', $card->text());
+    }
+
+    public function testDashboardShowsNoClassesOnADayOff(): void
+    {
+        $this->em->persist(new SchoolDayOff($this->school, $this->sy, new \DateTimeImmutable('2025-08-22'), 'Typhoon suspension', $this->principal, new \DateTimeImmutable()));
+        $this->em->flush();
+
+        $this->client->request('GET', '/principal');
+
+        self::assertSelectorTextContains('main', 'No classes');
+        self::assertSelectorTextContains('main', 'Typhoon suspension');
     }
 
     public function testClassListLinksToAttendance(): void

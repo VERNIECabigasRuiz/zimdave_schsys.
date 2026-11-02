@@ -1,7 +1,8 @@
 {% extends 'teacher/_layout.html.twig' %}
 
 {# A class's grade sheet for a period. Needs load, period, periods, learners (SheetLearner list), saved
-   (Grade by enrollment id), status (nullable ClassGradeStatus), refusal (nullable), form (nullable), editable,
+   (Grade by enrollment id), previous_period (nullable) and previous (its Grade by enrollment id), other_columns
+   (the other subjects' GridColumns) and other_cells (their values by enrollment id, then column key), status (nullable ClassGradeStatus), refusal (nullable), form (nullable), editable,
    change_requests (this class's, newest first), pending (one of them waits), own_pending (the waiting one is the
    current user's) and can_request. #}
 
@@ -43,25 +44,34 @@
             {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
             {{ form_errors(form) }}
         {% endif %}
+        {% set colspan = 5 + (previous_period ? 2 : 0) + other_columns|length %}
+        <div class="grade-sheet__scroll">
         <table class="table roll-call__table">
             <thead>
                 <tr>
                     <th>No.</th>
                     <th>LRN</th>
-                    <th>Learner</th>
+                    <th class="grade-sheet__name">Learner</th>
                     <th>Grade</th>
+                    {% if previous_period %}
+                        <th class="grade-sheet__compare">{{ previous_period.label }}</th>
+                        <th class="grade-sheet__compare">Change</th>
+                    {% endif %}
                     <th>Remarks</th>
+                    {% for column in other_columns %}
+                        <th class="grade-sheet__other" title="{{ column.label }}{{ column.average ? ' (average)' }}{{ column.teacherName ? ' · ' ~ column.teacherName }}">{{ column.label }}</th>
+                    {% endfor %}
                 </tr>
             </thead>
             <tbody>
                 {% for learner in learners %}
                     {% if loop.first or learner.male != learners[loop.index0 - 1].male %}
-                        <tr class="roll-call__group"><th colspan="5">{{ learner.male ? 'Male' : 'Female' }}</th></tr>
+                        <tr class="roll-call__group"><th colspan="{{ colspan }}">{{ learner.male ? 'Male' : 'Female' }}</th></tr>
                     {% endif %}
                     {% set id = learner.enrollment.id %}
                     {% set field = editable and learner.editable ? (form.grades[id] ?? null) : null %}
                     {% set grade = saved[id] ?? null %}
-                    <tr{% if not learner.editable %} class="roll-call__out"{% endif %}>
+                    <tr data-learner="{{ id }}"{% if not learner.editable %} class="roll-call__out"{% endif %}>
                         <td>{{ loop.index }}</td>
                         <td>{{ learner.lrn ?? '—' }}</td>
                         <td class="grade-sheet__name">{{ learner.name }}</td>
@@ -73,13 +83,34 @@
                                 {{ grade ? grade.value : '—' }}
                             {% endif %}
                         </td>
+                        {% if previous_period %}
+                            {% set before = previous[id] ?? null %}
+                            <td class="grade-sheet__prev">{{ before ? before.value : '—' }}</td>
+                            {% if grade and before %}
+                                {% set change = grade.value - before.value %}
+                                {% if change > 0 %}
+                                    <td class="grade-sheet__change grade-change--up">▲ +{{ change }}</td>
+                                {% elseif change < 0 %}
+                                    <td class="grade-sheet__change grade-change--down">▼ −{{ -change }}</td>
+                                {% else %}
+                                    <td class="grade-sheet__change grade-change--same">=</td>
+                                {% endif %}
+                            {% else %}
+                                <td class="grade-sheet__change">—</td>
+                            {% endif %}
+                        {% endif %}
                         <td>{{ learner.status }}</td>
+                        {% for column in other_columns %}
+                            {% set value = other_cells[id][column.key] ?? null %}
+                            <td class="grade-sheet__other">{{ value ?? '—' }}</td>
+                        {% endfor %}
                     </tr>
                 {% else %}
-                    <tr><td colspan="5" class="empty">No learners in this section.</td></tr>
+                    <tr><td colspan="{{ colspan }}" class="empty">No learners in this section.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
+        </div>
         {% if form %}
             {% if editable %}
                 <div class="form-actions">

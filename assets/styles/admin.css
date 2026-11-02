@@ -298,6 +298,22 @@ body.admin-page {
     color: var(--ink-600);
 }
 
+.stat small.stat__note {
+    display: block;
+    color: #9a5b00;
+    font-weight: 600;
+}
+
+/* The adviser's "take today's attendance" reminder on the teacher dashboard */
+
+.attendance-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
 /* Tables */
 
 .table-card {
@@ -1839,6 +1855,55 @@ span.sf2-cell {
 
 .grade-sheet input[type="number"] {
     width: 5.5rem;
+}
+
+/* Read-only comparison columns: the previous period, and the other subjects. Many subjects scroll
+   sideways with the learner's name kept in view. */
+
+.grade-sheet__scroll {
+    overflow-x: auto;
+}
+
+.grade-sheet__scroll .grade-sheet__name {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #fff;
+}
+
+.grade-sheet__prev,
+.grade-sheet__change,
+.grade-sheet__compare {
+    text-align: center;
+    color: var(--ink-600);
+}
+
+.grade-sheet__change {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.grade-change--up {
+    color: var(--success);
+}
+
+.grade-change--down {
+    color: var(--danger);
+}
+
+.grade-sheet__other {
+    text-align: center;
+    background: #f5f7fb;
+    color: var(--ink-600);
+    white-space: nowrap;
+}
+
+th.grade-sheet__other {
+    font-weight: 600;
+    font-size: .85em;
+    max-width: 7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .grade-status {

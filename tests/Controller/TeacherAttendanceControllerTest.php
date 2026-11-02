@@ -206,4 +206,36 @@ class TeacherAttendanceControllerTest extends AdminTestCase
         $this->client->request('GET', '/teacher');
         self::assertSelectorTextContains('.advisory-card', "Today's attendance: taken");
     }
+
+    public function testDashboardAlertsUntilAttendanceIsTaken(): void
+    {
+        $crawler = $this->client->request('GET', '/teacher');
+        self::assertSelectorTextContains('.attendance-alert', "You haven't taken today's attendance for Grade 8 – Artistic. Your principal checks it daily.");
+        self::assertCount(1, $crawler->filter('.attendance-alert a[href="/teacher/class/attendance"]'));
+
+        $this->client->request('GET', '/teacher/class/attendance');
+        $this->client->submit($this->client->getCrawler()->selectButton('Save attendance')->form());
+        $this->client->request('GET', '/teacher');
+        self::assertSelectorNotExists('.attendance-alert');
+    }
+
+    public function testNoAlertOnADayOff(): void
+    {
+        static::mockTime('2025-08-21 10:00:00');
+
+        $this->client->request('GET', '/teacher');
+
+        self::assertSelectorNotExists('.attendance-alert');
+    }
+
+    public function testNoAlertForATeacherWhoIsNotAnAdviser(): void
+    {
+        $this->client->loginUser($other = $this->createUser('omar', User::ROLE_TEACHER));
+        $this->assign($this->school, $this->sy, $other, User::ROLE_TEACHER);
+
+        $this->client->request('GET', '/teacher');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('.attendance-alert');
+    }
 }

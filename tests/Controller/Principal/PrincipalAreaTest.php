@@ -57,7 +57,7 @@ class PrincipalAreaTest extends AdminTestCase
         self::assertStringContainsString('Basic plan', $head);
         self::assertStringContainsString('Apr 30, 2027', $head);
         $stats = $crawler->filter('.stat')->each(static fn ($node) => $node->filter('small')->text().'='.$node->filter('strong')->text());
-        self::assertSame(['Teachers=2 / 15', 'Students=0 / 1,000', 'Attendance today · 0 absent=0 / 0'], $stats);
+        self::assertSame(['Teachers=2 / 15', 'Students=0 / 1,000', 'Students present today · 0 absent=0 / 0'], $stats);
     }
 
     public function testDashboardCountsEnrolledLearners(): void

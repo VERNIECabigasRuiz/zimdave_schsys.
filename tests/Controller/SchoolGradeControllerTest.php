@@ -426,6 +426,68 @@ class SchoolGradeControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
+    /** Abad fails (71.00); Bautista's 74.50 rounds up to a pass; Cruz is incomplete in another section. */
+    private function failingFixture(): void
+    {
+        $this->honest->setAdviser($this->teacher);
+        $this->grade('Abad', $this->math, 70);
+        $this->grade('Abad', $this->science, 72);
+        $this->grade('Bautista', $this->math, 74);
+        $this->grade('Bautista', $this->science, 75);
+        $kind = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Kind');
+        $this->em->persist($this->enrollments['Cruz'] = new Enrollment($this->learner('120017170009', 'Cruz', 'Carla'), $this->sy, $kind, $this->teacher, new \DateTimeImmutable('2025-05-20')));
+        $this->em->flush();
+        $this->grade('Cruz', $this->math, 60);
+    }
+
+    public function testFailingGeneralAverageList(): void
+    {
+        $this->failingFixture();
+
+        $crawler = $this->client->request('GET', $this->url('/grades/failing'));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Failed general average');
+        self::assertSelectorTextContains('.grade-tabs .btn--primary', 'Term 1');
+        $rows = $crawler->filter('.failing-learners tbody tr');
+        self::assertCount(1, $rows);
+        $cells = $rows->filter('td')->each(static fn (Crawler $td) => $td->text());
+        self::assertSame(['1', 'ABAD, ANA, -', '12001717000', 'Grade 8 – Honest', 'Tess Reyes', '71.00', 'Mathematics 70, Science 72'], $cells);
+        self::assertSelectorTextContains('.sidebar__link.is-active', 'Grades');
+    }
+
+    public function testFailingListOfAnotherTermIsEmpty(): void
+    {
+        $this->failingFixture();
+
+        $this->client->request('GET', $this->url('/grades/failing?period='.$this->sy->getGradingPeriod(2)->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.grade-tabs .btn--primary', 'Term 2');
+        self::assertSelectorTextContains('main', 'No learner failed the general average in Term 2.');
+    }
+
+    public function testDashboardCountsFailedGeneralAverages(): void
+    {
+        $this->failingFixture();
+
+        $crawler = $this->client->request('GET', '/principal');
+
+        $card = $crawler->filter('a.stat[href="'.$this->url('/grades/failing').'"]');
+        self::assertSame('1', $card->filter('strong')->text());
+        self::assertSame('Failed general average · Term 1', $card->filter('small')->text());
+    }
+
+    public function testFailingListOfAnotherSchoolIs403(): void
+    {
+        $this->client->loginUser($otherPrincipal = $this->createUser('omar', User::ROLE_PRINCIPAL));
+        $this->assign($this->other, $this->sy, $otherPrincipal);
+
+        $this->client->request('GET', $this->url('/grades/failing'));
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testPrincipalShortcutAndMenu(): void
     {
         $this->client->request('GET', '/principal/grades');

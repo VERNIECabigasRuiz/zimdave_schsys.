@@ -17,6 +17,13 @@
     {% elseif not school %}
         <div class="card form-card"><p>You are not assigned to a school for S.Y. {{ school_year.name }}. Contact your principal.</p></div>
     {% else %}
+        {% if advisory and attendance_today.schoolDay and not attendance_today.taken %}
+            <div class="alert alert--warning attendance-alert" role="alert">
+                <span>You haven't taken today's attendance for {{ advisory.label }}. Your principal checks it daily.</span>
+                <a class="btn btn--primary btn--sm" href="{{ path('teacher_class_attendance') }}">Take attendance</a>
+            </div>
+        {% endif %}
+
         <div class="card form-card advisory-card">
             {% if advisory %}
                 <p class="muted">Advisory class</p>

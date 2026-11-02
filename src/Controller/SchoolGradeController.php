@@ -12,6 +12,7 @@ use App\Entity\Subject;
 use App\Entity\User;
 use App\Form\GradeLockFormType;
 use App\Grading\ClassProgress;
+use App\Grading\FailingLearners;
 use App\Grading\GradeRecorder;
 use App\Grading\GradeRules;
 use App\Grading\GradingException;
@@ -81,6 +82,22 @@ class SchoolGradeController extends AbstractController
             'can_open' => $this->isGranted(GradeVoter::OPEN, $school),
             'lock_form' => $canLock && null !== $selected && null === $lock ? $this->lockForm($school, $selected)->createView() : null,
             'pending_changes' => $changeRequests->countPendingForSchool($school, $schoolYear),
+        ]);
+    }
+
+    #[Route('/grades/failing', name: 'school_grades_failing', methods: ['GET'])]
+    public function failing(School $school, FailingLearners $failingLearners, #[MapQueryParameter] ?int $period = null): Response
+    {
+        $schoolYear = $this->currentYear();
+        $selected = $this->selectPeriod($school, $schoolYear, $period);
+
+        return $this->render('grades/failing.html.twig', [
+            'layout' => $this->layout(),
+            'school' => $school,
+            'school_year' => $schoolYear,
+            'periods' => $schoolYear->getGradingPeriods(),
+            'period' => $selected,
+            'learners' => null === $selected ? [] : $failingLearners->forSchool($school, $schoolYear, $selected),
         ]);
     }
 

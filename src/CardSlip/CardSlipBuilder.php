@@ -4,6 +4,7 @@ namespace App\CardSlip;
 
 use App\Entity\GradingPeriod;
 use App\Entity\Section;
+use App\Grading\GeneralAverage;
 use App\Grading\GridColumn;
 use App\Grading\SectionGradeGrid;
 use App\Repository\CardSlipCommentRepository;
@@ -64,19 +65,14 @@ class CardSlipBuilder
             return [];
         }
 
-        $componentKeys = [];
-        foreach ($this->subjects->findForSection($section) as $subject) {
-            if (null !== $subject->getParent()) {
-                $componentKeys['s'.$subject->getId()] = true;
-            }
-        }
+        $componentKeys = GeneralAverage::componentKeys($this->subjects->findForSection($section));
 
         $previousAverages = [];
         $previous = $period->getSchoolYear()->getGradingPeriod($period->getNumber() - 1);
         if (null !== $previous) {
             $previousGrid = $this->grid->build($section, $previous);
             foreach ($previousGrid['rows'] as $row) {
-                $previousAverages[(int) $row['learner']->enrollment->getId()] = self::average(self::topLevelGrades($previousGrid['columns'], $row['cells'], $componentKeys));
+                $previousAverages[(int) $row['learner']->enrollment->getId()] = GeneralAverage::of(GeneralAverage::topLevelGrades($previousGrid['columns'], $row['cells'], $componentKeys));
             }
         }
 
@@ -92,8 +88,8 @@ class CardSlipBuilder
         foreach ($rows as $row) {
             $learner = $row['learner'];
             $id = (int) $learner->enrollment->getId();
-            $grades = self::topLevelGrades($grid['columns'], $row['cells'], $componentKeys);
-            $average = self::average($grades);
+            $grades = GeneralAverage::topLevelGrades($grid['columns'], $row['cells'], $componentKeys);
+            $average = GeneralAverage::of($grades);
             $tally = $attendance[$id] ?? null;
 
             $facts = new TermFacts($grades, $average, $previousAverages[$id] ?? null, $tally?->absent, $tally?->late, $tally->schoolDays ?? 0);
@@ -170,35 +166,6 @@ class CardSlipBuilder
         }
 
         return $lines;
-    }
-
-    /**
-     * @param list<GridColumn>    $columns
-     * @param array<string, ?int> $cells
-     * @param array<string, true> $componentKeys
-     *
-     * @return array<string, ?int> label => grade of every top-level subject (a parent once, as its average)
-     */
-    private static function topLevelGrades(array $columns, array $cells, array $componentKeys): array
-    {
-        $grades = [];
-        foreach ($columns as $column) {
-            if (!isset($componentKeys[$column->key])) {
-                $grades[$column->label] = $cells[$column->key] ?? null;
-            }
-        }
-
-        return $grades;
-    }
-
-    /** @param array<string, ?int> $grades null when there is no subject or one has no grade */
-    private static function average(array $grades): ?float
-    {
-        if ([] === $grades || \in_array(null, $grades, true)) {
-            return null;
-        }
-
-        return array_sum($grades) / \count($grades);
     }
 
     private static function remarks(?int $grade): string
