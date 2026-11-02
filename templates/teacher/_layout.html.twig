@@ -32,6 +32,7 @@
                     {{ _self.nav_link('Attendance', path('teacher_class_attendance'), attendance_route) }}
                     {{ _self.nav_link('Nutrition', path('teacher_class_nutrition'), nutrition_route) }}
                 {% endif %}
+                {% if has_id(app.user) %}{{ _self.nav_link('My Lesson Plans', path('teacher_lesson_plans'), route starts with 'teacher_lesson_plan') }}{% endif %}
                 {{ _self.nav_link('My Profile', path('profile_show'), route starts with 'profile_') }}
                 {% if has_id(app.user) %}{{ _self.nav_link('My ID', path('my_id'), route starts with 'my_id') }}{% endif %}
             </nav>
