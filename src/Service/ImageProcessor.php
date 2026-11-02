@@ -19,6 +19,7 @@ class ImageProcessor
     public const PHOTO_WIDTH = 350;
     public const PHOTO_HEIGHT = 450;
     public const LOGO_MAX = 400;
+    public const SIGNATURE_MAX = 600;
     public const MAX_PIXELS = 25_000_000;
 
     private const STORED_PATH = '#^uploads/(photos|logos)/[0-9a-f]{32}\.webp$#';
@@ -44,6 +45,15 @@ class ImageProcessor
         $target = $this->fitWithin($source, self::LOGO_MAX);
 
         return $this->save($target, 'logos', 85, $oldPath);
+    }
+
+    /** A signature for IDs, transparency kept. */
+    public function storeSignature(File $file, ?string $oldPath): string
+    {
+        $source = $this->decode($file);
+        $target = $this->fitWithin($source, self::SIGNATURE_MAX);
+
+        return $this->save($target, 'signatures', 90, $oldPath);
     }
 
     /** Deletes a stored image; ignores null and anything that isn't one of ours. */
