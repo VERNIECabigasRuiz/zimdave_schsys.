@@ -93,6 +93,15 @@ class PrincipalAreaTest extends AdminTestCase
         }
     }
 
+    public function testNotAssignedPrincipalHasNoServiceRecord(): void
+    {
+        $this->client->request('GET', '/principal');
+        self::assertSelectorNotExists('.sidebar a[href="/principal/service-record"]');
+
+        $this->client->request('GET', '/principal/service-record');
+        self::assertResponseStatusCodeSame(403);
+    }
+
     public function testNoCurrentSchoolYear(): void
     {
         $this->em->getRepository(SchoolYear::class)->find($this->sy->getId())->setCurrent(false);

@@ -38,7 +38,7 @@ class SchoolProfileController extends AbstractController
         $schoolYear = $this->schoolYears->findCurrent();
         $school = $schoolYear ? $this->assignments->findSchoolOf($user, $schoolYear, User::ROLE_PRINCIPAL) : null;
         if (null === $school) {
-            return $this->render('principal/not_assigned.html.twig', ['school_year' => $schoolYear]);
+            return $this->render('principal/not_assigned.html.twig', ['school_year' => $schoolYear, 'not_assigned' => true]);
         }
         $this->denyAccessUnlessGranted(SchoolVoter::MANAGE, $school);
 

@@ -201,6 +201,21 @@ class ServiceRecordControllerTest extends AdminTestCase
         self::assertSame('2026-01-01', $form[$this->field('fromDate')]->getValue());
     }
 
+    public function testAddAfterAnOpenRowLeavesFromEmpty(): void
+    {
+        $this->entry($this->tess, '2026-01-01', null);
+
+        $crawler = $this->client->request('GET', $this->url($this->tess, '/rows/new'));
+        $form = $crawler->selectButton('Save row')->form();
+        self::assertSame('', $form[$this->field('fromDate')]->getValue());
+        self::assertSame('Teacher III', $form[$this->field('designation')]->getValue());
+
+        // saved without a From, nothing changes: the current row stays open
+        $this->client->submit($form, [$this->field('annualSalary') => '443028']);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSame([['2026-01-01', null, '420588.00']], $this->rows($this->tess));
+    }
+
     public function testAddingAfterAnOpenRowClosesIt(): void
     {
         $this->entry($this->tess, '2026-01-01', null);

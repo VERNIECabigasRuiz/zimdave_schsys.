@@ -168,7 +168,7 @@ class DashboardController extends AbstractController
     #[Route('/service-record', name: 'principal_service_record', methods: ['GET'])]
     public function serviceRecord(#[CurrentUser] User $user): Response
     {
-        $school = $this->ownSchool($user) ?? throw $this->createNotFoundException('You are not assigned to a school this school year.');
+        $school = $this->ownSchool($user) ?? throw $this->createAccessDeniedException('You are not assigned to a school this school year.');
 
         return $this->redirectToRoute('service_record_show', ['id' => $school->getId(), 'employee' => $user->getId()]);
     }
@@ -184,6 +184,7 @@ class DashboardController extends AbstractController
     {
         return $this->render('principal/not_assigned.html.twig', [
             'school_year' => $this->schoolYears->findCurrent(),
+            'not_assigned' => true,
         ]);
     }
 }

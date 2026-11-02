@@ -90,10 +90,11 @@ class ServiceRecordEntry
      */
     public bool $closeOpen = false;
 
-    public function __construct(User $employee, \DateTimeImmutable $fromDate, User $updatedBy, \DateTimeImmutable $updatedAt)
+    /** $fromDate is null only for a new row's form, which can't be saved without one. */
+    public function __construct(User $employee, ?\DateTimeImmutable $fromDate, User $updatedBy, \DateTimeImmutable $updatedAt)
     {
         $this->employee = $employee;
-        $this->fromDate = $fromDate->setTime(0, 0);
+        $this->fromDate = $fromDate?->setTime(0, 0);
         $this->updatedBy = $updatedBy;
         $this->updatedAt = $updatedAt;
     }

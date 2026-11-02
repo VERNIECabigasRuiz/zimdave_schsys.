@@ -20,15 +20,17 @@ class ServiceRecordKeeper
     }
 
     /**
-     * A new row like the last one (designation, status, station, branch), starting the day after it ends — or
-     * today when it runs to the present or there is none. A first row gets the school's city and the National branch.
+     * A new row like the last one (designation, status, station, branch), starting the day after it ends — with
+     * no start when it runs to the present. A first row starts today, in the school's city, National branch.
      */
     public function draft(User $employee, School $school, User $by): ServiceRecordEntry
     {
         $today = $this->clock->now()->setTime(0, 0);
         $rows = $this->entries->findForEmployee($employee);
         $last = [] === $rows ? null : end($rows);
-        $entry = new ServiceRecordEntry($employee, $last?->getToDate()?->modify('+1 day') ?? $today, $by, $this->clock->now());
+        // after a row up to the present the principal picks the date, so saving can't end that row by accident
+        $from = null === $last ? $today : $last->getToDate()?->modify('+1 day');
+        $entry = new ServiceRecordEntry($employee, $from, $by, $this->clock->now());
 
         if (null === $last) {
             return $entry->setStation(self::city($school))->setBranch('National');
