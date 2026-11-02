@@ -21,7 +21,19 @@
 
             <nav class="sidebar__nav" aria-label="Teacher">
                 {{ _self.nav_link('Dashboard', path('teacher_dashboard'), route == 'teacher_dashboard') }}
+                {% if has_teaching_load(app.user) %}
+                    {{ _self.nav_link('My Teaching Load', path('teacher_load'), route starts with 'teacher_load') }}
+                    {{ _self.nav_link('My Grades', path('teacher_grades'), route starts with 'teacher_grades') }}
+                {% endif %}
+                {% if advises_section(app.user) %}
+                    {% set attendance_route = route starts with 'teacher_class_attendance' or route == 'teacher_class_sf2' %}
+                    {% set nutrition_route = route starts with 'teacher_class_nutrition' or route == 'teacher_class_sf8' %}
+                    {{ _self.nav_link('My class', path('teacher_class'), route starts with 'teacher_class' and not attendance_route and not nutrition_route) }}
+                    {{ _self.nav_link('Attendance', path('teacher_class_attendance'), attendance_route) }}
+                    {{ _self.nav_link('Nutrition', path('teacher_class_nutrition'), nutrition_route) }}
+                {% endif %}
                 {{ _self.nav_link('My Profile', path('profile_show'), route starts with 'profile_') }}
+                {% if has_id(app.user) %}{{ _self.nav_link('My ID', path('my_id'), route starts with 'my_id') }}{% endif %}
             </nav>
 
             <a class="sidebar__me" href="{{ path('app_change_password') }}" title="Change password">

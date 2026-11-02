@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+    @page { margin: 0; }
+    body { margin: 0; font-family: 'DejaVu Sans', sans-serif; }
+    .card { position: absolute; left: 58mm; top: 20mm; width: 100mm; height: 138mm; overflow: hidden; border: 0.1mm solid #999; }
+    .card > * { position: absolute; }
+    .bg { left: 0; top: 0; width: 100mm; height: 138mm; }
+    .line { left: 0; width: 100mm; text-align: center; color: #fff; white-space: nowrap; }
+    .region { top: 30.8mm; font-family: 'DejaVu Serif', serif; font-weight: bold; font-size: 8.5pt; }
+    .division { top: 34.9mm; font-family: 'DejaVu Serif', serif; font-weight: bold; font-size: 8.5pt; }
+    .photo { left: 31mm; top: 42.6mm; width: 38.1mm; height: 38.1mm; border: 0.5mm solid #000; background: #fff; overflow: hidden; }
+    .photo img { width: 38.1mm; margin-top: -5.3mm; }
+    .call { top: 82mm; font-weight: bold; font-size: 27pt; }
+    .call--long { top: 84mm; font-size: 20pt; }
+    .name { top: 96.2mm; font-weight: bold; font-size: 12.5pt; }
+    .name--long { top: 96.8mm; font-size: 10pt; }
+    .position { top: 102.3mm; font-weight: bold; font-size: 12pt; }
+    .logo { left: 5.6mm; top: 113.2mm; width: 22.2mm; height: 22.2mm; }
+    .head { left: 31mm; width: 66.4mm; text-align: center; color: #000; }
+    .signature { top: 111mm; height: 11mm; }
+    .signature img { max-width: 50mm; max-height: 11mm; }
+    .head-name { top: 121.4mm; font-weight: bold; font-size: 10.5pt; }
+    .head-position { top: 126.4mm; font-size: 9.5pt; }
+</style>
+</head>
+<body>
+{% set division = card.division|upper starts with 'SCHOOLS DIVISION' ? card.division|upper : 'SCHOOLS DIVISION OF ' ~ card.division|upper %}
+<div class="card">
+    {% if bg.big %}<img class="bg" src="{{ bg.big }}" alt="">{% endif %}
+    <div class="line region">{{ card.regionLabel }}</div>
+    <div class="line division">{{ division }}</div>
+    <div class="photo">{% if card.photo %}<img src="{{ card.photo }}" alt="">{% endif %}</div>
+    <div class="line call{{ card.callName|length > 12 ? ' call--long' }}">{{ card.callName }}</div>
+    <div class="line name{{ card.fullName|length > 24 ? ' name--long' }}">{{ card.fullName }}</div>
+    <div class="line position">{{ card.position }}</div>
+    {% if card.logo %}<img class="logo" src="{{ card.logo }}" alt="">{% endif %}
+    <div class="head signature">{% if card.headSignature %}<img src="{{ card.headSignature }}" alt="">{% endif %}</div>
+    <div class="head head-name">{{ card.headName }}</div>
+    <div class="head head-position">{{ card.headPosition }}</div>
+</div>
+</body>
+</html>

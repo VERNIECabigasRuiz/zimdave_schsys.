@@ -1,0 +1,93 @@
+{% extends layout %}
+
+{% block title %}Attendance {{ day|date('M j') }} · {{ section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Attendance</h1>
+            <p>{{ section.label }} · {{ day|date('l, F j, Y') }}{% if day == today %} · today{% endif %}</p>
+        </div>
+        <div class="row-actions">
+            <a class="btn btn--ghost btn--sm" href="{{ path('teacher_class_attendance', {date: previous_day|date('Y-m-d')}) }}">← {{ previous_day|date('D, M j') }}</a>
+            {% if next_day %}
+                <a class="btn btn--ghost btn--sm" href="{{ path('teacher_class_attendance', {date: next_day|date('Y-m-d')}) }}">{{ next_day|date('D, M j') }} →</a>
+            {% endif %}
+            <div class="day-picker" data-controller="day-picker" data-day-picker-url-value="{{ path('teacher_class_attendance') }}">
+                <label class="visually-hidden" for="day-picker">Go to date</label>
+                <input id="day-picker" type="date" value="{{ day|date('Y-m-d') }}" max="{{ today|date('Y-m-d') }}" data-action="change->day-picker#go">
+            </div>
+            <a class="btn btn--ghost" href="{{ path('teacher_class_attendance_month', {month: day|date('Y-m')}) }}">Month · SF2</a>
+        </div>
+    </div>
+
+    <div class="card form-card roll-call" data-controller="attendance-mark">
+        {% if refusal %}
+            <div class="alert alert--warning" role="status">{{ refusal }}</div>
+        {% endif %}
+
+        <p class="roll-call__counts" data-attendance-mark-target="counts">
+            {{ counts.present }} present · {{ counts.absent }} absent · {{ counts.late }} late · {{ counts.cutting }} cutting
+        </p>
+        {% if roll_call %}
+            <p class="muted">
+                Taken {{ roll_call.takenAt|date('M j, g:i A') }} by {{ roll_call.takenBy.fullName }}{% if roll_call.updatedAt %} · changed {{ roll_call.updatedAt|date('M j, g:i A') }}{% endif %}
+            </p>
+        {% elseif not refusal %}
+            <p class="muted">Not taken yet. Everyone starts as present; mark only who is absent, late or cutting classes.</p>
+        {% endif %}
+
+        {% if form %}{{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}{% endif %}
+            <table class="table roll-call__table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Learner</th>
+                        <th>Attendance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                        {% set field = 'mark_' ~ entry.enrollment.id %}
+                        {% if loop.first or entry.male != loop.parent.entries[loop.index0 - 1].male %}
+                            <tr class="roll-call__group"><th colspan="3">{{ entry.male ? 'Male' : 'Female' }}</th></tr>
+                        {% endif %}
+                        {% if form and form[field] is defined %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ form_label(form[field]) }}</td>
+                                <td>{{ form_widget(form[field], {attr: {'data-attendance-mark-target': 'select', 'data-action': 'attendance-mark#count'}}) }}</td>
+                            </tr>
+                        {% else %}
+                            {% set mark = roll_call ? roll_call.markFor(entry.enrollment) : null %}
+                            <tr class="{{ entry.counts(day) ? '' : 'roll-call__out' }}">
+                                <td>{{ loop.index }}</td>
+                                <td>{{ entry.name }}</td>
+                                <td>
+                                    {% if not entry.counts(day) %}
+                                        {% if day < entry.from %}
+                                            {{ entry.transferredIn ? 'Transferred in' : 'Enrolled' }} {{ entry.from|date('M j') }}
+                                        {% else %}
+                                            {{ entry.transferredOut ? 'Transferred out' : 'Dropped' }}
+                                        {% endif %}
+                                    {% elseif mark %}
+                                        <span class="mark-chip mark-chip--{{ mark.value }}">{{ mark.label }}</span>
+                                    {% elseif roll_call %}
+                                        <span class="mark-chip">Present</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% else %}
+                        <tr><td colspan="3" class="empty">No learners in this section.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% if form %}
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save attendance</button>
+            </div>
+            {{ form_end(form) }}
+        {% endif %}
+    </div>
+{% endblock %}

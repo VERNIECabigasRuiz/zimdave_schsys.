@@ -89,6 +89,9 @@
                                         {% if school.active %}
                                             <a class="btn btn--ghost btn--sm" href="{{ path('admin_schools_principal', {id: school.id, sy: school_year.id}) }}">Change</a>
                                         {% endif %}
+                                        {% if school_year.current %}
+                                            <a class="btn btn--ghost btn--sm" href="{{ path('service_record_pdf', {id: school.id, employee: assignment.user.id}) }}" data-turbo="false">Service record (PDF)</a>
+                                        {% endif %}
                                         <form method="post" action="{{ path('admin_schools_principal_remove', {id: school.id, sy: school_year.id}) }}"
                                               data-turbo-confirm="Remove {{ assignment.user.fullName }} as principal of {{ school.name }}?">
                                             <input type="hidden" name="_token" value="{{ csrf_token('school-principal-' ~ school.id) }}">
@@ -112,6 +115,12 @@
                         <td class="table__actions">
                             <a class="btn btn--ghost btn--sm" href="{{ path('school_teachers', {id: school.id}) }}">Teachers</a>
                                 <a class="btn btn--ghost btn--sm" href="{{ path('school_sections', {id: school.id}) }}">Sections</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_learners', {id: school.id}) }}">Learners</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_attendance', {id: school.id}) }}">Attendance</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_nutrition', {id: school.id}) }}">Nutrition</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_grades', {id: school.id}) }}">Grades</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_subjects', {id: school.id}) }}">Subjects</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_class_periods', {id: school.id}) }}">Class Periods</a>
                             <a class="btn btn--ghost btn--sm" href="{{ path('admin_schools_edit', {id: school.id}) }}">Edit</a>
                             <form method="post" action="{{ path('admin_schools_toggle', {id: school.id}) }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token('school-' ~ school.id) }}">

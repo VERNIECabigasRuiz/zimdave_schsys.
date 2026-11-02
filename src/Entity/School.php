@@ -75,6 +75,15 @@ class School
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logoPath = null;
 
+    /** The principal's signature for their teachers' IDs, relative to public/. */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $idSignaturePath = null;
+
+    /** Who uploaded the ID signature: it prints only while they are the school's principal. */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $idSignatureBy = null;
+
     #[ORM\Column(length: 30, nullable: true)]
     #[Assert\Length(max: 30, groups: ['Default', self::PROFILE])]
     private ?string $contactNumber = null;
@@ -88,6 +97,32 @@ class School
     #[Assert\Url(requireTld: true, groups: ['Default', self::PROFILE])]
     #[Assert\Length(max: 255, groups: ['Default', self::PROFILE])]
     private ?string $facebookUrl = null;
+
+    /** Who certifies the SF8 (the "Certified Correct" block). */
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $sf8CertifierName = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $sf8CertifierPosition = null;
+
+    /** Service record signatories: "Prepared by", and "Certified correct" (the principal when empty). */
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $srPreparedByName = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $srPreparedByDesignation = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $srCertifiedByName = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $srCertifiedByDesignation = null;
 
     public function getId(): ?int
     {
@@ -135,9 +170,10 @@ class School
         return $this->region;
     }
 
-    public function setRegion(string $region): static
+    /** Null (nothing chosen in the form) is kept as blank so NotBlank reports it. */
+    public function setRegion(?string $region): static
     {
-        $this->region = trim($region);
+        $this->region = trim($region ?? '');
 
         return $this;
     }
@@ -147,9 +183,9 @@ class School
         return $this->division;
     }
 
-    public function setDivision(string $division): static
+    public function setDivision(?string $division): static
     {
-        $this->division = trim($division);
+        $this->division = trim($division ?? '');
 
         return $this;
     }
@@ -240,6 +276,30 @@ class School
         return $this;
     }
 
+    public function getIdSignaturePath(): ?string
+    {
+        return $this->idSignaturePath;
+    }
+
+    public function setIdSignaturePath(?string $idSignaturePath): static
+    {
+        $this->idSignaturePath = $idSignaturePath;
+
+        return $this;
+    }
+
+    public function getIdSignatureBy(): ?User
+    {
+        return $this->idSignatureBy;
+    }
+
+    public function setIdSignatureBy(?User $idSignatureBy): static
+    {
+        $this->idSignatureBy = $idSignatureBy;
+
+        return $this;
+    }
+
     public function getContactNumber(): ?string
     {
         return $this->contactNumber;
@@ -272,6 +332,78 @@ class School
     public function setFacebookUrl(?string $facebookUrl): static
     {
         $this->facebookUrl = self::blankToNull($facebookUrl);
+
+        return $this;
+    }
+
+    public function getSf8CertifierName(): ?string
+    {
+        return $this->sf8CertifierName;
+    }
+
+    public function setSf8CertifierName(?string $name): static
+    {
+        $this->sf8CertifierName = self::blankToNull($name);
+
+        return $this;
+    }
+
+    public function getSf8CertifierPosition(): ?string
+    {
+        return $this->sf8CertifierPosition;
+    }
+
+    public function setSf8CertifierPosition(?string $position): static
+    {
+        $this->sf8CertifierPosition = self::blankToNull($position);
+
+        return $this;
+    }
+
+    public function getSrPreparedByName(): ?string
+    {
+        return $this->srPreparedByName;
+    }
+
+    public function setSrPreparedByName(?string $name): static
+    {
+        $this->srPreparedByName = self::blankToNull($name);
+
+        return $this;
+    }
+
+    public function getSrPreparedByDesignation(): ?string
+    {
+        return $this->srPreparedByDesignation;
+    }
+
+    public function setSrPreparedByDesignation(?string $designation): static
+    {
+        $this->srPreparedByDesignation = self::blankToNull($designation);
+
+        return $this;
+    }
+
+    public function getSrCertifiedByName(): ?string
+    {
+        return $this->srCertifiedByName;
+    }
+
+    public function setSrCertifiedByName(?string $name): static
+    {
+        $this->srCertifiedByName = self::blankToNull($name);
+
+        return $this;
+    }
+
+    public function getSrCertifiedByDesignation(): ?string
+    {
+        return $this->srCertifiedByDesignation;
+    }
+
+    public function setSrCertifiedByDesignation(?string $designation): static
+    {
+        $this->srCertifiedByDesignation = self::blankToNull($designation);
 
         return $this;
     }

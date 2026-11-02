@@ -2,8 +2,11 @@
 
 namespace App\Tests\Controller\Principal;
 
+use App\Entity\GradeChangeRequest;
+use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;
+use App\Entity\Subject;
 use App\Entity\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
@@ -54,7 +57,19 @@ class PrincipalAreaTest extends AdminTestCase
         self::assertStringContainsString('Basic plan', $head);
         self::assertStringContainsString('Apr 30, 2027', $head);
         $stats = $crawler->filter('.stat')->each(static fn ($node) => $node->filter('small')->text().'='.$node->filter('strong')->text());
-        self::assertSame(['Teachers=2 / 15', 'Students=0 / 1,000'], $stats);
+        self::assertSame(['Teachers=2 / 15', 'Students=0 / 1,000', 'Students present today · 0 absent=0 / 0'], $stats);
+    }
+
+    public function testDashboardCountsEnrolledLearners(): void
+    {
+        $this->makePrincipal();
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade7, 'Rizal');
+        $this->enroll($this->learner('100000000001', 'Cruz', 'Juan'), $this->sy, $section, $this->maria);
+
+        $crawler = $this->client->request('GET', '/principal');
+
+        $stats = $crawler->filter('.stat')->each(static fn ($node) => $node->filter('small')->text().'='.$node->filter('strong')->text());
+        self::assertContains('Students=1 / 1,000', $stats);
     }
 
     public function testExpiredPlanWarning(): void
@@ -76,6 +91,15 @@ class PrincipalAreaTest extends AdminTestCase
             self::assertResponseIsSuccessful();
             self::assertSelectorTextContains('main', 'You are not assigned to a school for S.Y. 2026-2027. Contact the administrator.');
         }
+    }
+
+    public function testNotAssignedPrincipalHasNoServiceRecord(): void
+    {
+        $this->client->request('GET', '/principal');
+        self::assertSelectorNotExists('.sidebar a[href="/principal/service-record"]');
+
+        $this->client->request('GET', '/principal/service-record');
+        self::assertResponseStatusCodeSame(403);
     }
 
     public function testNoCurrentSchoolYear(): void
@@ -103,7 +127,7 @@ class PrincipalAreaTest extends AdminTestCase
 
         $crawler = $this->client->request('GET', '/schools/'.$this->school->getId().'/teachers');
 
-        self::assertSame(['Dashboard', 'Teachers', 'Sections', 'School Profile', 'My Profile'],$crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()));
+        self::assertSame(['Dashboard', 'Teachers', 'Sections', 'Learners', 'Attendance', 'Nutrition', 'Grades', 'Subjects', 'Class Periods', 'School Profile', 'My Profile', 'My ID', 'My Service Record'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()));
         self::assertSelectorTextContains('.sidebar__link.is-active', 'Teachers');
         self::assertSelectorNotExists('.topbar__search');
     }
@@ -124,5 +148,27 @@ class PrincipalAreaTest extends AdminTestCase
         $this->client->request('GET', '/admin');
 
         self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testGradeChangeCard(): void
+    {
+        $this->makePrincipal();
+        $crawler = $this->client->request('GET', '/principal');
+        self::assertCount(0, $crawler->filter('.stat:contains("Grade change requests waiting")'));
+
+        $this->sy->rebuildGradingPeriods();
+        $section = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Honest');
+        $math = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade8)->setCode('MATH8')->setName('Mathematics')->setPosition(1)->setMeetingsPerWeek(5);
+        $this->em->persist($math);
+        $this->em->persist(new GradeChangeRequest($section, $math, $this->sy->getGradingPeriod(1), $this->createUser('tess', User::ROLE_TEACHER), 'Encoding error on a quiz', new \DateTimeImmutable('2026-10-16')));
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', '/principal');
+
+        $card = $crawler->filter('.stat:contains("Grade change requests waiting")');
+        self::assertCount(1, $card);
+        self::assertSame('Grade change requests waiting: 1', $card->filter('strong')->text());
+        self::assertSame('Approve or decline', $card->filter('small')->text());
+        self::assertSame('/schools/'.$this->school->getId().'/grade-changes', $card->attr('href'));
     }
 }

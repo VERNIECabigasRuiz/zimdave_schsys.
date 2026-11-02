@@ -74,7 +74,13 @@
                             <td>{{ teacher.lastLoginAt ? teacher.lastLoginAt|activity_time : '—' }}</td>
                             <td class="table__actions">
                                 <a class="btn btn--ghost btn--sm" href="{{ path('school_teachers_edit', {id: school.id, teacher: teacher.id}) }}">Edit</a>
+                                <a class="btn btn--ghost btn--sm" href="{{ path('school_teacher_load', {id: school.id, teacher: teacher.id}) }}">Load</a>
                                 <a class="btn btn--ghost btn--sm" href="{{ path('school_teacher_pds', {id: school.id, teacher: teacher.id}) }}" title="Download {{ teacher.fullName }}'s Personal Data Sheet" data-turbo="false">PDS</a>
+                                {% if is_granted('SERVICE_RECORD_EDIT', school) %}
+                                    <a class="btn btn--ghost btn--sm" href="{{ path('service_record_show', {id: school.id, employee: teacher.id}) }}">Service record</a>
+                                {% else %}
+                                    <a class="btn btn--ghost btn--sm" href="{{ path('service_record_pdf', {id: school.id, employee: teacher.id}) }}" title="Download {{ teacher.fullName }}'s service record" data-turbo="false">Service record (PDF)</a>
+                                {% endif %}
                                 <form method="post" action="{{ path('school_teachers_reset_password', {id: school.id, teacher: teacher.id}) }}"
                                       data-turbo-confirm="Reset the password for {{ teacher.username }}?">
                                     <input type="hidden" name="_token" value="{{ csrf_token('teacher-' ~ teacher.id) }}">

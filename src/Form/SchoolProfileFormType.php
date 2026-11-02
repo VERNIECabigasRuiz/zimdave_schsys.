@@ -49,6 +49,43 @@ class SchoolProfileFormType extends AbstractType
                 'required' => false,
                 'default_protocol' => 'https',
                 'attr' => ['placeholder' => 'https://facebook.com/yourschool'],
+            ])
+            ->add('sf8CertifierName', TextType::class, [
+                'label' => 'SF8 certified correct by',
+                'required' => false,
+                'help' => 'Printed under "Certified correct" on the SF8, e.g. the school nurse.',
+            ])
+            ->add('sf8CertifierPosition', TextType::class, [
+                'label' => 'Position',
+                'required' => false,
+                'attr' => ['placeholder' => 'e.g. School Nurse'],
+            ])
+            ->add('srPreparedByName', TextType::class, [
+                'label' => 'Service record prepared by',
+                'required' => false,
+            ])
+            ->add('srPreparedByDesignation', TextType::class, [
+                'label' => 'Designation',
+                'required' => false,
+                'attr' => ['placeholder' => 'e.g. Teacher III'],
+            ])
+            ->add('srCertifiedByName', TextType::class, [
+                'label' => 'Service record certified correct by',
+                'required' => false,
+                'help' => 'Left empty, the principal signs.',
+            ])
+            ->add('srCertifiedByDesignation', TextType::class, [
+                'label' => 'Designation',
+                'required' => false,
+                'attr' => ['placeholder' => 'e.g. Administrative Officer V'],
+            ])
+            ->add('idSignature', FileType::class, [
+                'label' => 'Your ID signature',
+                'mapped' => false,
+                'required' => false,
+                'help' => 'PNG with a transparent background works best. Printed on your teachers\' IDs.',
+                'attr' => ['accept' => 'image/jpeg,image/png,image/webp'],
+                'constraints' => [ImageUploadFormType::imageConstraint()],
             ]);
     }
 

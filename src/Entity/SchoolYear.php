@@ -161,13 +161,8 @@ class SchoolYear
         return $this->gradingPeriods->count() === $this->gradingSystem->periodCount();
     }
 
-    public function hasOpenGradingPeriod(): bool
-    {
-        return $this->gradingPeriods->exists(static fn ($key, GradingPeriod $period) => $period->isOpen());
-    }
-
     /**
-     * Makes the grading periods match the grading system, closed and splitting the school year evenly.
+     * Makes the grading periods match the grading system, splitting the school year evenly.
      * Existing periods are reused by number so the (school year, number) unique key never clashes on flush.
      */
     public function rebuildGradingPeriods(): void
@@ -195,7 +190,6 @@ class SchoolYear
             $firstDay = intdiv($totalDays * ($number - 1), $count);
             $nextFirstDay = intdiv($totalDays * $number, $count);
             $period
-                ->setOpen(false)
                 ->setStartDate($this->startDate->modify(\sprintf('+%d days', $firstDay)))
                 ->setEndDate($this->startDate->modify(\sprintf('+%d days', $nextFirstDay - 1)));
         }

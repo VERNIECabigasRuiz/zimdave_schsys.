@@ -42,8 +42,9 @@ class TeacherAreaTest extends AdminTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('main', 'Pagsabungan NHS');
         self::assertSelectorTextContains('main', 'S.Y. 2026-2027');
-        self::assertSame(['Dashboard', 'My Profile'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()));
+        self::assertSame(['Dashboard', 'My Teaching Load', 'My Grades', 'My Profile', 'My ID'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()));
         self::assertSelectorTextContains('.sidebar__brand', 'Teacher');
+        self::assertSelectorExists('turbo-frame#now');
     }
 
     public function testDashboardWithoutAssignment(): void
@@ -60,7 +61,7 @@ class TeacherAreaTest extends AdminTestCase
             $crawler = $this->client->request('GET', $url);
 
             self::assertResponseIsSuccessful($url);
-            self::assertSame(['Dashboard', 'My Profile'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()), $url);
+            self::assertSame(['Dashboard', 'My Teaching Load', 'My Grades', 'My Profile'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()), $url);
         }
         $this->client->request('GET', '/profile/pds.pdf');
         self::assertResponseHeaderSame('Content-Type', 'application/pdf');
@@ -132,5 +133,19 @@ class TeacherAreaTest extends AdminTestCase
         self::assertResponseRedirects('/teacher');
         $this->client->followRedirect();
         self::assertSelectorTextContains('main', 'You already advise Grade 8 – Narra.');
+    }
+
+    public function testIndividualPlanTeacherHasNoTimetableExtras(): void
+    {
+        $own = $this->school('303999', 'Ana Home Class', plan: 'Individual', planValidUntil: new \DateTimeImmutable('2027-04-30'));
+        $this->assign($own, $this->sy, $this->ana, User::ROLE_TEACHER);
+
+        foreach (['/teacher', '/profile'] as $url) {
+            $crawler = $this->client->request('GET', $url);
+            self::assertResponseIsSuccessful();
+            self::assertSame(['Dashboard', 'My Profile', 'My ID'], $crawler->filter('.sidebar__link')->each(static fn ($a) => $a->text()), $url);
+        }
+        $this->client->request('GET', '/teacher');
+        self::assertSelectorNotExists('turbo-frame#now');
     }
 }

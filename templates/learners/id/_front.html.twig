@@ -1,0 +1,36 @@
+{# The front of one ID card; `style` places it on the page #}
+{% set size = card.name|length > 32 ? 3 : (card.name|length > 24 ? 2 : 1) %}
+<div class="card card--front" style="{{ style }}">
+    <div class="band"></div>
+    <div class="gold"></div>
+    {% if card.seal %}<img class="seal" src="{{ card.seal }}" alt="">{% endif %}
+    {% if card.logo %}<img class="logo" src="{{ card.logo }}" alt="">{% endif %}
+    <div class="abs gov">
+        <div class="gov__republic">Republic of the Philippines</div>
+        <div class="gov__deped">Department of Education</div>
+        <div class="gov__region">{{ card.region }} · Division of {{ card.division }}</div>
+    </div>
+    <div class="abs school">
+        {{ card.schoolName|upper }}
+        <span class="school__id">SCHOOL ID {{ card.schoolId }}</span>
+    </div>
+
+    <div class="photo">
+        {% if card.photo %}
+            <img src="{{ card.photo }}" alt="">
+        {% else %}
+            <div class="silhouette__head"></div>
+            <div class="silhouette__body"></div>
+        {% endif %}
+    </div>
+
+    <div class="abs who">
+        <div class="name name--{{ size }}">{{ card.name }}</div>
+        <div class="lrn">LRN <b>{{ card.lrn }}</b></div>
+        <div class="grade">{{ card.gradeSection }}</div>
+    </div>
+    <div class="abs sign">Learner's signature</div>
+
+    <div class="foot"></div>
+    <div class="abs foot__text">LEARNER <span>·</span> S.Y. {{ card.schoolYear }}</div>
+</div>

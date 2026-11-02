@@ -46,6 +46,16 @@ abstract class AdminTestCase extends WebTestCase
         return $user;
     }
 
+    /** A valid CSRF token of the client's session (a page must have been requested first). */
+    protected function csrfToken(string $id): string
+    {
+        static::getContainer()->get('request_stack')->push($this->client->getRequest());
+        $token = static::getContainer()->get('security.csrf.token_manager')->getToken($id)->getValue();
+        $this->client->getRequest()->getSession()->save();
+
+        return $token;
+    }
+
     protected function findUser(string $username): ?User
     {
         $this->em->clear();

@@ -1,0 +1,31 @@
+{% extends layout %}
+
+{% set heading = period.id ? 'Edit class period' : 'New class period' %}
+
+{% block title %}{{ heading }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ school.name }} · S.Y. {{ school_year.name }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <div class="form-grid">
+                {{ form_row(form.startsAt) }}
+                {{ form_row(form.endsAt) }}
+            </div>
+            {{ form_row(form.isBreak) }}
+            {{ form_row(form.breakLabel) }}
+
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save</button>
+                <a class="link-muted" href="{{ path('school_class_periods', {id: school.id}) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

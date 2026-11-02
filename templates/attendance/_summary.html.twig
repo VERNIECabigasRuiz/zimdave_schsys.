@@ -1,0 +1,33 @@
+{# The "Summary for the Month" box of SF2. Needs report. #}
+{% set s = report.summary %}
+{% macro figure(label, values) %}
+    <tr>
+        <th scope="row">{{ label }}</th>
+        {% for value in values ?? [null, null, null] %}<td>{{ value ?? '' }}</td>{% endfor %}
+    </tr>
+{% endmacro %}
+
+<div class="card table-card sf2-summary">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Summary for {{ report.month|date('F') }} · {{ s.daysOfClasses }} {{ s.daysOfClasses == 1 ? 'day' : 'days' }} of classes</th>
+                <th>M</th>
+                <th>F</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ _self.figure('Enrolment as of 1st Friday of the school year', s.enrolmentAtCutOff) }}
+            {{ _self.figure('Late enrollment during the month', s.lateEnrollment) }}
+            {{ _self.figure('Registered learners as of end of the month', s.registered) }}
+            {{ _self.figure('Percentage of enrolment', s.percentEnrolment) }}
+            {{ _self.figure('Average Daily Attendance', s.ada) }}
+            {{ _self.figure('Percentage of attendance for the month', s.percentAttendance) }}
+            {{ _self.figure('Learners with 5 consecutive days of absences', s.consecutiveAbsent) }}
+            {{ _self.figure('Drop out', s.dropped) }}
+            {{ _self.figure('Transferred out', s.transferredOut) }}
+            {{ _self.figure('Transferred in', s.transferredIn) }}
+        </tbody>
+    </table>
+</div>

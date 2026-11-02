@@ -1,0 +1,59 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Learners · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Learners</h1>
+            <p>Find a learner in any school by LRN or name.</p>
+        </div>
+    </div>
+
+    <form class="filters" method="get" action="{{ path('admin_learners') }}" role="search">
+        <input type="search" name="q" value="{{ query }}" placeholder="12-digit LRN or name" aria-label="Search by LRN or name">
+        <button class="btn btn--ghost btn--sm" type="submit">Search</button>
+        {% if query %}
+            <a class="link-muted" href="{{ path('admin_learners') }}">Clear</a>
+        {% endif %}
+    </form>
+
+    {% if query %}
+        {% if rows %}
+            <div class="card table-card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>LRN</th>
+                            <th>Name</th>
+                            <th>School</th>
+                            <th>Section</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                            <tr>
+                                <td>{{ row.learner.lrn }}</td>
+                                <td>
+                                    {% if row.enrollment %}
+                                        <a href="{{ path('school_learners_show', {id: row.enrollment.school.id, learner: row.learner.id}) }}">{{ row.learner.user.fullName }}</a>
+                                    {% else %}
+                                        {{ row.learner.user.fullName }}
+                                    {% endif %}
+                                </td>
+                                {% if row.current %}
+                                    <td>{{ row.current.school.name }}</td>
+                                    <td>{{ row.current.section.label }}</td>
+                                {% else %}
+                                    <td colspan="2" class="muted">Not enrolled this school year</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card empty">No learner found for "{{ query }}".</div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

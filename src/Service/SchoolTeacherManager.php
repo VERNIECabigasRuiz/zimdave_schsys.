@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
+use App\Repository\TeachingLoadRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -27,6 +28,7 @@ class SchoolTeacherManager
         private readonly TemporaryPasswordGenerator $passwordGenerator,
         private readonly ActivityLogger $activityLogger,
         private readonly SectionRepository $sections,
+        private readonly TeachingLoadRepository $loads,
     ) {
     }
 
@@ -101,6 +103,7 @@ class SchoolTeacherManager
             return;
         }
 
+        $this->assertNoLoads($teacher, $schoolYear);
         $from = $current->getSchool();
         $current->setSchool($school);
         $this->clearAdvisory($teacher, $schoolYear);
@@ -114,9 +117,18 @@ class SchoolTeacherManager
             return;
         }
 
+        $this->assertNoLoads($teacher, $schoolYear);
         $this->entityManager->remove($current);
         $this->clearAdvisory($teacher, $schoolYear);
         $this->activityLogger->log(\sprintf('Removed %s from %s (%s)', $teacher->getUsername(), $current->getSchool()->getName(), $schoolYear->getName()));
+    }
+
+    /** @throws AssignmentException */
+    private function assertNoLoads(User $teacher, SchoolYear $schoolYear): void
+    {
+        if (0 < $count = $this->loads->countForTeacher($teacher, $schoolYear)) {
+            throw new AssignmentException(\sprintf('%s still has %d %s this school year.', $teacher->getFullName(), $count, 1 === $count ? 'load' : 'loads'));
+        }
     }
 
     /** A teacher who leaves a school stops advising its section that school year. */

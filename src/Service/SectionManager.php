@@ -6,7 +6,10 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\User;
+use App\Repository\EnrollmentRepository;
 use App\Repository\SectionRepository;
+use App\Repository\TeachingLoadRepository;
+use App\Repository\TransferRequestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -20,6 +23,9 @@ class SectionManager
         private readonly SectionRepository $sections,
         private readonly PlanLimits $planLimits,
         private readonly ActivityLogger $activityLogger,
+        private readonly TeachingLoadRepository $loads,
+        private readonly EnrollmentRepository $enrollments,
+        private readonly TransferRequestRepository $transferRequests,
     ) {
     }
 
@@ -38,6 +44,9 @@ class SectionManager
     {
         $this->assertWritable($section->getSchool());
         $isNew = null === $section->getId();
+        if (!$isNew) {
+            $this->assertTimetableKept($section);
+        }
         if ($isNew) {
             $this->entityManager->persist($section);
         }
@@ -53,6 +62,15 @@ class SectionManager
     public function delete(Section $section): void
     {
         $this->assertWritable($section->getSchool());
+        if (0 < $learners = $this->enrollments->countForSection($section)) {
+            throw new InUseException(\sprintf('%s has %d %s. Move or unenroll them first.', $section->getLabel(), $learners, 1 === $learners ? 'learner' : 'learners'));
+        }
+        if (0 < $pending = $this->transferRequests->countPendingInto($section)) {
+            throw new InUseException(\sprintf('%s has %d pending %s.', $section->getLabel(), $pending, 1 === $pending ? 'transfer' : 'transfers'));
+        }
+        if ([] !== $this->loads->findForSection($section)) {
+            throw $this->hasTimetable($section);
+        }
         $this->activityLogger->log('Deleted section '.$section->getLabel());
         $this->entityManager->remove($section);
         $this->entityManager->flush();
@@ -76,6 +94,28 @@ class SectionManager
         }
 
         return \count($candidates);
+    }
+
+    /**
+     * A section with loads keeps its grade level, track and strand: its subjects come from them.
+     * On refusal the unsaved edit is dropped, so nothing of it is flushed later.
+     */
+    private function assertTimetableKept(Section $section): void
+    {
+        $original = $this->entityManager->getUnitOfWork()->getOriginalEntityData($section);
+        $changed = $section->getGradeLevel() !== ($original['gradeLevel'] ?? null)
+            || $section->getTrack() !== ($original['track'] ?? null)
+            || $section->getStrand() !== ($original['strand'] ?? null);
+        if ($changed && [] !== $this->loads->findForSection($section)) {
+            $this->entityManager->refresh($section);
+
+            throw $this->hasTimetable($section);
+        }
+    }
+
+    private function hasTimetable(Section $section): InUseException
+    {
+        return new InUseException(\sprintf('%s has a timetable. Remove its classes and teachers first.', $section->getLabel()));
     }
 
     private function assertWritable(School $school): void

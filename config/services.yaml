@@ -10,6 +10,9 @@ parameters:
     # Uploaded photos/logos live under <upload_root>/uploads/...
     app.upload_root: '%kernel.project_dir%/public'
 
+    # The school day runs on this clock (Philippines)
+    app.timezone: 'Asia/Manila'
+
 services:
     # default configuration for services in *this* file
     _defaults:

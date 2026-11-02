@@ -7,6 +7,8 @@ use App\Entity\School;
 use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
+use App\Entity\Subject;
+use App\Entity\TeachingLoad;
 use App\Entity\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
@@ -173,6 +175,23 @@ class SchoolSectionControllerTest extends AdminTestCase
 
         self::assertResponseStatusCodeSame(422);
         self::assertSelectorTextContains('main', 'Ana Reyes is already the adviser of Grade 7 – Sampaguita.');
+    }
+
+    public function testGradeOfSectionWithTimetableCannotChange(): void
+    {
+        $section = $this->section(GradeLevel::Grade7, 'Sampaguita');
+        $math = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade7)->setCode('MATH7')->setName('Mathematics')->setMeetingsPerWeek(5);
+        $this->em->persist($math);
+        $this->em->persist(new TeachingLoad($section, $math, $this->teacher('ana', $this->school)));
+        $this->em->flush();
+
+        $this->client->request('GET', $this->url($this->school, '/'.$section->getId().'/edit'));
+        $this->client->submitForm('Save section', ['section_form[gradeLevel]' => '8']);
+
+        self::assertResponseRedirects($this->url($this->school));
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('body', 'Grade 7 – Sampaguita has a timetable. Remove its classes and teachers first.');
+        self::assertSame(['Grade 7 – Sampaguita'], $this->labels());
     }
 
     public function testDeleteSection(): void

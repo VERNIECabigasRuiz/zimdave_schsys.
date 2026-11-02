@@ -4,12 +4,40 @@ namespace App\Tests;
 
 use App\Entity\ActivityLog;
 use App\Entity\Announcement;
+use App\Entity\AttendanceMark;
+use App\Entity\CardSlipComment;
+use App\Entity\ClassPeriod;
+use App\Entity\Division;
+use App\Entity\StaffIdDetails;
+use App\Entity\Enrollment;
+use App\Entity\Grade;
+use App\Entity\GradeChangeLine;
+use App\Entity\GradeChangeRequest;
+use App\Entity\GradeLevel;
+use App\Entity\GradeLock;
+use App\Entity\GradeOpening;
+use App\Entity\GradingPeriod;
+use App\Entity\GradeUnlock;
+use App\Entity\Learner;
+use App\Entity\NutritionAssessment;
+use App\Entity\NutritionMeasurement;
 use App\Entity\Plan;
+use App\Entity\RollCall;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
+use App\Entity\ScheduleEntry;
 use App\Entity\Section;
+use App\Entity\ServiceRecord;
+use App\Entity\ServiceRecordEntry;
+use App\Entity\SchoolDayOff;
 use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
+use App\Entity\SexAtBirth;
+use App\Entity\Sf2Submission;
+use App\Entity\Sf8Submission;
+use App\Entity\Subject;
+use App\Entity\TeachingLoad;
+use App\Entity\TransferRequest;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -22,7 +50,7 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([Section::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
+        foreach ([CardSlipComment::class, GradeChangeLine::class, GradeChangeRequest::class, GradeUnlock::class, GradeOpening::class, GradeLock::class, Grade::class, NutritionMeasurement::class, NutritionAssessment::class, Sf8Submission::class, AttendanceMark::class, RollCall::class, Sf2Submission::class, SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, ServiceRecordEntry::class, ServiceRecord::class, StaffIdDetails::class, Division::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
             $this->em->createQuery('DELETE FROM '.$class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test
@@ -42,9 +70,32 @@ trait SchoolFixturesTrait
         return $sy;
     }
 
+    protected function classPeriod(School $school, SchoolYear $sy, string $start, string $end, ?string $breakLabel = null): ClassPeriod
+    {
+        $period = (new ClassPeriod($school, $sy))
+            ->setStartsAt(new \DateTimeImmutable($start))
+            ->setEndsAt(new \DateTimeImmutable($end))
+            ->setBreakLabel($breakLabel)
+            ->setPosition(\count($this->em->getRepository(ClassPeriod::class)->findForSchool($school, $sy)) + 1);
+        $this->em->persist($period);
+        $this->em->flush();
+
+        return $period;
+    }
+
     protected function plan(string $name = 'Basic'): Plan
     {
         return $this->em->getRepository(Plan::class)->findOneBy(['name' => $name]);
+    }
+
+    /** A plan of its own, so a test never edits the shared Basic row; clearSchoolData removes it. */
+    protected function limitedPlan(string $name, int $studentsPerSeat, bool $includesPrincipal = true): Plan
+    {
+        $plan = (new Plan())->setName($name)->setTeachersPerSeat(15)->setStudentsPerSeat($studentsPerSeat)->setIncludesPrincipal($includesPrincipal);
+        $this->em->persist($plan);
+        $this->em->flush();
+
+        return $plan;
     }
 
     protected function school(
@@ -95,5 +146,42 @@ trait SchoolFixturesTrait
         $this->em->flush();
 
         return $user;
+    }
+
+    protected function newSection(School $school, SchoolYear $sy, GradeLevel $level, string $name): Section
+    {
+        $section = (new Section($school, $sy))->setGradeLevel($level)->setName($name);
+        $this->em->persist($section);
+        $this->em->flush();
+
+        return $section;
+    }
+
+    protected function learner(string $lrn, string $lastName, string $firstName): Learner
+    {
+        $user = $this->plainUser('learner'.$lrn, User::ROLE_STUDENT);
+        $learner = (new Learner($user, new \DateTimeImmutable()))->setLrn($lrn)->setLastName($lastName)->setFirstName($firstName)->setSex(SexAtBirth::Female)->setBirthDate(new \DateTimeImmutable('2012-05-01'));
+        $this->em->persist($learner);
+        $this->em->flush();
+
+        return $learner;
+    }
+
+    protected function enroll(Learner $learner, SchoolYear $sy, Section $section, User $by): Enrollment
+    {
+        $enrollment = new Enrollment($learner, $sy, $section, $by, new \DateTimeImmutable());
+        $this->em->persist($enrollment);
+        $this->em->flush();
+
+        return $enrollment;
+    }
+
+    protected function openGrading(School $school, GradingPeriod $period): GradeOpening
+    {
+        $opening = new GradeOpening($school, $period, null, new \DateTimeImmutable());
+        $this->em->persist($opening);
+        $this->em->flush();
+
+        return $opening;
     }
 }

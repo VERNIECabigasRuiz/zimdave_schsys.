@@ -2,11 +2,18 @@
 
 namespace App\Controller\Principal;
 
+use App\Attendance\AttendanceStatistics;
 use App\Entity\School;
 use App\Entity\User;
+use App\Grading\FailingLearners;
+use App\Grading\SectionGradeGrid;
+use App\Repository\GradeChangeRequestRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
+use App\Repository\TransferRequestRepository;
 use App\Service\PlanLimits;
+use App\Service\SchoolClock;
+use App\Service\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,6 +28,13 @@ class DashboardController extends AbstractController
         private readonly SchoolYearRepository $schoolYears,
         private readonly SchoolAssignmentRepository $assignments,
         private readonly PlanLimits $planLimits,
+        private readonly TimetableQuery $timetable,
+        private readonly SchoolClock $clock,
+        private readonly TransferRequestRepository $transferRequests,
+        private readonly AttendanceStatistics $attendance,
+        private readonly GradeChangeRequestRepository $gradeChanges,
+        private readonly FailingLearners $failingLearners,
+        private readonly SectionGradeGrid $grid,
     ) {
     }
 
@@ -32,12 +46,34 @@ class DashboardController extends AbstractController
         if (null === $school) {
             return $this->notAssigned();
         }
+        $gradingPeriod = $this->grid->defaultPeriod($school, $schoolYear);
 
         return $this->render('principal/dashboard.html.twig', [
             'school' => $school,
             'school_year' => $schoolYear,
             'teachers' => $this->planLimits->countTeachers($school, $schoolYear),
+            'students' => $this->planLimits->countStudents($school, $schoolYear),
             'blocked_reason' => $this->planLimits->blockedReason($school),
+            'transfers_waiting' => $this->transferRequests->countPendingOutgoing($school, $schoolYear),
+            'attendance_today' => $this->attendance->today($school, $schoolYear),
+            'grade_changes_waiting' => $this->gradeChanges->countPendingForSchool($school, $schoolYear),
+            'grading_period' => $gradingPeriod,
+            'failing' => null === $gradingPeriod ? 0 : \count($this->failingLearners->forSchool($school, $schoolYear, $gradingPeriod)),
+        ]);
+    }
+
+    /** The "Classes right now" card: only the turbo-frame, so the dashboard can reload it in place. */
+    #[Route('/now', name: 'principal_now', methods: ['GET'])]
+    public function now(#[CurrentUser] User $user): Response
+    {
+        $schoolYear = $this->schoolYears->findCurrent();
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->render('principal/_now.html.twig', ['now' => null]);
+        }
+
+        return $this->render('principal/_now.html.twig', [
+            'now' => $this->timetable->now($school, $schoolYear, $this->clock->now()),
         ]);
     }
 
@@ -63,6 +99,80 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('school_sections', ['id' => $school->getId()]);
     }
 
+    #[Route('/learners', name: 'principal_learners', methods: ['GET'])]
+    public function learners(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_learners', ['id' => $school->getId()]);
+    }
+
+    #[Route('/attendance', name: 'principal_attendance', methods: ['GET'])]
+    public function attendance(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_attendance', ['id' => $school->getId()]);
+    }
+
+    #[Route('/nutrition', name: 'principal_nutrition', methods: ['GET'])]
+    public function nutrition(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_nutrition', ['id' => $school->getId()]);
+    }
+
+    #[Route('/grades', name: 'principal_grades', methods: ['GET'])]
+    public function grades(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_grades', ['id' => $school->getId()]);
+    }
+
+    #[Route('/subjects', name: 'principal_subjects', methods: ['GET'])]
+    public function subjects(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_subjects', ['id' => $school->getId()]);
+    }
+
+    #[Route('/class-periods', name: 'principal_class_periods', methods: ['GET'])]
+    public function classPeriods(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user);
+        if (null === $school) {
+            return $this->notAssigned();
+        }
+
+        return $this->redirectToRoute('school_class_periods', ['id' => $school->getId()]);
+    }
+
+    #[Route('/service-record', name: 'principal_service_record', methods: ['GET'])]
+    public function serviceRecord(#[CurrentUser] User $user): Response
+    {
+        $school = $this->ownSchool($user) ?? throw $this->createAccessDeniedException('You are not assigned to a school this school year.');
+
+        return $this->redirectToRoute('service_record_show', ['id' => $school->getId(), 'employee' => $user->getId()]);
+    }
+
     private function ownSchool(User $user): ?School
     {
         $schoolYear = $this->schoolYears->findCurrent();
@@ -74,6 +184,7 @@ class DashboardController extends AbstractController
     {
         return $this->render('principal/not_assigned.html.twig', [
             'school_year' => $this->schoolYears->findCurrent(),
+            'not_assigned' => true,
         ]);
     }
 }

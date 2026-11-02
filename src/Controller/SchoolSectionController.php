@@ -6,9 +6,11 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Form\SectionFormType;
+use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Security\Voter\SchoolVoter;
+use App\Service\InUseException;
 use App\Service\PlanLimitException;
 use App\Service\SectionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,6 +33,7 @@ class SchoolSectionController extends AbstractController
         private readonly SectionRepository $sections,
         private readonly SchoolYearRepository $schoolYears,
         private readonly SectionManager $manager,
+        private readonly EnrollmentRepository $enrollments,
     ) {
     }
 
@@ -49,6 +52,7 @@ class SchoolSectionController extends AbstractController
             'school' => $school,
             'school_year' => $schoolYear,
             'groups' => $groups,
+            'enrolled' => $schoolYear ? $this->enrollments->countBySection($school, $schoolYear) : [],
             'refusal' => $this->manager->refusal($school),
             'bring_back_from' => $previous && [] !== $this->sections->findBringBackCandidates($school, $previous, $schoolYear) ? $previous : null,
         ]);
@@ -74,7 +78,7 @@ class SchoolSectionController extends AbstractController
         try {
             $this->manager->delete($section);
             $this->addFlash('success', \sprintf('Deleted %s.', $section->getLabel()));
-        } catch (PlanLimitException $e) {
+        } catch (PlanLimitException|InUseException $e) {
             $this->addFlash('error', $e->getMessage());
         }
 
@@ -115,8 +119,12 @@ class SchoolSectionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $isNew = null === $section->getId();
-            $this->manager->save($section, $previousAdviser);
-            $this->addFlash('success', \sprintf($isNew ? 'Created %s.' : 'Saved %s.', $section->getLabel()));
+            try {
+                $this->manager->save($section, $previousAdviser);
+                $this->addFlash('success', \sprintf($isNew ? 'Created %s.' : 'Saved %s.', $section->getLabel()));
+            } catch (PlanLimitException|InUseException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
 
             return $this->redirectToList($school);
         }

@@ -2,7 +2,12 @@
 
 namespace App\Tests\Controller\Admin;
 
+use App\Entity\GradeLevel;
 use App\Entity\SchoolAssignment;
+use App\Entity\SchoolYear;
+use App\Entity\Section;
+use App\Entity\Subject;
+use App\Entity\TeachingLoad;
 use App\Entity\User;
 
 class UserAccountControllerTest extends AdminTestCase
@@ -117,6 +122,65 @@ class UserAccountControllerTest extends AdminTestCase
         self::assertSame('Maria Clara Santos', $user->getFullName());
         self::assertSame(User::ROLE_TEACHER, $user->getRole());
         self::assertFalse($user->isActive(), 'Unchecked "active" box deactivates the account');
+    }
+
+    public function testLearnerAccountKeepsItsRole(): void
+    {
+        $learner = $this->learner('100000000001', 'Cruz', 'Ana');
+        $user = $learner->getUser();
+
+        $this->client->request('GET', '/admin/accounts/'.$user->getId().'/edit');
+        self::assertSelectorExists('select[name="user_account_form[role]"] option[value="ROLE_STUDENT"][selected]');
+        $this->client->submitForm('Save changes', [
+            'user_account_form[role]' => User::ROLE_TEACHER,
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertStringContainsString('This account belongs to learner 100000000001.', $this->client->getCrawler()->filter('.form-card')->text());
+        self::assertSame(User::ROLE_STUDENT, $this->findUser($user->getUsername())->getRole());
+    }
+
+    public function testLearnerAccountKeepsUsernameAndName(): void
+    {
+        $learner = $this->learner('100000000001', 'Cruz', 'Ana');
+        $user = $learner->getUser();
+        $username = $user->getUsername();
+        $fullName = $user->getFullName();
+
+        $crawler = $this->client->request('GET', '/admin/accounts/'.$user->getId().'/edit');
+        self::assertSelectorExists('input[name="user_account_form[username]"][disabled]');
+        self::assertSelectorExists('input[name="user_account_form[fullName]"][disabled]');
+        self::assertStringContainsString('This account belongs to learner 100000000001.', $crawler->filter('.form-card')->text());
+
+        // a hand-made request must not change them either
+        $token = $crawler->filter('input[name="user_account_form[_token]"]')->attr('value');
+        $this->client->request('POST', '/admin/accounts/'.$user->getId().'/edit', ['user_account_form' => [
+            'role' => User::ROLE_STUDENT, 'username' => 'hacked', 'fullName' => 'Hacked Name', 'active' => '1', '_token' => $token,
+        ]]);
+
+        $saved = $this->findUser($username);
+        self::assertSame($username, $saved->getUsername());
+        self::assertSame($fullName, $saved->getFullName());
+    }
+
+    public function testNewAccountCannotBeAStudent(): void
+    {
+        $this->client->request('GET', '/admin/accounts/new');
+
+        self::assertSelectorExists('select[name="user_account_form[role]"] option[value="ROLE_TEACHER"]');
+        self::assertSelectorNotExists('select[name="user_account_form[role]"] option[value="ROLE_STUDENT"]');
+    }
+
+    public function testStudentListHasNoCreateAccountButton(): void
+    {
+        $this->client->request('GET', '/admin/students');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('a[href="/admin/accounts/new?role=students"]');
+        self::assertSelectorNotExists('a[href^="/admin/accounts/new"]');
+
+        $this->client->request('GET', '/admin/accounts/new?role=students');
+        self::assertResponseIsSuccessful();
+        self::assertSame("", $this->client->getCrawler()->selectButton("Create account")->form()["user_account_form[role]"]->getValue());
     }
 
     public function testAdminCannotChangeOwnRoleOrStatus(): void
@@ -299,6 +363,55 @@ class UserAccountControllerTest extends AdminTestCase
 
         self::assertSame(0, $this->em->getRepository(SchoolAssignment::class)->count(['user' => $ana->getId()]));
         self::assertContains('Removed ana from Pagsabungan NHS ('.$sy->getName().')', $this->activityActions());
+    }
+
+    /** A teacher with a teaching load in Pagsabungan NHS this school year. */
+    private function loadedTeacher(SchoolYear $sy): User
+    {
+        $school = $this->school('303456', 'Pagsabungan NHS');
+        $ana = $this->createUser('ana', User::ROLE_TEACHER, 'Ana Reyes');
+        $this->assign($school, $sy, $ana, User::ROLE_TEACHER);
+        $section = (new Section($school, $sy))->setGradeLevel(GradeLevel::Grade7)->setName('Rizal');
+        $math = (new Subject($school, $sy))->setGradeLevel(GradeLevel::Grade7)->setCode('MATH7')->setName('Mathematics')->setMeetingsPerWeek(5);
+        $this->em->persist($section);
+        $this->em->persist($math);
+        $this->em->persist(new TeachingLoad($section, $math, $ana));
+        $this->em->flush();
+
+        return $ana;
+    }
+
+    private function schoolOf(User $teacher): ?string
+    {
+        $this->em->clear();
+
+        return $this->em->getRepository(SchoolAssignment::class)->findOneBy(['user' => $teacher->getId()])?->getSchool()->getName();
+    }
+
+    public function testTeacherWithLoadsCannotBeRemovedFromSchool(): void
+    {
+        $ana = $this->loadedTeacher($this->schoolYear((int) date('Y'), current: true));
+
+        $crawler = $this->client->request('GET', '/admin/accounts/'.$ana->getId().'/school');
+        $this->client->submit($crawler->selectButton('Remove from school')->form());
+
+        self::assertResponseRedirects('/admin/teachers');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('body', 'Ana Reyes still has 1 load this school year.');
+        self::assertSame('Pagsabungan NHS', $this->schoolOf($ana));
+    }
+
+    public function testTeacherWithLoadsCannotBeMoved(): void
+    {
+        $ana = $this->loadedTeacher($this->schoolYear((int) date('Y'), current: true));
+        $to = $this->school('300002', 'New School');
+
+        $this->client->request('GET', '/admin/accounts/'.$ana->getId().'/school');
+        $this->client->submitForm('Save school', ['teacher_school_form[school]' => (string) $to->getId()]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'Ana Reyes still has 1 load this school year.');
+        self::assertSame('Pagsabungan NHS', $this->schoolOf($ana));
     }
 
     public function testOnlyTeachersCanBeAssignedToASchool(): void

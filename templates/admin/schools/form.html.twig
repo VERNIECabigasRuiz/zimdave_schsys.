@@ -19,7 +19,7 @@
                 {{ form_row(form.type) }}
             </div>
             {{ form_row(form.name) }}
-            <div class="form-grid">
+            <div class="form-grid" data-controller="region-division" data-region-division-map-value="{{ form.vars.division_map|json_encode }}">
                 {{ form_row(form.region) }}
                 {{ form_row(form.division) }}
             </div>

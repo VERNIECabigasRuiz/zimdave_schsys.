@@ -1,0 +1,8 @@
+{# Dashboard card: transfer requests waiting for this user's decision. Needs count and school. #}
+<a class="stat card" href="{{ path('school_transfers', {id: school.id, tab: 'outgoing'}) }}">
+    <span class="avatar avatar--amber">T</span>
+    <span>
+        <strong>Transfer requests waiting: {{ count|number_format }}</strong>
+        <small>Approve or decline</small>
+    </span>
+</a>

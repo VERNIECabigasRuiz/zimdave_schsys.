@@ -1,0 +1,23 @@
+{% extends layout %}
+
+{% block title %}Edit learner · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Edit learner</h1>
+            <p>{{ learner.user.fullName }} · LRN {{ learner.lrn }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            {% include 'learners/_fields.html.twig' with {form: form} only %}
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save</button>
+                <a class="link-muted" href="{{ path(routes ~ '_show', route_params|merge({learner: learner.id})) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

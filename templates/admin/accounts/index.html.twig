@@ -19,7 +19,7 @@
             <h1>{{ heading }}</h1>
             <p>{{ subheading }}</p>
         </div>
-        <a class="btn btn--primary" href="{{ path('admin_account_new', slug ? {role: slug} : {}) }}">+ Create account</a>
+        {% if slug != 'students' %}<a class="btn btn--primary" href="{{ path('admin_account_new', slug ? {role: slug} : {}) }}">+ Create account</a>{% endif %}
     </div>
 
     {% if not slug %}
@@ -115,7 +115,7 @@
                                 No accounts match your search.
                             {% else %}
                                 No {{ slug ? heading|lower : 'accounts' }} yet.
-                                <a href="{{ path('admin_account_new', slug ? {role: slug} : {}) }}">Create one</a>.
+                                {% if slug != 'students' %}<a href="{{ path('admin_account_new', slug ? {role: slug} : {}) }}">Create one</a>.{% endif %}
                             {% endif %}
                         </td>
                     </tr>

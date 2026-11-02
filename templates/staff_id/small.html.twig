@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+    @page { margin: 0; }
+    body { margin: 0; font-family: 'DejaVu Sans', sans-serif; }
+    .card { position: absolute; top: 20mm; width: 54mm; height: 85.6mm; overflow: hidden; border: 0.1mm solid #999; }
+    .card--back { left: 50mm; }
+    .card--front { left: 108mm; }
+    .card > * { position: absolute; }
+    .bg { left: 0; top: 0; width: 54mm; height: 85.6mm; }
+    .center { left: 1.5mm; width: 51mm; text-align: center; }
+
+    /* back */
+    .school { top: 2mm; font-size: 5.5pt; line-height: 1.2; }
+    .school strong { font-size: 6pt; }
+    .signature { top: 12mm; height: 8.5mm; }
+    .signature img { max-width: 34mm; max-height: 8.5mm; }
+    .head-name { top: 21mm; font-weight: bold; font-size: 6.5pt; }
+    .head-position { top: 23.9mm; font-size: 6pt; }
+    .value { font-weight: bold; font-size: 5.8pt; white-space: nowrap; }
+
+    /* front */
+    .white { color: #fff; font-weight: bold; left: 2mm; width: 43mm; }
+    .surname { top: 25mm; font-size: 12.5pt; line-height: 1; }
+    .surname--long { top: 26mm; font-size: 9pt; }
+    .given { top: 30.6mm; font-size: 10pt; }
+    .given--long { font-size: 8pt; }
+    .office { top: 35.4mm; font-size: 6pt; }
+    .employee { top: 51.2mm; font-size: 6.5pt; }
+    .station { left: 2mm; top: 56.6mm; width: 27mm; font-weight: bold; font-size: 6pt; line-height: 1.2; }
+    .position { left: 27.5mm; top: 24mm; width: 44mm; height: 9mm; transform: rotate(-90deg); color: #fff; opacity: 0.75; font-weight: bold; font-size: 17pt; text-align: center; white-space: nowrap; }
+    .position--long { font-size: 12pt; }
+    .position--longer { font-size: 9pt; }
+    .photo { left: 30.6mm; top: 55.6mm; width: 23.4mm; height: 30mm; }
+</style>
+</head>
+<body>
+{% set division = card.division|upper starts with 'SCHOOLS DIVISION' ? card.division|upper|replace({'SCHOOLS DIVISION ': ''}) : 'OF ' ~ card.division|upper %}
+<div class="card card--back">
+    {% if bg.back %}<img class="bg" src="{{ bg.back }}" alt="">{% endif %}
+    <div class="center school">
+        <strong>{{ card.schoolName|upper }}</strong><br>
+        {{ card.schoolAddress }}<br>
+        {{ card.website }}
+    </div>
+    <div class="center signature">{% if card.headSignature %}<img src="{{ card.headSignature }}" alt="">{% endif %}</div>
+    <div class="center head-name">{{ card.headName }}</div>
+    <div class="center head-position">{{ card.headPosition }}</div>
+
+    <div class="value" style="left: 14.2mm; top: 34.6mm">{{ card.emergencyName }}</div>
+    <div class="value" style="left: 24.4mm; top: 37.7mm">{{ card.emergencyContact }}</div>
+    <div class="value" style="left: 11.5mm; top: 48.1mm">{{ card.tin }}</div>
+    <div class="value" style="left: 25.9mm; top: 51.2mm">{{ card.gsisPolicyNo }}</div>
+    <div class="value" style="left: 23.9mm; top: 54.4mm">{{ card.philhealthNo }}</div>
+    <div class="value" style="left: 21.4mm; top: 57.4mm">{{ card.pagibigNo }}</div>
+    <div class="value" style="left: 20.9mm; top: 60.5mm">{{ card.bloodType }}</div>
+</div>
+
+<div class="card card--front">
+    {% if bg.front %}<img class="bg" src="{{ bg.front }}" alt="">{% endif %}
+    <div class="white surname{{ card.surname|length > 12 ? ' surname--long' }}">{{ card.surname }},</div>
+    <div class="white given{{ card.givenNames|length > 14 ? ' given--long' }}">{{ card.givenNames }}</div>
+    <div class="white office">{{ card.schoolName }}</div>
+    {% set position = card.position|upper %}
+    <div class="position{{ position|length > 16 ? ' position--longer' : (position|length > 10 ? ' position--long') }}">{{ position }}</div>
+    <div class="white employee">EMPLOYEE NO: {{ card.employeeNo }}</div>
+    <div class="station">{{ card.region|upper }}/<br>SCHOOLS DIVISION<br>{{ division }}</div>
+    {% if card.photo %}<img class="photo" src="{{ card.photo }}" alt="">{% endif %}
+</div>
+</body>
+</html>

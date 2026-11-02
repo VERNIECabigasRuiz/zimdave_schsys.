@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Form\UserAccountFormType;
+use App\Repository\LearnerRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\UserRepository;
@@ -54,6 +55,7 @@ class UserAccountController extends AbstractController
         private readonly SchoolAssignmentRepository $assignments,
         private readonly PlanLimits $planLimits,
         private readonly SchoolTeacherLock $teacherLock,
+        private readonly LearnerRepository $learners,
     ) {
     }
 
@@ -80,7 +82,8 @@ class UserAccountController extends AbstractController
     public function new(Request $request, #[MapQueryParameter] ?string $role = null): Response
     {
         $user = new User();
-        if (null !== $role && isset(self::ROLE_SLUGS[$role])) {
+        // Students are created by enrolling, so that role is never preset here
+        if (null !== $role && isset(self::ROLE_SLUGS[$role]) && User::ROLE_STUDENT !== self::ROLE_SLUGS[$role]) {
             $user->setRole(self::ROLE_SLUGS[$role]);
         }
 
@@ -124,12 +127,14 @@ class UserAccountController extends AbstractController
         $form = $this->createForm(UserAccountFormType::class, $account, [
             'is_new' => false,
             'lock_role' => $this->isSelf($account),
+            'learner_lrn' => $this->learners->findOneByUser($account)?->getLrn(),
         ]);
         $originalRole = $account->getRole();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->guardPrincipalRoleChange($form, $account, $originalRole);
+            $this->guardLearnerRoleChange($form, $account, $originalRole);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -216,9 +221,13 @@ class UserAccountController extends AbstractController
     {
         $schoolYear = $this->requireTeacherAndYear($account);
 
-        $teachers->removeFromSchool($schoolYear, $account);
-        $this->entityManager->flush();
-        $this->addFlash('success', \sprintf('%s no longer has a school for %s.', $account->getFullName(), $schoolYear->getName()));
+        try {
+            $teachers->removeFromSchool($schoolYear, $account);
+            $this->entityManager->flush();
+            $this->addFlash('success', \sprintf('%s no longer has a school for %s.', $account->getFullName(), $schoolYear->getName()));
+        } catch (AssignmentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
 
         return $this->redirectToRoute('admin_accounts_by_role', ['slug' => 'teachers']);
     }
@@ -294,6 +303,21 @@ class UserAccountController extends AbstractController
                 $assignment->getSchool()->getName(),
                 $assignment->getSchoolYear()->getName(),
             )));
+        }
+    }
+
+    /**
+     * A learner's account stays a student account; the learner record is what makes it one.
+     */
+    private function guardLearnerRoleChange(FormInterface $form, User $account, ?string $originalRole): void
+    {
+        if ($originalRole === $account->getRole()) {
+            return;
+        }
+
+        $learner = $this->learners->findOneByUser($account);
+        if (null !== $learner) {
+            $form->get('role')->addError(new FormError(\sprintf('This account belongs to learner %s.', $learner->getLrn())));
         }
     }
 

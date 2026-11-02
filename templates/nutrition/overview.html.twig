@@ -1,0 +1,86 @@
+{% extends layout %}
+
+{# The school's SF8 for a period, one row per section; with compare, every count reads "baseline → endline". #}
+
+{% block title %}Nutrition · {{ school.name }} · ZIM School{% endblock %}
+
+{% macro badge(status) %}
+    <span class="badge {{ status.value == 'submitted' ? 'badge--green' : (status.value == 'draft' ? 'badge--amber' : '') }}">{{ status.label }}</span>
+{% endmacro %}
+
+{# One row of counts: weighed / on roster, then BMI and HFA categories. `after` is the endline summary when comparing. #}
+{% macro counts(s, after) %}
+    <td>{{ s.weighed }} / {{ s.onRoster }}{% if after %} → {{ after.weighed }} / {{ after.onRoster }}{% endif %}</td>
+    {% for category in enum_cases('App\\Nutrition\\BmiCategory') %}
+        <td class="nutrition-bmi-{{ category.value|replace({'_': '-'}) }}">{{ s.bmi(category) }}{% if after %} → {{ after.bmi(category) }}{% endif %}</td>
+    {% endfor %}
+    {% for category in enum_cases('App\\Nutrition\\HfaCategory') %}
+        <td class="nutrition-hfa-{{ category.value|replace({'_': '-'}) }}">{{ s.hfa(category) }}{% if after %} → {{ after.hfa(category) }}{% endif %}</td>
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+    {% set bmi = enum_cases('App\\Nutrition\\BmiCategory') %}
+    {% set hfa = enum_cases('App\\Nutrition\\HfaCategory') %}
+    <div class="page-head">
+        <div>
+            <h1>Nutritional status</h1>
+            <p>SF8 · {{ school.name }} · S.Y. {{ school_year.name }}</p>
+        </div>
+    </div>
+
+    <nav class="tabs" aria-label="Weighing period">
+        {% for p in enum_cases('App\\Nutrition\\NutritionPeriod') %}
+            <a class="tabs__tab{{ not compare and p == period ? ' is-active' }}" href="{{ path('school_nutrition', {id: school.id, period: p.value}) }}"{{ not compare and p == period ? ' aria-current="page"' }}>{{ p.label }}</a>
+        {% endfor %}
+        <a class="tabs__tab{{ compare ? ' is-active' }}" href="{{ path('school_nutrition', {id: school.id, compare: 1}) }}"{{ compare ? ' aria-current="page"' }}>Baseline → Endline</a>
+    </nav>
+
+    <div class="card table-card">
+        <table class="table sf2-summary nutrition-overview">
+            <thead>
+                <tr>
+                    <th rowspan="2">Grade</th>
+                    <th rowspan="2">Section</th>
+                    <th rowspan="2">Adviser</th>
+                    <th rowspan="2">Status</th>
+                    <th rowspan="2">Weighed / on roster</th>
+                    <th colspan="{{ bmi|length }}">BMI-for-age</th>
+                    <th colspan="{{ hfa|length }}">Height-for-age</th>
+                </tr>
+                <tr>
+                    {% for category in bmi %}<th>{{ category.label }}</th>{% endfor %}
+                    {% for category in hfa %}<th>{{ category.label }}</th>{% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                    {% set after = compare ? endlines[report.section.id] ?? null : null %}
+                    <tr>
+                        <td>{{ report.section.gradeLevel ? report.section.gradeLevel.label : '—' }}</td>
+                        <td><a href="{{ path('school_nutrition_section', {id: school.id, section: report.section.id, period: compare ? 'baseline' : period.value}) }}">{{ report.section.label }}</a></td>
+                        <td>{{ report.section.adviser ? report.section.adviser.fullName : '—' }}</td>
+                        <td>
+                            {{ _self.badge(report.status) }}
+                            {% if after %} → {{ _self.badge(after.status) }}{% endif %}
+                        </td>
+                        {{ _self.counts(report.summary, after ? after.summary : null) }}
+                    </tr>
+                {% else %}
+                    <tr><td colspan="{{ 5 + bmi|length + hfa|length }}" class="empty">No sections this school year.</td></tr>
+                {% endfor %}
+                {% if reports %}
+                    <tr class="attendance-subtotal">
+                        <th colspan="3" scope="row">School total</th>
+                        <td>
+                            {{ reports|filter(r => r.status.value == 'submitted')|length }} of {{ reports|length }} submitted
+                            {% if compare %} → {{ endlines|filter(r => r.status.value == 'submitted')|length }} of {{ endlines|length }}{% endif %}
+                        </td>
+                        {{ _self.counts(total, endline_total) }}
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <p class="muted">Counts are learners on each section's roster on its date of weighing, aged 5 to 19 years. Weighed includes learners outside that age range.</p>
+{% endblock %}

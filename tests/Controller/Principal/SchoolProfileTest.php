@@ -89,6 +89,37 @@ class SchoolProfileTest extends AdminTestCase
         self::assertContains('Updated school profile Pagsabungan NHS', $this->activityActions());
     }
 
+    public function testSavesServiceRecordSignatories(): void
+    {
+        $this->assign($this->school, $this->sy, $this->maria);
+        $this->client->request('GET', '/principal/school');
+
+        $this->client->submitForm('Save school profile', [
+            'school_profile_form[srPreparedByName]' => 'JANET T. BIHAG',
+            'school_profile_form[srPreparedByDesignation]' => 'Teacher III',
+            'school_profile_form[srCertifiedByName]' => 'EDGAR C. ESPINA JR., DevEdD',
+            'school_profile_form[srCertifiedByDesignation]' => 'Administrative Officer V',
+        ]);
+
+        self::assertResponseRedirects('/principal/school');
+        $school = $this->reloadSchool();
+        self::assertSame('JANET T. BIHAG', $school->getSrPreparedByName());
+        self::assertSame('Teacher III', $school->getSrPreparedByDesignation());
+        self::assertSame('EDGAR C. ESPINA JR., DevEdD', $school->getSrCertifiedByName());
+        self::assertSame('Administrative Officer V', $school->getSrCertifiedByDesignation());
+
+        $this->client->request('GET', '/principal/school');
+        $this->client->submitForm('Save school profile', [
+            'school_profile_form[srPreparedByName]' => '',
+            'school_profile_form[srPreparedByDesignation]' => '',
+            'school_profile_form[srCertifiedByName]' => ' ',
+            'school_profile_form[srCertifiedByDesignation]' => '',
+        ]);
+        $school = $this->reloadSchool();
+        self::assertNull($school->getSrPreparedByName());
+        self::assertNull($school->getSrCertifiedByName());
+    }
+
     public function testTamperedLockedFieldsAreNotSaved(): void
     {
         $this->assign($this->school, $this->sy, $this->maria);
@@ -142,6 +173,25 @@ class SchoolProfileTest extends AdminTestCase
         $logo = $this->reloadSchool()->getLogoPath();
         self::assertMatchesRegularExpression('#^uploads/logos/[0-9a-f]{32}\.webp$#', $logo);
         $absolute = static::getContainer()->getParameter('app.upload_root').'/'.$logo;
+        self::assertFileExists($absolute);
+        unlink($absolute);
+    }
+
+    public function testPrincipalUploadsIdSignature(): void
+    {
+        $this->assign($this->school, $this->sy, $this->maria);
+        $crawler = $this->client->request('GET', '/principal/school');
+        $form = $crawler->selectButton('Save school profile')->form();
+        $form['school_profile_form[idSignature]']->upload($this->pngFile());
+
+        $this->client->submit($form);
+
+        self::assertResponseRedirects('/principal/school');
+        $school = $this->reloadSchool();
+        $signature = $school->getIdSignaturePath();
+        self::assertMatchesRegularExpression('#^uploads/signatures/[0-9a-f]{32}\.webp$#', (string) $signature);
+        self::assertSame($this->maria->getId(), $school->getIdSignatureBy()?->getId());
+        $absolute = static::getContainer()->getParameter('app.upload_root').'/'.$signature;
         self::assertFileExists($absolute);
         unlink($absolute);
     }

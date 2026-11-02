@@ -1,0 +1,31 @@
+{% extends layout %}
+
+{% block title %}School year {{ school_year.name }} · {{ learner.user.fullName }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>School year {{ school_year.name }}</h1>
+            <p>{{ learner.user.fullName }} · LRN {{ learner.lrn }} · {{ enrollment.section.label }}</p>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        {% if automatic_remark %}
+            <p class="muted">Automatic: {{ automatic_remark }}. Choose a remark to replace it.</p>
+        {% endif %}
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            {{ form_row(form.learningModality) }}
+            <div class="form-grid">
+                {{ form_row(form.remarkCode) }}
+                {{ form_row(form.remarkDate) }}
+            </div>
+            {{ form_row(form.remarkDetails) }}
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save</button>
+                <a class="link-muted" href="{{ path(routes ~ '_show', route_params|merge({learner: learner.id})) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -1,0 +1,6 @@
+{# A learner's SF1 record for the school year, read-only #}
+<dl class="info-list">
+    <div><dt>Section</dt><dd>{{ enrollment.section.label }}</dd></div>
+    <div><dt>Learning modality</dt><dd>{{ enrollment.learningModality.label }}</dd></div>
+    <div><dt>Remarks</dt><dd>{{ remarks_text ?? '—' }}</dd></div>
+</dl>
