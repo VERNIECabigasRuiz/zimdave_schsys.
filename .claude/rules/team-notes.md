@@ -57,6 +57,10 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - After a scripted copy or rewrite, check the files aren't empty before trusting a diff.
 - When checking a length limit, measure the full stored value, prefixes included.
 - For a new project, run Base's `init-makefile` and set the hooks path before the first commit.
+- Before giving server setup steps, read every project's notes for that server.
+- Before a command prints a secret, say not to paste that line back.
+- Change IDE settings through the IDE, not by editing its files.
+- Note the start time before the first step of any task, including deploys.
 
 ## Plans / Specs
 
