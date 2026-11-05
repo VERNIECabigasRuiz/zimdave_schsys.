@@ -52,9 +52,6 @@ class LessonPlan
     #[ORM\Column(type: Types::JSON)]
     private array $days = [];
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $draftedAt = null;
-
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -174,18 +171,6 @@ class LessonPlan
     public function sessionCount(): int
     {
         return \count(array_filter($this->days, static fn (array $day) => null === ($day['holiday'] ?? null)));
-    }
-
-    public function getDraftedAt(): ?\DateTimeImmutable
-    {
-        return $this->draftedAt;
-    }
-
-    public function setDraftedAt(?\DateTimeImmutable $draftedAt): static
-    {
-        $this->draftedAt = $draftedAt;
-
-        return $this;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

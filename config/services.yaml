@@ -30,10 +30,3 @@ services:
 when@test:
     parameters:
         app.upload_root: '%kernel.project_dir%/var/test_public'
-    services:
-        # Tests never call the real AI: the lesson plan drafter is a fake they can steer
-        App\Tests\LessonPlan\FakeLessonPlanDrafter:
-            public: true
-        App\LessonPlan\LessonPlanDrafter:
-            alias: App\Tests\LessonPlan\FakeLessonPlanDrafter
-            public: true

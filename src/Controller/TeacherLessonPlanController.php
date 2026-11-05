@@ -8,8 +8,6 @@ use App\Entity\SchoolYear;
 use App\Entity\User;
 use App\Form\LessonPlanFormType;
 use App\Form\LessonPlanStartFormType;
-use App\LessonPlan\AiDraftFailed;
-use App\LessonPlan\LessonPlanAi;
 use App\LessonPlan\LessonWeek;
 use App\Repository\LessonPlanRepository;
 use App\Repository\SchoolAssignmentRepository;
@@ -20,7 +18,6 @@ use App\Service\SchoolClock;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
-use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,7 +25,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/** A teacher's ILAW lesson plans: start one for a class and week, fill it in or draft it with AI, delete it. */
+/** A teacher's ILAW lesson plans: start one for a class and week, fill it in, delete it. */
 #[IsGranted(User::ROLE_TEACHER)]
 #[Route('/teacher/lesson-plans')]
 class TeacherLessonPlanController extends AbstractController
@@ -39,7 +36,6 @@ class TeacherLessonPlanController extends AbstractController
         private readonly TeachingLoadRepository $loads,
         private readonly LessonPlanRepository $plans,
         private readonly LessonWeek $week,
-        private readonly LessonPlanAi $ai,
         private readonly SchoolClock $clock,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -81,33 +77,15 @@ class TeacherLessonPlanController extends AbstractController
 
     #[Route('/{id}', name: 'teacher_lesson_plan_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     #[IsGranted(LessonPlanVoter::EDIT, 'plan')]
-    public function edit(Request $request, LessonPlan $plan, #[CurrentUser] User $user): Response
+    public function edit(Request $request, LessonPlan $plan): Response
     {
-        $school = $plan->getLoad()->getSection()->getSchool();
-        $remaining = $this->ai->remaining($user, $school);
-        $form = $this->createForm(LessonPlanFormType::class, $plan, [
-            'drafted' => null !== $plan->getDraftedAt(),
-            'can_draft' => $remaining > 0 && $plan->sessionCount() > 0,
-        ]);
+        $form = $this->createForm(LessonPlanFormType::class, $plan);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plan->touch($this->clock->now());
             $this->entityManager->flush();
-
-            $draft = $form->get('draft');
-            if ($draft instanceof SubmitButton && $draft->isClicked()) {
-                // the AI may take up to its 110 s limit; leave PHP room to save and answer after it
-                set_time_limit(150);
-                try {
-                    $this->ai->draft($plan, $user);
-                    $this->addFlash('success', 'Draft ready. Check every cell before you print.');
-                } catch (AiDraftFailed $e) {
-                    $this->addFlash('error', \sprintf("The AI draft didn't work this time (%s). Nothing was changed; you can try again or write the plan yourself.", $e->reason));
-                }
-            } else {
-                $this->addFlash('success', 'Lesson plan saved.');
-            }
+            $this->addFlash('success', 'Lesson plan saved.');
 
             return $this->redirectToRoute('teacher_lesson_plan_edit', ['id' => $plan->getId()]);
         }
@@ -115,8 +93,6 @@ class TeacherLessonPlanController extends AbstractController
         return $this->render('lesson_plans/edit.html.twig', [
             'plan' => $plan,
             'form' => $form,
-            'remaining' => $remaining,
-            'limit' => $this->ai->limit($school),
         ]);
     }
 
