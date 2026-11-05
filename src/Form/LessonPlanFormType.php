@@ -34,7 +34,7 @@ class LessonPlanFormType extends AbstractType
             ->add('classNotes', TextareaType::class, [
                 'label' => 'Notes about this class (optional)',
                 'required' => false,
-                'help' => 'e.g. many slow readers, no projector. The AI uses these to fit the activities to your class.',
+                'help' => 'e.g. many slow readers, no projector.',
                 'attr' => ['rows' => 2],
             ])
             ->add('days', CollectionType::class, [
@@ -43,16 +43,11 @@ class LessonPlanFormType extends AbstractType
             ])
             ->add('references', TextareaType::class, ['required' => false, 'attr' => ['rows' => 3]])
             ->add('aiDeclaration', TextareaType::class, ['label' => 'Declaration of AI use', 'required' => false, 'attr' => ['rows' => 2]])
-            ->add('save', SubmitType::class, ['label' => 'Save plan'])
-            ->add('draft', SubmitType::class, [
-                'label' => $options['drafted'] ? 'Redraft with AI' : 'Draft with AI',
-                'disabled' => !$options['can_draft'],
-            ]);
+            ->add('save', SubmitType::class, ['label' => 'Save plan']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => LessonPlan::class, 'drafted' => false, 'can_draft' => true]);
-        $resolver->setAllowedTypes('drafted', 'bool')->setAllowedTypes('can_draft', 'bool');
+        $resolver->setDefaults(['data_class' => LessonPlan::class]);
     }
 }

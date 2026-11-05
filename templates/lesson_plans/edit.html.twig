@@ -1,6 +1,6 @@
 {% extends 'teacher/_layout.html.twig' %}
 
-{# Edit a lesson plan and draft it with AI. Needs plan, form, remaining and limit (AI drafts this month). #}
+{# Edit a lesson plan. Needs plan and form. #}
 
 {% block title %}Lesson plan · {{ plan.topic ?: 'New' }} · ZIM School{% endblock %}
 
@@ -24,15 +24,7 @@
             {{ form_row(form.topic) }}
             {{ form_row(form.competencies) }}
             {{ form_row(form.classNotes) }}
-            <div class="form-actions">
-                {{ form_widget(form.draft, {attr: {class: 'btn btn--primary', 'data-turbo-confirm': plan.draftedAt ? 'Redraft replaces every AI cell, including your edits to them. Continue?' : false}}) }}
-                <span class="muted">
-                    {% if limit == 0 %}AI drafts are not part of your school's plan.
-                    {% else %}{{ remaining }} of {{ limit }} AI drafts left this month.{% endif %}
-                    {% if plan.sessionCount == 0 %} This week has no school days.{% endif %}
-                </span>
-            </div>
-            <p class="form-note">The AI usually takes about a minute, at most two. Keep this page open. Your topic, competencies and notes stay as you typed them.</p>
+            {% if plan.sessionCount == 0 %}<p class="form-note">This week has no school days.</p>{% endif %}
         </div>
 
         {% for day in form.days %}

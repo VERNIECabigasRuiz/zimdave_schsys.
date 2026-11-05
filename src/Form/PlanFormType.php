@@ -32,12 +32,6 @@ class PlanFormType extends AbstractType
                 'label' => 'Includes a principal',
                 'required' => false,
                 'help' => 'Turn off for teacher-only plans such as Individual.',
-            ])
-            ->add('aiDraftsPerTeacherMonthly', IntegerType::class, [
-                'label' => 'AI lesson plan drafts per teacher per month',
-                'empty_data' => '0',
-                'help' => '0 turns the AI off for this plan.',
-                'attr' => ['min' => 0],
             ]);
     }
 

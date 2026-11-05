@@ -49,7 +49,7 @@ class LessonPlanViewControllerTest extends AdminTestCase
             ->setTopic('Multiplying monomials')
             ->setCompetencies('Multiplies simple monomials (M8AL-Ia-1)')
             ->setReferences("Mathematics 8 Learner's Module")
-            ->setAiDeclaration('AI (Claude, claude-opus-5-5) was used to draft the learning objectives.')
+            ->setAiDeclaration('No AI was used; the teacher wrote this plan.')
             ->setDays([LessonPlan::emptyDay('2026-11-30', 'Bonifacio Day'), $day]);
         $this->em->persist($this->plan);
         $this->em->persist((new ServiceRecordEntry($this->tess, new \DateTimeImmutable('2020-01-01'), $this->rosa, new \DateTimeImmutable()))
@@ -68,7 +68,7 @@ class LessonPlanViewControllerTest extends AdminTestCase
 
         foreach ([
             'DAILY LESSON LOG-ILAW FORMAT', 'Multiplying monomials', 'Mathematics', 'TESS REYES', 'Grade 8 ARTISTIC', '1 session',
-            "Mathematics 8 Learner&#039;s Module", 'AI (Claude, claude-opus-5-5)', 'M8AL-Ia-1',
+            "Mathematics 8 Learner&#039;s Module", 'No AI was used', 'M8AL-Ia-1',
             'Intentions.', 'Learning Experience.', 'Assessment.', 'Ways Forward.',
             'Day 1', 'Day 2', 'HOLIDAY', 'Bonifacio Day', 'December 1',
             'objectives first', 'learnerContext second', 'preLesson first', 'flow first', 'resources first', 'integration first',
