@@ -89,6 +89,22 @@ class SchoolProfileTest extends AdminTestCase
         self::assertContains('Updated school profile Pagsabungan NHS', $this->activityActions());
     }
 
+    public function testSavesLessonPlanChecker(): void
+    {
+        $this->assign($this->school, $this->sy, $this->maria);
+        $this->client->request('GET', '/principal/school');
+
+        $this->client->submitForm('Save school profile', [
+            'school_profile_form[lpCheckedByName]' => 'JULIE ANN I. NONOL',
+            'school_profile_form[lpCheckedByPosition]' => 'Master Teacher I',
+        ]);
+
+        self::assertResponseRedirects('/principal/school');
+        $school = $this->reloadSchool();
+        self::assertSame('JULIE ANN I. NONOL', $school->getLpCheckedByName());
+        self::assertSame('Master Teacher I', $school->getLpCheckedByPosition());
+    }
+
     public function testSavesServiceRecordSignatories(): void
     {
         $this->assign($this->school, $this->sy, $this->maria);

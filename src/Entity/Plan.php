@@ -37,6 +37,24 @@ class Plan
     #[ORM\Column]
     private bool $includesPrincipal = true;
 
+    /** AI lesson plan drafts each teacher may make per calendar month; 0 turns the AI off. */
+    #[ORM\Column(options: ['default' => 0])]
+    #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
+    private ?int $aiDraftsPerTeacherMonthly = 0;
+
+    public function getAiDraftsPerTeacherMonthly(): int
+    {
+        return $this->aiDraftsPerTeacherMonthly ?? 0;
+    }
+
+    public function setAiDraftsPerTeacherMonthly(?int $aiDraftsPerTeacherMonthly): static
+    {
+        $this->aiDraftsPerTeacherMonthly = $aiDraftsPerTeacherMonthly;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

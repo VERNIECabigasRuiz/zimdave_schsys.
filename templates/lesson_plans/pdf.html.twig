@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+{# An ILAW lesson plan for dompdf, letter landscape. Needs plan, school, competencies and references (bullet lists),
+   teacher and principal ({name, position}; principal may be null). #}
+<style>
+    @page { margin: 12mm 12mm 14mm; }
+    body { font-family: 'DejaVu Sans', sans-serif; font-size: 8pt; color: #000; }
+    body, div, p, table { margin: 0; padding: 0; }
+    h1 { font-size: 10pt; text-align: center; margin: 0 0 4mm; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 5mm; page-break-inside: auto; }
+    tr { page-break-inside: avoid; }
+    td, th { border: 0.6pt solid #000; padding: 1.5mm 2mm; vertical-align: top; text-align: left; }
+    .label { background: #bfbfbf; font-weight: bold; font-style: italic; width: 32%; }
+    .label small { display: block; font-weight: normal; margin-top: 1mm; }
+    .block { background: #bfbfbf; }
+    .block th { font-weight: bold; }
+    .row-title { width: 19%; font-style: italic; }
+    .row-title u { font-style: italic; }
+    .row-title small { display: block; margin-top: 1mm; }
+    .day-head { background: #bfbfbf; font-weight: bold; }
+    ul { margin: 0; padding-left: 3.5mm; }
+    li { margin-bottom: 0.8mm; }
+    .holiday { font-weight: bold; }
+    .signatories { width: 100%; border: 0; margin-top: 6mm; }
+    .signatories td { border: 0; width: 33%; padding: 0 2mm; }
+    .signatories em { display: block; margin-bottom: 7mm; }
+    .signatories strong { text-decoration: underline; }
+</style>
+</head>
+<body>
+{% set load = plan.load %}
+{% set days = plan.days %}
+{% set grade = load.section.gradeLevel ? load.section.gradeLevel.label : '' %}
+
+{% macro bullets(text) %}{% set lines = text|split('\n')|map(l => l|trim)|filter(l => l != '') %}{% if lines is not empty %}<ul>{% for line in lines %}<li>{{ line }}</li>{% endfor %}</ul>{% endif %}{% endmacro %}
+
+{% macro row(title, help, field, days) %}
+    <tr>
+        <td class="row-title"><u>{{ title }}</u><small>{{ help|raw }}</small></td>
+        {% for day in days %}
+            <td>
+                {% if day.holiday %}
+                    {% if field == 'objectives' %}<span class="holiday">HOLIDAY</span><br>({{ day.holiday }}){% else %}N/A{% endif %}
+                {% else %}
+                    {{ _self.bullets(day[field]) }}
+                {% endif %}
+            </td>
+        {% endfor %}
+    </tr>
+{% endmacro %}
+
+{% macro block(name, intro, days) %}
+    <tr class="block"><th>{{ name }}</th><td colspan="{{ days|length }}">{{ intro }}</td></tr>
+{% endmacro %}
+
+<h1>DAILY LESSON LOG-ILAW FORMAT</h1>
+
+<table>
+    <tr><td class="label">Name of Lesson</td><td><strong>{{ plan.topic }}</strong></td></tr>
+    <tr><td class="label">Learning Area/s</td><td>{{ load.subject.name }} ({{ grade }})</td></tr>
+    <tr><td class="label">Designed by Teacher/s</td><td><strong>{{ teacher.name }}</strong></td></tr>
+    <tr><td class="label">Designed for which Grade Level and Section</td><td>{{ grade }} {{ load.section.name }}</td></tr>
+    <tr><td class="label">No. of Sessions</td><td>{{ plan.sessionCount }} session{{ plan.sessionCount == 1 ? '' : 's' }} · week of {{ plan.weekStart|date('F j, Y') }}</td></tr>
+    <tr>
+        <td class="label">References<small>(books, websites, toolkits, etc.)</small></td>
+        <td>{% if references is not empty %}<ul>{% for r in references %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}</td>
+    </tr>
+    <tr>
+        <td class="label">Declaration of AI use<small>Cite how AI was used in the formulation of the lesson plan. See DO 3 s. 2024 Annex A.</small></td>
+        <td>{{ plan.aiDeclaration }}</td>
+    </tr>
+</table>
+
+<table>
+    <thead>
+        <tr class="day-head">
+            <th class="row-title">&nbsp;</th>
+            {% for day in days %}<th>Day {{ loop.index }}<br><span style="font-weight: normal">{{ day.date|date('l, F j') }}</span></th>{% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {{ _self.block('Intentions.', "Meaningful learning experiences are anchored in how we frame them. Start by deciding what you want learners to master by the end of the lesson — keep it clear and simple. Remember: Understanding your learners' evolving context and designing around it help ensure that your lessons connect with and are relevant to them.", days) }}
+        <tr>
+            <td class="row-title"><u>Learning Competency:</u><small>Write the competency/ies from the curriculum that we are targeting, and the content or performance standards applicable to the session/s.</small></td>
+            <td colspan="{{ days|length }}">{% if competencies is not empty %}<ul>{% for c in competencies %}<li>{{ c }}</li>{% endfor %}</ul>{% endif %}</td>
+        </tr>
+        {{ _self.row('Learning Objectives:', 'Write the smaller knowledge, skills, or tasks from the competency that the learners will work on and be able to show by the end of the sessions.', 'objectives', days) }}
+        {{ _self.row('Learner Context:', 'Write your observations of your learners, and how they have been performing or responding to learning experiences recently. Include strengths, interests, and possible barriers to learning.', 'learnerContext', days) }}
+
+        {{ _self.block('Learning Experience.', 'A learning experience is like a thoughtfully designed journey. Each activity and interaction builds towards meaningful understanding and growth. Identify activities and interactions to help learners gain knowledge, skills, or understanding in a purposeful way.', days) }}
+        {{ _self.row('Pre-Lesson:', 'Describe how you will help the learners get ready for the lesson.', 'preLesson', days) }}
+        {{ _self.row('Flow:', "Describe the activities that you can implement in 1 or more sessions to meet the learning objectives.<br>Apply the Learning Design Principles by thinking about how to:<br>• make the objectives clear for the learners<br>• guide learners before letting them try the task on their own<br>• check the state of the learners' well-being, understanding, and mastery over the lesson<br>• connect today's new concepts to past competencies<br>• encourage collaboration among learners<br>• invite learners to reflect on why this matters to them<br>• ensure inclusion for learners' varied abilities, learning styles, and contexts", 'flow', days) }}
+        {{ _self.row('Learning Resources:', 'List down the learning resources that will help you reach your objectives. Ensure that they are available and inclusive. Include options and alternatives in case of emergencies.', 'resources', days) }}
+        {{ _self.row('Opportunities for integration:', 'Write down any possibilities to meaningfully integrate another learning area, special topic, or technology. Write N/A if none.', 'integration', days) }}
+
+        {{ _self.block('Assessment.', 'Assessments reveal what learners have gained and what they still need help with. These are helpful in providing you with information to guide your future instruction.', days) }}
+        {{ _self.row('Formative Assessment:', 'Create a task, activity or questions to evaluate learning and provide feedback. Include ways for learners to ask for guidance or support.<br>Remember to provide appropriate accommodations so all learners can demonstrate their understanding (e.g., varied response formats, small group options, visual or auditory supports)', 'formativeAssessment', days) }}
+
+        {{ _self.block('Ways Forward.', 'Meaningful learning can also happen beyond the classroom — for both the learners and the teacher. Pause and reflect on what happened today.', days) }}
+        {{ _self.row('Extended learning opportunities:', 'Suggest other learning experiences outside the classroom/class hours that learners may want to access to reinforce what they have learned, to spark their curiosities further, or that may provide them support in their areas of difficulty.', 'extendedLearning', days) }}
+        {{ _self.row('Reflections:', 'Think about what you need to change for the next session based on what happened today. Is there something the learners are interested in exploring? Are there some things you would like to share with your co-teachers, parents, or school leaders about your classroom experience? What would you like your instructional coach to help you with?', 'reflections', days) }}
+    </tbody>
+</table>
+
+<table class="signatories">
+    <tr>
+        <td><em>Prepared by:</em><strong>{{ teacher.name }}</strong><br>{{ teacher.position }}</td>
+        <td><em>Checked by:</em>{% if school.lpCheckedByName %}<strong>{{ school.lpCheckedByName }}</strong><br>{{ school.lpCheckedByPosition }}{% else %}&nbsp;{% endif %}</td>
+        <td><em>Noted by:</em>{% if principal %}<strong>{{ principal.name }}</strong><br>{{ principal.position }}{% else %}&nbsp;{% endif %}</td>
+    </tr>
+</table>
+</body>
+</html>

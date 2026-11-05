@@ -56,6 +56,18 @@ class PlanControllerTest extends AdminTestCase
         self::assertContains('Created plan Standard', $this->activityActions());
     }
 
+    public function testAiDraftLimitDefaultsToZeroAndCanBeSet(): void
+    {
+        $this->submitNewPlan('Standard', 40, 2500, true);
+        self::assertSame(0, $this->findPlan('Standard')->getAiDraftsPerTeacherMonthly());
+
+        $this->client->request('GET', '/admin/plans/'.$this->findPlan('Standard')->getId().'/edit');
+        $this->client->submitForm('Save plan', ['plan_form[aiDraftsPerTeacherMonthly]' => '20']);
+
+        self::assertResponseRedirects('/admin/plans');
+        self::assertSame(20, $this->findPlan('Standard')->getAiDraftsPerTeacherMonthly());
+    }
+
     public function testDuplicatePlanNameRejected(): void
     {
         $this->submitNewPlan('Basic', 1, 1, true);

@@ -1,0 +1,32 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{# Pick the class and week of a new lesson plan. Needs form and has_loads. #}
+
+{% block title %}New lesson plan · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>New lesson plan</h1>
+            <p>The days come from the class's timetable; school holidays are marked for you.</p>
+        </div>
+        <a class="btn btn--ghost" href="{{ path('teacher_lesson_plans') }}">Back</a>
+    </div>
+
+    {% if not has_loads %}
+        <div class="alert alert--warning" role="status">You have no classes in your teaching load this school year yet.</div>
+    {% endif %}
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <div class="form-grid">
+                {{ form_row(form.load) }}
+                {{ form_row(form.week) }}
+            </div>
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Start plan</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
