@@ -79,6 +79,16 @@ class SchoolProfileFormType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'e.g. Administrative Officer V'],
             ])
+            ->add('lpCheckedByName', TextType::class, [
+                'label' => 'Lesson plans checked by',
+                'required' => false,
+                'attr' => ['placeholder' => 'e.g. JULIE ANN I. NONOL'],
+            ])
+            ->add('lpCheckedByPosition', TextType::class, [
+                'label' => 'Position',
+                'required' => false,
+                'attr' => ['placeholder' => 'e.g. Master Teacher I'],
+            ])
             ->add('idSignature', FileType::class, [
                 'label' => 'Your ID signature',
                 'mapped' => false,

@@ -1,0 +1,47 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{# The teacher's own ILAW lesson plans this S.Y. Needs plans (LessonPlan list, newest week first). #}
+
+{% block title %}My Lesson Plans · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>My Lesson Plans</h1>
+            <p>ILAW lesson plans, one per class per week. Type the topic and competencies, then let the AI draft the rest.</p>
+        </div>
+        <a class="btn btn--primary" href="{{ path('teacher_lesson_plan_new') }}">+ New plan</a>
+    </div>
+
+    <div class="card table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Week of</th>
+                    <th>Class</th>
+                    <th>Topic</th>
+                    <th>Sessions</th>
+                    <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                    <tr>
+                        <td>{{ plan.weekStart|date('M j, Y') }}</td>
+                        <td>{{ plan.load.subject.name }} · {{ plan.load.section.gradeLevel ? plan.load.section.gradeLevel.label }} {{ plan.load.section.name }}</td>
+                        <td>{{ plan.topic ?: '—' }}</td>
+                        <td>{{ plan.sessionCount }}</td>
+                        <td class="table__actions">
+                            <a class="btn btn--ghost btn--sm" href="{{ path('teacher_lesson_plan_edit', {id: plan.id}) }}">Open</a>
+                            <a class="btn btn--ghost btn--sm" href="{{ path('lesson_plan_pdf', {id: plan.id}) }}" data-turbo="false">PDF</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="empty">No lesson plans yet. <a href="{{ path('teacher_lesson_plan_new') }}">Start one</a>.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

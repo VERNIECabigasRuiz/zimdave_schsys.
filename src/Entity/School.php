@@ -124,6 +124,15 @@ class School
     #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
     private ?string $srCertifiedByDesignation = null;
 
+    /** "Checked by" on ILAW lesson plans, e.g. a Master Teacher or the Assistant Principal. */
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $lpCheckedByName = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, groups: ['Default', self::PROFILE])]
+    private ?string $lpCheckedByPosition = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -404,6 +413,30 @@ class School
     public function setSrCertifiedByDesignation(?string $designation): static
     {
         $this->srCertifiedByDesignation = self::blankToNull($designation);
+
+        return $this;
+    }
+
+    public function getLpCheckedByName(): ?string
+    {
+        return $this->lpCheckedByName;
+    }
+
+    public function setLpCheckedByName(?string $name): static
+    {
+        $this->lpCheckedByName = self::blankToNull($name);
+
+        return $this;
+    }
+
+    public function getLpCheckedByPosition(): ?string
+    {
+        return $this->lpCheckedByPosition;
+    }
+
+    public function setLpCheckedByPosition(?string $position): static
+    {
+        $this->lpCheckedByPosition = self::blankToNull($position);
 
         return $this;
     }
