@@ -8,7 +8,7 @@ use App\Repository\LearnerRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\UserRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Form\TeacherSchoolFormType;
@@ -48,7 +48,7 @@ class UserAccountController extends AbstractController
     public function __construct(
         private readonly UserRepository $users,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TemporaryPasswordGenerator $passwordGenerator,
         private readonly SchoolYearRepository $schoolYears,

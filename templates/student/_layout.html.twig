@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends '@Core/base.html.twig' %}
 
 {% block body_class %}admin-page{% endblock %}
 
@@ -42,7 +42,7 @@
             </header>
 
             <main class="content">
-                {% include 'admin/_flashes.html.twig' %}
+                {% include '@Core/_flashes.html.twig' %}
                 {% block content %}{% endblock %}
             </main>
         </div>

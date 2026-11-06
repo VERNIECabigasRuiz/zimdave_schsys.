@@ -27,7 +27,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolDayOffRepository;
 use App\Repository\Sf2SubmissionRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\SchoolClock;
+use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Sf1\Sf1Remarks;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;

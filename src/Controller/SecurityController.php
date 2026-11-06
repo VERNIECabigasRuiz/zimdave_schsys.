@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\ChangePasswordFormType;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -46,7 +46,7 @@ class SecurityController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
-        ActivityLogger $activityLogger,
+        ActivityLoggerInterface $activityLogger,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();

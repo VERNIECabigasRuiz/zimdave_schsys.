@@ -16,7 +16,7 @@ use App\Repository\ScheduleEntryRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\PlanLimits;
 use App\Service\TimetableManager;
 use App\Service\TimetableQuery;
@@ -57,7 +57,7 @@ class TimetableQueryTest extends KernelTestCase
         $this->manager = new TimetableManager(
             $this->em, $c->get(ManagerRegistry::class), $c->get(TeachingLoadRepository::class), $c->get(ScheduleEntryRepository::class),
             $c->get(SubjectRepository::class), $c->get(ClassPeriodRepository::class), $c->get(SchoolAssignmentRepository::class),
-            $c->get(PlanLimits::class), $c->get(ActivityLogger::class), $c->get(LockFactory::class),
+            $c->get(PlanLimits::class), $c->get(ActivityLoggerInterface::class), $c->get(LockFactory::class),
         );
         $this->query = new TimetableQuery(
             $c->get(ScheduleEntryRepository::class), $c->get(TeachingLoadRepository::class), $c->get(SubjectRepository::class),

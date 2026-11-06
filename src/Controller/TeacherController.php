@@ -12,7 +12,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Service\SectionManager;
 use App\Service\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,7 +33,7 @@ class TeacherController extends AbstractController
         private readonly SectionRepository $sections,
         private readonly SectionManager $sectionManager,
         private readonly TimetableQuery $timetable,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
         private readonly TransferRequestRepository $transferRequests,
         private readonly SchoolCalendar $calendar,
         private readonly RollCallRepository $rollCalls,

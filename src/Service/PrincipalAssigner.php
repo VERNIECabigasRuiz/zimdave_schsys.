@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
 use App\Entity\SchoolYear;
@@ -20,7 +21,7 @@ class PrincipalAssigner
         private readonly SchoolAssignmentRepository $assignments,
         private readonly SchoolYearRepository $schoolYears,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
     ) {
     }
 

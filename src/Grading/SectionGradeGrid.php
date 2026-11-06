@@ -11,7 +11,7 @@ use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
 /**
  * Every subject's grades of one section for one period: a column per gradable subject, and after
@@ -26,7 +26,7 @@ class SectionGradeGrid
         private readonly GradeRepository $grades,
         private readonly GradeRules $rules,
         private readonly GradeOpeningRepository $openings,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

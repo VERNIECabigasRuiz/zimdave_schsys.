@@ -14,7 +14,7 @@ use App\Repository\NutritionAssessmentRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SectionRepository;
 use App\Repository\Sf8SubmissionRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
 /**
  * Computes a section's SF8 for a weighing period. The roster is the learners who count in the section
@@ -32,7 +32,7 @@ class Sf8ReportBuilder
         private readonly Sf8SubmissionRepository $submissions,
         private readonly SectionRepository $sections,
         private readonly SchoolAssignmentRepository $assignments,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

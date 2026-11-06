@@ -6,7 +6,7 @@ use App\Entity\Announcement;
 use App\Entity\User;
 use App\Form\AnnouncementFormType;
 use App\Repository\AnnouncementRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -22,7 +22,7 @@ class AnnouncementController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
     ) {
     }
 

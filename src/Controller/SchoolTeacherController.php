@@ -17,7 +17,7 @@ use App\Repository\UserRepository;
 use App\Service\AssignmentException;
 use Symfony\Component\Form\FormError;
 use App\Security\Voter\SchoolVoter;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
 use App\Service\SchoolTeacherLock;
@@ -45,7 +45,7 @@ class SchoolTeacherController extends AbstractController
         private readonly SchoolAssignmentRepository $assignments,
         private readonly SchoolYearRepository $schoolYears,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly SchoolTeacherLock $lock,
     ) {
     }

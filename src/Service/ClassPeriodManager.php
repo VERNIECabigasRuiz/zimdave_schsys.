@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\ClassPeriod;
 use App\Entity\School;
 use App\Entity\SchoolYear;
@@ -22,7 +23,7 @@ class ClassPeriodManager
         private readonly EntityManagerInterface $entityManager,
         private readonly ClassPeriodRepository $periods,
         private readonly PlanLimits $planLimits,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly ScheduleEntryRepository $entries,
         private readonly LockFactory $lockFactory,
     ) {

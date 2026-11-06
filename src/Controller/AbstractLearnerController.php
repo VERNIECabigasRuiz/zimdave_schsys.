@@ -22,7 +22,7 @@ use App\Repository\SectionRepository;
 use App\Repository\TransferRequestRepository;
 use App\Security\Voter\LearnerVoter;
 use App\Service\EnrollmentException;
-use App\Service\ImageProcessingException;
+use App\Core\Domain\Exception\ImageProcessingException;
 use App\Service\LearnerEnrollment;
 use App\Service\LearnerLookup;
 use App\Service\LookupKind;

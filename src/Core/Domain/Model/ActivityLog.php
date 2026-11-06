@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Entity;
+declare(strict_types=1);
 
-use App\Repository\ActivityLogRepository;
+namespace App\Core\Domain\Model;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * One line of the "Recent activity" feed, e.g. "john — Created account: dgsosmena".
  * The username is copied (not linked) so history survives account changes.
  */
-#[ORM\Entity(repositoryClass: ActivityLogRepository::class)]
+#[ORM\Entity]
 #[ORM\Index(columns: ['created_at'])]
 class ActivityLog
 {

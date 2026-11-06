@@ -5,7 +5,7 @@ namespace App\Nutrition;
 use App\Entity\Section;
 use App\Repository\NutritionAssessmentRepository;
 use App\Repository\Sf8SubmissionRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
 /** When a section may be weighed. Who may do it is NutritionVoter's question. */
 class NutritionRules
@@ -13,7 +13,7 @@ class NutritionRules
     public function __construct(
         private readonly NutritionAssessmentRepository $assessments,
         private readonly Sf8SubmissionRepository $submissions,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

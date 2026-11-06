@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Entity\PersonalDataSheet;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Twig\Environment;
 
 /**
@@ -17,23 +17,15 @@ class PdsPdfRenderer
     public const CHILD_ROWS = 12;
 
     public function __construct(
+        private readonly PdfRendererInterface $pdf,
         private readonly Environment $twig,
-        private readonly ImageProcessor $images,
+        private readonly ImageProcessorInterface $images,
     ) {
     }
 
     public function render(PersonalDataSheet $sheet): string
     {
-        $options = new Options();
-        $options->setIsRemoteEnabled(false);
-        $options->setDefaultFont('DejaVu Sans');
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($this->renderHtml($sheet));
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-        return (string) $dompdf->output();
+        return $this->pdf->render($this->renderHtml($sheet), 'A4', 'portrait');
     }
 
     public function renderHtml(PersonalDataSheet $sheet): string

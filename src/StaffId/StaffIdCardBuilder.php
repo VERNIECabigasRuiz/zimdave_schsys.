@@ -13,7 +13,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Repository\StaffIdDetailsRepository;
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
@@ -32,7 +32,7 @@ class StaffIdCardBuilder
         private readonly SchoolAssignmentRepository $assignments,
         private readonly SchoolYearRepository $schoolYears,
         private readonly DivisionRepository $divisions,
-        private readonly ImageProcessor $images,
+        private readonly ImageProcessorInterface $images,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
     ) {

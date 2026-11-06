@@ -93,7 +93,7 @@ final class DemoFixturesTest extends KernelTestCase
     {
         // Expect
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Demo data is already loaded. Run make fixture-load first.');
+        $this->expectExceptionMessageIsOrContains('Demo data is already loaded. Run make fixture-load first.');
 
         // Initialize
         $this->loadDemo();

@@ -12,7 +12,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
 use App\Service\PlanLimits;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Service\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +29,7 @@ class DashboardController extends AbstractController
         private readonly SchoolAssignmentRepository $assignments,
         private readonly PlanLimits $planLimits,
         private readonly TimetableQuery $timetable,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
         private readonly TransferRequestRepository $transferRequests,
         private readonly AttendanceStatistics $attendance,
         private readonly GradeChangeRequestRepository $gradeChanges,

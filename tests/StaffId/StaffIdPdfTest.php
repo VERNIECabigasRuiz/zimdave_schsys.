@@ -2,6 +2,7 @@
 
 namespace App\Tests\StaffId;
 
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\StaffId\StaffIdCard;
 use App\StaffId\StaffIdPdf;
 use App\StaffId\StaffIdSize;
@@ -18,7 +19,7 @@ class StaffIdPdfTest extends KernelTestCase
     /** Built by hand: until a controller uses it, the container drops the service. */
     private function pdf(): StaffIdPdf
     {
-        return new StaffIdPdf(static::getContainer()->get(Environment::class), static::getContainer()->getParameter('kernel.project_dir'));
+        return new StaffIdPdf(static::getContainer()->get(PdfRendererInterface::class), static::getContainer()->get(Environment::class), static::getContainer()->getParameter('kernel.project_dir'));
     }
 
     public static function card(string $surname = 'DELA CRUZ', string $given = 'JUAN A.'): StaffIdCard

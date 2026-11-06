@@ -6,9 +6,9 @@ use App\Entity\Division;
 use App\Entity\User;
 use App\Form\DivisionFormType;
 use App\Repository\DivisionRepository;
-use App\Service\ActivityLogger;
-use App\Service\ImageProcessingException;
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
+use App\Core\Domain\Exception\ImageProcessingException;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -26,8 +26,8 @@ class DivisionController extends AbstractController
     public function __construct(
         private readonly DivisionRepository $divisions,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ImageProcessor $images,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ImageProcessorInterface $images,
+        private readonly ActivityLoggerInterface $activityLogger,
     ) {
     }
 
@@ -58,7 +58,7 @@ class DivisionController extends AbstractController
             $signature = $form->get('signature')->getData();
             try {
                 if ($signature instanceof UploadedFile) {
-                    $division->setSignaturePath($this->images->storeSignature($signature, $division->getSignaturePath()));
+                    $division->setSignaturePath($this->images->storeSignature($signature->getPathname(), $division->getSignaturePath()));
                 }
                 $this->entityManager->persist($division);
                 $message = \sprintf($saved, $division->getName());

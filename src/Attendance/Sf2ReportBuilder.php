@@ -9,7 +9,7 @@ use App\Repository\RollCallRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolDayOffRepository;
 use App\Repository\Sf2SubmissionRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
 /**
  * Computes a section's SF2 for a month from its roll calls. A school day without a roll call
@@ -28,7 +28,7 @@ class Sf2ReportBuilder
         private readonly SchoolDayOffRepository $daysOff,
         private readonly SchoolAssignmentRepository $assignments,
         private readonly AttendanceRules $rules,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

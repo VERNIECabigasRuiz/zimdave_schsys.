@@ -8,7 +8,7 @@ use App\Core\Application\Bus\Result;
 use App\Core\Application\Bus\UseCase;
 use App\Core\Application\Bus\UseCaseHandlerInterface;
 use App\Core\Infrastructure\Bus\Attributes\AsUseCaseHandler;
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** @implements UseCaseHandlerInterface<LogThenFailCommand> */

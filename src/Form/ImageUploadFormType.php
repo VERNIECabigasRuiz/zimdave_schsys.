@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,7 +27,7 @@ class ImageUploadFormType extends AbstractType
             maxSize: '5M',
             mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
             mimeTypesMessage: 'Upload a JPG, PNG or WebP image.',
-            maxPixels: ImageProcessor::MAX_PIXELS,
+            maxPixels: ImageProcessorInterface::MAX_PIXELS,
             maxPixelsMessage: 'The image is too large. Use one under 25 megapixels.',
         );
     }

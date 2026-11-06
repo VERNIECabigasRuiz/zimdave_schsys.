@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\Enrollment;
 use App\Entity\GradeLevel;
 use App\Entity\School;
@@ -13,7 +13,7 @@ use App\Entity\TransferStatus;
 use App\Entity\User;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\EnrollmentException;
 use App\Service\EnrollmentGuard;
 use App\Service\LearnerLock;
@@ -65,7 +65,7 @@ class TransferManagerTest extends KernelTestCase
             new LearnerLock($c->get(LockFactory::class), $c->get(ManagerRegistry::class)),
             $c->get(TransferRequestRepository::class),
             new EnrollmentGuard($this->em, $c->get(SchoolYearRepository::class), $c->get(TransferRequestRepository::class)),
-            $c->get(ActivityLogger::class),
+            $c->get(ActivityLoggerInterface::class),
             $c->get(ClockInterface::class),
         );
     }

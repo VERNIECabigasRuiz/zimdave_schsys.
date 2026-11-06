@@ -2,7 +2,7 @@
 
 namespace App\Tests\Grading;
 
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeChangeRequest;
@@ -30,8 +30,8 @@ use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\ActivityLogger;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
+use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -129,7 +129,7 @@ class GradeChangeManagerTest extends KernelTestCase
             $c->get(GradeLockRepository::class),
             $c->get(GradeUnlockRepository::class),
             $c->get(GradeOpeningRepository::class),
-            $c->get(ActivityLogger::class),
+            $c->get(ActivityLoggerInterface::class),
             $this->clock(),
         );
     }
@@ -144,7 +144,7 @@ class GradeChangeManagerTest extends KernelTestCase
             $this->rules(),
             $c->get(GradeRepository::class),
             $c->get(GradeChangeRequestRepository::class),
-            $c->get(ActivityLogger::class),
+            $c->get(ActivityLoggerInterface::class),
             $this->clock(),
         );
     }

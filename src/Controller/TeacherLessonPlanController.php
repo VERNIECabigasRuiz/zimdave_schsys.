@@ -14,7 +14,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TeachingLoadRepository;
 use App\Security\Voter\LessonPlanVoter;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -36,7 +36,7 @@ class TeacherLessonPlanController extends AbstractController
         private readonly TeachingLoadRepository $loads,
         private readonly LessonPlanRepository $plans,
         private readonly LessonWeek $week,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }

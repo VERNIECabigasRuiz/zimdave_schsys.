@@ -13,9 +13,9 @@ use App\Entity\User;
 use App\Repository\RollCallRepository;
 use App\Repository\SchoolDayOffRepository;
 use App\Repository\Sf2SubmissionRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\LearnerLock;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Lock\LockFactory;
 
@@ -36,8 +36,8 @@ class AttendanceRecorder
         private readonly RollCallRepository $rollCalls,
         private readonly Sf2SubmissionRepository $submissions,
         private readonly SchoolDayOffRepository $daysOff,
-        private readonly ActivityLogger $activityLogger,
-        private readonly SchoolClock $clock,
+        private readonly ActivityLoggerInterface $activityLogger,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

@@ -3,7 +3,7 @@
 namespace App\Tests\Controller\Admin;
 
 use App\Entity\User;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
@@ -26,7 +26,7 @@ class DashboardControllerTest extends AdminTestCase
         $this->createUser('student2', User::ROLE_STUDENT, active: false);
         $this->createUser('principal1', User::ROLE_PRINCIPAL);
 
-        static::getContainer()->get(ActivityLogger::class)->log('Created account: teacher1', 'zim');
+        static::getContainer()->get(ActivityLoggerInterface::class)->log('Created account: teacher1', 'zim');
         $this->em->flush();
 
         $crawler = $this->client->request('GET', '/admin');

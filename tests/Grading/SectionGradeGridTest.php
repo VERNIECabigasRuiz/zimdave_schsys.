@@ -27,7 +27,7 @@ use App\Repository\GradeUnlockRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\SchoolClock;
+use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\Grade;
 use App\Entity\GradeChangeRequest;
 use App\Entity\GradeLevel;
@@ -13,7 +13,7 @@ use App\Entity\ShsTrack;
 use App\Entity\Subject;
 use App\Entity\User;
 use App\Repository\SubjectRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\InUseException;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
@@ -44,7 +44,7 @@ class SubjectManagerTest extends KernelTestCase
             $this->em,
             $container->get(SubjectRepository::class),
             $container->get(PlanLimits::class),
-            $container->get(ActivityLogger::class),
+            $container->get(ActivityLoggerInterface::class),
             $container->get(\App\Repository\TeachingLoadRepository::class),
             $container->get(\App\Repository\GradeRepository::class),
             $container->get(\App\Repository\GradeChangeRequestRepository::class),

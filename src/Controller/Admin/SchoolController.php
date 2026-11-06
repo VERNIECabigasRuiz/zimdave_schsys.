@@ -12,7 +12,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\UserRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\AssignmentException;
 use App\Service\PrincipalAssigner;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,7 +37,7 @@ class SchoolController extends AbstractController
         private readonly SchoolYearRepository $schoolYears,
         private readonly SchoolAssignmentRepository $assignments,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly PrincipalAssigner $principalAssigner,
         private readonly ClockInterface $clock,
     ) {

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
@@ -22,7 +23,7 @@ class SectionManager
         private readonly EntityManagerInterface $entityManager,
         private readonly SectionRepository $sections,
         private readonly PlanLimits $planLimits,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly TeachingLoadRepository $loads,
         private readonly EnrollmentRepository $enrollments,
         private readonly TransferRequestRepository $transferRequests,

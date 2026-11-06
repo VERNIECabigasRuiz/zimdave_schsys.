@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\LearnerId\IdCard;
 use App\LearnerId\IdCardPdf;
 use App\LearnerId\IdLayout;
@@ -15,7 +16,7 @@ class IdCardPdfTest extends KernelTestCase
     {
         self::bootKernel();
 
-        return new IdCardPdf(static::getContainer()->get(Environment::class));
+        return new IdCardPdf(static::getContainer()->get(PdfRendererInterface::class), static::getContainer()->get(Environment::class));
     }
 
     private static function card(string $lrn, string $name = 'GERALD JAMES M. ARNOL', bool $full = true): IdCard

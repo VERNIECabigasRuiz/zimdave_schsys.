@@ -11,9 +11,9 @@ use App\Entity\Sf8Submission;
 use App\Entity\User;
 use App\Repository\NutritionAssessmentRepository;
 use App\Repository\Sf8SubmissionRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\LearnerLock;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Lock\LockFactory;
 
@@ -28,8 +28,8 @@ class NutritionRecorder
         private readonly Sf8ReportBuilder $reports,
         private readonly NutritionAssessmentRepository $assessments,
         private readonly Sf8SubmissionRepository $submissions,
-        private readonly ActivityLogger $activityLogger,
-        private readonly SchoolClock $clock,
+        private readonly ActivityLoggerInterface $activityLogger,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

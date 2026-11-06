@@ -14,9 +14,9 @@ use App\Form\QuestionsFormType;
 use App\Form\ReferencesFormType;
 use App\Entity\PdsReference;
 use App\Repository\PersonalDataSheetRepository;
-use App\Service\ActivityLogger;
-use App\Service\ImageProcessingException;
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
+use App\Core\Domain\Exception\ImageProcessingException;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Service\PdsPdfRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,8 +41,8 @@ class ProfileController extends AbstractController
     public function __construct(
         private readonly PersonalDataSheetRepository $sheets,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
-        private readonly ImageProcessor $images,
+        private readonly ActivityLoggerInterface $activityLogger,
+        private readonly ImageProcessorInterface $images,
         private readonly FormFactoryInterface $formFactory,
     ) {
     }
@@ -244,7 +244,7 @@ class ProfileController extends AbstractController
         }
 
         try {
-            $user->setPhotoPath($this->images->storePhoto($form->get('image')->getData(), $user->getPhotoPath()));
+            $user->setPhotoPath($this->images->storePhoto($form->get('image')->getData()->getPathname(), $user->getPhotoPath()));
             $this->activityLogger->log('Changed profile photo');
             $this->entityManager->flush();
             $this->addFlash('success', 'Photo updated.');

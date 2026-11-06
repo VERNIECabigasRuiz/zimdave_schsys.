@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller\Admin;
 
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\User;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;

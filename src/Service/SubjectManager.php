@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Data\DepEdSubjects;
 use App\Entity\GradeLevel;
 use App\Entity\School;
@@ -26,7 +27,7 @@ class SubjectManager
         private readonly EntityManagerInterface $entityManager,
         private readonly SubjectRepository $subjects,
         private readonly PlanLimits $planLimits,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly TeachingLoadRepository $loads,
         private readonly GradeRepository $grades,
         private readonly GradeChangeRequestRepository $changeRequests,

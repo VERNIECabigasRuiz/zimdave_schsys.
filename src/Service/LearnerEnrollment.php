@@ -2,6 +2,9 @@
 
 namespace App\Service;
 
+use App\Core\Domain\Exception\ImageProcessingException;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\Enrollment;
 use App\Entity\Learner;
 use App\Entity\School;
@@ -34,9 +37,9 @@ class LearnerEnrollment
         private readonly UserRepository $users,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TemporaryPasswordGenerator $passwordGenerator,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly ClockInterface $clock,
-        private readonly ImageProcessor $images,
+        private readonly ImageProcessorInterface $images,
         private readonly GradeRepository $grades,
     ) {
     }
@@ -139,7 +142,7 @@ class LearnerEnrollment
             $this->assertNotBlocked($learner);
             $user = $learner->getUser();
             if (null !== $file) {
-                $user->setPhotoPath($this->images->storePhoto($file, $user->getPhotoPath()));
+                $user->setPhotoPath($this->images->storePhoto($file->getPathname(), $user->getPhotoPath()));
                 $this->activityLogger->log(\sprintf('Updated ID photo of %s', $learner->getLrn()));
             } else {
                 $this->images->remove($user->getPhotoPath());

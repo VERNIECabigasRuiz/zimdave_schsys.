@@ -130,11 +130,11 @@ class PdsPdfRendererTest extends KernelTestCase
 
     public function testPhotoIsEmbeddedInPhotoBox(): void
     {
-        $images = new \App\Service\ImageProcessor(static::getContainer()->getParameter('app.upload_root'), new \Symfony\Component\Filesystem\Filesystem());
+        $images = new \App\Core\Infrastructure\FileStorage\ImageProcessor(static::getContainer()->getParameter('app.upload_root'), new \Symfony\Component\Filesystem\Filesystem());
         $source = sys_get_temp_dir().'/zim_pdf_photo.jpg';
         imagejpeg(imagecreatetruecolor(400, 500), $source);
         $sheet = $this->sheet();
-        $sheet->getUser()->setPhotoPath($images->storePhoto(new \Symfony\Component\HttpFoundation\File\File($source), null));
+        $sheet->getUser()->setPhotoPath($images->storePhoto($source, null));
 
         $html = $this->renderer->renderHtml($sheet);
 

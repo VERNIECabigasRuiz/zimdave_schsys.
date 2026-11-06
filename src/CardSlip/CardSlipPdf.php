@@ -2,11 +2,10 @@
 
 namespace App\CardSlip;
 
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\Entity\GradingPeriod;
 use App\Entity\Section;
-use App\Service\ImageProcessor;
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Twig\Environment;
 
 /**
@@ -16,24 +15,16 @@ use Twig\Environment;
 class CardSlipPdf
 {
     public function __construct(
+        private readonly PdfRendererInterface $pdf,
         private readonly Environment $twig,
-        private readonly ImageProcessor $images,
+        private readonly ImageProcessorInterface $images,
     ) {
     }
 
     /** @param list<CardSlip> $slips */
     public function render(array $slips): string
     {
-        $options = new Options();
-        $options->setIsRemoteEnabled(false);
-        $options->setDefaultFont('DejaVu Sans');
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($this->html($slips));
-        // the page size is set by @page in the template
-        $dompdf->render();
-
-        return (string) $dompdf->output();
+        return $this->pdf->render($this->html($slips));
     }
 
     /** @param list<CardSlip> $slips */

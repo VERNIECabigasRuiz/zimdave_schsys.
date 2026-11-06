@@ -7,9 +7,9 @@ use App\Form\SchoolProfileFormType;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Security\Voter\SchoolVoter;
-use App\Service\ActivityLogger;
-use App\Service\ImageProcessingException;
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
+use App\Core\Domain\Exception\ImageProcessingException;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -26,9 +26,9 @@ class SchoolProfileController extends AbstractController
     public function __construct(
         private readonly SchoolYearRepository $schoolYears,
         private readonly SchoolAssignmentRepository $assignments,
-        private readonly ImageProcessor $images,
+        private readonly ImageProcessorInterface $images,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
     ) {
     }
 
@@ -49,11 +49,11 @@ class SchoolProfileController extends AbstractController
             $logo = $form->get('logo')->getData();
             try {
                 if ($logo instanceof UploadedFile) {
-                    $school->setLogoPath($this->images->storeLogo($logo, $school->getLogoPath()));
+                    $school->setLogoPath($this->images->storeLogo($logo->getPathname(), $school->getLogoPath()));
                 }
                 $signature = $form->get('idSignature')->getData();
                 if ($signature instanceof UploadedFile) {
-                    $school->setIdSignaturePath($this->images->storeSignature($signature, $school->getIdSignaturePath()))
+                    $school->setIdSignaturePath($this->images->storeSignature($signature->getPathname(), $school->getIdSignaturePath()))
                         ->setIdSignatureBy($user);
                 }
                 $this->activityLogger->log('Updated school profile '.$school->getName());

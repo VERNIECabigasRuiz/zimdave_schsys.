@@ -30,7 +30,7 @@ use App\Repository\SubjectRepository;
 use App\Service\ClassPeriodManager;
 use App\Service\LearnerEnrollment;
 use App\Service\PrincipalAssigner;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Service\SchoolTeacherManager;
 use App\Service\SectionManager;
 use App\Service\SubjectManager;
@@ -76,7 +76,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
         private readonly SchoolRepository $schools,
         private readonly SchoolYearRepository $schoolYears,
         private readonly SubjectRepository $subjects,
@@ -251,9 +251,11 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
     {
         $this->subjectManager->addDepEdSet($school, $schoolYear, $grade);
 
+        $name = $this->faker->randomElement(self::SECTION_NAMES);
+        \assert(\is_string($name));
         $section = (new Section($school, $schoolYear))
             ->setGradeLevel($grade)
-            ->setName($this->faker->randomElement(self::SECTION_NAMES) . ' ' . $grade->value)
+            ->setName($name . ' ' . $grade->value)
             ->setAdviser($adviser);
         $this->sections->save($section);
 
@@ -317,7 +319,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         for ($i = 0; $i < $count; ++$i) {
             $sex = 0 === $i % 2 ? SexAtBirth::Male : SexAtBirth::Female;
             $gender = SexAtBirth::Male === $sex ? 'male' : 'female';
-            $age = 12 + ($section->getGradeLevel()?->value ?? 7) - 7;
+            $age = 12 + ($section->getGradeLevel()->value ?? 7) - 7;
             $learner = (new Learner(new User(), $this->clock->now()))
                 ->setLrn(\sprintf('9%011d', $this->nextLrn++))
                 ->setLastName($this->faker->lastName())
@@ -354,6 +356,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
             $marks = [];
             foreach ($classList as $enrollment) {
                 $mark = $this->faker->optional(0.1)->randomElement([LearnerMark::Absent, LearnerMark::Late]);
+                \assert(null === $mark || $mark instanceof LearnerMark);
                 $marks[(int) $enrollment->getId()] = $mark;
             }
             $this->attendance->takeRollCall($section, $day, $marks, $adviser);

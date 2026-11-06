@@ -15,7 +15,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Repository\StaffIdDetailsRepository;
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\StaffId\StaffIdCardBuilder;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -66,7 +66,7 @@ class StaffIdCardBuilderTest extends KernelTestCase
             $c->get(SchoolAssignmentRepository::class),
             $c->get(SchoolYearRepository::class),
             $c->get(DivisionRepository::class),
-            $c->get(ImageProcessor::class),
+            $c->get(ImageProcessorInterface::class),
             $c->getParameter('kernel.project_dir'),
         );
     }

@@ -97,10 +97,9 @@ final class BusIntegrationTest extends KernelTestCase
 
         // Assert
         self::assertSame('INTERNAL_ERROR', $result->errorCode());
-        self::assertSame(
-            0,
-            (int) $this->connection->fetchOne("SELECT COUNT(*) FROM activity_log WHERE username = 'bus-test'"),
-        );
+        $count = $this->connection->fetchOne("SELECT COUNT(*) FROM activity_log WHERE username = 'bus-test'");
+        self::assertIsNumeric($count);
+        self::assertSame(0, (int) $count);
     }
 
     public function testCachedQueryRunsHandlerOnce(): void

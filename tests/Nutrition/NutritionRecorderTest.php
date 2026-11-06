@@ -26,8 +26,8 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SectionRepository;
 use App\Repository\Sf8SubmissionRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\ActivityLogger;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
+use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -102,7 +102,7 @@ class NutritionRecorderTest extends KernelTestCase
             ),
             $c->get(NutritionAssessmentRepository::class),
             $c->get(Sf8SubmissionRepository::class),
-            $c->get(ActivityLogger::class),
+            $c->get(ActivityLoggerInterface::class),
             $clock,
         );
     }

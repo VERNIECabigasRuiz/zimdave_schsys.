@@ -325,8 +325,8 @@ parameters:
 			path: ../src/Controller/Principal/DashboardController.php
 
 		-
-			message: '#^Parameter \#1 \$file of method App\\Service\\ImageProcessor\:\:storePhoto\(\) expects Symfony\\Component\\HttpFoundation\\File\\File, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Cannot call method getPathname\(\) on mixed\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../src/Controller/ProfileController.php
 
@@ -1687,48 +1687,6 @@ parameters:
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Cannot access offset ''Orientation'' on array\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/Service/ImageProcessor.php
-
-		-
-			message: '#^Method App\\Service\\ImageProcessor\:\:applyExifOrientation\(\) has parameter \$size with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Service/ImageProcessor.php
-
-		-
-			message: '#^Method App\\Service\\ImageProcessor\:\:applyExifOrientation\(\) should return GdImage but returns GdImage\|false\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Service/ImageProcessor.php
-
-		-
-			message: '#^Parameter \#1 \$image of function imageflip expects GdImage, GdImage\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Service/ImageProcessor.php
-
-		-
-			message: '#^Parameter \#1 \$width of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Service/ImageProcessor.php
-
-		-
-			message: '#^Parameter \#2 \$height of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Service/ImageProcessor.php
-
-		-
-			message: '#^Parameter \#4 \$color of function imagefill expects int, int\<0, max\>\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Service/ImageProcessor.php
-
-		-
 			message: '#^Cannot call method formLabel\(\) on App\\Entity\\EducationLevel\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -1807,15 +1765,6 @@ parameters:
 			path: ../src/Validator/ValidServiceRowValidator.php
 
 		-
-			message: '''
-				#^Call to deprecated method expectExceptionMessage\(\) of class PHPUnit\\Framework\\TestCase\:
-				https\://github\.com/sebastianbergmann/phpunit/issues/6560$#
-			'''
-			identifier: method.deprecated
-			count: 5
-			path: ../tests/Attendance/AttendanceRecorderTest.php
-
-		-
 			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:badRanges\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1823,12 +1772,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Attendance/AttendanceRecorderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: ../tests/Attendance/AttendanceRecorderTest.php
@@ -1852,34 +1795,16 @@ parameters:
 			path: ../tests/Attendance/AttendanceRecorderTest.php
 
 		-
-			message: '#^Method App\\Tests\\Attendance\\AttendanceStatisticsTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Attendance/AttendanceStatisticsTest.php
-
-		-
 			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Attendance/AttendanceStatisticsTest.php
 
 		-
-			message: '#^Method App\\Tests\\Attendance\\SchoolCalendarTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Attendance/SchoolCalendarTest.php
-
-		-
 			message: '#^Method App\\Tests\\Attendance\\SchoolCalendarTest\:\:ymd\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: ../tests/Attendance/SchoolCalendarTest.php
-
-		-
-			message: '#^Method App\\Tests\\Attendance\\Sf2ReportBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Attendance/Sf2ReportBuilderTest.php
 
 		-
 			message: '#^Parameter \#1 \$keys of function array_combine expects array\<int\|string\>, list\<int\|null\> given\.$#'
@@ -1892,12 +1817,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../tests/Attendance/Sf2ReportBuilderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Attendance\\Sf2RosterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Attendance/Sf2RosterTest.php
 
 		-
 			message: '#^Cannot cast mixed to string\.$#'
@@ -1936,12 +1855,6 @@ parameters:
 			path: ../tests/CardSlip/CardSlipBuilderTest.php
 
 		-
-			message: '#^Method App\\Tests\\CardSlip\\CardSlipBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/CardSlip/CardSlipBuilderTest.php
-
-		-
 			message: '#^Property App\\Tests\\CardSlip\\CardSlipBuilderTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -1966,12 +1879,6 @@ parameters:
 			path: ../tests/CardSlip/CardSlipPdfTest.php
 
 		-
-			message: '#^Method App\\Tests\\CardSlip\\TermAttendanceTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/CardSlip/TermAttendanceTest.php
-
-		-
 			message: '#^Offset int\|null might not exist on array\<int, App\\CardSlip\\AttendanceTally\|null\>\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
@@ -1994,12 +1901,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../tests/CardSlip/TermAttendanceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Controller/Admin/AdminTestCase.php
 
 		-
 			message: '#^Method App\\Tests\\Controller\\Admin\\DashboardControllerTest\:\:adminPages\(\) return type has no value type specified in iterable type iterable\.$#'
@@ -3058,12 +2959,6 @@ parameters:
 			path: ../tests/Controller/SecurityControllerTest.php
 
 		-
-			message: '#^Method App\\Tests\\Controller\\SecurityControllerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Controller/SecurityControllerTest.php
-
-		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -3496,12 +3391,6 @@ parameters:
 			path: ../tests/Data/PhilippineDivisionsTest.php
 
 		-
-			message: '#^Method App\\Tests\\Entity\\ClassPeriodTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/ClassPeriodTest.php
-
-		-
 			message: '#^Method App\\Tests\\Entity\\ClassPeriodTest\:\:violations\(\) should return list\<string\> but returns array\<int, string\|Stringable\>\.$#'
 			identifier: return.type
 			count: 1
@@ -3604,12 +3493,6 @@ parameters:
 			path: ../tests/Entity/GradeEntitiesTest.php
 
 		-
-			message: '#^Method App\\Tests\\Entity\\GradeEntitiesTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
 			message: '#^Offset int\|null might not exist on array\<int, App\\Entity\\Grade\>\.$#'
 			identifier: offsetAccess.notFound
 			count: 4
@@ -3647,12 +3530,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Tests\\Entity\\LearnerTest\:\:messages\(\) should return list\<string\> but returns array\<int, string\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/LearnerTest.php
-
-		-
-			message: '#^Method App\\Tests\\Entity\\LearnerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: ../tests/Entity/LearnerTest.php
@@ -3712,12 +3589,6 @@ parameters:
 			path: ../tests/Entity/NutritionEntitiesTest.php
 
 		-
-			message: '#^Method App\\Tests\\Entity\\NutritionEntitiesTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
 			message: '#^Parameter \#1 \$section of method App\\Repository\\NutritionAssessmentRepository\:\:findFor\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3754,12 +3625,6 @@ parameters:
 			path: ../tests/Entity/SectionTest.php
 
 		-
-			message: '#^Method App\\Tests\\Entity\\SectionTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/SectionTest.php
-
-		-
 			message: '#^Method App\\Tests\\Entity\\SectionTest\:\:violations\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
 			identifier: return.type
 			count: 1
@@ -3778,12 +3643,6 @@ parameters:
 			path: ../tests/Entity/SubjectTest.php
 
 		-
-			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/SubjectTest.php
-
-		-
 			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:violations\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
 			identifier: return.type
 			count: 1
@@ -3794,12 +3653,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../tests/Entity/SubjectTest.php
-
-		-
-			message: '#^Method App\\Tests\\Entity\\TimetableEntitiesTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/TimetableEntitiesTest.php
 
 		-
 			message: '#^Cannot call method getDecidedAt\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
@@ -3838,12 +3691,6 @@ parameters:
 			path: ../tests/Grading/GradeChangeManagerTest.php
 
 		-
-			message: '#^Method App\\Tests\\Grading\\GradeChangeManagerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Grading/GradeChangeManagerTest.php
-
-		-
 			message: '#^Method App\\Tests\\Grading\\GradeChangeManagerTest\:\:savedValues\(\) should return array\<int, int\> but returns array\<int\|string, int\>\.$#'
 			identifier: return.type
 			count: 1
@@ -3863,12 +3710,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Tests\\Grading\\GradeRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Grading\\GradeRecorderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: ../tests/Grading/GradeRecorderTest.php
@@ -3922,12 +3763,6 @@ parameters:
 			path: ../tests/Grading/GradeRulesTest.php
 
 		-
-			message: '#^Method App\\Tests\\Grading\\GradeRulesTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Grading/GradeRulesTest.php
-
-		-
 			message: '#^Parameter \#2 \$componentGrades of method App\\Grading\\GradeRules\:\:parentGrade\(\) expects array\<int, int\|null\>, array\<int\|string, int\> given\.$#'
 			identifier: argument.type
 			count: 5
@@ -3958,12 +3793,6 @@ parameters:
 			path: ../tests/Grading/SectionGradeGridTest.php
 
 		-
-			message: '#^Method App\\Tests\\Grading\\SectionGradeGridTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Grading/SectionGradeGridTest.php
-
-		-
 			message: '#^Parameter \#2 \$period of method App\\Tests\\Grading\\SectionGradeGridTest\:\:openGrading\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3988,12 +3817,6 @@ parameters:
 			path: ../tests/LessonPlan/LessonWeekTest.php
 
 		-
-			message: '#^Method App\\Tests\\LessonPlan\\LessonWeekTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/LessonPlan/LessonWeekTest.php
-
-		-
 			message: '#^Cannot call method getHeightM\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -4013,12 +3836,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Tests\\Nutrition\\NutritionRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Nutrition\\NutritionRecorderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: ../tests/Nutrition/NutritionRecorderTest.php
@@ -4090,12 +3907,6 @@ parameters:
 			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
 
 		-
-			message: '#^Method App\\Tests\\Nutrition\\Sf8ReportBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 3
@@ -4150,12 +3961,6 @@ parameters:
 			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
 
 		-
-			message: '#^Method App\\Tests\\Repository\\CardSlipCommentRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
 			message: '#^Offset int\|null might not exist on non\-empty\-array\<int, App\\Entity\\CardSlipComment\>\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
@@ -4180,20 +3985,8 @@ parameters:
 			path: ../tests/Repository/EnrollmentRepositoryTest.php
 
 		-
-			message: '#^Method App\\Tests\\Repository\\EnrollmentRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Repository/EnrollmentRepositoryTest.php
-
-		-
 			message: '#^Call to an undefined method Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\GradeChangeLine\>\:\:isInitialized\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
-
-		-
-			message: '#^Method App\\Tests\\Repository\\GradeChangeRequestRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
 			count: 1
 			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
 
@@ -4208,18 +4001,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
-
-		-
-			message: '#^Method App\\Tests\\Repository\\GradeOpeningRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Repository/GradeOpeningRepositoryTest.php
-
-		-
-			message: '#^Method App\\Tests\\Repository\\RollCallRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Repository/RollCallRepositoryTest.php
 
 		-
 			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\>, non\-empty\-array\<''''\|int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\:\:Absent\}\> given\.$#'
@@ -4276,52 +4057,10 @@ parameters:
 			path: ../tests/Repository/RollCallRepositoryTest.php
 
 		-
-			message: '#^Method App\\Tests\\Security\\AttendanceVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Security/AttendanceVoterTest.php
-
-		-
-			message: '#^Method App\\Tests\\Security\\CardSlipVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Security/CardSlipVoterTest.php
-
-		-
-			message: '#^Method App\\Tests\\Security\\GradeVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Security/GradeVoterTest.php
-
-		-
 			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Security/GradeVoterTest.php
-
-		-
-			message: '#^Method App\\Tests\\Security\\LearnerVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Security/LearnerVoterTest.php
-
-		-
-			message: '#^Method App\\Tests\\Security\\NutritionVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Security/NutritionVoterTest.php
-
-		-
-			message: '#^Method App\\Tests\\Security\\SchoolVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Security/SchoolVoterTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\IdCardBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/IdCardBuilderTest.php
 
 		-
 			message: '#^Parameter \#1 \$enrollment of method App\\LearnerId\\IdCardBuilder\:\:forEnrollment\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
@@ -4348,75 +4087,6 @@ parameters:
 			path: ../tests/Service/IdCardPdfTest.php
 
 		-
-			message: '''
-				#^Call to deprecated method expectExceptionMessage\(\) of class PHPUnit\\Framework\\TestCase\:
-				https\://github\.com/sebastianbergmann/phpunit/issues/6560$#
-			'''
-			identifier: method.deprecated
-			count: 1
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Cannot access offset ''mime'' on array\{0\: int\<0, max\>, 1\: int\<0, max\>, 2\: int, 3\: string, mime\: string, channels\?\: int, bits\?\: int\}\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Cannot access offset 0 on array\{0\: int\<0, max\>, 1\: int\<0, max\>, 2\: int, 3\: string, mime\: string, channels\?\: int, bits\?\: int\}\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Cannot access offset 1 on array\{0\: int\<0, max\>, 1\: int\<0, max\>, 2\: int, 3\: string, mime\: string, channels\?\: int, bits\?\: int\}\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Parameter \#1 \$image of function imagecolorat expects GdImage, GdImage\|false given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Parameter \#1 \$image of function imagecolorsforindex expects GdImage, GdImage\|false given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Parameter \#1 \$width of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Parameter \#2 \$color of function imagecolorsforindex expects int, int\<0, max\>\|false given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Parameter \#2 \$height of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Parameter \#4 \$color of function imagefill expects int, int\<0, max\>\|false given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
-			message: '#^Parameter \#6 \$color of function imagefilledrectangle expects int, int\<0, max\>\|false given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../tests/Service/ImageProcessorTest.php
-
-		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -4437,12 +4107,6 @@ parameters:
 		-
 			message: '#^Cannot call method getStartsAt\(\) on App\\Entity\\ClassPeriod\|null\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: ../tests/Service/InUseProtectionTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\InUseProtectionTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
 			count: 1
 			path: ../tests/Service/InUseProtectionTest.php
 
@@ -4495,12 +4159,6 @@ parameters:
 			path: ../tests/Service/LearnerEnrollmentTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\LearnerEnrollmentTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/LearnerEnrollmentTest.php
-
-		-
 			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4531,45 +4189,15 @@ parameters:
 			path: ../tests/Service/LearnerIdQrCodeTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\LearnerLookupTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/LearnerLookupTest.php
-
-		-
 			message: '#^Parameter \#2 \$offset of function substr expects int, int\<0, max\>\|false given\.$#'
 			identifier: argument.type
 			count: 3
 			path: ../tests/Service/PdsPdfRendererTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\PlanLimitsTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/PlanLimitsTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\SectionAdvisoryCleanupTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/SectionAdvisoryCleanupTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\Sf1RemarksTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/Sf1RemarksTest.php
-
-		-
 			message: '#^Cannot call method setRemarkCode\(\) on App\\Entity\\Enrollment\|null\.$#'
 			identifier: method.nonObject
 			count: 2
-			path: ../tests/Service/Sf1ReportBuilderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\Sf1ReportBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
 			path: ../tests/Service/Sf1ReportBuilderTest.php
 
 		-
@@ -4633,12 +4261,6 @@ parameters:
 			path: ../tests/Service/SubjectManagerTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\SubjectManagerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
 			message: '#^Parameter \#1 \$lrn of method App\\Tests\\Service\\SubjectManagerTest\:\:learner\(\) expects string, int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4687,12 +4309,6 @@ parameters:
 			path: ../tests/Service/TimetableManagerTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\TimetableManagerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/TimetableManagerTest.php
-
-		-
 			message: '#^Parameter \#1 \$load of method App\\Tests\\Service\\TimetableManagerTest\:\:plotElsewhere\(\) expects App\\Entity\\TeachingLoad, App\\Entity\\TeachingLoad\|null given\.$#'
 			identifier: argument.type
 			count: 3
@@ -4703,12 +4319,6 @@ parameters:
 			identifier: ternary.alwaysFalse
 			count: 1
 			path: ../tests/Service/TimetableManagerTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\TimetableNowTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/TimetableNowTest.php
 
 		-
 			message: '#^Offset ''label'' might not exist on array\{label\: string, startsAt\: string\}\|null\.$#'
@@ -4783,12 +4393,6 @@ parameters:
 			path: ../tests/Service/TimetableQueryTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\TimetableQueryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/TimetableQueryTest.php
-
-		-
 			message: '#^Method App\\Tests\\Service\\TimetableQueryTest\:\:sortedKeys\(\) has parameter \$map with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -4825,12 +4429,6 @@ parameters:
 			path: ../tests/Service/TimetableQueryTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\TransferManagerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/TransferManagerTest.php
-
-		-
 			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4839,12 +4437,6 @@ parameters:
 		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
-
-		-
-			message: '#^Method App\\Tests\\ServiceRecord\\ServiceRecordEntryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
 			count: 1
 			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
 
@@ -4859,15 +4451,3 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
-
-		-
-			message: '#^Method App\\Tests\\ServiceRecord\\ServiceRecordPdfTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/ServiceRecord/ServiceRecordPdfTest.php
-
-		-
-			message: '#^Method App\\Tests\\StaffId\\StaffIdCardBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/StaffId/StaffIdCardBuilderTest.php

@@ -33,7 +33,7 @@ use App\Repository\RollCallRepository;
 use App\Repository\SchoolDayOffRepository;
 use App\Repository\SubjectRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\SchoolClock;
+use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;

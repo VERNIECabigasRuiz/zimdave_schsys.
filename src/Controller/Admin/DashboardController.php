@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
-use App\Repository\ActivityLogRepository;
+use App\Core\Domain\Model\Repository\ActivityLogRepositoryInterface;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolRepository;
 use App\Repository\SchoolYearRepository;
@@ -20,7 +20,7 @@ class DashboardController extends AbstractController
     #[Route('/admin', name: 'admin_dashboard')]
     public function index(
         UserRepository $users,
-        ActivityLogRepository $activity,
+        ActivityLogRepositoryInterface $activity,
         SchoolYearRepository $schoolYears,
         SchoolRepository $schools,
         SchoolAssignmentRepository $assignments,

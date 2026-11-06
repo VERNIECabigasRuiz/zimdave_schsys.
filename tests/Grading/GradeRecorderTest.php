@@ -2,7 +2,7 @@
 
 namespace App\Tests\Grading;
 
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeLevel;
@@ -30,9 +30,9 @@ use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\LearnerLock;
-use App\Service\SchoolClock;
+use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -116,7 +116,7 @@ class GradeRecorderTest extends KernelTestCase
             $c->get(GradeLockRepository::class),
             $c->get(GradeUnlockRepository::class),
             $c->get(GradeOpeningRepository::class),
-            $c->get(ActivityLogger::class),
+            $c->get(ActivityLoggerInterface::class),
             new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
         );
     }

@@ -2,13 +2,12 @@
 
 namespace App\LessonPlan;
 
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\Entity\LessonPlan;
 use App\Entity\User;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\ServiceRecordEntryRepository;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Twig\Environment;
 
 use function Symfony\Component\String\u;
@@ -20,6 +19,7 @@ class LessonPlanPdf
     private const LETTER_LANDSCAPE = [0, 0, 792, 612];
 
     public function __construct(
+        private readonly PdfRendererInterface $pdf,
         private readonly Environment $twig,
         private readonly ServiceRecordEntryRepository $entries,
         private readonly SchoolAssignmentRepository $assignments,
@@ -29,16 +29,7 @@ class LessonPlanPdf
 
     public function render(LessonPlan $plan): string
     {
-        $options = new Options();
-        $options->setIsRemoteEnabled(false);
-        $options->setDefaultFont('DejaVu Sans');
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($this->html($plan));
-        $dompdf->setPaper(self::LETTER_LANDSCAPE);
-        $dompdf->render();
-
-        return (string) $dompdf->output();
+        return $this->pdf->render($this->html($plan), self::LETTER_LANDSCAPE);
     }
 
     public function html(LessonPlan $plan): string

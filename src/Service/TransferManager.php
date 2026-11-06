@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\Enrollment;
 use App\Entity\Section;
 use App\Entity\TransferRequest;
@@ -26,7 +27,7 @@ class TransferManager
         private readonly LearnerLock $lock,
         private readonly TransferRequestRepository $transfers,
         private readonly EnrollmentGuard $guard,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly ClockInterface $clock,
     ) {
     }

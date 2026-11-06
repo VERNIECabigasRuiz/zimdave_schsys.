@@ -2,6 +2,7 @@
 
 namespace App\ServiceRecord;
 
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\Entity\PersonalDataSheet;
 use App\Entity\School;
 use App\Entity\User;
@@ -10,9 +11,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Repository\ServiceRecordRepository;
-use App\Service\SchoolClock;
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Environment;
 
@@ -29,13 +28,14 @@ class ServiceRecordPdf
     private const SEAL = '/assets/images/deped-seal.png';
 
     public function __construct(
+        private readonly PdfRendererInterface $pdf,
         private readonly Environment $twig,
         private readonly PersonalDataSheetRepository $sheets,
         private readonly ServiceRecordRepository $records,
         private readonly ServiceRecordEntryRepository $entries,
         private readonly SchoolAssignmentRepository $assignments,
         private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
     ) {
@@ -43,16 +43,7 @@ class ServiceRecordPdf
 
     public function render(User $employee, School $school): string
     {
-        $options = new Options();
-        $options->setIsRemoteEnabled(false);
-        $options->setDefaultFont('DejaVu Sans');
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($this->html($employee, $school));
-        $dompdf->setPaper(self::LONG_BOND);
-        $dompdf->render();
-
-        return (string) $dompdf->output();
+        return $this->pdf->render($this->html($employee, $school), self::LONG_BOND);
     }
 
     public function html(User $employee, School $school): string

@@ -9,7 +9,7 @@ use App\Entity\Section;
 use App\Entity\User;
 use App\Grading\GradeRules;
 use App\Repository\CardSlipCommentRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** Saves the adviser's card slip comments; a learner without a saved row prints the suggested ones. */
@@ -19,7 +19,7 @@ class CardSlipCommentRecorder
         private readonly EntityManagerInterface $entityManager,
         private readonly CardSlipCommentRepository $comments,
         private readonly GradeRules $rules,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

@@ -6,7 +6,7 @@ use App\Entity\School;
 use App\Entity\ServiceRecordEntry;
 use App\Entity\User;
 use App\Repository\ServiceRecordEntryRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** Starts and saves service record rows the way a principal adds them: one change at a time after the last. */
@@ -15,7 +15,7 @@ class ServiceRecordKeeper
     public function __construct(
         private readonly ServiceRecordEntryRepository $entries,
         private readonly EntityManagerInterface $entityManager,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

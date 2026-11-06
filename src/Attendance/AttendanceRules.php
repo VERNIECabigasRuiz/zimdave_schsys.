@@ -5,7 +5,7 @@ namespace App\Attendance;
 use App\Entity\Section;
 use App\Repository\RollCallRepository;
 use App\Repository\Sf2SubmissionRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
 /** When attendance may be taken and a month submitted. Who may do it is AttendanceVoter's question. */
 class AttendanceRules
@@ -14,7 +14,7 @@ class AttendanceRules
         private readonly SchoolCalendar $calendar,
         private readonly RollCallRepository $rollCalls,
         private readonly Sf2SubmissionRepository $submissions,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

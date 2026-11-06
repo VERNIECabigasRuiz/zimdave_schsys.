@@ -15,7 +15,6 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
-use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Caches the data of successful queries marked #[Cacheable]. Invalidate an entry
@@ -45,7 +44,6 @@ final class CachingMiddleware implements MiddlewareInterface
 
         try {
             $item = $this->cache->getItem('bus.' . sha1($message::class . serialize($message)));
-            assert($item instanceof ItemInterface);
             $item->tag($this->resolveTag($cacheable->namespace, $message));
         } catch (\Throwable $exception) {
             $this->logger->warning('Cache lookup failed for ' . $message::class . ', running it uncached.', [

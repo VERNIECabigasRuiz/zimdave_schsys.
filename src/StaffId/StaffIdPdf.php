@@ -2,8 +2,7 @@
 
 namespace App\StaffId;
 
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Environment;
 
@@ -21,6 +20,7 @@ class StaffIdPdf
     ];
 
     public function __construct(
+        private readonly PdfRendererInterface $pdf,
         private readonly Environment $twig,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
@@ -29,16 +29,7 @@ class StaffIdPdf
 
     public function render(StaffIdCard $card, StaffIdSize $size): string
     {
-        $options = new Options();
-        $options->setIsRemoteEnabled(false);
-        $options->setDefaultFont('DejaVu Sans');
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($this->html($card, $size));
-        $dompdf->setPaper(self::PAPER[$size->value]);
-        $dompdf->render();
-
-        return (string) $dompdf->output();
+        return $this->pdf->render($this->html($card, $size), self::PAPER[$size->value]);
     }
 
     public function html(StaffIdCard $card, StaffIdSize $size): string

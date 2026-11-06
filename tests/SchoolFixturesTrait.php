@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\LessonPlan;
 use App\Entity\Announcement;
 use App\Entity\AttendanceMark;
@@ -86,7 +86,8 @@ trait SchoolFixturesTrait
 
     protected function plan(string $name = 'Basic'): Plan
     {
-        return $this->em->getRepository(Plan::class)->findOneBy(['name' => $name]);
+        return $this->em->getRepository(Plan::class)->findOneBy(['name' => $name])
+            ?? throw new \LogicException(\sprintf('The "%s" plan is missing; the migrations seed it.', $name));
     }
 
     /** A plan of its own, so a test never edits the shared Basic row; clearSchoolData removes it. */

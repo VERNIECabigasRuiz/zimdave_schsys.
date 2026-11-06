@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\ClassPeriod;
 use App\Entity\ScheduleEntry;
 use App\Entity\School;
@@ -38,7 +39,7 @@ class TimetableManager
         private readonly ClassPeriodRepository $periods,
         private readonly SchoolAssignmentRepository $assignments,
         private readonly PlanLimits $planLimits,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly LockFactory $lockFactory,
     ) {
     }

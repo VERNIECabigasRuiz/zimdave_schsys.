@@ -2,9 +2,8 @@
 
 namespace App\LearnerId;
 
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\Entity\Section;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Twig\Environment;
 
 /** Learner ID cards (CR80, 54 × 86 mm) as a PDF, on A4 sheets or card-sized pages. */
@@ -13,23 +12,16 @@ class IdCardPdf
     public const PER_SHEET = 9;
     private const PER_ROW = 3;
 
-    public function __construct(private readonly Environment $twig)
-    {
+    public function __construct(
+        private readonly PdfRendererInterface $pdf,
+        private readonly Environment $twig,
+    ) {
     }
 
     /** @param list<IdCard> $cards */
     public function render(array $cards, IdLayout $layout): string
     {
-        $options = new Options();
-        $options->setIsRemoteEnabled(false);
-        $options->setDefaultFont('DejaVu Sans');
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($this->html($cards, $layout));
-        // the page size is set by @page in the templates
-        $dompdf->render();
-
-        return (string) $dompdf->output();
+        return $this->pdf->render($this->html($cards, $layout));
     }
 
     /** "IDs_2025_Grade 8 - ARTISTIC.pdf"; "/", "\" and "%" become "-", a download filename can't have them */

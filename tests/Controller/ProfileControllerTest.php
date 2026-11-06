@@ -242,7 +242,7 @@ class ProfileControllerTest extends AdminTestCase
 
     public function testHugeImageShowsErrorInsteadOfCrashing(): void
     {
-        $this->uploadPhoto(\App\Tests\Service\ImageProcessorTest::hugePngHeader(sys_get_temp_dir()), 'bomb.png');
+        $this->uploadPhoto(\App\Tests\Core\Integration\Infrastructure\FileStorage\ImageProcessorTest::hugePngHeader(sys_get_temp_dir()), 'bomb.png');
 
         self::assertResponseRedirects('/profile');
         $this->client->followRedirect();

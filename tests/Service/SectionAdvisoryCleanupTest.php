@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;

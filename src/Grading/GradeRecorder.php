@@ -17,8 +17,8 @@ use App\Repository\GradeLockRepository;
 use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
-use App\Service\ActivityLogger;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** Saves grade sheets and applies the principal's locks. A class's grades, and a school's locks, change one request at a time; a save and a lock never overlap. */
@@ -32,8 +32,8 @@ class GradeRecorder
         private readonly GradeLockRepository $locks,
         private readonly GradeUnlockRepository $unlocks,
         private readonly GradeOpeningRepository $openings,
-        private readonly ActivityLogger $activityLogger,
-        private readonly SchoolClock $clock,
+        private readonly ActivityLoggerInterface $activityLogger,
+        private readonly SchoolClockInterface $clock,
     ) {
     }
 

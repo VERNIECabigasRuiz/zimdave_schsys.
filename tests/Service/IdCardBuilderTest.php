@@ -16,7 +16,7 @@ use App\LearnerId\IdCardBuilder;
 use App\LearnerId\QrCode;
 use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolAssignmentRepository;
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -55,7 +55,7 @@ class IdCardBuilderTest extends KernelTestCase
         return new IdCardBuilder(
             $c->get(EnrollmentRepository::class),
             $c->get(SchoolAssignmentRepository::class),
-            $c->get(ImageProcessor::class),
+            $c->get(ImageProcessorInterface::class),
             new QrCode(),
             $c->getParameter('kernel.project_dir'),
         );

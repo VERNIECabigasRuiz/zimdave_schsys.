@@ -11,7 +11,7 @@ use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\SchoolRepository;
 use App\Repository\SchoolYearRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -29,7 +29,7 @@ class SchoolYearController extends AbstractController
     public function __construct(
         private readonly SchoolYearRepository $schoolYears,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
         private readonly GradeRepository $grades,
         private readonly GradeLockRepository $locks,
         private readonly GradeOpeningRepository $openings,

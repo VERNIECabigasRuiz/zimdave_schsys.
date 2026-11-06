@@ -10,7 +10,7 @@ use App\Entity\LearnerMark;
 use App\Entity\Section;
 use App\Repository\EnrollmentRepository;
 use App\Repository\RollCallRepository;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
 /**
  * A section's attendance over a grading term, counted as SF2 counts its months: only the school
@@ -22,7 +22,7 @@ class TermAttendance
         private readonly Sf2Roster $roster,
         private readonly SchoolCalendar $calendar,
         private readonly RollCallRepository $rollCalls,
-        private readonly SchoolClock $clock,
+        private readonly SchoolClockInterface $clock,
         private readonly EnrollmentRepository $enrollments,
     ) {
     }

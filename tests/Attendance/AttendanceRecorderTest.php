@@ -7,7 +7,7 @@ use App\Attendance\AttendanceRecorder;
 use App\Attendance\AttendanceRules;
 use App\Attendance\SchoolCalendar;
 use App\Attendance\Sf2Roster;
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\AttendanceMark;
 use App\Entity\Enrollment;
 use App\Entity\GradeLevel;
@@ -25,8 +25,8 @@ use App\Repository\RollCallRepository;
 use App\Repository\SchoolDayOffRepository;
 use App\Repository\Sf2SubmissionRepository;
 use App\Repository\TransferRequestRepository;
-use App\Service\ActivityLogger;
-use App\Service\SchoolClock;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
+use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Sf1\Sf1Remarks;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -102,7 +102,7 @@ class AttendanceRecorderTest extends KernelTestCase
             $c->get(RollCallRepository::class),
             $c->get(Sf2SubmissionRepository::class),
             $c->get(SchoolDayOffRepository::class),
-            $c->get(ActivityLogger::class),
+            $c->get(ActivityLoggerInterface::class),
             new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
         );
     }
@@ -151,7 +151,7 @@ class AttendanceRecorderTest extends KernelTestCase
     public function testRefusals(string $date, string $message): void
     {
         $this->expectException(AttendanceException::class);
-        $this->expectExceptionMessage($message);
+        $this->expectExceptionMessageIsOrContains($message);
 
         $this->recorder()->takeRollCall($this->artistic, new \DateTimeImmutable($date), [], $this->adviser);
     }
@@ -162,7 +162,7 @@ class AttendanceRecorderTest extends KernelTestCase
         $this->em->flush();
 
         $this->expectException(AttendanceException::class);
-        $this->expectExceptionMessage('July 2025 is submitted and locked.');
+        $this->expectExceptionMessageIsOrContains('July 2025 is submitted and locked.');
 
         $this->recorder()->takeRollCall($this->artistic, new \DateTimeImmutable('2025-07-15'), [], $this->adviser);
     }
@@ -209,7 +209,7 @@ class AttendanceRecorderTest extends KernelTestCase
         self::assertContains('Submitted SF2 of Grade 8 – ARTISTIC for July 2025', $this->logs());
 
         $this->expectException(AttendanceException::class);
-        $this->expectExceptionMessage('July 2025 is already submitted.');
+        $this->expectExceptionMessageIsOrContains('July 2025 is already submitted.');
         $this->recorder()->submit($this->artistic, new \DateTimeImmutable('2025-07-01'), $this->adviser, true);
     }
 
@@ -225,7 +225,7 @@ class AttendanceRecorderTest extends KernelTestCase
         self::assertSame(['Reopened SF2 of Grade 8 – ARTISTIC for July 2025'], $this->logs());
 
         $this->expectException(AttendanceException::class);
-        $this->expectExceptionMessage('July 2025 is not submitted.');
+        $this->expectExceptionMessageIsOrContains('July 2025 is not submitted.');
         $this->recorder()->reopen($this->artistic, new \DateTimeImmutable('2025-07-01'));
     }
 
@@ -254,7 +254,7 @@ class AttendanceRecorderTest extends KernelTestCase
     public function testBadRangesAreRefused(string $from, string $to, string $message): void
     {
         $this->expectException(AttendanceException::class);
-        $this->expectExceptionMessage($message);
+        $this->expectExceptionMessageIsOrContains($message);
 
         $this->recorder()->addDaysOff($this->school, $this->sy, new \DateTimeImmutable($from), new \DateTimeImmutable($to), 'Something', $this->principal);
     }

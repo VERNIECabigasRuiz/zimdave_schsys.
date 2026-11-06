@@ -2,6 +2,7 @@
 
 namespace App\Tests\CardSlip;
 
+use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\CardSlip\AttendanceTally;
 use App\CardSlip\CardSlip;
 use App\CardSlip\CardSlipLine;
@@ -11,7 +12,7 @@ use App\Entity\GradingPeriod;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Twig\Environment;
 
@@ -21,7 +22,7 @@ class CardSlipPdfTest extends KernelTestCase
     {
         self::bootKernel();
 
-        return new CardSlipPdf(static::getContainer()->get(Environment::class), static::getContainer()->get(ImageProcessor::class));
+        return new CardSlipPdf(static::getContainer()->get(PdfRendererInterface::class), static::getContainer()->get(Environment::class), static::getContainer()->get(ImageProcessorInterface::class));
     }
 
     private static function slip(string $name = 'DELA CRUZ, JUAN', bool $draft = false): CardSlip

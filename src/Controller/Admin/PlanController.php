@@ -6,7 +6,7 @@ use App\Entity\Plan;
 use App\Entity\User;
 use App\Form\PlanFormType;
 use App\Repository\PlanRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -23,7 +23,7 @@ class PlanController extends AbstractController
     public function __construct(
         private readonly PlanRepository $plans,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly ActivityLoggerInterface $activityLogger,
     ) {
     }
 

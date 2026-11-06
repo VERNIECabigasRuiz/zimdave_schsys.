@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\ActivityLog;
+use App\Core\Domain\Model\ActivityLog;
 use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeLevel;
@@ -21,10 +21,10 @@ use App\Repository\GradeRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
 use App\Repository\UserRepository;
-use App\Service\ActivityLogger;
+use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\EnrollmentException;
 use App\Service\EnrollmentGuard;
-use App\Service\ImageProcessor;
+use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Service\LearnerEnrollment;
 use App\Service\LearnerLock;
 use App\Service\PlanLimitException;
@@ -87,9 +87,9 @@ class LearnerEnrollmentTest extends KernelTestCase
             $c->get(UserRepository::class),
             $c->get(UserPasswordHasherInterface::class),
             new TemporaryPasswordGenerator(),
-            $c->get(ActivityLogger::class),
+            $c->get(ActivityLoggerInterface::class),
             $c->get(ClockInterface::class),
-            $c->get(ImageProcessor::class),
+            $c->get(ImageProcessorInterface::class),
             $c->get(GradeRepository::class),
         );
     }
