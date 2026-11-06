@@ -11,7 +11,7 @@ Tests and checks run in Docker only; `zimdave_schsys-web-1` must be running (`do
    - JS tests: `make test vitest FILTER=<file name part>`.
    - One static check: `make test phpstan` (or `deptrac`, `phpcs`, `eslint`, `stylelint`, `composer-audit`).
 2. Fix failures from evidence (test output, `var/log/test.log`, `reports/`), then re-run only the failing tests.
-3. Finish with the full run, one command at a time: `make test all`, then `make test-feature` (all database suites with the 100% coverage gate on `src/Core`), then `make regression-test` (browser tests in headless Chrome). The full run takes about 10 minutes in Docker on Windows (about 2, 7 and 1 minutes); give each a long timeout.
+3. Finish with the full run, one command at a time: `make test all`, then `make test-feature` (all database suites with the 100% coverage gate on the moved modules), then `make regression-test` (browser tests in headless Chrome). The full run takes about 10 minutes in Docker on Windows (about 2, 7 and 1 minutes); give each a long timeout.
 4. A run is clean only when:
    - `make test all` ends with a summary that has no ❌ line;
    - `make test-feature` shows PHPUnit's `OK (...)` with no deprecations, notices or warnings (`phpunit.dist.xml` fails on all three), followed by the coverage check's pass line;

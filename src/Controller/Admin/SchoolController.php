@@ -7,7 +7,7 @@ use App\Entity\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Form\PrincipalAssignmentFormType;
 use App\Form\SchoolFormType;
-use App\Repository\PlanRepository;
+use App\Billing\Domain\Model\Repository\PlanRepositoryInterface;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolRepository;
 use App\Repository\SchoolYearRepository;
@@ -61,7 +61,7 @@ class SchoolController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_schools_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, PlanRepository $plans): Response
+    public function new(Request $request, PlanRepositoryInterface $plans): Response
     {
         $school = (new School())->setPlan($plans->findByName('Basic'));
         $form = $this->createForm(SchoolFormType::class, $school);

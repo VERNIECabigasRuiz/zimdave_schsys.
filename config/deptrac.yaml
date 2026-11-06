@@ -56,6 +56,26 @@ deptrac:
         - type: classLike
           value: ^App\\Access\\Presentation\\.*
 
+    - name: Billing_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Domain\\.*
+
+    - name: Billing_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Application\\.*
+
+    - name: Billing_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Infrastructure\\.*
+
+    - name: Billing_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Presentation\\.*
+
     - name: Kernel
       collectors:
         - type: classLike
@@ -65,7 +85,7 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -143,6 +163,33 @@ deptrac:
       - SecurityUserContract
       - ValidatorConstraints
       - Framework
+    Billing_Domain:
+      - Core_Domain
+      - DoctrineMapping
+    Billing_Application:
+      - Billing_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - ValidatorConstraints
+    Billing_Infrastructure:
+      - Billing_Domain
+      - Billing_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+    Billing_Presentation:
+      - Billing_Application
+      - Billing_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - ValidatorConstraints
+      - Framework
     Kernel:
       - Core_Domain
       - Core_Application
@@ -166,6 +213,10 @@ deptrac:
       - Access_Application
       - Access_Infrastructure
       - Access_Presentation
+      - Billing_Domain
+      - Billing_Application
+      - Billing_Infrastructure
+      - Billing_Presentation
       - Kernel
       - DoctrineMapping
       - SecurityUserContract

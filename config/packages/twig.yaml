@@ -3,6 +3,7 @@ twig:
     paths:
         '%kernel.project_dir%/src/Core/Presentation/templates': Core
         '%kernel.project_dir%/src/Access/Presentation/templates': Access
+        '%kernel.project_dir%/src/Billing/Presentation/templates': Billing
 
 when@test:
     twig:

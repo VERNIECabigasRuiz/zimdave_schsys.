@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Billing\Domain\Model\Plan;
 use App\Access\Domain\Model\User;
 use App\Repository\SchoolRepository;
 use Doctrine\DBAL\Types\Types;

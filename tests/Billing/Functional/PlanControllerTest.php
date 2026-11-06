@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Tests\Controller\Admin;
+namespace App\Tests\Billing\Functional;
 
-use App\Entity\Plan;
 use App\Access\Domain\Model\User;
+use App\Billing\Domain\Model\Plan;
+use App\Tests\Controller\Admin\AdminTestCase;
+use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 
 class PlanControllerTest extends AdminTestCase
 {
@@ -14,6 +16,15 @@ class PlanControllerTest extends AdminTestCase
         return $this->em->getRepository(Plan::class)->findOneBy(['name' => $name]);
     }
 
+    /** The plan, freshly loaded; the test fails when there is none. */
+    private function requirePlan(string $name): Plan
+    {
+        $plan = $this->findPlan($name);
+        self::assertNotNull($plan, \sprintf('No plan "%s".', $name));
+
+        return $plan;
+    }
+
     private function submitNewPlan(string $name, int $teachers, int $students, bool $principal): void
     {
         $this->client->request('GET', '/admin/plans/new');
@@ -22,10 +33,12 @@ class PlanControllerTest extends AdminTestCase
             'plan_form[teachersPerSeat]' => (string) $teachers,
             'plan_form[studentsPerSeat]' => (string) $students,
         ]);
+        $includesPrincipal = $form['plan_form[includesPrincipal]'];
+        self::assertInstanceOf(ChoiceFormField::class, $includesPrincipal);
         if ($principal) {
-            $form['plan_form[includesPrincipal]']->tick();
+            $includesPrincipal->tick();
         } else {
-            $form['plan_form[includesPrincipal]']->untick();
+            $includesPrincipal->untick();
         }
         $this->client->submit($form);
     }
@@ -49,7 +62,7 @@ class PlanControllerTest extends AdminTestCase
         $this->submitNewPlan('Standard', 40, 2500, true);
         self::assertResponseRedirects('/admin/plans');
 
-        $plan = $this->findPlan('Standard');
+        $plan = $this->requirePlan('Standard');
         self::assertSame(40, $plan->getTeachersPerSeat());
         self::assertSame(2500, $plan->getStudentsPerSeat());
         self::assertTrue($plan->includesPrincipal());
@@ -69,15 +82,15 @@ class PlanControllerTest extends AdminTestCase
         $basic = $this->plan('Basic');
 
         try {
-            $this->client->request('GET', '/admin/plans/'.$basic->getId().'/edit');
+            $this->client->request('GET', '/admin/plans/' . $basic->getId() . '/edit');
             $this->client->submitForm('Save plan', ['plan_form[teachersPerSeat]' => '20']);
             self::assertResponseRedirects('/admin/plans');
 
-            self::assertSame(20, $this->findPlan('Basic')->getTeachersPerSeat());
+            self::assertSame(20, $this->requirePlan('Basic')->getTeachersPerSeat());
             self::assertContains('Updated plan Basic', $this->activityActions());
         } finally {
             // The seeded plans are shared by every test
-            $this->findPlan('Basic')->setTeachersPerSeat(15);
+            $this->requirePlan('Basic')->setTeachersPerSeat(15);
             $this->em->flush();
         }
     }
@@ -104,6 +117,68 @@ class PlanControllerTest extends AdminTestCase
 
         self::assertSelectorTextContains('.alert--error', 'Basic is used by 1 school(s) and cannot be deleted.');
         self::assertNotNull($this->findPlan('Basic'));
+    }
+
+    public function testDuplicateNameIsRefusedWithTheOtherErrors(): void
+    {
+        // Initialize
+        $individual = $this->plan('Individual');
+        $this->client->request('GET', '/admin/plans/new');
+
+        // Execute
+        $this->client->submitForm('Create plan', [
+            'plan_form[name]' => 'Basic',
+            'plan_form[teachersPerSeat]' => '',
+            'plan_form[studentsPerSeat]' => '0',
+        ]);
+        $createStatus = $this->client->getResponse()->getStatusCode();
+        $createText = $this->client->getCrawler()->filter('.form-card')->text();
+        $this->client->request('GET', '/admin/plans/' . $individual->getId() . '/edit');
+        $this->client->submitForm('Save plan', ['plan_form[name]' => 'Basic']);
+
+        // Assert
+        self::assertSame(422, $createStatus);
+        self::assertStringContainsString('This plan already exists.', $createText);
+        self::assertStringContainsString('This value should not be null.', $createText);
+        self::assertStringContainsString('This value should be positive.', $createText);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'This plan already exists.');
+        self::assertNotNull($this->findPlan('Individual'), 'The edit was not saved');
+    }
+
+    public function testEditKeepsItsOwnName(): void
+    {
+        // Initialize
+        $basic = $this->plan('Basic');
+        $this->client->request('GET', '/admin/plans/' . $basic->getId() . '/edit');
+
+        // Execute
+        $this->client->submitForm('Save plan');
+
+        // Assert
+        self::assertResponseRedirects('/admin/plans');
+    }
+
+    public function testUnknownPlanIs404(): void
+    {
+        // Initialize
+        $this->submitNewPlan('Trial', 1, 10, false);
+        $trial = $this->findPlan('Trial');
+        self::assertNotNull($trial);
+        $id = $trial->getId();
+        $crawler = $this->client->request('GET', '/admin/plans');
+        $token = $crawler->filter('form[action="/admin/plans/' . $id . '/delete"] input[name="_token"]')->attr('value');
+        $this->em->remove($trial);
+        $this->em->flush();
+
+        // Execute
+        $this->client->request('GET', '/admin/plans/' . $id . '/edit');
+        $editStatus = $this->client->getResponse()->getStatusCode();
+        $this->client->request('POST', '/admin/plans/' . $id . '/delete', ['_token' => $token]);
+
+        // Assert
+        self::assertSame(404, $editStatus);
+        self::assertResponseStatusCodeSame(404);
     }
 
     public function testPrincipalCannotOpenPlans(): void

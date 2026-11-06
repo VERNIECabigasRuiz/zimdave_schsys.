@@ -3,7 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Core\Domain\Model\ActivityLog;
-use App\Entity\Plan;
+use App\Billing\Domain\Model\Plan;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
 use App\Entity\SchoolType;

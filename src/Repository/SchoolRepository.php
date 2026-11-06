@@ -54,4 +54,18 @@ class SchoolRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * @return array<int, int> number of schools keyed by plan id
+     */
+    public function countByPlan(): array
+    {
+        $rows = $this->createQueryBuilder('s')
+            ->select('IDENTITY(s.plan) AS planId', 'COUNT(s.id) AS schools')
+            ->groupBy('s.plan')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map('intval', array_column($rows, 'schools', 'planId'));
+    }
 }

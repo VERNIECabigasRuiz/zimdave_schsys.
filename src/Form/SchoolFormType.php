@@ -2,11 +2,11 @@
 
 namespace App\Form;
 
+use Doctrine\ORM\EntityRepository;
 use App\Data\PhilippineDivisions;
-use App\Entity\Plan;
+use App\Billing\Domain\Model\Plan;
 use App\Entity\School;
 use App\Entity\SchoolType;
-use App\Repository\PlanRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -56,7 +56,7 @@ class SchoolFormType extends AbstractType
                     $plan->getTeachersPerSeat(),
                     number_format($plan->getStudentsPerSeat()),
                 ),
-                'query_builder' => static fn (PlanRepository $plans) => $plans->createQueryBuilder('p')->orderBy('p.name'),
+                'query_builder' => static fn (EntityRepository $plans) => $plans->createQueryBuilder('p')->orderBy('p.name'),
                 'placeholder' => 'Choose a plan',
             ])
             ->add('seats', IntegerType::class, [

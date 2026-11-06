@@ -11,7 +11,7 @@ use App\Entity\Division;
 use App\Entity\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\LearnerMark;
-use App\Entity\Plan;
+use App\Billing\Domain\Model\Plan;
 use App\Entity\School;
 use App\Entity\SchoolType;
 use App\Entity\SchoolYear;

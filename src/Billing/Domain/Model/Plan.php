@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Entity;
+declare(strict_types=1);
 
-use App\Repository\PlanRepository;
+namespace App\Billing\Domain\Model;
+
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * What a school bought: how many teachers and students it may have per seat.
  */
-#[ORM\Entity(repositoryClass: PlanRepository::class)]
-#[UniqueEntity(fields: ['name'], message: 'This plan already exists.')]
+#[ORM\Entity]
 class Plan
 {
     #[ORM\Id]
@@ -20,19 +18,13 @@ class Plan
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 50)]
     private string $name = '';
 
     #[ORM\Column]
-    #[Assert\NotNull]
-    #[Assert\Positive]
-    private ?int $teachersPerSeat = null;
+    private int $teachersPerSeat = 0;
 
     #[ORM\Column]
-    #[Assert\NotNull]
-    #[Assert\Positive]
-    private ?int $studentsPerSeat = null;
+    private int $studentsPerSeat = 0;
 
     #[ORM\Column]
     private bool $includesPrincipal = true;
@@ -54,24 +46,24 @@ class Plan
         return $this;
     }
 
-    public function getTeachersPerSeat(): ?int
+    public function getTeachersPerSeat(): int
     {
         return $this->teachersPerSeat;
     }
 
-    public function setTeachersPerSeat(?int $teachersPerSeat): static
+    public function setTeachersPerSeat(int $teachersPerSeat): static
     {
         $this->teachersPerSeat = $teachersPerSeat;
 
         return $this;
     }
 
-    public function getStudentsPerSeat(): ?int
+    public function getStudentsPerSeat(): int
     {
         return $this->studentsPerSeat;
     }
 
-    public function setStudentsPerSeat(?int $studentsPerSeat): static
+    public function setStudentsPerSeat(int $studentsPerSeat): static
     {
         $this->studentsPerSeat = $studentsPerSeat;
 

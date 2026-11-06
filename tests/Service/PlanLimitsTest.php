@@ -6,7 +6,7 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Entity\GradeLevel;
-use App\Entity\Plan;
+use App\Billing\Domain\Model\Plan;
 use App\Entity\Section;
 use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolAssignmentRepository;

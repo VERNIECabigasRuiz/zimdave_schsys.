@@ -1,8 +1,12 @@
 <?php
 
-namespace App\Form;
+declare(strict_types=1);
 
-use App\Entity\Plan;
+namespace App\Billing\Presentation\Form;
+
+use App\Billing\Application\UseCase\Command\CreatePlanCommand;
+use App\Billing\Application\UseCase\Command\UpdatePlanCommand;
+use App\Billing\Presentation\Validation\UniquePlanName;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -10,6 +14,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Creates a plan (bound to CreatePlanCommand) or edits one (bound to UpdatePlanCommand).
+ *
+ * @extends AbstractType<CreatePlanCommand|UpdatePlanCommand>
+ */
 class PlanFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -37,6 +46,6 @@ class PlanFormType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => Plan::class]);
+        $resolver->setDefaults(['constraints' => [new UniquePlanName()]]);
     }
 }

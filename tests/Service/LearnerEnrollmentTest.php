@@ -7,7 +7,7 @@ use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeLevel;
 use App\Entity\Learner;
-use App\Entity\Plan;
+use App\Billing\Domain\Model\Plan;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;

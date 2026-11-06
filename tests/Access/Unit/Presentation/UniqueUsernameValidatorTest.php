@@ -35,7 +35,7 @@ final class UniqueUsernameValidatorTest extends ConstraintValidatorTestCase
         $command->username = 'juan';
 
         // Execute
-        $this->validator->validate($command, new UniqueUsername());
+        $this->validate($command, new UniqueUsername());
 
         // Assert
         $this->buildViolation('This username is already taken.')->atPath('property.path.username')->assertRaised();
@@ -48,7 +48,7 @@ final class UniqueUsernameValidatorTest extends ConstraintValidatorTestCase
         $command->username = 'juan';
 
         // Execute
-        $this->validator->validate($command, new UniqueUsername());
+        $this->validate($command, new UniqueUsername());
 
         // Assert
         $this->assertNoViolation();
@@ -62,7 +62,7 @@ final class UniqueUsernameValidatorTest extends ConstraintValidatorTestCase
         $command->username = 'juan';
 
         // Execute
-        $this->validator->validate($command, new UniqueUsername());
+        $this->validate($command, new UniqueUsername());
 
         // Assert
         $this->assertNoViolation();
@@ -76,7 +76,7 @@ final class UniqueUsernameValidatorTest extends ConstraintValidatorTestCase
         $command->username = 'juan';
 
         // Execute
-        $this->validator->validate($command, new UniqueUsername());
+        $this->validate($command, new UniqueUsername());
 
         // Assert
         $this->buildViolation('This username is already taken.')->atPath('property.path.username')->assertRaised();
@@ -88,7 +88,7 @@ final class UniqueUsernameValidatorTest extends ConstraintValidatorTestCase
         $this->owner = $this->account(3);
 
         // Execute
-        $this->validator->validate(new CreateAccountCommand(), new UniqueUsername());
+        $this->validate(new CreateAccountCommand(), new UniqueUsername());
 
         // Assert
         $this->assertNoViolation();
@@ -97,7 +97,7 @@ final class UniqueUsernameValidatorTest extends ConstraintValidatorTestCase
     public function testOtherValuesAreIgnored(): void
     {
         // Execute
-        $this->validator->validate('juan', new UniqueUsername());
+        $this->validate('juan', new UniqueUsername());
 
         // Assert
         $this->assertNoViolation();
@@ -109,7 +109,7 @@ final class UniqueUsernameValidatorTest extends ConstraintValidatorTestCase
         $this->expectException(UnexpectedTypeException::class);
 
         // Execute
-        $this->validator->validate(new CreateAccountCommand(), new NotBlank());
+        $this->validate(new CreateAccountCommand(), new NotBlank());
     }
 
     public function testItIsAClassConstraint(): void

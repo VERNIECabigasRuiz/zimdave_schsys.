@@ -817,19 +817,7 @@ parameters:
 			path: ../src/Entity/PersonalDataSheet.php
 
 		-
-			message: '#^Property App\\Entity\\Plan\:\:\$studentsPerSeat type mapping mismatch\: property can contain int\|null but database expects int\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: ../src/Entity/Plan.php
-
-		-
-			message: '#^Property App\\Entity\\Plan\:\:\$teachersPerSeat type mapping mismatch\: property can contain int\|null but database expects int\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: ../src/Entity/Plan.php
-
-		-
-			message: '#^Property App\\Entity\\School\:\:\$plan type mapping mismatch\: property can contain App\\Entity\\Plan\|null but database expects App\\Entity\\Plan\.$#'
+			message: '#^Property App\\Entity\\School\:\:\$plan type mapping mismatch\: property can contain App\\Billing\\Domain\\Model\\Plan\|null but database expects App\\Billing\\Domain\\Model\\Plan\.$#'
 			identifier: doctrine.associationType
 			count: 1
 			path: ../src/Entity/School.php
@@ -1153,12 +1141,6 @@ parameters:
 			path: ../src/Form/PersonalInfoFormType.php
 
 		-
-			message: '#^Class App\\Form\\PlanFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/PlanFormType.php
-
-		-
 			message: '#^Class App\\Form\\PrincipalAssignmentFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -1221,12 +1203,6 @@ parameters:
 		-
 			message: '#^Class App\\Form\\SchoolFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/SchoolFormType.php
-
-		-
-			message: '#^Parameter \#1 \$num of function number_format expects float, int\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../src/Form/SchoolFormType.php
 
@@ -1825,42 +1801,6 @@ parameters:
 			path: ../tests/Controller/Admin/LearnerControllerTest.php
 
 		-
-			message: '#^Cannot call method getStudentsPerSeat\(\) on App\\Entity\\Plan\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/PlanControllerTest.php
-
-		-
-			message: '#^Cannot call method getTeachersPerSeat\(\) on App\\Entity\\Plan\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/Admin/PlanControllerTest.php
-
-		-
-			message: '#^Cannot call method includesPrincipal\(\) on App\\Entity\\Plan\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/PlanControllerTest.php
-
-		-
-			message: '#^Cannot call method setTeachersPerSeat\(\) on App\\Entity\\Plan\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/PlanControllerTest.php
-
-		-
-			message: '#^Cannot call method tick\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/PlanControllerTest.php
-
-		-
-			message: '#^Cannot call method untick\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/PlanControllerTest.php
-
-		-
 			message: '#^Cannot access offset ''NCR'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -1891,7 +1831,7 @@ parameters:
 			path: ../tests/Controller/Admin/SchoolControllerTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Plan\|null\.$#'
+			message: '#^Cannot call method getName\(\) on App\\Billing\\Domain\\Model\\Plan\|null\.$#'
 			identifier: method.nonObject
 			count: 3
 			path: ../tests/Controller/Admin/SchoolControllerTest.php
