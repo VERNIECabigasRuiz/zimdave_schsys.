@@ -1,0 +1,4873 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Attendance/AttendanceRecorder.php
+
+		-
+			message: '#^Property App\\Attendance\\AttendanceRecorder\:\:\$calendar is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: ../src/Attendance/AttendanceRecorder.php
+
+		-
+			message: '#^Offset 1\|2\|3\|4\|5\|6\|7 might not exist on array\{1\: ''M'', 2\: ''T'', 3\: ''W'', 4\: ''TH'', 5\: ''F''\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../src/Attendance/Sf2Report.php
+
+		-
+			message: '#^Parameter \$percentAttendance of class App\\Attendance\\Sf2Summary constructor expects array\{float\|null, float\|null, float\|null\}, non\-empty\-list\<float\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Attendance/Sf2ReportBuilder.php
+
+		-
+			message: '#^Parameter \$percentEnrolment of class App\\Attendance\\Sf2Summary constructor expects array\{float\|null, float\|null, float\|null\}, non\-empty\-list\<float\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Attendance/Sf2ReportBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<App\\Attendance\\RosterEntry\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: ../src/Attendance/Sf2Roster.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: ../src/Attendance/Sf2Writer.php
+
+		-
+			message: '#^Parameter \#2 \$content of method ZipArchive\:\:addFromString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Attendance/Sf2Writer.php
+
+		-
+			message: '#^Offset ''codes'' on array\{codes\: list\<string\>, text\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: ../src/CardSlip/CardSlipCommentRecorder.php
+
+		-
+			message: '#^Parameter \#1 \$content of class Symfony\\Component\\HttpFoundation\\Response constructor expects string\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractAttendanceController.php
+
+		-
+			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractAttendanceController.php
+
+		-
+			message: '#^Cannot call method getLabel\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Cannot call method getSection\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Cannot call method getUser\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$content of class Symfony\\Component\\HttpFoundation\\Response constructor expects string\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of method App\\LearnerId\\IdCardBuilder\:\:forEnrollment\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of method App\\Service\\LearnerEnrollment\:\:move\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of method App\\Service\\LearnerEnrollment\:\:transferDirectly\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of method App\\Service\\LearnerEnrollment\:\:unenroll\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of method App\\Service\\LearnerEnrollment\:\:updateRecord\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of method App\\Sf1\\Sf1Remarks\:\:automaticFor\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$learner of method App\\Service\\LearnerEnrollment\:\:enrollExisting\(\) expects App\\Entity\\Learner, App\\Entity\\Learner\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$learner of method App\\Service\\LearnerEnrollment\:\:enrollNew\(\) expects App\\Entity\\Learner, App\\Entity\\Learner\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\ORM\\EntityManagerInterface\:\:refresh\(\) expects object, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:contains\(\) expects object, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#2 \$file of method App\\Service\\LearnerEnrollment\:\:updatePhoto\(\) expects Symfony\\Component\\HttpFoundation\\File\\File\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#2 \$learner of method App\\Controller\\AbstractLearnerController\:\:addCredentials\(\) expects App\\Entity\\Learner, App\\Entity\\Learner\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#2 \$section of method App\\Controller\\AbstractLearnerController\:\:redirectToClassList\(\) expects App\\Entity\\Section, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#2 \$section of method App\\Service\\LearnerEnrollment\:\:enrollExisting\(\) expects App\\Entity\\Section, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#2 \$section of method App\\Service\\LearnerEnrollment\:\:enrollNew\(\) expects App\\Entity\\Section, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: ../src/Controller/AbstractLearnerController.php
+
+		-
+			message: '#^Parameter \#1 \$content of class Symfony\\Component\\HttpFoundation\\Response constructor expects string\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractNutritionController.php
+
+		-
+			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractNutritionController.php
+
+		-
+			message: '#^Cannot access property \$value on App\\Entity\\GradeLevel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Controller/AbstractSubjectController.php
+
+		-
+			message: '#^Cannot call method isSeniorHigh\(\) on App\\Entity\\GradeLevel\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Controller/AbstractSubjectController.php
+
+		-
+			message: '#^Cannot call method label\(\) on App\\Entity\\GradeLevel\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../src/Controller/AbstractSubjectController.php
+
+		-
+			message: '#^Parameter \#1 \$grade of static method App\\Data\\DepEdSubjects\:\:hasPreset\(\) expects App\\Entity\\GradeLevel, App\\Entity\\GradeLevel\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractSubjectController.php
+
+		-
+			message: '#^Parameter \#3 \$grade of method App\\Repository\\SubjectRepository\:\:nextPosition\(\) expects App\\Entity\\GradeLevel, App\\Entity\\GradeLevel\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractSubjectController.php
+
+		-
+			message: '#^Parameter \#3 \$grade of method App\\Service\\SubjectManager\:\:addDepEdSet\(\) expects App\\Entity\\GradeLevel, App\\Entity\\GradeLevel\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/AbstractSubjectController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\SchoolController\:\:guardPlanWithoutPrincipal\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Controller/Admin/SchoolController.php
+
+		-
+			message: '#^Parameter \#2 \$before of method App\\Controller\\Admin\\SchoolYearController\:\:firstGradedPeriodRemoved\(\) expects list\<App\\Entity\\GradingPeriod\>, array\<int, App\\Entity\\GradingPeriod\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Admin/SchoolYearController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\UserAccountController\:\:guardLearnerRoleChange\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Controller/Admin/UserAccountController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\UserAccountController\:\:guardPrincipalRoleChange\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Controller/Admin/UserAccountController.php
+
+		-
+			message: '#^Parameter \#2 \$plainPassword of method Symfony\\Component\\PasswordHasher\\Hasher\\UserPasswordHasherInterface\:\:hashPassword\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Admin/UserAccountController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Service\\PlanLimits\:\:canAddTeacher\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Admin/UserAccountController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Attendance\\AttendanceStatistics\:\:today\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Grading\\FailingLearners\:\:forSchool\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Grading\\SectionGradeGrid\:\:defaultPeriod\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\GradeChangeRequestRepository\:\:countPendingForSchool\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\TransferRequestRepository\:\:countPendingOutgoing\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Service\\PlanLimits\:\:countStudents\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Service\\PlanLimits\:\:countTeachers\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Service\\TimetableQuery\:\:now\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#1 \$file of method App\\Service\\ImageProcessor\:\:storePhoto\(\) expects Symfony\\Component\\HttpFoundation\\File\\File, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/ProfileController.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: ../src/Controller/ProfileController.php
+
+		-
+			message: '#^Parameter \#3 \$from of method App\\Attendance\\AttendanceRecorder\:\:addDaysOff\(\) expects DateTimeImmutable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SchoolCalendarController.php
+
+		-
+			message: '#^Parameter \#4 \$to of method App\\Attendance\\AttendanceRecorder\:\:addDaysOff\(\) expects DateTimeImmutable\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SchoolCalendarController.php
+
+		-
+			message: '#^Parameter \#5 \$reason of method App\\Attendance\\AttendanceRecorder\:\:addDaysOff\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SchoolCalendarController.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: ../src/Controller/SchoolGradeChangeController.php
+
+		-
+			message: '#^Method App\\Controller\\SchoolGradeChangeController\:\:declineForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Controller/SchoolGradeChangeController.php
+
+		-
+			message: '#^Method App\\Controller\\SchoolGradeChangeController\:\:page\(\) has parameter \$submitted with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Controller/SchoolGradeChangeController.php
+
+		-
+			message: '#^Method App\\Controller\\SchoolGradeController\:\:lockForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Controller/SchoolGradeController.php
+
+		-
+			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SchoolGradeController.php
+
+		-
+			message: '#^Cannot call method label\(\) on App\\Entity\\GradeLevel\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Controller/SchoolSectionController.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SchoolTeacherController.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Controller/SchoolTransferController.php
+
+		-
+			message: '#^Cannot call method getSchool\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Controller/SchoolTransferController.php
+
+		-
+			message: '#^Parameter \#1 \$from of method App\\Service\\TransferManager\:\:request\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SchoolTransferController.php
+
+		-
+			message: '#^Parameter \#2 \$to of method App\\Service\\TransferManager\:\:request\(\) expects App\\Entity\\Section, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SchoolTransferController.php
+
+		-
+			message: '#^Parameter \#2 \$plainPassword of method Symfony\\Component\\PasswordHasher\\Hasher\\UserPasswordHasherInterface\:\:hashPassword\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SecurityController.php
+
+		-
+			message: '#^Parameter \#2 \$plainPassword of method Symfony\\Component\\PasswordHasher\\Hasher\\UserPasswordHasherInterface\:\:isPasswordValid\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/SecurityController.php
+
+		-
+			message: '#^Method App\\Controller\\TeacherAttendanceController\:\:submitForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Controller/TeacherAttendanceController.php
+
+		-
+			message: '#^Parameter \#3 \$marks of method App\\Attendance\\AttendanceRecorder\:\:takeRollCall\(\) expects array\<int, App\\Entity\\LearnerMark\|null\>, array\<int, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherAttendanceController.php
+
+		-
+			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherCardSlipController.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\Controller\\AbstractLearnerController\:\:downloadIds\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherClassController.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\Controller\\AbstractLearnerController\:\:downloadSf1\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherClassController.php
+
+		-
+			message: '#^Parameter \#2 \$section of method App\\Controller\\AbstractLearnerController\:\:renderClassList\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherClassController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../src/Controller/TeacherGradeController.php
+
+		-
+			message: '#^Parameter \#1 \$any of static method App\\LessonPlan\\LessonWeek\:\:monday\(\) expects DateTimeImmutable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherLessonPlanController.php
+
+		-
+			message: '#^Parameter \#1 \$load of method App\\LessonPlan\\LessonWeek\:\:start\(\) expects App\\Entity\\TeachingLoad, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherLessonPlanController.php
+
+		-
+			message: '#^Parameter \#1 \$load of method App\\Repository\\LessonPlanRepository\:\:findOneFor\(\) expects App\\Entity\\TeachingLoad, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherLessonPlanController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\TeachingLoadRepository\:\:findForTeacher\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherLessonPlanController.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_filter expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherLoadController.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, Closure\(array\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherLoadController.php
+
+		-
+			message: '#^Method App\\Controller\\TeacherNutritionController\:\:submitForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Controller/TeacherNutritionController.php
+
+		-
+			message: '#^Parameter \#3 \$weighedOn of method App\\Nutrition\\NutritionRecorder\:\:save\(\) expects DateTimeImmutable, DateTimeImmutable\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherNutritionController.php
+
+		-
+			message: '#^Parameter \#3 \$grades of class App\\Controller\\SubjectScope constructor expects list\<App\\Entity\\GradeLevel\>, array\{App\\Entity\\GradeLevel\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/TeacherSubjectController.php
+
+		-
+			message: '#^Method App\\Data\\DepEdSubjects\:\:forGrade\(\) should return list\<array\{code\: string, name\: string, components\: list\<array\{code\: string, name\: string\}\>\}\> but returns array\<0\|1\|2\|3\|4\|5\|6\|7, array\{components\: array\{\}\|array\{array\{code\: non\-empty\-string, name\: mixed\}, array\{code\: non\-empty\-string, name\: mixed\}, array\{code\: non\-empty\-string, name\: mixed\}, array\{code\: non\-empty\-string, name\: mixed\}\}\|array\{array\{code\: non\-empty\-string, name\: mixed\}, array\{code\: non\-empty\-string, name\: mixed\}\}, code\: non\-empty\-string, name\: mixed\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Data/DepEdSubjects.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<string\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: ../src/Entity/CardSlipComment.php
+
+		-
+			message: '#^Property App\\Entity\\ClassPeriod\:\:\$endsAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/ClassPeriod.php
+
+		-
+			message: '#^Property App\\Entity\\ClassPeriod\:\:\$startsAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/ClassPeriod.php
+
+		-
+			message: '#^Method App\\Entity\\EducationLevel\:\:order\(\) should return int but returns int\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Entity/EducationLevel.php
+
+		-
+			message: '#^Property App\\Entity\\Learner\:\:\$birthDate type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/Learner.php
+
+		-
+			message: '#^Property App\\Entity\\Learner\:\:\$sex type mapping mismatch\: property can contain App\\Entity\\SexAtBirth\|null but database expects App\\Entity\\SexAtBirth\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/Learner.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<array\<string, string\|null\>\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: ../src/Entity/LessonPlan.php
+
+		-
+			message: '#^Property App\\Entity\\PdsChild\:\:\$fullName type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsChild.php
+
+		-
+			message: '#^Property App\\Entity\\PdsChild\:\:\$sheet type mapping mismatch\: property can contain App\\Entity\\PersonalDataSheet\|null but database expects App\\Entity\\PersonalDataSheet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PdsChild.php
+
+		-
+			message: '#^Property App\\Entity\\PdsEducation\:\:\$level type mapping mismatch\: property can contain App\\Entity\\EducationLevel\|null but database expects App\\Entity\\EducationLevel\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsEducation.php
+
+		-
+			message: '#^Property App\\Entity\\PdsEducation\:\:\$schoolName type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsEducation.php
+
+		-
+			message: '#^Property App\\Entity\\PdsEducation\:\:\$sheet type mapping mismatch\: property can contain App\\Entity\\PersonalDataSheet\|null but database expects App\\Entity\\PersonalDataSheet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PdsEducation.php
+
+		-
+			message: '#^Property App\\Entity\\PdsEligibility\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsEligibility.php
+
+		-
+			message: '#^Property App\\Entity\\PdsEligibility\:\:\$sheet type mapping mismatch\: property can contain App\\Entity\\PersonalDataSheet\|null but database expects App\\Entity\\PersonalDataSheet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PdsEligibility.php
+
+		-
+			message: '#^Property App\\Entity\\PdsReference\:\:\$address type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsReference.php
+
+		-
+			message: '#^Property App\\Entity\\PdsReference\:\:\$contact type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsReference.php
+
+		-
+			message: '#^Property App\\Entity\\PdsReference\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsReference.php
+
+		-
+			message: '#^Property App\\Entity\\PdsReference\:\:\$sheet type mapping mismatch\: property can contain App\\Entity\\PersonalDataSheet\|null but database expects App\\Entity\\PersonalDataSheet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PdsReference.php
+
+		-
+			message: '#^Property App\\Entity\\PdsTraining\:\:\$dateFrom type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsTraining.php
+
+		-
+			message: '#^Property App\\Entity\\PdsTraining\:\:\$sheet type mapping mismatch\: property can contain App\\Entity\\PersonalDataSheet\|null but database expects App\\Entity\\PersonalDataSheet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PdsTraining.php
+
+		-
+			message: '#^Property App\\Entity\\PdsTraining\:\:\$title type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsTraining.php
+
+		-
+			message: '#^Property App\\Entity\\PdsVoluntaryWork\:\:\$organization type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsVoluntaryWork.php
+
+		-
+			message: '#^Property App\\Entity\\PdsVoluntaryWork\:\:\$sheet type mapping mismatch\: property can contain App\\Entity\\PersonalDataSheet\|null but database expects App\\Entity\\PersonalDataSheet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PdsVoluntaryWork.php
+
+		-
+			message: '#^Property App\\Entity\\PdsWorkExperience\:\:\$dateFrom type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsWorkExperience.php
+
+		-
+			message: '#^Property App\\Entity\\PdsWorkExperience\:\:\$office type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsWorkExperience.php
+
+		-
+			message: '#^Property App\\Entity\\PdsWorkExperience\:\:\$positionTitle type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/PdsWorkExperience.php
+
+		-
+			message: '#^Property App\\Entity\\PdsWorkExperience\:\:\$sheet type mapping mismatch\: property can contain App\\Entity\\PersonalDataSheet\|null but database expects App\\Entity\\PersonalDataSheet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PdsWorkExperience.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$position\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$sheet\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Cannot access property \$dateTo on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Cannot access property \$position on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Cannot access property \$present on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Method App\\Entity\\PersonalDataSheet\:\:sortedEducations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Method App\\Entity\\PersonalDataSheet\:\:sortedEligibilities\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Method App\\Entity\\PersonalDataSheet\:\:sortedTrainings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Method App\\Entity\\PersonalDataSheet\:\:sortedVoluntaryWorks\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Method App\\Entity\\PersonalDataSheet\:\:sortedWorkExperiences\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(App\\Entity\\PdsTraining\)\: float given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Parameter \#1 \$rows of method App\\Entity\\PersonalDataSheet\:\:addRow\(\) expects Doctrine\\Common\\Collections\\Collection\<int, object\>, Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\PdsReference\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$children type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\PdsChild\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$children with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$distinctions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$educations type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\PdsEducation\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$educations with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$eligibilities type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\PdsEligibility\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$eligibilities with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$memberships type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$skills type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$trainings type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\PdsTraining\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$trainings with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$voluntaryWorks type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\PdsVoluntaryWork\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$voluntaryWorks with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$workExperiences type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\PdsWorkExperience\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\PersonalDataSheet\:\:\$workExperiences with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to static method App\\Entity\\PersonalDataSheet\:\:sorted\(\)$#'
+			identifier: argument.templateType
+			count: 5
+			path: ../src/Entity/PersonalDataSheet.php
+
+		-
+			message: '#^Property App\\Entity\\Plan\:\:\$studentsPerSeat type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/Plan.php
+
+		-
+			message: '#^Property App\\Entity\\Plan\:\:\$teachersPerSeat type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/Plan.php
+
+		-
+			message: '#^Property App\\Entity\\School\:\:\$plan type mapping mismatch\: property can contain App\\Entity\\Plan\|null but database expects App\\Entity\\Plan\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: ../src/Entity/School.php
+
+		-
+			message: '#^Property App\\Entity\\School\:\:\$seats type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/School.php
+
+		-
+			message: '#^Property App\\Entity\\School\:\:\$type type mapping mismatch\: property can contain App\\Entity\\SchoolType\|null but database expects App\\Entity\\SchoolType\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/School.php
+
+		-
+			message: '#^Property App\\Entity\\SchoolYear\:\:\$endDate type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/SchoolYear.php
+
+		-
+			message: '#^Property App\\Entity\\SchoolYear\:\:\$startDate type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/SchoolYear.php
+
+		-
+			message: '#^Property App\\Entity\\Section\:\:\$gradeLevel type mapping mismatch\: property can contain App\\Entity\\GradeLevel\|null but database expects App\\Entity\\GradeLevel\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/Section.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceRecordEntry\:\:\$annualSalary type mapping mismatch\: property can contain string\|null but database expects float\|int\|string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/ServiceRecordEntry.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceRecordEntry\:\:\$branch type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/ServiceRecordEntry.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceRecordEntry\:\:\$designation type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/ServiceRecordEntry.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceRecordEntry\:\:\$fromDate type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/ServiceRecordEntry.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceRecordEntry\:\:\$station type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/ServiceRecordEntry.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceRecordEntry\:\:\$status type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/ServiceRecordEntry.php
+
+		-
+			message: '#^Property App\\Entity\\Subject\:\:\$gradeLevel type mapping mismatch\: property can contain App\\Entity\\GradeLevel\|null but database expects App\\Entity\\GradeLevel\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/Subject.php
+
+		-
+			message: '#^Property App\\Entity\\Subject\:\:\$position type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: ../src/Entity/Subject.php
+
+		-
+			message: '#^Method App\\Entity\\User\:\:getUserIdentifier\(\) should return non\-empty\-string but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Entity/User.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, list\<string\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Entity/User.php
+
+		-
+			message: '#^Class App\\Form\\AnnouncementFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/AnnouncementFormType.php
+
+		-
+			message: '#^Class App\\Form\\CardSlipCommentEntryFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/CardSlipCommentEntryFormType.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Form/CardSlipCommentsFormType.php
+
+		-
+			message: '#^Class App\\Form\\CardSlipCommentsFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/CardSlipCommentsFormType.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/CardSlipCommentsFormType.php
+
+		-
+			message: '#^Class App\\Form\\ChangePasswordFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/ChangePasswordFormType.php
+
+		-
+			message: '#^Class App\\Form\\ClassPeriodFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/ClassPeriodFormType.php
+
+		-
+			message: '#^Class App\\Form\\DayOffFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/DayOffFormType.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: ../src/Form/DivisionFormType.php
+
+		-
+			message: '#^Class App\\Form\\DivisionFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/DivisionFormType.php
+
+		-
+			message: '#^Class App\\Form\\EnrollSectionFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/EnrollSectionFormType.php
+
+		-
+			message: '#^Class App\\Form\\EnrollmentRecordFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/EnrollmentRecordFormType.php
+
+		-
+			message: '#^Class App\\Form\\ExistingTeacherFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/ExistingTeacherFormType.php
+
+		-
+			message: '#^Class App\\Form\\FamilyBackgroundFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/FamilyBackgroundFormType.php
+
+		-
+			message: '#^Class App\\Form\\GradeChangeDeclineFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/GradeChangeDeclineFormType.php
+
+		-
+			message: '#^Class App\\Form\\GradeChangeFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/GradeChangeFormType.php
+
+		-
+			message: '#^Class App\\Form\\GradeLockFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/GradeLockFormType.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Form/GradeLockFormType.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Form/GradeSheetFormType.php
+
+		-
+			message: '#^Class App\\Form\\GradeSheetFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/GradeSheetFormType.php
+
+		-
+			message: '#^Class App\\Form\\GradingPeriodFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/GradingPeriodFormType.php
+
+		-
+			message: '#^Class App\\Form\\ImageUploadFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/ImageUploadFormType.php
+
+		-
+			message: '#^Class App\\Form\\LearnerFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/LearnerFormType.php
+
+		-
+			message: '#^Cannot access offset ''holiday'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Form/LessonPlanDayFormType.php
+
+		-
+			message: '#^Class App\\Form\\LessonPlanDayFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/LessonPlanDayFormType.php
+
+		-
+			message: '#^Class App\\Form\\LessonPlanFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/LessonPlanFormType.php
+
+		-
+			message: '#^Class App\\Form\\LessonPlanStartFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/LessonPlanStartFormType.php
+
+		-
+			message: '#^Class App\\Form\\NutritionEntryFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/NutritionEntryFormType.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Form/NutritionSheetFormType.php
+
+		-
+			message: '#^Class App\\Form\\NutritionSheetFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/NutritionSheetFormType.php
+
+		-
+			message: '#^Class App\\Form\\OtherInfoFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/OtherInfoFormType.php
+
+		-
+			message: '#^Class App\\Form\\PdsChildFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PdsChildFormType.php
+
+		-
+			message: '#^Class App\\Form\\PdsEducationFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PdsEducationFormType.php
+
+		-
+			message: '#^Class App\\Form\\PdsEligibilityFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PdsEligibilityFormType.php
+
+		-
+			message: '#^Class App\\Form\\PdsListFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PdsListFormType.php
+
+		-
+			message: '#^Parameter \#1 \$child of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects string\|Symfony\\Component\\Form\\FormBuilderInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/PdsListFormType.php
+
+		-
+			message: '#^Class App\\Form\\PdsReferenceFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PdsReferenceFormType.php
+
+		-
+			message: '#^Class App\\Form\\PdsTrainingFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PdsTrainingFormType.php
+
+		-
+			message: '#^Class App\\Form\\PdsVoluntaryWorkFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PdsVoluntaryWorkFormType.php
+
+		-
+			message: '#^Class App\\Form\\PdsWorkExperienceFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PdsWorkExperienceFormType.php
+
+		-
+			message: '#^Class App\\Form\\PersonalInfoFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PersonalInfoFormType.php
+
+		-
+			message: '#^Method App\\Form\\PersonalInfoFormType\:\:addAddress\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PersonalInfoFormType.php
+
+		-
+			message: '#^Class App\\Form\\PlanFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PlanFormType.php
+
+		-
+			message: '#^Class App\\Form\\PrincipalAssignmentFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/PrincipalAssignmentFormType.php
+
+		-
+			message: '#^Class App\\Form\\QuestionsFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/QuestionsFormType.php
+
+		-
+			message: '#^Class App\\Form\\ReferencesFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/ReferencesFormType.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: ../src/Form/RollCallFormType.php
+
+		-
+			message: '#^Cannot access property \$name on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Form/RollCallFormType.php
+
+		-
+			message: '#^Class App\\Form\\RollCallFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/RollCallFormType.php
+
+		-
+			message: '#^Parameter \#1 \$entry of static method App\\Form\\RollCallFormType\:\:field\(\) expects App\\Attendance\\RosterEntry, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/RollCallFormType.php
+
+		-
+			message: '#^Cannot call method getDivision\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Form/SchoolFormType.php
+
+		-
+			message: '#^Cannot call method getRegion\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Form/SchoolFormType.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: ../src/Form/SchoolFormType.php
+
+		-
+			message: '#^Class App\\Form\\SchoolFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/SchoolFormType.php
+
+		-
+			message: '#^Parameter \#1 \$num of function number_format expects float, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/SchoolFormType.php
+
+		-
+			message: '#^Class App\\Form\\SchoolProfileFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/SchoolProfileFormType.php
+
+		-
+			message: '#^Class App\\Form\\SchoolYearFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/SchoolYearFormType.php
+
+		-
+			message: '#^Parameter \#1 \$schoolYear of class App\\Entity\\GradingPeriod constructor expects App\\Entity\\SchoolYear, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/SchoolYearFormType.php
+
+		-
+			message: '#^Class App\\Form\\SectionFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/SectionFormType.php
+
+		-
+			message: '#^Class App\\Form\\ServiceRecordEntryFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/ServiceRecordEntryFormType.php
+
+		-
+			message: '#^Class App\\Form\\Sf2SubmitFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/Sf2SubmitFormType.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/Sf2SubmitFormType.php
+
+		-
+			message: '#^Class App\\Form\\Sf8SubmitFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/Sf8SubmitFormType.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/Sf8SubmitFormType.php
+
+		-
+			message: '#^Class App\\Form\\StaffIdDetailsFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/StaffIdDetailsFormType.php
+
+		-
+			message: '#^Class App\\Form\\SubjectFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/SubjectFormType.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/SubjectFormType.php
+
+		-
+			message: '#^Class App\\Form\\TeacherFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/TeacherFormType.php
+
+		-
+			message: '#^Class App\\Form\\TeacherSchoolFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/TeacherSchoolFormType.php
+
+		-
+			message: '#^Class App\\Form\\UserAccountFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../src/Form/UserAccountFormType.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Form/UserAccountFormType.php
+
+		-
+			message: '#^Parameter \#4 \$failedSubjects of class App\\Grading\\FailingLearner constructor expects array\<string, int\>, array\<string, int\<min, 74\>\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Grading/FailingLearners.php
+
+		-
+			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\GradeRepository\:\:findForEnrollments\(\) expects list\<int\>, array\<int, int\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Grading/GradeChangeManager.php
+
+		-
+			message: '#^Method App\\LearnerId\\QrCode\:\:png\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/LearnerId/QrCode.php
+
+		-
+			message: '#^Cannot call method getTimestamp\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../src/LessonPlan/LessonWeek.php
+
+		-
+			message: '#^Method App\\Repository\\CardSlipCommentRepository\:\:findForEnrollments\(\) should return array\<int, App\\Entity\\CardSlipComment\> but returns array\<int\|string, App\\Entity\\CardSlipComment\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/CardSlipCommentRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ClassPeriodRepository\:\:numbering\(\) should return array\<int, int\> but returns array\<int\|string, int\<1, max\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/ClassPeriodRepository.php
+
+		-
+			message: '#^Cannot access offset ''sectionId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Repository/EnrollmentRepository.php
+
+		-
+			message: '#^Cannot access offset ''total'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Repository/EnrollmentRepository.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: ../src/Repository/EnrollmentRepository.php
+
+		-
+			message: '#^Method App\\Repository\\EnrollmentRepository\:\:findClassList\(\) should return list\<App\\Entity\\Enrollment\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/EnrollmentRepository.php
+
+		-
+			message: '#^Method App\\Repository\\EnrollmentRepository\:\:search\(\) should return Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\Enrollment\> but returns Doctrine\\ORM\\Tools\\Pagination\\Paginator\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/EnrollmentRepository.php
+
+		-
+			message: '#^Method App\\Repository\\GradeChangeRequestRepository\:\:findDecidedForSchool\(\) should return list\<App\\Entity\\GradeChangeRequest\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/GradeChangeRequestRepository.php
+
+		-
+			message: '#^Method App\\Repository\\GradeChangeRequestRepository\:\:findPendingFor\(\) should return App\\Entity\\GradeChangeRequest\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/GradeChangeRequestRepository.php
+
+		-
+			message: '#^Method App\\Repository\\GradeChangeRequestRepository\:\:findPendingForSchool\(\) should return list\<App\\Entity\\GradeChangeRequest\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/GradeChangeRequestRepository.php
+
+		-
+			message: '#^Method App\\Repository\\GradeOpeningRepository\:\:findOpenPeriodIds\(\) should return list\<int\> but returns array\<int\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/GradeOpeningRepository.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''intval'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Repository/GradeOpeningRepository.php
+
+		-
+			message: '#^Method App\\Repository\\GradeRepository\:\:findForEnrollments\(\) should return array\<int, App\\Entity\\Grade\> but returns array\<int\|string, App\\Entity\\Grade\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/GradeRepository.php
+
+		-
+			message: '#^Method App\\Repository\\GradeRepository\:\:findForEnrollmentsByPeriod\(\) should return array\<int, array\<int, App\\Entity\\Grade\>\> but returns array\<int\|string, array\<int\|string, App\\Entity\\Grade\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/GradeRepository.php
+
+		-
+			message: '#^Method App\\Repository\\NutritionAssessmentRepository\:\:findFor\(\) should return App\\Entity\\NutritionAssessment\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/NutritionAssessmentRepository.php
+
+		-
+			message: '#^Method App\\Repository\\NutritionAssessmentRepository\:\:findForSections\(\) should return array\<int, App\\Entity\\NutritionAssessment\> but returns array\<int\|string, App\\Entity\\NutritionAssessment\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/NutritionAssessmentRepository.php
+
+		-
+			message: '#^Method App\\Repository\\RollCallRepository\:\:countSectionsOn\(\) has parameter \$dates with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Repository/RollCallRepository.php
+
+		-
+			message: '#^Method App\\Repository\\RollCallRepository\:\:findForSchoolOn\(\) should return array\<int, App\\Entity\\RollCall\> but returns array\<int\|string, App\\Entity\\RollCall\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/RollCallRepository.php
+
+		-
+			message: '#^Method App\\Repository\\RollCallRepository\:\:findOne\(\) should return App\\Entity\\RollCall\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/RollCallRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ScheduleEntryRepository\:\:findSectionClash\(\) should return App\\Entity\\ScheduleEntry\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/ScheduleEntryRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ScheduleEntryRepository\:\:findTeacherClash\(\) should return App\\Entity\\ScheduleEntry\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/ScheduleEntryRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SchoolAssignmentRepository\:\:findPrincipalsBySchool\(\) should return array\<int, App\\Entity\\SchoolAssignment\> but returns array\<int\|string, App\\Entity\\SchoolAssignment\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/SchoolAssignmentRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SchoolAssignmentRepository\:\:findUnfinishedPrincipalAssignment\(\) should return App\\Entity\\SchoolAssignment\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/SchoolAssignmentRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SchoolYearRepository\:\:findPrevious\(\) should return App\\Entity\\SchoolYear\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/SchoolYearRepository.php
+
+		-
+			message: '#^Method App\\Repository\\Sf2SubmissionRepository\:\:findForMonth\(\) should return array\<int, App\\Entity\\Sf2Submission\> but returns array\<int\|string, App\\Entity\\Sf2Submission\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/Sf2SubmissionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\Sf8SubmissionRepository\:\:findForSections\(\) should return array\<int, App\\Entity\\Sf8Submission\> but returns array\<int\|string, App\\Entity\\Sf8Submission\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/Sf8SubmissionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubjectRepository\:\:findBringBackCandidates\(\) should return list\<App\\Entity\\Subject\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/SubjectRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubjectRepository\:\:findForSchool\(\) should return list\<App\\Entity\\Subject\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/SubjectRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubjectRepository\:\:findForSection\(\) should return list\<App\\Entity\\Subject\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/SubjectRepository.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Repository/TransferRequestRepository.php
+
+		-
+			message: '#^Method App\\Repository\\TransferRequestRepository\:\:findApprovedInto\(\) should return App\\Entity\\TransferRequest\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/TransferRequestRepository.php
+
+		-
+			message: '#^Method App\\Repository\\TransferRequestRepository\:\:findApprovedIntoSection\(\) should return array\<int, App\\Entity\\TransferRequest\> but returns array\<int\|string, App\\Entity\\TransferRequest\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/TransferRequestRepository.php
+
+		-
+			message: '#^Method App\\Repository\\TransferRequestRepository\:\:findPending\(\) should return App\\Entity\\TransferRequest\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/TransferRequestRepository.php
+
+		-
+			message: '#^Method App\\Repository\\UserRepository\:\:search\(\) should return Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\User\> but returns Doctrine\\ORM\\Tools\\Pagination\\Paginator\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Repository/UserRepository.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_starts_with expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Security/ForcePasswordChangeListener.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest\:\:getFromSchool\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest\:\:getFromSection\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest\:\:getSchool\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest\:\:getSchoolYear\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest\:\:getToSchool\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest\:\:isPending\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Parameter \#2 \$learner of method App\\Security\\Voter\\LearnerVoter\:\:voteOnLearner\(\) expects App\\Entity\\Learner, App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Parameter \#2 \$school of method App\\Security\\Voter\\LearnerVoter\:\:isPrincipalOf\(\) expects App\\Entity\\School, App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Parameter \#2 \$section of method App\\Security\\Voter\\LearnerVoter\:\:advises\(\) expects App\\Entity\\Section, App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Security/Voter/LearnerVoter.php
+
+		-
+			message: '#^Cannot access offset ''Orientation'' on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Service/ImageProcessor.php
+
+		-
+			message: '#^Method App\\Service\\ImageProcessor\:\:applyExifOrientation\(\) has parameter \$size with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Service/ImageProcessor.php
+
+		-
+			message: '#^Method App\\Service\\ImageProcessor\:\:applyExifOrientation\(\) should return GdImage but returns GdImage\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Service/ImageProcessor.php
+
+		-
+			message: '#^Parameter \#1 \$image of function imageflip expects GdImage, GdImage\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Service/ImageProcessor.php
+
+		-
+			message: '#^Parameter \#1 \$width of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Service/ImageProcessor.php
+
+		-
+			message: '#^Parameter \#2 \$height of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Service/ImageProcessor.php
+
+		-
+			message: '#^Parameter \#4 \$color of function imagefill expects int, int\<0, max\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Service/ImageProcessor.php
+
+		-
+			message: '#^Cannot call method formLabel\(\) on App\\Entity\\EducationLevel\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Service/PdsListGrids.php
+
+		-
+			message: '#^Method App\\Service\\PdsListGrids\:\:lines\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Service/PdsListGrids.php
+
+		-
+			message: '#^Method App\\Service\\PdsListGrids\:\:lines\(\) has parameter \$widths with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Service/PdsListGrids.php
+
+		-
+			message: '#^Parameter \#1 \$rows of static method App\\Service\\PdsListGrids\:\:fit\(\) expects list\<list\<string\>\>, array\<list\<string\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Service/PdsListGrids.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Service/PlanLimits.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 12
+			path: ../src/Service/TimetableQuery.php
+
+		-
+			message: '#^Cannot call method getTimestamp\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../src/Service/TimetableQuery.php
+
+		-
+			message: '#^Offset int\|null might not exist on array\<int, int\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 3
+			path: ../src/Service/TimetableQuery.php
+
+		-
+			message: '#^Cannot call method getDefaultStyle\(\) on PhpOffice\\PhpSpreadsheet\\Spreadsheet\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Sf1/Sf1Writer.php
+
+		-
+			message: '#^Offset 0\|1\|2 might not exist on array\{array\{''A1\:A1'', ''B1\:C1'', ''D1\:H1''\}, array\{''I1\:L1'', ''M1\:M1'', ''N1\:U1''\}\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../src/Sf1/Sf1Writer.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../src/Validator/NoOverlappingPeriodValidator.php
+
+		-
+			message: '#^Offset int\|null might not exist on array\<int, int\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../src/Validator/NoOverlappingPeriodValidator.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Validator/ValidServiceRowValidator.php
+
+		-
+			message: '''
+				#^Call to deprecated method expectExceptionMessage\(\) of class PHPUnit\\Framework\\TestCase\:
+				https\://github\.com/sebastianbergmann/phpunit/issues/6560$#
+			'''
+			identifier: method.deprecated
+			count: 5
+			path: ../tests/Attendance/AttendanceRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:badRanges\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Attendance/AttendanceRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Attendance/AttendanceRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Attendance/AttendanceRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:refusals\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Attendance/AttendanceRecorderTest.php
+
+		-
+			message: '#^Parameter \#1 \$dayOff of method App\\Attendance\\AttendanceRecorder\:\:removeDayOff\(\) expects App\\Entity\\SchoolDayOff, App\\Entity\\SchoolDayOff\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Attendance/AttendanceRecorderTest.php
+
+		-
+			message: '#^Parameter \#3 \$marks of method App\\Attendance\\AttendanceRecorder\:\:takeRollCall\(\) expects array\<int, App\\Entity\\LearnerMark\|null\>, array\<int\|string, App\\Entity\\LearnerMark\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Attendance/AttendanceRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\AttendanceStatisticsTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Attendance/AttendanceStatisticsTest.php
+
+		-
+			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Attendance/AttendanceStatisticsTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\SchoolCalendarTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Attendance/SchoolCalendarTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\SchoolCalendarTest\:\:ymd\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Attendance/SchoolCalendarTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\Sf2ReportBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Attendance/Sf2ReportBuilderTest.php
+
+		-
+			message: '#^Parameter \#1 \$keys of function array_combine expects array\<int\|string\>, list\<int\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Attendance/Sf2ReportBuilderTest.php
+
+		-
+			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Attendance/Sf2ReportBuilderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\Sf2RosterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Attendance/Sf2RosterTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: ../tests/Attendance/Sf2WriterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Attendance\\Sf2WriterTest\:\:row\(\) has parameter \$cells with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Attendance/Sf2WriterTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 5
+			path: ../tests/Attendance/Sf2WriterTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Attendance/Sf2WriterTest.php
+
+		-
+			message: '#^Parameter \#5 \$cells of class App\\Attendance\\Sf2Row constructor expects list\<string\>, non\-empty\-array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Attendance/Sf2WriterTest.php
+
+		-
+			message: '#^Method App\\Tests\\CardSlip\\CardSlipBuilderTest\:\:averages\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/CardSlip/CardSlipBuilderTest.php
+
+		-
+			message: '#^Method App\\Tests\\CardSlip\\CardSlipBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/CardSlip/CardSlipBuilderTest.php
+
+		-
+			message: '#^Property App\\Tests\\CardSlip\\CardSlipBuilderTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/CardSlip/CardSlipBuilderTest.php
+
+		-
+			message: '#^Property App\\Tests\\CardSlip\\CardSlipBuilderTest\:\:\$term2 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/CardSlip/CardSlipBuilderTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''Academic'', ''Attendance'', ''Behaviour'', ''Suggestion for…''\} and array\{''Academic'', ''Attendance'', ''Behaviour'', ''Suggestion for…''\} will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../tests/CardSlip/CardSlipCommentsTest.php
+
+		-
+			message: '#^Method App\\Tests\\CardSlip\\CardSlipPdfTest\:\:pages\(\) should return int but returns int\<0, max\>\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/CardSlip/CardSlipPdfTest.php
+
+		-
+			message: '#^Method App\\Tests\\CardSlip\\TermAttendanceTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/CardSlip/TermAttendanceTest.php
+
+		-
+			message: '#^Offset int\|null might not exist on array\<int, App\\CardSlip\\AttendanceTally\|null\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../tests/CardSlip/TermAttendanceTest.php
+
+		-
+			message: '#^Offset int\|null might not exist on non\-empty\-array\<int, App\\CardSlip\\AttendanceTally\|null\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../tests/CardSlip/TermAttendanceTest.php
+
+		-
+			message: '#^Parameter \#1 \$keys of function array_combine expects array\<int\|string\>, list\<int\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/CardSlip/TermAttendanceTest.php
+
+		-
+			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/CardSlip/TermAttendanceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/Admin/AdminTestCase.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\Admin\\DashboardControllerTest\:\:adminPages\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Controller/Admin/DashboardControllerTest.php
+
+		-
+			message: '#^Cannot call method upload\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/DivisionControllerTest.php
+
+		-
+			message: '#^Cannot call method getSection\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Admin/LearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getStudentsPerSeat\(\) on App\\Entity\\Plan\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/PlanControllerTest.php
+
+		-
+			message: '#^Cannot call method getTeachersPerSeat\(\) on App\\Entity\\Plan\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Admin/PlanControllerTest.php
+
+		-
+			message: '#^Cannot call method includesPrincipal\(\) on App\\Entity\\Plan\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/PlanControllerTest.php
+
+		-
+			message: '#^Cannot call method setTeachersPerSeat\(\) on App\\Entity\\Plan\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/PlanControllerTest.php
+
+		-
+			message: '#^Cannot call method tick\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/PlanControllerTest.php
+
+		-
+			message: '#^Cannot call method untick\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/PlanControllerTest.php
+
+		-
+			message: '#^Cannot access offset ''NCR'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot access offset ''Region VII'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method getDivision\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on App\\Entity\\Plan\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method getPlan\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method getPlanValidUntil\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method getRegion\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method getSeats\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method isActive\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertContains\(\) expects iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertNotContains\(\) expects iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/Admin/SchoolControllerTest.php
+
+		-
+			message: '#^Cannot call method setActive\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/SchoolPrincipalTest.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 14
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Cannot call method getEndDate\(\) on App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Cannot call method getStartDate\(\) on App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Cannot call method modify\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\Admin\\SchoolYearControllerTest\:\:findSchoolYear\(\) should return App\\Entity\\SchoolYear but returns App\\Entity\\SchoolYear\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$gradingPeriod of class App\\Entity\\GradeLock constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:openGrading\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\Grade constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
+
+		-
+			message: '#^Cannot call method getFullName\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Admin/UserAccountControllerTest.php
+
+		-
+			message: '#^Cannot call method getRole\(\) on App\\Entity\\SchoolAssignment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/UserAccountControllerTest.php
+
+		-
+			message: '#^Cannot call method getRole\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 5
+			path: ../tests/Controller/Admin/UserAccountControllerTest.php
+
+		-
+			message: '#^Cannot call method getSchool\(\) on App\\Entity\\SchoolAssignment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/UserAccountControllerTest.php
+
+		-
+			message: '#^Cannot call method getUsername\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/UserAccountControllerTest.php
+
+		-
+			message: '#^Cannot call method getValue\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Admin/UserAccountControllerTest.php
+
+		-
+			message: '#^Cannot call method isActive\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 6
+			path: ../tests/Controller/Admin/UserAccountControllerTest.php
+
+		-
+			message: '#^Cannot call method mustChangePassword\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Admin/UserAccountControllerTest.php
+
+		-
+			message: '#^Cannot call method getCallName\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/MyIdControllerTest.php
+
+		-
+			message: '#^Cannot call method getEmergencyContact\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/MyIdControllerTest.php
+
+		-
+			message: '#^Cannot call method getEmergencyName\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/MyIdControllerTest.php
+
+		-
+			message: '#^Cannot call method getGsisPolicyNo\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/MyIdControllerTest.php
+
+		-
+			message: '#^Cannot call method setCurrent\(\) on App\\Entity\\SchoolYear\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Principal/PrincipalAreaTest.php
+
+		-
+			message: '#^Cannot call method setPlanValidUntil\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/Principal/PrincipalAreaTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/Principal/PrincipalAreaTest.php
+
+		-
+			message: '#^Cannot call method upload\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/Principal/SchoolProfileTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\Principal\\SchoolProfileTest\:\:reloadSchool\(\) should return App\\Entity\\School but returns App\\Entity\\School\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/Principal/SchoolProfileTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of static method PHPUnit\\Framework\\Assert\:\:assertMatchesRegularExpression\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/Principal/SchoolProfileTest.php
+
+		-
+			message: '#^Cannot access property \$bloodType on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$civilStatus on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$dateOfBirth on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$distinctions on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$govIdIssued on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$govIdNumber on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$govIdType on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$licenseNo on App\\Entity\\PdsEligibility\|false\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$licenseValidUntil on App\\Entity\\PdsEligibility\|false\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$memberships on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$monthlySalary on App\\Entity\\PdsWorkExperience\|false\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$motherMaidenSurname on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Entity\\PdsEligibility\|false\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$permCity on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$philsysPcn on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$q36 on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$q37 on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$q39Details on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$q40c on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$q40cDetails on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$sexAtBirth on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$skills on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$spouseFirstName on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$surname on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot access property \$value on App\\Entity\\EducationLevel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method addTraining\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getChildren\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getEducations\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getEligibilities\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getFullName\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getPhotoPath\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 7
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getReferences\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getTrainings\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getVoluntaryWorks\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getWorkExperiences\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method upload\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\ProfileControllerTest\:\:postFamily\(\) has parameter \$children with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\ProfileControllerTest\:\:postFamily\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\ProfileControllerTest\:\:postList\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\ProfileControllerTest\:\:postQuestions\(\) has parameter \$answers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\ProfileControllerTest\:\:requiredPersonal\(\) has parameter \$extra with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_slice expects array, array\<int\|string, int\|string\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$node of class Symfony\\Component\\DomCrawler\\Crawler constructor expects array\<DOMNode\>\|DOMNode\|DOMNodeList\<DOMNode\>\|string\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$path of method App\\Tests\\Controller\\ProfileControllerTest\:\:absolute\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 5
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of static method PHPUnit\\Framework\\Assert\:\:assertMatchesRegularExpression\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function preg_replace expects array\<float\|int\|string\>\|string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/ProfileControllerTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\SchoolDayOff\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolAttendanceControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\>, non\-empty\-array\<''''\|int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\:\:Absent\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolAttendanceControllerTest.php
+
+		-
+			message: '#^Property App\\Tests\\Controller\\SchoolCardSlipTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Controller/SchoolCardSlipTest.php
+
+		-
+			message: '#^Cannot call method setPlanValidUntil\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolClassPeriodControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Controller/SchoolClassPeriodControllerTest.php
+
+		-
+			message: '#^Cannot call method change\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Cannot call method getValue\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Cannot call method isPending\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function substr_count expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$load of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\TeachingLoad, App\\Entity\\TeachingLoad\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$school of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\School, App\\Entity\\School\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Parameter \#5 \$by of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Property App\\Tests\\Controller\\SchoolGradeChangeControllerTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\GradeOpening\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Controller/SchoolGradeControllerTest.php
+
+		-
+			message: '#^Property App\\Tests\\Controller\\SchoolGradeControllerTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Controller/SchoolGradeControllerTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpKernel\\DataCollector\\DataCollectorInterface\:\:getQueries\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getAddressBarangay\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getAddressStreet\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getCollector\(\) on Symfony\\Component\\HttpKernel\\Profiler\\Profile\|false\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getContactNumber\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getEnrolledBy\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getFirstName\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getIpGroup\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getMotherSf1Name\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getReligion\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getRemarkDetails\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getSection\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 6
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getStatus\(\) on App\\Entity\\TransferRequest\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getToSection\(\) on App\\Entity\\TransferRequest\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getUser\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 20
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method upload\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\SchoolLearnerControllerTest\:\:assertWritesAre404\(\) has parameter \$learners with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_slice expects array, array\<int\|string, int\|string\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of class App\\Entity\\Grade constructor expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$learner of method App\\Tests\\Controller\\SchoolLearnerControllerTest\:\:currentEnrollment\(\) expects App\\Entity\\Learner, App\\Entity\\Learner\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$path of method App\\Tests\\Controller\\SchoolLearnerControllerTest\:\:photoFile\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 5
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of static method PHPUnit\\Framework\\Assert\:\:assertMatchesRegularExpression\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\Grade constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolLearnerControllerTest.php
+
+		-
+			message: '#^Cannot call method getSf8CertifierName\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolNutritionControllerTest.php
+
+		-
+			message: '#^Cannot call method getSf8CertifierPosition\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolNutritionControllerTest.php
+
+		-
+			message: '#^Cannot call method getSchool\(\) on App\\Entity\\Section\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolSectionControllerTest.php
+
+		-
+			message: '#^Cannot call method getSchoolYear\(\) on App\\Entity\\Section\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolSectionControllerTest.php
+
+		-
+			message: '#^Cannot call method setPlanValidUntil\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolSectionControllerTest.php
+
+		-
+			message: '#^Cannot call method setType\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolSectionControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\Service\\SectionManager\:\:delete\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolSectionControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\Service\\SectionManager\:\:save\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolSectionControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$from of method App\\Service\\SectionManager\:\:bringBack\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolSectionControllerTest.php
+
+		-
+			message: '#^Cannot call method getGradeLevel\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/SchoolSubjectControllerTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolSubjectControllerTest.php
+
+		-
+			message: '#^Cannot call method getLabel\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolSubjectControllerTest.php
+
+		-
+			message: '#^Cannot call method getMeetingsPerWeek\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolSubjectControllerTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolSubjectControllerTest.php
+
+		-
+			message: '#^Cannot call method getPosition\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolSubjectControllerTest.php
+
+		-
+			message: '#^Cannot call method setPlanValidUntil\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolSubjectControllerTest.php
+
+		-
+			message: '#^Cannot call method getFullName\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolTeacherControllerTest.php
+
+		-
+			message: '#^Cannot call method getRole\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolTeacherControllerTest.php
+
+		-
+			message: '#^Cannot call method isActive\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolTeacherControllerTest.php
+
+		-
+			message: '#^Cannot call method mustChangePassword\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/SchoolTeacherControllerTest.php
+
+		-
+			message: '#^Cannot call method setCurrent\(\) on App\\Entity\\SchoolYear\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolTeacherControllerTest.php
+
+		-
+			message: '#^Cannot call method setPlan\(\) on App\\Entity\\School\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SchoolTeacherControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$uri of method Symfony\\Component\\BrowserKit\\AbstractBrowser\<Symfony\\Component\\HttpFoundation\\Request,Symfony\\Component\\HttpFoundation\\Response\>\:\:request\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolTeacherControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\SchoolTimetableControllerTest\:\:json\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Controller/SchoolTimetableControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\SchoolTimetableControllerTest\:\:json\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/SchoolTimetableControllerTest.php
+
+		-
+			message: '#^Parameter \$content of method Symfony\\Component\\BrowserKit\\AbstractBrowser\<Symfony\\Component\\HttpFoundation\\Request,Symfony\\Component\\HttpFoundation\\Response\>\:\:request\(\) expects string\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolTimetableControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\SchoolTransferControllerTest\:\:currentEnrollment\(\) should return App\\Entity\\Enrollment but returns App\\Entity\\Enrollment\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/SchoolTransferControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\SchoolTransferControllerTest\:\:reload\(\) should return App\\Entity\\TransferRequest but returns App\\Entity\\TransferRequest\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/SchoolTransferControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of class App\\Entity\\TransferRequest constructor expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/SchoolTransferControllerTest.php
+
+		-
+			message: '#^Cannot call method getLastLoginAt\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SecurityControllerTest.php
+
+		-
+			message: '#^Cannot call method mustChangePassword\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/SecurityControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\SecurityControllerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/SecurityControllerTest.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ServiceRecordControllerTest.php
+
+		-
+			message: '#^Cannot call method getUpdatedBy\(\) on App\\Entity\\ServiceRecordEntry\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ServiceRecordControllerTest.php
+
+		-
+			message: '#^Cannot call method getValue\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: ../tests/Controller/ServiceRecordControllerTest.php
+
+		-
+			message: '#^Cannot call method touch\(\) on App\\Entity\\ServiceRecordEntry\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ServiceRecordControllerTest.php
+
+		-
+			message: '#^Cannot call method untick\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/ServiceRecordControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\ServiceRecordControllerTest\:\:rows\(\) should return list\<array\{string, string\|null, string\}\> but returns list\<array\{non\-falsy\-string, non\-falsy\-string\|null, string\|null\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/ServiceRecordControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\SchoolAssignment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/ServiceRecordControllerTest.php
+
+		-
+			message: '#^Cannot call method getUsername\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherAreaTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\TeacherAttendanceControllerTest\:\:marksOn\(\) should return array\<int, App\\Entity\\LearnerMark\> but returns array\<int\|string, App\\Entity\\LearnerMark\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/TeacherAttendanceControllerTest.php
+
+		-
+			message: '#^Cannot access offset ''codes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 6
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot access offset ''entries'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 6
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot access offset ''text'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot access offset int\|null on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 6
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot call method change\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot call method getGradingPeriod\(\) on App\\Entity\\SchoolYear\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot call method setRemarkCode\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot call method text\(\) on Symfony\\Component\\DomCrawler\\Crawler\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\TeacherCardSlipControllerTest\:\:picker\(\) should return Symfony\\Component\\DomCrawler\\Crawler but returns Symfony\\Component\\DomCrawler\\Crawler\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_values expects array\<T\>, mixed given\.$#'
+			identifier: argument.type
+			count: 4
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$school of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\School, App\\Entity\\School\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$school of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:openGrading\(\) expects App\\Entity\\School, App\\Entity\\School\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\CardSlip\\CardSlipBuilder\:\:forEnrollment\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$slips of method App\\CardSlip\\CardSlipPdf\:\:html\(\) expects list\<App\\CardSlip\\CardSlip\>, array\{App\\CardSlip\\CardSlip\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\CardSlip\\CardSlipBuilder\:\:forEnrollment\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:openGrading\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Property App\\Tests\\Controller\\TeacherCardSlipControllerTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Cannot call method getGuardianName\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Cannot call method getManualRemarkText\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Cannot call method getMotherTongue\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Cannot call method getSection\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Cannot call method getUser\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Cannot call method setAdviser\(\) on App\\Entity\\Section\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Cannot call method upload\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Controller/TeacherClassControllerTest.php
+
+		-
+			message: '#^Cannot call method getLabel\(\) on App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Cannot call method isPending\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Cannot call method setRemarkCode\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Cannot call method setTeacher\(\) on App\\Entity\\TeachingLoad\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function substr_count expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$load of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\TeachingLoad, App\\Entity\\TeachingLoad\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\GradeOpening\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$school of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\School, App\\Entity\\School\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#1 \$section of class App\\Entity\\GradeUnlock constructor expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$by of method App\\Grading\\GradeChangeManager\:\:decline\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:openGrading\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$subject of class App\\Entity\\GradeUnlock constructor expects App\\Entity\\Subject, App\\Entity\\Subject\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeUnlock constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$period of method App\\Tests\\Controller\\TeacherGradeControllerTest\:\:grade\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$section of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:enroll\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#4 \$unlockedBy of class App\\Entity\\GradeUnlock constructor expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Parameter \#5 \$by of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Property App\\Tests\\Controller\\TeacherGradeControllerTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Controller/TeacherGradeControllerTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Entity\\LessonPlan will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
+
+		-
+			message: '#^Cannot call method getDays\(\) on App\\Entity\\LessonPlan\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\LessonPlan\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
+
+		-
+			message: '#^Cannot call method getWeekStart\(\) on App\\Entity\\LessonPlan\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Controller\\TeacherLessonPlanControllerTest\:\:reload\(\) should return App\\Entity\\LessonPlan but returns App\\Entity\\LessonPlan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
+
+		-
+			message: '#^Cannot call method setRemarkCode\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherNutritionControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of class App\\Entity\\Enrollment constructor expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherNutritionControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$section of class App\\Entity\\Enrollment constructor expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherNutritionControllerTest.php
+
+		-
+			message: '#^Parameter \#4 \$enrolledBy of class App\\Entity\\Enrollment constructor expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherNutritionControllerTest.php
+
+		-
+			message: '#^Cannot call method getGradeLevel\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherSubjectsTest.php
+
+		-
+			message: '#^Cannot call method getMeetingsPerWeek\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Controller/TeacherSubjectsTest.php
+
+		-
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, count\(\$variable\)\)\.$#'
+			identifier: phpunit.assertCount
+			count: 2
+			path: ../tests/Data/PhilippineDivisionsTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\ClassPeriodTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/ClassPeriodTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\ClassPeriodTest\:\:violations\(\) should return list\<string\> but returns array\<int, string\|Stringable\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/ClassPeriodTest.php
+
+		-
+			message: '#^Cannot call method getEnrollment\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeChangeRequestTest.php
+
+		-
+			message: '#^Cannot call method getFromValue\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeChangeRequestTest.php
+
+		-
+			message: '#^Cannot call method getToValue\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeChangeRequestTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Entity/GradeChangeRequestTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Repository\\\\GradeLockRepository'' and App\\Repository\\GradeLockRepository will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Repository\\\\GradeRepository'' and App\\Repository\\GradeRepository will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Repository\\\\GradeUnlockRepository'' and App\\Repository\\GradeUnlockRepository will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 3
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Cannot call method change\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getEnrollment\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getGradingPeriod\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getLockedBy\(\) on App\\Entity\\GradeLock\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getSubject\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getUpdatedAt\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getUpdatedBy\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getValue\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\GradeEntitiesTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Offset int\|null might not exist on array\<int, App\\Entity\\Grade\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 4
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Offset int\|null might not exist on array\<int, array\<int, App\\Entity\\Grade\>\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 4
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\GradeRepository\:\:findForEnrollments\(\) expects list\<int\>, array\{int\|null, int\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\GradeRepository\:\:findForEnrollmentsByPeriod\(\) expects list\<int\>, array\{int\|null, int\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Property App\\Tests\\Entity\\GradeEntitiesTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Property App\\Tests\\Entity\\GradeEntitiesTest\:\:\$term2 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Entity/GradeEntitiesTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\LearnerTest\:\:messages\(\) should return list\<string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/LearnerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\LearnerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/LearnerTest.php
+
+		-
+			message: '#^Cannot call method getHeightM\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getMeasurements\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getPeriod\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getRemarks\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getSection\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getWeighedOn\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getWeightKg\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot call method isWeighed\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot call method measurementFor\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\NutritionEntitiesTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\Repository\\NutritionAssessmentRepository\:\:findFor\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Entity/NutritionEntitiesTest.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Entity\\EducationLevel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Entity/PdsListsTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\PdsListsTest\:\:violations\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/PdsListsTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\PdsQuestionsTest\:\:violations\(\) should return list\<string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/PdsQuestionsTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\PersonalDataSheetTest\:\:violationPaths\(\) should return list\<string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/PersonalDataSheetTest.php
+
+		-
+			message: '#^Cannot call method getAdviser\(\) on App\\Entity\\Section\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Entity/SectionTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\SectionTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/SectionTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\SectionTest\:\:violations\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/SectionTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:codes\(\) has parameter \$subjects with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Entity/SubjectTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:codes\(\) should return list\<string\> but returns array\<string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/SubjectTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/SubjectTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:violations\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/SubjectTest.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\Subject\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Entity/SubjectTest.php
+
+		-
+			message: '#^Method App\\Tests\\Entity\\TimetableEntitiesTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Entity/TimetableEntitiesTest.php
+
+		-
+			message: '#^Cannot call method getDecidedAt\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Cannot call method getDecidedBy\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Cannot call method getEnrollment\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Cannot call method getStatus\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Cannot call method getUpdatedAt\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Cannot call method getUpdatedBy\(\) on App\\Entity\\Grade\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Grading\\GradeChangeManagerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Grading\\GradeChangeManagerTest\:\:savedValues\(\) should return array\<int, int\> but returns array\<int\|string, int\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\GradeOpening\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Property App\\Tests\\Grading\\GradeChangeManagerTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Grading/GradeChangeManagerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Grading\\GradeRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Grading\\GradeRecorderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Grading\\GradeRecorderTest\:\:savedValues\(\) should return array\<int, int\> but returns array\<int\|string, int\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Parameter \#1 \$values of method App\\Tests\\Grading\\GradeRecorderTest\:\:save\(\) expects array\<int, int\|null\>, array\<int\|string, int\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeUnlock constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Parameter \#3 \$values of method App\\Grading\\GradeRecorder\:\:saveSheet\(\) expects array\<int, int\|null\>, array\<int\|string, int\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$load \(App\\Entity\\TeachingLoad\) does not accept App\\Entity\\TeachingLoad\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$teacher \(App\\Entity\\User\) does not accept App\\Entity\\User\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 2
+			path: ../tests/Grading/GradeRecorderTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with ''unlocked'' and ''unlocked'' will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: ../tests/Grading/GradeRulesTest.php
+
+		-
+			message: '#^Method App\\Tests\\Grading\\GradeRulesTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Grading/GradeRulesTest.php
+
+		-
+			message: '#^Parameter \#2 \$componentGrades of method App\\Grading\\GradeRules\:\:parentGrade\(\) expects array\<int, int\|null\>, array\<int\|string, int\> given\.$#'
+			identifier: argument.type
+			count: 5
+			path: ../tests/Grading/GradeRulesTest.php
+
+		-
+			message: '#^Parameter \#2 \$componentGrades of method App\\Grading\\GradeRules\:\:parentGrade\(\) expects array\<int, int\|null\>, array\<int\|string, int\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Grading/GradeRulesTest.php
+
+		-
+			message: '#^Property App\\Tests\\Grading\\GradeRulesTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Grading/GradeRulesTest.php
+
+		-
+			message: '#^Cannot call method setStartDate\(\) on App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Grading/SectionGradeGridTest.php
+
+		-
+			message: '#^Method App\\Tests\\Grading\\SectionGradeGridTest\:\:byKey\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Grading/SectionGradeGridTest.php
+
+		-
+			message: '#^Method App\\Tests\\Grading\\SectionGradeGridTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Grading/SectionGradeGridTest.php
+
+		-
+			message: '#^Parameter \#2 \$period of method App\\Tests\\Grading\\SectionGradeGridTest\:\:openGrading\(\) expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Grading/SectionGradeGridTest.php
+
+		-
+			message: '#^Property App\\Tests\\Grading\\SectionGradeGridTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Grading/SectionGradeGridTest.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Entity\\GradingPeriod\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../tests/Grading/SectionGradeGridTest.php
+
+		-
+			message: '#^Method App\\Tests\\LessonPlan\\LessonWeekTest\:\:dates\(\) has parameter \$days with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/LessonPlan/LessonWeekTest.php
+
+		-
+			message: '#^Method App\\Tests\\LessonPlan\\LessonWeekTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/LessonPlan/LessonWeekTest.php
+
+		-
+			message: '#^Cannot call method getHeightM\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Cannot call method getRemarks\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Cannot call method getWeightKg\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Nutrition\\NutritionRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Nutrition\\NutritionRecorderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Nutrition\\NutritionRecorderTest\:\:saveAt\(\) has parameter \$inputs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Parameter \#1 \$enrollmentId of class App\\Nutrition\\MeasurementInput constructor expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Parameter \#4 \$inputs of method App\\Nutrition\\NutritionRecorder\:\:save\(\) expects list\<App\\Nutrition\\MeasurementInput\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Property App\\Tests\\Nutrition\\NutritionRecorderTest\:\:\$adviser \(App\\Entity\\User\) does not accept App\\Entity\\User\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Property App\\Tests\\Nutrition\\NutritionRecorderTest\:\:\$artistic \(App\\Entity\\Section\) does not accept App\\Entity\\Section\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Nutrition/NutritionRecorderTest.php
+
+		-
+			message: '#^Cannot access property \$birthDate on App\\Nutrition\\Sf8Row\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
+
+		-
+			message: '#^Cannot access property \$heightM on App\\Nutrition\\Sf8Row\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
+
+		-
+			message: '#^Cannot access property \$lrn on App\\Nutrition\\Sf8Row\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
+
+		-
+			message: '#^Cannot access property \$result on App\\Nutrition\\Sf8Row\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
+
+		-
+			message: '#^Cannot access property \$weighed on App\\Nutrition\\Sf8Row\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
+
+		-
+			message: '#^Cannot access property \$weightKg on App\\Nutrition\\Sf8Row\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Nutrition\\Sf8ReportBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: ../tests/Nutrition/Sf8WriterTest.php
+
+		-
+			message: '#^Parameter \#1 \$excelTimestamp of static method PhpOffice\\PhpSpreadsheet\\Shared\\Date\:\:excelToDateTimeObject\(\) expects float\|int, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Nutrition/Sf8WriterTest.php
+
+		-
+			message: '#^Parameter \#1 \$string of function str_pad expects string, int\<\-99, 99\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Nutrition/Sf8WriterTest.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getCodes\(\) on App\\Entity\\CardSlipComment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getCustomText\(\) on App\\Entity\\CardSlipComment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getUpdatedAt\(\) on App\\Entity\\CardSlipComment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getUpdatedBy\(\) on App\\Entity\\CardSlipComment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Repository\\CardSlipCommentRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Offset int\|null might not exist on non\-empty\-array\<int, App\\Entity\\CardSlipComment\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\CardSlipCommentRepository\:\:findForEnrollments\(\) expects list\<int\>, array\{int\|null, int\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\CardSlipCommentRepository\:\:findForEnrollments\(\) expects list\<int\>, array\{int\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method label\(\) on App\\Entity\\SexAtBirth\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Repository/EnrollmentRepositoryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Repository\\EnrollmentRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Repository/EnrollmentRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\GradeChangeLine\>\:\:isInitialized\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Repository\\GradeChangeRequestRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Repository\\GradeChangeRequestRepositoryTest\:\:\$term1 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Repository\\GradeChangeRequestRepositoryTest\:\:\$term2 \(App\\Entity\\GradingPeriod\) does not accept App\\Entity\\GradingPeriod\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Repository\\GradeOpeningRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Repository/GradeOpeningRepositoryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Repository\\RollCallRepositoryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\}\>, non\-empty\-array\<''''\|int, array\{App\\Entity\\Enrollment, App\\Entity\\LearnerMark\:\:Absent\}\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$school of method App\\Repository\\RollCallRepository\:\:countSectionsOn\(\) expects App\\Entity\\School, App\\Entity\\School\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$school of method App\\Repository\\RollCallRepository\:\:findForSchoolOn\(\) expects App\\Entity\\School, App\\Entity\\School\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$school of method App\\Repository\\Sf2SubmissionRepository\:\:findForMonth\(\) expects App\\Entity\\School, App\\Entity\\School\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\Repository\\RollCallRepository\:\:findBetween\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\Repository\\RollCallRepository\:\:findOne\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$section of method App\\Repository\\Sf2SubmissionRepository\:\:findOne\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\RollCallRepository\:\:findForSchoolOn\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\Sf2SubmissionRepository\:\:findForMonth\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Repository/RollCallRepositoryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Security\\AttendanceVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Security/AttendanceVoterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Security\\CardSlipVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Security/CardSlipVoterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Security\\GradeVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Security/GradeVoterTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Security/GradeVoterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Security\\LearnerVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Security/LearnerVoterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Security\\NutritionVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Security/NutritionVoterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Security\\SchoolVoterTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Security/SchoolVoterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\IdCardBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/IdCardBuilderTest.php
+
+		-
+			message: '#^Parameter \#1 \$enrollment of method App\\LearnerId\\IdCardBuilder\:\:forEnrollment\(\) expects App\\Entity\\Enrollment, App\\Entity\\Enrollment\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/IdCardBuilderTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of static method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Service/IdCardBuilderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\IdCardPdfTest\:\:lrns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Service/IdCardPdfTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\IdCardPdfTest\:\:pages\(\) should return int but returns int\<0, max\>\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/IdCardPdfTest.php
+
+		-
+			message: '''
+				#^Call to deprecated method expectExceptionMessage\(\) of class PHPUnit\\Framework\\TestCase\:
+				https\://github\.com/sebastianbergmann/phpunit/issues/6560$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Cannot access offset ''mime'' on array\{0\: int\<0, max\>, 1\: int\<0, max\>, 2\: int, 3\: string, mime\: string, channels\?\: int, bits\?\: int\}\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Cannot access offset 0 on array\{0\: int\<0, max\>, 1\: int\<0, max\>, 2\: int, 3\: string, mime\: string, channels\?\: int, bits\?\: int\}\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Cannot access offset 1 on array\{0\: int\<0, max\>, 1\: int\<0, max\>, 2\: int, 3\: string, mime\: string, channels\?\: int, bits\?\: int\}\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Parameter \#1 \$image of function imagecolorat expects GdImage, GdImage\|false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Parameter \#1 \$image of function imagecolorsforindex expects GdImage, GdImage\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Parameter \#1 \$width of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Parameter \#2 \$color of function imagecolorsforindex expects int, int\<0, max\>\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Parameter \#2 \$height of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Parameter \#4 \$color of function imagefill expects int, int\<0, max\>\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Parameter \#6 \$color of function imagefilledrectangle expects int, int\<0, max\>\|false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Service/ImageProcessorTest.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/InUseProtectionTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on App\\Entity\\Section\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/InUseProtectionTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/InUseProtectionTest.php
+
+		-
+			message: '#^Cannot call method getStartsAt\(\) on App\\Entity\\ClassPeriod\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/InUseProtectionTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\InUseProtectionTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/InUseProtectionTest.php
+
+		-
+			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/InUseProtectionTest.php
+
+		-
+			message: '#^Parameter \#1 \$period of method App\\Service\\ClassPeriodManager\:\:delete\(\) expects App\\Entity\\ClassPeriod, App\\Entity\\ClassPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/InUseProtectionTest.php
+
+		-
+			message: '#^Cannot call method getFirstName\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Cannot call method getLrn\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Cannot call method getSchoolYear\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Cannot call method getSection\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Cannot call method getUser\(\) on App\\Entity\\Learner\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\LearnerEnrollmentTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\Grade constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/LearnerEnrollmentTest.php
+
+		-
+			message: '#^Cannot use array destructuring on array\<int\|string, int\|string\>\|false\.$#'
+			identifier: offsetAccess.nonArray
+			count: 1
+			path: ../tests/Service/LearnerIdQrCodeTest.php
+
+		-
+			message: '#^Parameter \#1 \$string of function getimagesizefromstring expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/LearnerIdQrCodeTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of static method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/LearnerIdQrCodeTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\LearnerLookupTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/LearnerLookupTest.php
+
+		-
+			message: '#^Parameter \#2 \$offset of function substr expects int, int\<0, max\>\|false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Service/PdsPdfRendererTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\PlanLimitsTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/PlanLimitsTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\SectionAdvisoryCleanupTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/SectionAdvisoryCleanupTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\Sf1RemarksTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/Sf1RemarksTest.php
+
+		-
+			message: '#^Cannot call method setRemarkCode\(\) on App\\Entity\\Enrollment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Service/Sf1ReportBuilderTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\Sf1ReportBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/Sf1ReportBuilderTest.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 4
+			path: ../tests/Service/Sf1WriterTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 4
+			path: ../tests/Service/Sf1WriterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\Sf1WriterTest\:\:report\(\) has parameter \$female with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Service/Sf1WriterTest.php
+
+		-
+			message: '#^Parameter \#9 \$female of class App\\Sf1\\Sf1Report constructor expects list\<App\\Sf1\\Sf1Row\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/Sf1WriterTest.php
+
+		-
+			message: '#^Cannot call method getMeetingsPerWeek\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Cannot call method getPosition\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Cannot call method getSemester\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Cannot call method getStrand\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Cannot call method getTrack\(\) on App\\Entity\\Subject\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\SubjectManagerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Parameter \#1 \$lrn of method App\\Tests\\Service\\SubjectManagerTest\:\:learner\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\Grade\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Parameter \#1 \$subject of method App\\Service\\SubjectManager\:\:delete\(\) expects App\\Entity\\Subject, App\\Entity\\Subject\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\Grade constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Entity\\GradingPeriod, App\\Entity\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: ../tests/Service/SubjectManagerTest.php
+
+		-
+			message: '#^Cannot call method getEntries\(\) on App\\Entity\\TeachingLoad\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/TimetableManagerTest.php
+
+		-
+			message: '#^Cannot call method getTeacher\(\) on App\\Entity\\TeachingLoad\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/Service/TimetableManagerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\TimetableManagerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/TimetableManagerTest.php
+
+		-
+			message: '#^Parameter \#1 \$load of method App\\Tests\\Service\\TimetableManagerTest\:\:plotElsewhere\(\) expects App\\Entity\\TeachingLoad, App\\Entity\\TeachingLoad\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Service/TimetableManagerTest.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: ../tests/Service/TimetableManagerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\TimetableNowTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/TimetableNowTest.php
+
+		-
+			message: '#^Offset ''label'' might not exist on array\{label\: string, startsAt\: string\}\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../tests/Service/TimetableNowTest.php
+
+		-
+			message: '#^Offset ''label'' might not exist on array\{label\: string, timeRange\: string\}\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 4
+			path: ../tests/Service/TimetableNowTest.php
+
+		-
+			message: '#^Offset ''startsAt'' might not exist on array\{subjectName\: string, sectionLabel\: string, startsAt\: string\}\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../tests/Service/TimetableNowTest.php
+
+		-
+			message: '#^Offset ''subjectName'' might not exist on array\{subjectName\: string, sectionLabel\: string, startsAt\: string\}\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../tests/Service/TimetableNowTest.php
+
+		-
+			message: '#^Property App\\Tests\\Service\\TimetableNowTest\:\:\$recess is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: ../tests/Service/TimetableNowTest.php
+
+		-
+			message: '#^Property App\\Tests\\Service\\TimetableNowTest\:\:\$reyes is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: ../tests/Service/TimetableNowTest.php
+
+		-
+			message: '#^Cannot access offset ''''\|decimal\-int\-string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Cannot access offset ''teacherId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Cannot access offset ''teacherName'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Cannot access offset ''used'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Cannot access offset non\-falsy\-string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\TimetableQueryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\TimetableQueryTest\:\:sortedKeys\(\) has parameter \$map with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 5
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Parameter \#1 \$map of method App\\Tests\\Service\\TimetableQueryTest\:\:sortedKeys\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertContains\(\) expects iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Service\\TimetableQueryTest\:\:\$reyes is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: ../tests/Service/TimetableQueryTest.php
+
+		-
+			message: '#^Method App\\Tests\\Service\\TransferManagerTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/Service/TransferManagerTest.php
+
+		-
+			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Service/TransferManagerTest.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
+
+		-
+			message: '#^Method App\\Tests\\ServiceRecord\\ServiceRecordEntryTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
+
+		-
+			message: '#^Parameter \#1 \$toDate of method App\\Entity\\ServiceRecordEntry\:\:setToDate\(\) expects DateTimeImmutable\|null, DateTimeImmutable\|false\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
+
+		-
+			message: '#^Parameter \#2 \$fromDate of class App\\Entity\\ServiceRecordEntry constructor expects DateTimeImmutable\|null, DateTimeImmutable\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
+
+		-
+			message: '#^Method App\\Tests\\ServiceRecord\\ServiceRecordPdfTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/ServiceRecord/ServiceRecordPdfTest.php
+
+		-
+			message: '#^Method App\\Tests\\StaffId\\StaffIdCardBuilderTest\:\:plan\(\) should return App\\Entity\\Plan but returns App\\Entity\\Plan\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../tests/StaffId/StaffIdCardBuilderTest.php

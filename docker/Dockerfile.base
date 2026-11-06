@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     curl \
+    gnupg \
     libicu-dev \
     libonig-dev \
     libzip-dev \
@@ -32,11 +33,27 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     exif \
     opcache
 
+# pcov for PHPUnit code coverage (off by default, see php.ini)
+RUN pecl install pcov && docker-php-ext-enable pcov
+
 # Custom PHP settings
 COPY config/php.ini /usr/local/etc/php/conf.d/zz-custom.ini
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
+# Node 24 and pnpm (through Corepack) for the asset build and JS checks
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install -y nodejs \
+    && corepack enable \
+    && corepack prepare pnpm@latest --activate \
+    && rm -rf /var/lib/apt/lists/*
+
+# Chrome for the browser tests
+RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

@@ -1,0 +1,116 @@
+# Layers per module follow the same pattern as Core: <Module>_Domain,
+# <Module>_Application, <Module>_Infrastructure, <Module>_Presentation.
+# A module's Domain may use the Domain of modules above it; anything else
+# goes through <Module>/Application/Api.
+imports:
+  - deptrac.baseline.yaml
+
+deptrac:
+  paths:
+    - ../src
+
+  layers:
+    - name: Core_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Domain\\.*
+
+    - name: Core_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Application\\.*
+
+    - name: Core_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Infrastructure\\(?!Bus\\Attributes\\).*
+
+    # Handler and caching attributes: declared on Application classes, read by Infrastructure
+    - name: Core_BusAttributes
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Infrastructure\\Bus\\Attributes\\.*
+
+    - name: Core_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Presentation\\.*
+
+    - name: Kernel
+      collectors:
+        - type: classLike
+          value: ^App\\Kernel$
+
+    # Code not yet moved into a module
+    - name: Legacy
+      collectors:
+        - type: classLike
+          value: ^App\\(?!Core\\|Kernel$).*
+
+    - name: DoctrineMapping
+      collectors:
+        - type: classLike
+          value: ^Doctrine\\(ORM\\Mapping|Common\\Collections)\\.*
+
+    - name: ValidatorConstraints
+      collectors:
+        - type: classLike
+          value: ^Symfony\\Component\\Validator\\Constraints\\.*
+
+    - name: Framework
+      collectors:
+        - type: classLike
+          value: ^(Symfony\\(?!Component\\Validator\\Constraints\\)|Doctrine\\(?!ORM\\Mapping\\|Common\\Collections\\)|Psr\\|Twig\\|Monolog\\).*
+
+    - name: Vendor
+      collectors:
+        - type: classLike
+          value: ^(Dompdf|PhpOffice|chillerlan|Faker)\\.*
+
+  ruleset:
+    Core_Domain:
+      - DoctrineMapping
+    Core_Application:
+      - Core_Domain
+      - Core_BusAttributes
+      - ValidatorConstraints
+    Core_Infrastructure:
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+      - Vendor
+    Core_Presentation:
+      - Core_Application
+      - Core_Domain
+      - ValidatorConstraints
+      - Framework
+    Core_BusAttributes: ~
+    Kernel:
+      - Core_Domain
+      - Core_Application
+      - Core_Infrastructure
+      - Core_BusAttributes
+      - Core_Presentation
+      - Legacy
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+      - Vendor
+    Legacy:
+      - Core_Domain
+      - Core_Application
+      - Core_Infrastructure
+      - Core_BusAttributes
+      - Core_Presentation
+      - Kernel
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+      - Vendor
+    DoctrineMapping: ~
+    ValidatorConstraints: ~
+    Framework: ~
+    Vendor: ~

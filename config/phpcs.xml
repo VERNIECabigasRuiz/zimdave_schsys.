@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="ZIM School">
+    <arg name="basepath" value=".."/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <rule ref="PSR12"/>
+    <!-- Code not yet moved into a module is left out; each move adds its folders -->
+    <file>../src/Core</file>
+    <file>../src/DataFixtures</file>
+    <file>../tests/Core</file>
+    <file>../tests/DataFixtures</file>
+    <file>../tests/Browser</file>
+</ruleset>

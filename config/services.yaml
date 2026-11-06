@@ -30,3 +30,24 @@ services:
 when@test:
     parameters:
         app.upload_root: '%kernel.project_dir%/var/test_public'
+
+    services:
+        _defaults:
+            autowire: true
+            autoconfigure: true
+
+        # Handlers the bus integration test dispatches to
+        App\Tests\Core\Integration\Bus\Fixture\:
+            resource: '../tests/Core/Integration/Bus/Fixture/'
+
+        # Loaded directly by its test
+        App\DataFixtures\DemoFixtures:
+            public: true
+
+        # Kept in the test container even while no app code uses them yet
+        App\Core\Application\Bus\UseCaseBusInterface:
+            alias: App\Core\Infrastructure\Bus\MessengerUseCaseBus
+            public: true
+        App\Core\Application\Bus\QueryBusInterface:
+            alias: App\Core\Infrastructure\Bus\MessengerQueryBus
+            public: true

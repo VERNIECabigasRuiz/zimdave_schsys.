@@ -8,14 +8,16 @@ Team rules both developers follow live in `.claude/rules/team-notes.md` (loaded 
 
 ## What this is
 
-ZIM School: a Symfony 8.1 / PHP 8.4 school grading platform (Doctrine ORM on MySQL, Twig, AssetMapper + Stimulus + Turbo, plain CSS in `assets/styles/`, no Node build).
+ZIM School: a Symfony 8.1 / PHP 8.4 school grading platform (Doctrine ORM on MySQL, Twig, Stimulus + Turbo, plain CSS in `assets/styles/`). Assets are bundled by Vite (`pentatrion/vite-bundle`, output in `public/build/`); Vue 3 (Options API, mounted with `{{ vue_component() }}`) and Tailwind 4 (prefixed `tw:`) are available. Node 24 and pnpm run in Docker.
+
+New code goes into `src/Core/` or a module folder with DDD layers (Domain, Application, Infrastructure, Presentation). Use cases and queries go through the Core bus: inject `UseCaseBusInterface` or `QueryBusInterface`, call `handle()`, and get a `Result`. Handlers are marked `#[AsUseCaseHandler(X::class)]` or `#[AsQueryHandler(X::class)]`. A use case handler reports failure by throwing a `DomainException` (its code becomes the `Result`'s error code), never by returning `Result::failure()`: only a throw rolls back its database writes. A query must carry everything its result depends on (user, school), since the cache key is built from the query alone; a query marked `#[Cacheable('namespace-{property}')]` is cached and invalidated by that tag. `config/deptrac.yaml` holds the layer rules.
 
 ## Two ways to run it (both are in use)
 
 If `docker ps` shows `zimdave_schsys-web-1` running, use Docker; otherwise assume the local setup.
 
 - **Docker** (via the shared Base Makefile at `P:/ProgramData/Projects/Base`): see the Docker section in `AGENTS.md`. Run console/phpunit inside the container: `make bash-exec CMD='php bin/console ...'`. Never use `make run`/`make stop` when other projects' stacks are stopped; they prune all stopped containers machine-wide.
-- **Local XAMPP/Laragon** (vhost on `http://localhost:8081/`): needs PHP **8.4** (Laragon here ships 8.3) with intl, gd, exif, zip, mbstring, pdo_mysql. `.env` still holds Symfony's default PostgreSQL `DATABASE_URL`; put a MySQL one in `.env.local` (git-ignored). Create the test DB too: `php bin/console doctrine:database:create --env=test` then `doctrine:migrations:migrate -n --env=test` (the test DB name gets a `_test` suffix).
+- **Local XAMPP/Laragon** (vhost on `http://localhost:8081/`): runs the app only; tests, coverage, static checks and asset builds are Docker-only (build assets in Docker once so `public/build/` exists). Needs PHP **8.4** (Laragon here ships 8.3) with intl, gd, exif, zip, mbstring, pdo_mysql. `.env` still holds Symfony's default PostgreSQL `DATABASE_URL`; put a MySQL one in `.env.local` (git-ignored). Create the test DB too: `php bin/console doctrine:database:create --env=test` then `doctrine:migrations:migrate -n --env=test` (the test DB name gets a `_test` suffix).
 
 The root `.htaccess` denies everything on purpose: only `public/` may be web-served.
 
@@ -35,10 +37,22 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - `templates/base.html.twig` sets `turbo-prefetch=false` deliberately so one-time passwords shown on a page aren't consumed by prefetch.
 - Uploaded photos/logos are personal data: stored under `public/uploads/` (git-ignored), or `var/test_public` in tests (`app.upload_root`). `ImageProcessor` re-encodes everything to webp.
 - Schema changes only through migrations with MySQL syntax (use `/new-migration`).
+- Every Twig page needs the built assets (`public/build/.vite/entrypoints.json`); without them `vite_entry_*_tags()` throws. The web container builds them on start; rebuild with `make bash-exec CMD='pnpm build'`.
+- `assets/controllers/csrf_protection_controller.js` isn't a Stimulus controller: `assets/bootstrap.js` imports it for its side effect (the CSRF cookie on submit). Keep it out of the controller list, or forms and login stop working.
+- Stimulus controllers in a module's `Presentation/assets/controllers/` set `import.meta.stimulusIdentifier` so their names don't change when they move.
+- Tailwind classes only with the prefix (`tw:flex`); it has no preflight, so it can't restyle existing pages.
+- `@symfony/ux-turbo` and `@symfony/ux-vue` come from `vendor/` (`file:` in `package.json`, rewritten by Flex). Run `make bash-exec CMD='pnpm install'` after a composer change to them. pnpm settings live in `pnpm-workspace.yaml` (pnpm ignores `.npmrc`); `packageImportMethod: copy` is what makes `file:` packages install on the Windows bind mount.
+
+## Demo data
+
+`make fixture-load` (fresh database with the migrations' plans and `zim`), then `make fixture-seed`. It adds schools `999001` (Basic: principal, six teachers, three sections with timetables, learners, attendance, first grading period grades, a lesson plan) and `999002` (Individual: one teacher, one section). Sign in as `demo.principal`, `demo.teacher1` … `demo.teacher6` or `demo.solo`, password `demo1234`. A second `make fixture-seed` refuses; run `make fixture-load` first.
 
 ## Tests
 
 - Use `/run-tests`. `phpunit.dist.xml` fails on any deprecation, notice or warning; fix those, don't silence them.
+- Suites: `unit`, `integration`, `functional` (`tests/<Module>/Unit|Integration|Functional`), `browser` (`tests/Browser`, Panther) and `legacy` (today's test folders, emptied as modules move). JS tests live in `tests/<Module>/Javascript`.
+- `make test <type>` runs static checks and unit tests in a throwaway container without a database (`composer-audit`, `phpstan`, `deptrac`, `phpcs`, `eslint`, `stylelint`, `phpunit`, `vitest`, or `all`). `make test-feature` runs the database suites in `web` and requires 100% coverage of `src/Core`. `make regression-test` runs the browser suite. Reports land in `reports/`.
+- PHPStan and deptrac use baselines (`config/phpstan-baseline.neon`, `config/deptrac.baseline.yaml`) for code from before the move; don't add new entries to them.
 - Admin controller tests extend `tests/Controller/Admin/AdminTestCase.php` (logs in as `zim`, `createUser()`, `findUser()`, `activityActions()`). Build school data with `tests/SchoolFixturesTrait.php` (`schoolYear()`, `plan()`, `school()`, `assign()`, `plainUser()`); it wipes school data in `setUp` but keeps the seeded plans. No transaction rollback between tests.
 - New tests group their body with `// Initialize`, `// Execute`, `// Assert` comments (`// Expect` first when an exception is expected). Existing tests don't; leave them as they are.
 

@@ -1,4 +1,4 @@
-FROM vernie/zimdave-schsys:1.0
+FROM vernie/zimdave-schsys:1.1
 
 WORKDIR /app
 

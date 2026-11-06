@@ -1,0 +1,22 @@
+includes:
+    - ../vendor/phpstan/phpstan-symfony/extension.neon
+    - ../vendor/phpstan/phpstan-symfony/rules.neon
+    - ../vendor/phpstan/phpstan-doctrine/extension.neon
+    - ../vendor/phpstan/phpstan-doctrine/rules.neon
+    - ../vendor/phpstan/phpstan-phpunit/extension.neon
+    - ../vendor/phpstan/phpstan-phpunit/rules.neon
+    - ../vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 9
+    tmpDir: ../reports/phpstan/.cache
+    paths:
+        - ../src
+        - ../tests
+    excludePaths:
+        - ../tests/bootstrap.php
+    symfony:
+        containerXmlPath: ../var/cache/dev/App_KernelDevDebugContainer.xml
+    doctrine:
+        objectManagerLoader: ../tests/object-manager.php

@@ -8,18 +8,48 @@
          failOnNotice="true"
          failOnWarning="true"
          bootstrap="tests/bootstrap.php"
-         cacheDirectory=".phpunit.cache"
+         cacheDirectory="reports/phpunit/.cache"
 >
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
+        <!-- Browser tests: the kernel runs in the test env, Chrome runs as root in the container -->
+        <server name="PANTHER_APP_ENV" value="test" force="true" />
+        <server name="PANTHER_NO_SANDBOX" value="1" />
+        <server name="PANTHER_CHROME_ARGUMENTS" value="--disable-dev-shm-usage" />
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+        <testsuite name="unit">
+            <directory>tests/*/Unit</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/*/Integration</directory>
+        </testsuite>
+        <testsuite name="functional">
+            <directory>tests/*/Functional</directory>
+        </testsuite>
+        <testsuite name="browser">
+            <directory>tests/Browser</directory>
+        </testsuite>
+        <!-- Tests not yet moved into a module; each move takes its folders out of here -->
+        <testsuite name="legacy">
+            <directory>tests/Attendance</directory>
+            <directory>tests/CardSlip</directory>
+            <directory>tests/Controller</directory>
+            <directory>tests/Data</directory>
+            <directory>tests/Entity</directory>
+            <directory>tests/Grading</directory>
+            <directory>tests/LessonPlan</directory>
+            <directory>tests/Nutrition</directory>
+            <directory>tests/Repository</directory>
+            <directory>tests/Security</directory>
+            <directory>tests/Service</directory>
+            <directory>tests/ServiceRecord</directory>
+            <directory>tests/StaffId</directory>
+            <file>tests/KernelTimezoneTest.php</file>
         </testsuite>
     </testsuites>
 
@@ -29,7 +59,7 @@
             restrictWarnings="true"
     >
         <include>
-            <directory>src</directory>
+            <directory>src/Core</directory>
         </include>
 
         <deprecationTrigger>
@@ -40,5 +70,6 @@
     </source>
 
     <extensions>
+        <bootstrap class="Symfony\Component\Panther\ServerExtension" />
     </extensions>
 </phpunit>

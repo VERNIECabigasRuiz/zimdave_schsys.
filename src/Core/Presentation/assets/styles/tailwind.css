@@ -1,0 +1,11 @@
+/*
+ * Tailwind utilities, used as tw:<utility> (e.g. tw:flex). No preflight, so the
+ * existing styles of every page stay as they are.
+ */
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@source "../../../../../templates";
+@source "../../../..";
