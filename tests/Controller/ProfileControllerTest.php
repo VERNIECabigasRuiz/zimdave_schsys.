@@ -5,7 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\CivilStatus;
 use App\Entity\PersonalDataSheet;
 use App\Entity\SexAtBirth;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
@@ -177,79 +177,6 @@ class ProfileControllerTest extends AdminTestCase
         self::assertSelectorTextContains('main', 'Date of birth cannot be in the future.');
     }
 
-    private function uploadPhoto(string $path, string $name = 'photo.jpg'): void
-    {
-        $crawler = $this->client->request('GET', '/profile');
-        $form = $crawler->selectButton('Upload photo')->form();
-        $form['image_upload_form[image]']->upload($path);
-        $files = $form->getPhpFiles();
-        $files['image_upload_form']['image']['name'] = $name;
-
-        $this->client->request('POST', $form->getUri(), $form->getPhpValues(), $files);
-    }
-
-    private function jpegFile(): string
-    {
-        $img = imagecreatetruecolor(800, 800);
-        $path = sys_get_temp_dir().'/zim_photo_'.bin2hex(random_bytes(4)).'.jpg';
-        imagejpeg($img, $path);
-
-        return $path;
-    }
-
-    private function absolute(string $path): string
-    {
-        return static::getContainer()->getParameter('app.upload_root').'/'.$path;
-    }
-
-    public function testPhotoInputShowsPreviewBeforeUploading(): void
-    {
-        $crawler = $this->client->request('GET', '/profile');
-
-        self::assertCount(1, $crawler->filter('[data-controller~="image-preview"] input#image_upload_form_image[data-action~="image-preview#show"]'));
-        self::assertCount(1, $crawler->filter('[data-image-preview-target="image"]'));
-        self::assertStringContainsString('Click "Upload photo"', $crawler->filter('[data-image-preview-target="hint"]')->text());
-    }
-
-    public function testUploadPhotoStores350x450(): void
-    {
-        $this->uploadPhoto($this->jpegFile());
-
-        self::assertResponseRedirects('/profile');
-        $photo = $this->findUser('maria')->getPhotoPath();
-        self::assertMatchesRegularExpression('#^uploads/photos/[0-9a-f]{32}\.webp$#', $photo);
-        self::assertSame([350, 450], \array_slice(getimagesize($this->absolute($photo)), 0, 2));
-        self::assertContains('Changed profile photo', $this->activityActions());
-        unlink($this->absolute($photo));
-    }
-
-    public function testFakeJpgRejectedAndOldPhotoKept(): void
-    {
-        $this->uploadPhoto($this->jpegFile());
-        $old = $this->findUser('maria')->getPhotoPath();
-        $fake = sys_get_temp_dir().'/zim_fake_'.bin2hex(random_bytes(4)).'.jpg';
-        file_put_contents($fake, '%PDF-1.4 not an image');
-
-        $this->uploadPhoto($fake);
-
-        self::assertResponseRedirects('/profile');
-        $this->client->followRedirect();
-        self::assertSelectorTextContains('main', 'Upload a JPG, PNG or WebP image.');
-        self::assertSame($old, $this->findUser('maria')->getPhotoPath());
-        self::assertFileExists($this->absolute($old));
-        unlink($this->absolute($old));
-    }
-
-    public function testHugeImageShowsErrorInsteadOfCrashing(): void
-    {
-        $this->uploadPhoto(\App\Tests\Core\Integration\Infrastructure\FileStorage\ImageProcessorTest::hugePngHeader(sys_get_temp_dir()), 'bomb.png');
-
-        self::assertResponseRedirects('/profile');
-        $this->client->followRedirect();
-        self::assertSelectorTextContains('main', 'The image is too large.');
-        self::assertNull($this->findUser('maria')->getPhotoPath());
-    }
-
     public function testInvalidCsrfTokenIsShownOnPersonalForm(): void
     {
         $crawler = $this->client->request('GET', '/profile/personal');
@@ -265,23 +192,6 @@ class ProfileControllerTest extends AdminTestCase
 
         self::assertResponseStatusCodeSame(422);
         self::assertSelectorTextContains('main', 'CSRF token is invalid');
-    }
-
-    public function testRemovePhotoRequiresCsrfAndDeletesFile(): void
-    {
-        $this->uploadPhoto($this->jpegFile());
-        $photo = $this->findUser('maria')->getPhotoPath();
-
-        $this->client->request('POST', '/profile/photo/remove', ['_token' => 'wrong']);
-        self::assertSame($photo, $this->findUser('maria')->getPhotoPath());
-
-        $crawler = $this->client->request('GET', '/profile');
-        $this->client->submit($crawler->selectButton('Remove photo')->form());
-
-        self::assertResponseRedirects('/profile');
-        self::assertNull($this->findUser('maria')->getPhotoPath());
-        self::assertFileDoesNotExist($this->absolute($photo));
-        self::assertContains('Removed profile photo', $this->activityActions());
     }
 
     public function testPdfDownloadBeforeAnySave(): void

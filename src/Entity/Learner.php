@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Access\Domain\Model\User;
 use App\Repository\LearnerRepository;
 use App\Validator\UniqueLrn;
 use Doctrine\ORM\Mapping as ORM;

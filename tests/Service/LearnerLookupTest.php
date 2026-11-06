@@ -5,7 +5,7 @@ namespace App\Tests\Service;
 use App\Entity\GradeLevel;
 use App\Entity\School;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
 use App\Service\LearnerLookup;

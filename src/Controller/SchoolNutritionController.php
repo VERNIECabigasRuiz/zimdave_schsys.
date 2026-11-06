@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\School;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Nutrition\NutritionException;
 use App\Nutrition\NutritionPeriod;
 use App\Nutrition\Sf8Report;

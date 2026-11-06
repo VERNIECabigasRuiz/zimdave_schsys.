@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Browser;
 
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

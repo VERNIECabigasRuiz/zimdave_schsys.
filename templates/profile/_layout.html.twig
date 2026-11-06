@@ -34,7 +34,7 @@
                 <div><dt>Role</dt><dd>{{ app.user.roleLabel }}</dd></div>
                 <div><dt>Last updated</dt><dd>{{ sheet.updatedAt ? sheet.updatedAt|date('M j, Y') : 'Never' }}</dd></div>
             </dl>
-            {{ render(controller('App\\Controller\\ProfileController::photoForm')) }}
+            {{ render(controller('App\\Access\\Presentation\\Controller\\ProfilePhotoController::photoForm')) }}
             {% if app.user.photoPath %}
                 <form method="post" action="{{ path('profile_photo_remove') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token('remove-photo') }}">

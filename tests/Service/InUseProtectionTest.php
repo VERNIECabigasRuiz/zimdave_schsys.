@@ -12,7 +12,7 @@ use App\Entity\ShsTrack;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
 use App\Entity\TransferRequest;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\Service\AssignmentException;
 use App\Service\ClassPeriodManager;

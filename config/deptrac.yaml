@@ -36,6 +36,26 @@ deptrac:
         - type: classLike
           value: ^App\\Core\\Presentation\\.*
 
+    - name: Access_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Domain\\.*
+
+    - name: Access_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Application\\.*
+
+    - name: Access_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Infrastructure\\.*
+
+    - name: Access_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Presentation\\.*
+
     - name: Kernel
       collectors:
         - type: classLike
@@ -45,7 +65,13 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Kernel$).*
+
+    # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
+    - name: SecurityUserContract
+      collectors:
+        - type: classLike
+          value: ^Symfony\\Component\\Security\\Core\\User\\(UserInterface|PasswordAuthenticatedUserInterface)$
 
     - name: DoctrineMapping
       collectors:
@@ -60,7 +86,7 @@ deptrac:
     - name: Framework
       collectors:
         - type: classLike
-          value: ^(Symfony\\(?!Component\\Validator\\Constraints\\)|Doctrine\\(?!ORM\\Mapping\\|Common\\Collections\\)|Psr\\|Twig\\|Monolog\\).*
+          value: ^(Symfony\\(?!Component\\Validator\\Constraints\\|Component\\Security\\Core\\User\\(UserInterface|PasswordAuthenticatedUserInterface)$)|Doctrine\\(?!ORM\\Mapping\\|Common\\Collections\\)|Psr\\|Twig\\|Monolog\\).*
 
     - name: Vendor
       collectors:
@@ -88,12 +114,43 @@ deptrac:
       - ValidatorConstraints
       - Framework
     Core_BusAttributes: ~
+    Access_Domain:
+      - Core_Domain
+      - DoctrineMapping
+      - SecurityUserContract
+    Access_Application:
+      - Access_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - ValidatorConstraints
+    Access_Infrastructure:
+      - Access_Domain
+      - Access_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - DoctrineMapping
+      - SecurityUserContract
+      - ValidatorConstraints
+      - Framework
+    Access_Presentation:
+      - Access_Application
+      - Access_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - SecurityUserContract
+      - ValidatorConstraints
+      - Framework
     Kernel:
       - Core_Domain
       - Core_Application
       - Core_Infrastructure
       - Core_BusAttributes
       - Core_Presentation
+      - Access_Domain
+      - Access_Infrastructure
       - Legacy
       - DoctrineMapping
       - ValidatorConstraints
@@ -105,11 +162,17 @@ deptrac:
       - Core_Infrastructure
       - Core_BusAttributes
       - Core_Presentation
+      - Access_Domain
+      - Access_Application
+      - Access_Infrastructure
+      - Access_Presentation
       - Kernel
       - DoctrineMapping
+      - SecurityUserContract
       - ValidatorConstraints
       - Framework
       - Vendor
+    SecurityUserContract: ~
     DoctrineMapping: ~
     ValidatorConstraints: ~
     Framework: ~

@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -179,5 +179,30 @@ class SchoolAssignmentRepository extends ServiceEntityRepository
     public function countPrincipals(SchoolYear $schoolYear): int
     {
         return $this->count(['schoolYear' => $schoolYear, 'role' => User::ROLE_PRINCIPAL]);
+    }
+
+    /**
+     * Active principals with no school in $schoolYear, plus $include (the school's current principal).
+     *
+     * @return list<User>
+     */
+    public function findAssignablePrincipals(SchoolYear $schoolYear, ?User $include = null): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u')
+            ->leftJoin(SchoolAssignment::class, 'a', 'WITH', 'a.user = u AND a.schoolYear = :sy')
+            ->andWhere('u.active = true')
+            ->andWhere(null !== $include ? '(a.id IS NULL OR u = :include)' : 'a.id IS NULL')
+            // roles is a JSON list such as ["ROLE_PRINCIPAL"]
+            ->andWhere('u.roles LIKE :principalRole')
+            ->setParameter('sy', $schoolYear)
+            ->setParameter('principalRole', '%"'.User::ROLE_PRINCIPAL.'"%')
+            ->orderBy('u.fullName', 'ASC');
+        if (null !== $include) {
+            $qb->setParameter('include', $include);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

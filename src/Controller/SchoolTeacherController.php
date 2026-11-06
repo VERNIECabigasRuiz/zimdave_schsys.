@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\School;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\ExistingTeacherFormType;
 use App\Form\TeacherFormType;
 use App\Entity\PersonalDataSheet;
@@ -13,7 +13,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Service\PdsPdfRenderer;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use App\Repository\SchoolYearRepository;
-use App\Repository\UserRepository;
+use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use App\Service\AssignmentException;
 use Symfony\Component\Form\FormError;
 use App\Security\Voter\SchoolVoter;
@@ -104,7 +104,7 @@ class SchoolTeacherController extends AbstractController
     }
 
     #[Route('/add-existing', name: 'school_teachers_add_existing', methods: ['GET', 'POST'])]
-    public function addExisting(Request $request, School $school, UserRepository $users): Response
+    public function addExisting(Request $request, School $school, UserRepositoryInterface $users): Response
     {
         $schoolYear = $this->requireSchoolYear();
         if (null !== $refusal = $this->planLimits->canAddTeacher($school, $schoolYear)) {
@@ -118,7 +118,7 @@ class SchoolTeacherController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $username = mb_strtolower(trim($form->get('username')->getData()));
-            $teacher = $users->findOneBy(['username' => $username]);
+            $teacher = $users->findOneByUsername($username);
 
             try {
                 if (null === $teacher) {

@@ -253,30 +253,6 @@ parameters:
 			path: ../src/Controller/Admin/SchoolYearController.php
 
 		-
-			message: '#^Method App\\Controller\\Admin\\UserAccountController\:\:guardLearnerRoleChange\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Controller/Admin/UserAccountController.php
-
-		-
-			message: '#^Method App\\Controller\\Admin\\UserAccountController\:\:guardPrincipalRoleChange\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Controller/Admin/UserAccountController.php
-
-		-
-			message: '#^Parameter \#2 \$plainPassword of method Symfony\\Component\\PasswordHasher\\Hasher\\UserPasswordHasherInterface\:\:hashPassword\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/Admin/UserAccountController.php
-
-		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Service\\PlanLimits\:\:canAddTeacher\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/Admin/UserAccountController.php
-
-		-
 			message: '#^Parameter \#2 \$schoolYear of method App\\Attendance\\AttendanceStatistics\:\:today\(\) expects App\\Entity\\SchoolYear, App\\Entity\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -323,18 +299,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/Principal/DashboardController.php
-
-		-
-			message: '#^Cannot call method getPathname\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Controller/ProfileController.php
-
-		-
-			message: '#^Ternary operator condition is always true\.$#'
-			identifier: ternary.alwaysTrue
-			count: 1
-			path: ../src/Controller/ProfileController.php
 
 		-
 			message: '#^Parameter \#3 \$from of method App\\Attendance\\AttendanceRecorder\:\:addDaysOff\(\) expects DateTimeImmutable, mixed given\.$#'
@@ -419,18 +383,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/SchoolTransferController.php
-
-		-
-			message: '#^Parameter \#2 \$plainPassword of method Symfony\\Component\\PasswordHasher\\Hasher\\UserPasswordHasherInterface\:\:hashPassword\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/SecurityController.php
-
-		-
-			message: '#^Parameter \#2 \$plainPassword of method Symfony\\Component\\PasswordHasher\\Hasher\\UserPasswordHasherInterface\:\:isPasswordValid\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/SecurityController.php
 
 		-
 			message: '#^Method App\\Controller\\TeacherAttendanceController\:\:submitForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
@@ -961,18 +913,6 @@ parameters:
 			path: ../src/Entity/Subject.php
 
 		-
-			message: '#^Method App\\Entity\\User\:\:getUserIdentifier\(\) should return non\-empty\-string but returns string\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Entity/User.php
-
-		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, list\<string\>\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Entity/User.php
-
-		-
 			message: '#^Class App\\Form\\AnnouncementFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -1001,12 +941,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Form/CardSlipCommentsFormType.php
-
-		-
-			message: '#^Class App\\Form\\ChangePasswordFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/ChangePasswordFormType.php
 
 		-
 			message: '#^Class App\\Form\\ClassPeriodFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
@@ -1097,12 +1031,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: ../src/Form/GradingPeriodFormType.php
-
-		-
-			message: '#^Class App\\Form\\ImageUploadFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/ImageUploadFormType.php
 
 		-
 			message: '#^Class App\\Form\\LearnerFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
@@ -1387,18 +1315,6 @@ parameters:
 			path: ../src/Form/TeacherSchoolFormType.php
 
 		-
-			message: '#^Class App\\Form\\UserAccountFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/UserAccountFormType.php
-
-		-
-			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Form/UserAccountFormType.php
-
-		-
 			message: '#^Parameter \#4 \$failedSubjects of class App\\Grading\\FailingLearner constructor expects array\<string, int\>, array\<string, int\<min, 74\>\|null\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1619,18 +1535,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../src/Repository/TransferRequestRepository.php
-
-		-
-			message: '#^Method App\\Repository\\UserRepository\:\:search\(\) should return Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\User\> but returns Doctrine\\ORM\\Tools\\Pagination\\Paginator\<mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/UserRepository.php
-
-		-
-			message: '#^Parameter \#1 \$haystack of function str_starts_with expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Security/ForcePasswordChangeListener.php
 
 		-
 			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\School\|App\\Entity\\Section\|App\\Entity\\TransferRequest\:\:getFromSchool\(\)\.$#'
@@ -2107,54 +2011,6 @@ parameters:
 			path: ../tests/Controller/Admin/SchoolYearControllerTest.php
 
 		-
-			message: '#^Cannot call method getFullName\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/Admin/UserAccountControllerTest.php
-
-		-
-			message: '#^Cannot call method getRole\(\) on App\\Entity\\SchoolAssignment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/UserAccountControllerTest.php
-
-		-
-			message: '#^Cannot call method getRole\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: ../tests/Controller/Admin/UserAccountControllerTest.php
-
-		-
-			message: '#^Cannot call method getSchool\(\) on App\\Entity\\SchoolAssignment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/UserAccountControllerTest.php
-
-		-
-			message: '#^Cannot call method getUsername\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/UserAccountControllerTest.php
-
-		-
-			message: '#^Cannot call method getValue\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/UserAccountControllerTest.php
-
-		-
-			message: '#^Cannot call method isActive\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: ../tests/Controller/Admin/UserAccountControllerTest.php
-
-		-
-			message: '#^Cannot call method mustChangePassword\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/Admin/UserAccountControllerTest.php
-
-		-
 			message: '#^Cannot call method getCallName\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2395,18 +2251,6 @@ parameters:
 			path: ../tests/Controller/ProfileControllerTest.php
 
 		-
-			message: '#^Cannot call method getFullName\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/ProfileControllerTest.php
-
-		-
-			message: '#^Cannot call method getPhotoPath\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 7
-			path: ../tests/Controller/ProfileControllerTest.php
-
-		-
 			message: '#^Cannot call method getReferences\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
 			identifier: method.nonObject
 			count: 2
@@ -2428,12 +2272,6 @@ parameters:
 			message: '#^Cannot call method getWorkExperiences\(\) on App\\Entity\\PersonalDataSheet\|null\.$#'
 			identifier: method.nonObject
 			count: 3
-			path: ../tests/Controller/ProfileControllerTest.php
-
-		-
-			message: '#^Cannot call method upload\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
-			identifier: method.nonObject
-			count: 1
 			path: ../tests/Controller/ProfileControllerTest.php
 
 		-
@@ -2473,31 +2311,13 @@ parameters:
 			path: ../tests/Controller/ProfileControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_slice expects array, array\<int\|string, int\|string\>\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/ProfileControllerTest.php
-
-		-
 			message: '#^Parameter \#1 \$node of class Symfony\\Component\\DomCrawler\\Crawler constructor expects array\<DOMNode\>\|DOMNode\|DOMNodeList\<DOMNode\>\|string\|null, string\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/ProfileControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$path of method App\\Tests\\Controller\\ProfileControllerTest\:\:absolute\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 5
-			path: ../tests/Controller/ProfileControllerTest.php
-
-		-
 			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/ProfileControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$string of static method PHPUnit\\Framework\\Assert\:\:assertMatchesRegularExpression\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/ProfileControllerTest.php
@@ -2587,13 +2407,13 @@ parameters:
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
 
 		-
-			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
 
 		-
-			message: '#^Parameter \#5 \$by of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			message: '#^Parameter \#5 \$by of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
@@ -2869,30 +2689,6 @@ parameters:
 			path: ../tests/Controller/SchoolSubjectControllerTest.php
 
 		-
-			message: '#^Cannot call method getFullName\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolTeacherControllerTest.php
-
-		-
-			message: '#^Cannot call method getRole\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolTeacherControllerTest.php
-
-		-
-			message: '#^Cannot call method isActive\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/SchoolTeacherControllerTest.php
-
-		-
-			message: '#^Cannot call method mustChangePassword\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/SchoolTeacherControllerTest.php
-
-		-
 			message: '#^Cannot call method setCurrent\(\) on App\\Entity\\SchoolYear\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2947,18 +2743,6 @@ parameters:
 			path: ../tests/Controller/SchoolTransferControllerTest.php
 
 		-
-			message: '#^Cannot call method getLastLoginAt\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SecurityControllerTest.php
-
-		-
-			message: '#^Cannot call method mustChangePassword\(\) on App\\Entity\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SecurityControllerTest.php
-
-		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -3001,7 +2785,7 @@ parameters:
 			path: ../tests/Controller/ServiceRecordControllerTest.php
 
 		-
-			message: '#^Cannot call method getUsername\(\) on App\\Entity\\User\|null\.$#'
+			message: '#^Cannot call method getUsername\(\) on App\\Access\\Domain\\Model\\User\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/TeacherAreaTest.php
@@ -3121,7 +2905,7 @@ parameters:
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
 
 		-
-			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
@@ -3241,7 +3025,7 @@ parameters:
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Parameter \#2 \$by of method App\\Grading\\GradeChangeManager\:\:decline\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			message: '#^Parameter \#2 \$by of method App\\Grading\\GradeChangeManager\:\:decline\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
@@ -3277,7 +3061,7 @@ parameters:
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
@@ -3301,13 +3085,13 @@ parameters:
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Parameter \#4 \$unlockedBy of class App\\Entity\\GradeUnlock constructor expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			message: '#^Parameter \#4 \$unlockedBy of class App\\Entity\\GradeUnlock constructor expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Parameter \#5 \$by of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			message: '#^Parameter \#5 \$by of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
@@ -3367,7 +3151,7 @@ parameters:
 			path: ../tests/Controller/TeacherNutritionControllerTest.php
 
 		-
-			message: '#^Parameter \#4 \$enrolledBy of class App\\Entity\\Enrollment constructor expects App\\Entity\\User, App\\Entity\\User\|null given\.$#'
+			message: '#^Parameter \#4 \$enrolledBy of class App\\Entity\\Enrollment constructor expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherNutritionControllerTest.php
@@ -3745,7 +3529,7 @@ parameters:
 			path: ../tests/Grading/GradeRecorderTest.php
 
 		-
-			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$teacher \(App\\Entity\\User\) does not accept App\\Entity\\User\|null\.$#'
+			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$teacher \(App\\Access\\Domain\\Model\\User\) does not accept App\\Access\\Domain\\Model\\User\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Grading/GradeRecorderTest.php
@@ -3859,7 +3643,7 @@ parameters:
 			path: ../tests/Nutrition/NutritionRecorderTest.php
 
 		-
-			message: '#^Property App\\Tests\\Nutrition\\NutritionRecorderTest\:\:\$adviser \(App\\Entity\\User\) does not accept App\\Entity\\User\|null\.$#'
+			message: '#^Property App\\Tests\\Nutrition\\NutritionRecorderTest\:\:\$adviser \(App\\Access\\Domain\\Model\\User\) does not accept App\\Access\\Domain\\Model\\User\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Nutrition/NutritionRecorderTest.php
@@ -3943,7 +3727,7 @@ parameters:
 			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
 
 		-
-			message: '#^Cannot call method getId\(\) on App\\Entity\\User\|null\.$#'
+			message: '#^Cannot call method getId\(\) on App\\Access\\Domain\\Model\\User\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Repository/CardSlipCommentRepositoryTest.php

@@ -9,7 +9,7 @@ use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Security\Voter\GradeVoter;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;

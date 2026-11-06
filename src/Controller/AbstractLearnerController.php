@@ -2,14 +2,14 @@
 
 namespace App\Controller;
 
+use App\Core\Presentation\Form\ImageUploadFormType;
 use App\Entity\Enrollment;
 use App\Entity\Learner;
 use App\Entity\School;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\EnrollmentRecordFormType;
 use App\Form\EnrollSectionFormType;
-use App\Form\ImageUploadFormType;
 use App\Form\LearnerFormType;
 use App\LearnerId\IdCardBuilder;
 use App\LearnerId\IdCardPdf;

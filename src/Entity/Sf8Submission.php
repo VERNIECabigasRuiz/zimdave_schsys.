@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Access\Domain\Model\User;
 use App\Nutrition\NutritionPeriod;
 use App\Repository\Sf8SubmissionRepository;
 use Doctrine\ORM\Mapping as ORM;

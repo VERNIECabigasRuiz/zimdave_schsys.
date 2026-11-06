@@ -10,7 +10,7 @@ use App\Entity\ScheduleEntry;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\Repository\ScheduleEntryRepository;
 use App\Repository\TeachingLoadRepository;

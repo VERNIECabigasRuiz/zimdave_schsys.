@@ -14,7 +14,7 @@ use App\Entity\SchoolDayOff;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Sf2Submission;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

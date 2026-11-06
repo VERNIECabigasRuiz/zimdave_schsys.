@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Access\Domain\Model\User;
 use App\Repository\Sf2SubmissionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

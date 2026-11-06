@@ -20,6 +20,8 @@ framework:
                 middleware:
                     - App\Core\Infrastructure\Bus\Middleware\LoggingMiddleware
                     - App\Core\Infrastructure\Bus\Middleware\ExceptionHandlingMiddleware
+                    # Releases transaction locks only after doctrine_transaction has committed or rolled back
+                    - App\Core\Infrastructure\Bus\Middleware\ReleaseLocksMiddleware
                     - doctrine_transaction
                     - validation
             query.bus:

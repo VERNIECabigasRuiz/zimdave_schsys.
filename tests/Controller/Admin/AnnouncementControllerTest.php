@@ -3,7 +3,7 @@
 namespace App\Tests\Controller\Admin;
 
 use App\Entity\Announcement;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 
 class AnnouncementControllerTest extends AdminTestCase
 {

@@ -13,7 +13,7 @@ use App\Entity\RollCall;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SchoolYearRepository;
 use App\Service\PlanLimits;
 use App\Tests\SchoolFixturesTrait;

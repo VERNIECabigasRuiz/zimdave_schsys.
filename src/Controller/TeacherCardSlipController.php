@@ -10,7 +10,7 @@ use App\CardSlip\CardSlipLine;
 use App\CardSlip\CardSlipPdf;
 use App\Entity\GradingPeriod;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\CardSlipCommentsData;
 use App\Form\CardSlipCommentsFormType;
 use App\Grading\GradeRules;

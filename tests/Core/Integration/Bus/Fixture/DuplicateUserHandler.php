@@ -8,7 +8,7 @@ use App\Core\Application\Bus\Result;
 use App\Core\Application\Bus\UseCase;
 use App\Core\Application\Bus\UseCaseHandlerInterface;
 use App\Core\Infrastructure\Bus\Attributes\AsUseCaseHandler;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

@@ -4,7 +4,7 @@ namespace App\Tests\Controller\Principal;
 
 use App\Entity\School;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 

@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Attendance\AttendanceException;
 use App\Attendance\AttendanceRecorder;
 use App\Entity\School;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\DayOffFormType;
 use App\Repository\SchoolDayOffRepository;
 use App\Repository\SchoolYearRepository;

@@ -6,7 +6,7 @@ use App\Entity\Citizenship;
 use App\Entity\CivilStatus;
 use App\Entity\PersonalDataSheet;
 use App\Entity\SexAtBirth;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

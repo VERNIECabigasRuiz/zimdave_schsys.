@@ -8,7 +8,7 @@ use App\Entity\SchoolAssignment;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\ShsTrack;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

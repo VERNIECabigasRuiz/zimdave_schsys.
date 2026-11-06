@@ -3,9 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\PersonalDataSheet;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\FamilyBackgroundFormType;
-use App\Form\ImageUploadFormType;
 use App\Form\OtherInfoFormType;
 use App\Form\PdsListFormType;
 use App\Form\PdsListSections;
@@ -15,8 +14,6 @@ use App\Form\ReferencesFormType;
 use App\Entity\PdsReference;
 use App\Repository\PersonalDataSheetRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Core\Domain\Exception\ImageProcessingException;
-use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Service\PdsPdfRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,7 +24,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
@@ -42,7 +38,6 @@ class ProfileController extends AbstractController
         private readonly PersonalDataSheetRepository $sheets,
         private readonly EntityManagerInterface $entityManager,
         private readonly ActivityLoggerInterface $activityLogger,
-        private readonly ImageProcessorInterface $images,
         private readonly FormFactoryInterface $formFactory,
     ) {
     }
@@ -228,63 +223,6 @@ class ProfileController extends AbstractController
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $renderer->filename($sheet)),
         ]);
-    }
-
-    #[Route('/photo', name: 'profile_photo', methods: ['POST'])]
-    public function photo(Request $request, #[CurrentUser] User $user): Response
-    {
-        $form = $this->createForm(ImageUploadFormType::class, options: ['action' => $this->generateUrl('profile_photo')]);
-        $form->handleRequest($request);
-
-        if (!$form->isSubmitted() || !$form->isValid()) {
-            $error = $form->getErrors(true)->current();
-            $this->addFlash('error', $error ? $error->getMessage() : 'The photo could not be uploaded.');
-
-            return $this->back($request);
-        }
-
-        try {
-            $user->setPhotoPath($this->images->storePhoto($form->get('image')->getData()->getPathname(), $user->getPhotoPath()));
-            $this->activityLogger->log('Changed profile photo');
-            $this->entityManager->flush();
-            $this->addFlash('success', 'Photo updated.');
-        } catch (ImageProcessingException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
-
-        return $this->back($request);
-    }
-
-    #[Route('/photo/remove', name: 'profile_photo_remove', methods: ['POST'])]
-    #[IsCsrfTokenValid('remove-photo')]
-    public function photoRemove(Request $request, #[CurrentUser] User $user): Response
-    {
-        $this->images->remove($user->getPhotoPath());
-        $user->setPhotoPath(null);
-        $this->activityLogger->log('Removed profile photo');
-        $this->entityManager->flush();
-        $this->addFlash('success', 'Photo removed.');
-
-        return $this->back($request);
-    }
-
-    /** The photo upload form shown on every profile page (rendered as a sub-request). */
-    public function photoForm(): Response
-    {
-        $form = $this->createForm(ImageUploadFormType::class, options: ['action' => $this->generateUrl('profile_photo')]);
-
-        return $this->render('profile/_photo_form.html.twig', ['form' => $form]);
-    }
-
-    /** Back to the profile tab the request came from. */
-    private function back(Request $request): Response
-    {
-        $path = parse_url((string) $request->headers->get('referer'), \PHP_URL_PATH);
-        $profile = $this->generateUrl('profile_show');
-
-        return \is_string($path) && str_starts_with($path, $profile) && !str_starts_with($path, $profile.'/photo')
-            ? $this->redirect($path)
-            : $this->redirectToRoute('profile_show');
     }
 
     private function save(PersonalDataSheet $sheet, User $user): void

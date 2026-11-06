@@ -6,7 +6,7 @@ use App\Attendance\AttendanceException;
 use App\Attendance\RosterEntry;
 use App\Entity\LearnerMark;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\RollCallFormType;
 use App\Form\Sf2SubmitFormType;
 use App\Security\Voter\AttendanceVoter;

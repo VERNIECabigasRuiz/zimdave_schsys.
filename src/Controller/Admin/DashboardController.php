@@ -2,12 +2,12 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Core\Domain\Model\Repository\ActivityLogRepositoryInterface;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolRepository;
 use App\Repository\SchoolYearRepository;
-use App\Repository\UserRepository;
+use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +19,7 @@ class DashboardController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
     public function index(
-        UserRepository $users,
+        UserRepositoryInterface $users,
         ActivityLogRepositoryInterface $activity,
         SchoolYearRepository $schoolYears,
         SchoolRepository $schools,
@@ -34,11 +34,11 @@ class DashboardController extends AbstractController
             'year_stats' => $currentYear ? [
                 'schools' => $schools->count(['active' => true]),
                 'assigned' => $assignments->countPrincipals($currentYear),
-                'unassigned' => \count($users->findAssignablePrincipals($currentYear)),
+                'unassigned' => \count($assignments->findAssignablePrincipals($currentYear)),
                 'without_principal' => $schools->countActiveWithoutPrincipal($currentYear),
             ] : null,
             'stats' => [
-                'accounts' => $users->count([]),
+                'accounts' => $users->countAll(),
                 'principals' => $users->countByRole(User::ROLE_PRINCIPAL),
                 'teachers' => $users->countByRole(User::ROLE_TEACHER),
                 'students' => $users->countByRole(User::ROLE_STUDENT),

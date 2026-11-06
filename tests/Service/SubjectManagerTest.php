@@ -11,7 +11,7 @@ use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
 use App\Entity\ShsTrack;
 use App\Entity\Subject;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SubjectRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\InUseException;

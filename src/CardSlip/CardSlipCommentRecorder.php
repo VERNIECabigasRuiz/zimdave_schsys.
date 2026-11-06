@@ -6,7 +6,7 @@ use App\Entity\CardSlipComment;
 use App\Entity\Enrollment;
 use App\Entity\GradingPeriod;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Grading\GradeRules;
 use App\Repository\CardSlipCommentRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Access\Domain\Model\User;
 use App\Repository\SectionRepository;
 use App\Validator\UniqueSection;
 use Doctrine\ORM\Mapping as ORM;

@@ -3,7 +3,7 @@
 namespace App\Tests\Controller\Admin;
 
 use App\Entity\Division;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\DivisionRepository;
 
 class DivisionControllerTest extends AdminTestCase

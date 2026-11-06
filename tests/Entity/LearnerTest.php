@@ -4,7 +4,7 @@ namespace App\Tests\Entity;
 
 use App\Entity\Learner;
 use App\Entity\SexAtBirth;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

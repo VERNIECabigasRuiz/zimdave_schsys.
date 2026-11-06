@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller\Admin;
 
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;

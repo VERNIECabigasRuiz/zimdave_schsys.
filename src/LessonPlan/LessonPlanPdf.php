@@ -4,7 +4,7 @@ namespace App\LessonPlan;
 
 use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\Entity\LessonPlan;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\ServiceRecordEntryRepository;

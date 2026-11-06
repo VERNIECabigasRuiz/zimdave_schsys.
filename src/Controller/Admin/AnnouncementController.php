@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Announcement;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\AnnouncementFormType;
 use App\Repository\AnnouncementRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;

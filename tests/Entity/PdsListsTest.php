@@ -10,7 +10,7 @@ use App\Entity\PdsTraining;
 use App\Entity\PdsVoluntaryWork;
 use App\Entity\PdsWorkExperience;
 use App\Entity\PersonalDataSheet;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

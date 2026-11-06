@@ -1,0 +1,17 @@
+# Rules for forms that still edit the User entity directly (the principal's teacher forms).
+# Access's own screens validate their commands instead. Remove when those forms move.
+App\Access\Domain\Model\User:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields: [username]
+            message: 'This username is already taken.'
+    properties:
+        username:
+            - NotBlank: ~
+            - Length: { min: 3, max: 50 }
+            - Regex:
+                pattern: '/^[a-zA-Z0-9._-]+$/'
+                message: 'Use only letters, numbers, dots, dashes and underscores.'
+        fullName:
+            - NotBlank: ~
+            - Length: { max: 120 }

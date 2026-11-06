@@ -4,7 +4,7 @@ namespace App\Controller\Principal;
 
 use App\Attendance\AttendanceStatistics;
 use App\Entity\School;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Grading\FailingLearners;
 use App\Grading\SectionGradeGrid;
 use App\Repository\GradeChangeRequestRepository;

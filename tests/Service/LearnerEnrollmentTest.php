@@ -15,12 +15,12 @@ use App\Entity\SexAtBirth;
 use App\Entity\Subject;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
-use App\Repository\UserRepository;
+use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\EnrollmentException;
 use App\Service\EnrollmentGuard;
@@ -29,7 +29,7 @@ use App\Service\LearnerEnrollment;
 use App\Service\LearnerLock;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
-use App\Service\TemporaryPasswordGenerator;
+use App\Access\Domain\Service\Password\TemporaryPasswordGenerator;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -84,7 +84,7 @@ class LearnerEnrollmentTest extends KernelTestCase
             $enrollments ?? $realEnrollments,
             new EnrollmentGuard($this->em, $c->get(SchoolYearRepository::class), $c->get(TransferRequestRepository::class)),
             $c->get(SchoolYearRepository::class),
-            $c->get(UserRepository::class),
+            $c->get(UserRepositoryInterface::class),
             $c->get(UserPasswordHasherInterface::class),
             new TemporaryPasswordGenerator(),
             $c->get(ActivityLoggerInterface::class),

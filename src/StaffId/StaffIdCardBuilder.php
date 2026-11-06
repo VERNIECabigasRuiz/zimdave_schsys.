@@ -6,7 +6,7 @@ use App\Data\PhilippineDivisions;
 use App\Entity\PersonalDataSheet;
 use App\Entity\School;
 use App\Entity\SexAtBirth;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\DivisionRepository;
 use App\Repository\PersonalDataSheetRepository;
 use App\Repository\SchoolAssignmentRepository;

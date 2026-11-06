@@ -6,7 +6,7 @@ use App\Entity\PersonalDataSheet;
 use App\Entity\School;
 use App\Entity\ServiceRecord;
 use App\Entity\ServiceRecordEntry;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\ServiceRecord\ServiceRecordPdf;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;

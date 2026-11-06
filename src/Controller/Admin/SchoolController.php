@@ -4,14 +4,13 @@ namespace App\Controller\Admin;
 
 use App\Entity\School;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\PrincipalAssignmentFormType;
 use App\Form\SchoolFormType;
 use App\Repository\PlanRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolRepository;
 use App\Repository\SchoolYearRepository;
-use App\Repository\UserRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\AssignmentException;
 use App\Service\PrincipalAssigner;
@@ -123,13 +122,13 @@ class SchoolController extends AbstractController
     }
 
     #[Route('/{id}/principal', name: 'admin_schools_principal', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function principal(Request $request, School $school, UserRepository $users, #[MapQueryParameter] ?int $sy = null): Response
+    public function principal(Request $request, School $school, #[MapQueryParameter] ?int $sy = null): Response
     {
         $schoolYear = $this->requireSchoolYear($sy);
         $current = $this->assignments->findPrincipal($school, $schoolYear);
 
         $form = $this->createForm(PrincipalAssignmentFormType::class, ['principal' => $current?->getUser()], [
-            'principals' => $users->findAssignablePrincipals($schoolYear, $current?->getUser()),
+            'principals' => $this->assignments->findAssignablePrincipals($schoolYear, $current?->getUser()),
         ]);
         $form->handleRequest($request);
 

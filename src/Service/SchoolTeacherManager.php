@@ -2,11 +2,12 @@
 
 namespace App\Service;
 
+use App\Access\Domain\Service\Password\TemporaryPasswordGenerator;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;

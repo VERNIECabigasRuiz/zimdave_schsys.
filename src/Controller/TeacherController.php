@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Attendance\SchoolCalendar;
 use App\Entity\School;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\SectionFormType;
 use App\Repository\RollCallRepository;
 use App\Repository\SchoolAssignmentRepository;

@@ -3,7 +3,7 @@
 namespace App\Tests\Controller\Admin;
 
 use App\Core\Domain\Model\ActivityLog;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -56,11 +56,14 @@ abstract class AdminTestCase extends WebTestCase
         return $token;
     }
 
-    protected function findUser(string $username): ?User
+    /** The account, freshly loaded; the test fails when there is none. */
+    protected function findUser(string $username): User
     {
         $this->em->clear();
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertNotNull($user, \sprintf('No account "%s".', $username));
 
-        return $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        return $user;
     }
 
     /**

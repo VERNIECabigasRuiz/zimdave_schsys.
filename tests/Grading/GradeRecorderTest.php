@@ -19,7 +19,7 @@ use App\Entity\Subject;
 use App\Entity\TeachingLoad;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Grading\GradeLocks;
 use App\Grading\GradeRecorder;
 use App\Grading\GradeRules;

@@ -5,7 +5,7 @@ namespace App\Tests\Controller\Admin;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 
 class SchoolPrincipalTest extends AdminTestCase
 {

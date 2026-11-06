@@ -14,7 +14,7 @@ use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\SchoolDayOffRepository;
 use App\Repository\TransferRequestRepository;

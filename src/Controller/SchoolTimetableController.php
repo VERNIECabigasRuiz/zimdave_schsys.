@@ -9,7 +9,7 @@ use App\Entity\ScheduleEntry;
 use App\Entity\School;
 use App\Entity\Section;
 use App\Entity\Subject;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\Repository\ClassPeriodRepository;
 use App\Repository\ScheduleEntryRepository;
@@ -17,7 +17,7 @@ use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
-use App\Repository\UserRepository;
+use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use App\Security\Voter\SchoolVoter;
 use App\Service\PlanLimitException;
 use App\Service\TimetableException;
@@ -46,7 +46,7 @@ class SchoolTimetableController extends AbstractController
         private readonly SubjectRepository $subjects,
         private readonly ClassPeriodRepository $periods,
         private readonly ScheduleEntryRepository $entries,
-        private readonly UserRepository $users,
+        private readonly UserRepositoryInterface $users,
         private readonly SchoolAssignmentRepository $assignments,
         private readonly SchoolYearRepository $schoolYears,
         private readonly TimetableManager $manager,
@@ -182,7 +182,7 @@ class SchoolTimetableController extends AbstractController
     /** A teacher of this school this school year. */
     private function requireTeacher(School $school, Section $section, int $id): User
     {
-        $teacher = $this->users->find($id);
+        $teacher = $this->users->findById($id);
         if (null === $teacher || $this->assignments->findSchoolOf($teacher, $section->getSchoolYear(), User::ROLE_TEACHER) !== $school) {
             throw $this->createNotFoundException('This teacher is not in the school this school year.');
         }

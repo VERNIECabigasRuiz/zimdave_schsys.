@@ -60,6 +60,7 @@
     >
         <include>
             <directory>src/Core</directory>
+            <directory>src/Access</directory>
         </include>
 
         <deprecationTrigger>

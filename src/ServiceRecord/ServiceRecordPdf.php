@@ -5,7 +5,7 @@ namespace App\ServiceRecord;
 use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\Entity\PersonalDataSheet;
 use App\Entity\School;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\PersonalDataSheetRepository;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;

@@ -3,7 +3,7 @@
 namespace App\Tests\ServiceRecord;
 
 use App\Entity\ServiceRecordEntry;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;

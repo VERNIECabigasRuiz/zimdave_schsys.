@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Access\Infrastructure\AccessHookAutoconfiguration;
 use App\Core\Infrastructure\Bus\BusHandlerAutoconfiguration;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,6 +25,7 @@ class Kernel extends BaseKernel
     protected function build(ContainerBuilder $container): void
     {
         BusHandlerAutoconfiguration::register($container);
+        AccessHookAutoconfiguration::register($container);
     }
 
     /**

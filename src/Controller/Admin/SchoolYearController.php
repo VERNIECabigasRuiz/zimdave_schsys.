@@ -4,7 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\GradingPeriod;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\SchoolYearFormType;
 use App\Repository\GradeLockRepository;
 use App\Repository\GradeOpeningRepository;

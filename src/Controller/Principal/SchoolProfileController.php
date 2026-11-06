@@ -2,7 +2,7 @@
 
 namespace App\Controller\Principal;
 
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\SchoolProfileFormType;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;

@@ -15,7 +15,7 @@ use App\Entity\Subject;
 use App\Entity\TeachingLoad;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Grading\GradeRules;
 use App\Grading\GridColumn;
 use App\Grading\SectionGradeGrid;

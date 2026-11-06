@@ -8,7 +8,7 @@ use App\Entity\SchoolType;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\ShsTrack;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SectionRepository;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;

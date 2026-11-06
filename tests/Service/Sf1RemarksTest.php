@@ -10,7 +10,7 @@ use App\Entity\Section;
 use App\Entity\Sf1Remark;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\TransferRequestRepository;
 use App\Sf1\Sf1Remarks;
 use App\Tests\SchoolFixturesTrait;

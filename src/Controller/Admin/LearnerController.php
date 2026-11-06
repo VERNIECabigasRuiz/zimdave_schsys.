@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
 use App\Repository\SchoolYearRepository;

@@ -6,7 +6,7 @@ use App\Attendance\SchoolCalendar;
 use App\Entity\School;
 use App\Entity\SchoolDayOff;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SchoolDayOffRepository;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;

@@ -4,10 +4,10 @@ namespace App\Controller;
 
 use App\Entity\School;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
-use App\Repository\UserRepository;
+use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use App\Security\Voter\SchoolVoter;
 use App\Service\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,7 +23,7 @@ class TeacherLoadController extends AbstractController
     public function __construct(
         private readonly SchoolYearRepository $schoolYears,
         private readonly SchoolAssignmentRepository $assignments,
-        private readonly UserRepository $users,
+        private readonly UserRepositoryInterface $users,
         private readonly TimetableQuery $query,
     ) {
     }
@@ -33,7 +33,7 @@ class TeacherLoadController extends AbstractController
     public function forPrincipal(Request $request, School $school, int $teacher): Response
     {
         $schoolYear = $this->schoolYears->findCurrent();
-        $teacher = $this->users->find($teacher);
+        $teacher = $this->users->findById($teacher);
         if (null === $schoolYear || null === $teacher || $this->assignments->findSchoolOf($teacher, $schoolYear, User::ROLE_TEACHER) !== $school) {
             throw $this->createNotFoundException('This teacher is not in the school this school year.');
         }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Access\Domain\Model\User;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Validator\ValidServiceRow;
 use Doctrine\DBAL\Types\Types;

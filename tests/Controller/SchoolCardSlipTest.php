@@ -11,7 +11,7 @@ use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Subject;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 

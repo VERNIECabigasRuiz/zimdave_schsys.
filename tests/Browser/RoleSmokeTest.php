@@ -7,7 +7,7 @@ namespace App\Tests\Browser;
 use App\Entity\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\SexAtBirth;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use Symfony\Component\Panther\Client;
 
 final class RoleSmokeTest extends BrowserTestCase

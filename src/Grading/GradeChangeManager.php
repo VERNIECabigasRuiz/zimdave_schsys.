@@ -6,7 +6,7 @@ use App\Entity\Grade;
 use App\Entity\GradeChangeRequest;
 use App\Entity\GradingPeriod;
 use App\Entity\TeachingLoad;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;

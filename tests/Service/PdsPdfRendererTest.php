@@ -7,7 +7,7 @@ use App\Entity\CivilStatus;
 use App\Entity\PdsChild;
 use App\Entity\PersonalDataSheet;
 use App\Entity\SexAtBirth;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Service\PdsPdfRenderer;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 

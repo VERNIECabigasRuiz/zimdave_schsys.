@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\LessonPlan;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\LessonPlan\LessonPlanPdf;
 use App\Repository\LessonPlanRepository;
 use App\Repository\SchoolAssignmentRepository;

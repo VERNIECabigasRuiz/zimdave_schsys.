@@ -17,7 +17,7 @@ use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Grading\GradeChangeManager;
 use App\Grading\GradeLocks;
 use App\Grading\GradeRecorder;

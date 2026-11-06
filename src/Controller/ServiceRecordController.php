@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\PersonalDataSheet;
 use App\Entity\School;
 use App\Entity\ServiceRecordEntry;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\ServiceRecordEntryFormType;
 use App\Repository\PersonalDataSheetRepository;
 use App\Repository\SchoolAssignmentRepository;

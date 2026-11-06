@@ -4,7 +4,7 @@ namespace App\ServiceRecord;
 
 use App\Entity\School;
 use App\Entity\ServiceRecordEntry;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;

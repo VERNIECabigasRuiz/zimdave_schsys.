@@ -6,7 +6,7 @@ use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\SectionRepository;
 use App\Repository\TeachingLoadRepository;

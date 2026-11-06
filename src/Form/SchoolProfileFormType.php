@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Core\Presentation\Form\ImageUploadFormType;
 use App\Entity\School;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;

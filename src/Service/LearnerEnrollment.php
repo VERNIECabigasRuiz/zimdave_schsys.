@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Access\Domain\Service\Password\TemporaryPasswordGenerator;
 use App\Core\Domain\Exception\ImageProcessingException;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
@@ -10,11 +11,11 @@ use App\Entity\Learner;
 use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeRepository;
 use App\Repository\SchoolYearRepository;
-use App\Repository\UserRepository;
+use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -34,7 +35,7 @@ class LearnerEnrollment
         private readonly EnrollmentRepository $enrollments,
         private readonly EnrollmentGuard $guard,
         private readonly SchoolYearRepository $schoolYears,
-        private readonly UserRepository $users,
+        private readonly UserRepositoryInterface $users,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TemporaryPasswordGenerator $passwordGenerator,
         private readonly ActivityLoggerInterface $activityLogger,
@@ -296,7 +297,7 @@ class LearnerEnrollment
 
     private function assertUsernameFree(string $username, ?User $except): void
     {
-        $taken = $this->users->findOneBy(['username' => $username]);
+        $taken = $this->users->findOneByUsername($username);
         if (null !== $taken && $taken !== $except) {
             throw new EnrollmentException(\sprintf('The username %s is already taken by another account. Ask the administrator.', $username));
         }

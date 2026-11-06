@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\GradeChangeRequest;
 use App\Entity\GradingPeriod;
 use App\Entity\TeachingLoad;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\GradeChange;
 use App\Form\GradeChangeFormType;
 use App\Form\GradeSheet;

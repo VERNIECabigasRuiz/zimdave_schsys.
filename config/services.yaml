@@ -27,6 +27,15 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    # Access hooks: every module's account rules, tagged by AccessHookAutoconfiguration (Kernel::build)
+    App\Access\Application\UseCase\Handler\UpdateAccountHandler:
+        arguments:
+            $roleGuards: !tagged_iterator access.role_change_guard
+
+    App\Access\Application\UseCase\Handler\ToggleAccountActiveHandler:
+        arguments:
+            $reactivationGuards: !tagged_iterator access.reactivation_guard
+
 when@test:
     parameters:
         app.upload_root: '%kernel.project_dir%/var/test_public'

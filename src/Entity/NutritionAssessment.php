@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Access\Domain\Model\User;
 use App\Nutrition\NutritionPeriod;
 use App\Repository\NutritionAssessmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;

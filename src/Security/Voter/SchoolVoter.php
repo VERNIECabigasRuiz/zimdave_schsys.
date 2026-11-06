@@ -3,7 +3,7 @@
 namespace App\Security\Voter;
 
 use App\Entity\School;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SchoolAssignmentRepository;
 use App\Repository\SchoolYearRepository;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;

@@ -16,7 +16,7 @@ use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Entity\Subject;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Grading\GradeRecorder;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Doctrine\ORM\EntityManagerInterface;

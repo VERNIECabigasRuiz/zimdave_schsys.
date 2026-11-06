@@ -48,7 +48,7 @@
             {% else %}
                 <span class="profile-card__photo profile-card__photo--empty" aria-hidden="true">{{ learner.user.initials }}</span>
             {% endif %}
-            {% include 'profile/_photo_form.html.twig' with {form: photo_form} only %}
+            {% include '@Core/_photo_form.html.twig' with {form: photo_form} only %}
             <p class="row-actions">
                 <span class="muted">Print ID:</span>
                 <a class="btn btn--ghost btn--sm" href="{{ path(routes ~ '_id', route_params|merge({learner: learner.id, layout: 'sheet'})) }}" data-turbo="false">Paper sheet</a>

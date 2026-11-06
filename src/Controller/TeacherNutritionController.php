@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Section;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\NutritionSheet;
 use App\Form\NutritionSheetFormType;
 use App\Form\Sf8SubmitFormType;

@@ -5,7 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\School;
 use App\Entity\SchoolAssignment;
 use App\Entity\SchoolYear;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Lock\LockFactory;
@@ -74,6 +74,32 @@ class SchoolTeacherControllerTest extends AdminTestCase
         self::assertSame(1, $this->teacherCount($this->school));
         self::assertSelectorTextContains('.page-head', 'Teachers 1 / 15');
         self::assertContains('Created teacher ana.reyes for Pagsabungan NHS', $this->activityActions());
+    }
+
+    public function testDuplicateUsernameIsRefused(): void
+    {
+        // Initialize
+        $this->createUser('ana.reyes', User::ROLE_TEACHER, 'Ana Reyes');
+
+        // Execute
+        $this->createTeacher($this->school, 'Another Ana', 'ana.reyes');
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.form-card', 'This username is already taken.');
+        self::assertSame(0, $this->teacherCount($this->school));
+    }
+
+    public function testUsernameRulesApplyToTheTrimmedName(): void
+    {
+        // Execute
+        $this->createTeacher($this->school, 'Ben Santos', '  Ben.Santos  ');
+        $spaced = $this->findUser('ben.santos');
+        $this->createTeacher($this->school, 'Cora Cruz', 'cora cruz');
+
+        // Assert
+        self::assertSame('ben.santos', $spaced->getUsername(), 'Spaces around a username are trimmed, as before');
+        self::assertSelectorTextContains('.form-card', 'Use only letters, numbers, dots, dashes and underscores.');
     }
 
     public function testCreateBlockedAtLimit(): void

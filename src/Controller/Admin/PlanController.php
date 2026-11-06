@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Plan;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Form\PlanFormType;
 use App\Repository\PlanRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;

@@ -10,7 +10,7 @@ use App\Entity\School;
 use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\ShsTrack;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Nutrition\BmiCategory;
 use App\Nutrition\HfaCategory;
 use App\Nutrition\NutritionPeriod;

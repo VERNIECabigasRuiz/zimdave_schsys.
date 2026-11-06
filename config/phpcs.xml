@@ -5,8 +5,10 @@
     <arg name="extensions" value="php"/>
     <rule ref="PSR12"/>
     <!-- Code not yet moved into a module is left out; each move adds its folders -->
+    <file>../src/Access</file>
     <file>../src/Core</file>
     <file>../src/DataFixtures</file>
+    <file>../tests/Access</file>
     <file>../tests/Core</file>
     <file>../tests/DataFixtures</file>
     <file>../tests/Browser</file>

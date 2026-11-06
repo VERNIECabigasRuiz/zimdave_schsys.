@@ -23,7 +23,7 @@ use App\Entity\Sf1Remark;
 use App\Entity\Subject;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Grading\GradeRecorder;
 use App\Grading\SectionGradeGrid;
 use App\Repository\CardSlipCommentRepository;

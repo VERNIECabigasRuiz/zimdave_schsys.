@@ -15,7 +15,7 @@ use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DomCrawler\Crawler;

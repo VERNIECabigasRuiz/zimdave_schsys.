@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Core\Presentation\Form\ImageUploadFormType;
 use App\Data\PhilippineDivisions;
 use App\Entity\Division;
 use Symfony\Component\Form\AbstractType;

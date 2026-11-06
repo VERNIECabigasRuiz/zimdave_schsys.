@@ -10,7 +10,7 @@ use App\Entity\SchoolYear;
 use App\Entity\Section;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
-use App\Entity\User;
+use App\Access\Domain\Model\User;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TransferRequestRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
