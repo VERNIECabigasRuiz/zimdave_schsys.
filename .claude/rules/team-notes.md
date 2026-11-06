@@ -106,6 +106,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - At the end of an implementation/change, if existing regression tests are affected by the changes, make sure to fix those regression tests.
 - After a fix, re-run every relevant test layer, not just the fastest one to check — a passing subset doesn't guarantee the rest still pass.
 - At the end of an implementation, before starting any live-browser regression check or writing any regression tests, ask for confirmation first — I might have additions/changes to make to the existing implementation. Once confirmed, if a live-browser regression check is possible, do that first and confirm everything works as expected before writing any regression tests.
+- When asking to run a live-browser regression check, also confirm whether it runs headless. By default it is not headless (a visible browser).
 - Before verifying a fix, grep for the actual affected call sites/routes and scope the verification run to just those tests first, rather than defaulting to a full/large suite batch — cheaper to confirm the fix, and avoids exhausting shared-machine resources on a broad run when a narrow one would do.
 - Any code change resets a consecutive-clean-runs count — only runs on the final code count.
 
