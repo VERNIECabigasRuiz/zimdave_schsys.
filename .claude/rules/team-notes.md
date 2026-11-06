@@ -45,6 +45,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Before planning files to share through git, run `git check-ignore -v` on them (the global gitignore counts too).
 - In Git Bash, prefix docker exec commands that take container paths with `MSYS_NO_PATHCONV=1`, and never pass /dev/null as an argument — paths get rewritten to Windows ones (/dev/null becomes nul and creates a file in the mounted repo).
 - Write helper scripts to a scratchpad file and run that, rather than an inline heredoc.
+- Don't put `pkill -f` in a shell whose command line contains the same pattern; run it on its own.
 - When you add a new setup step, check the first run's log to confirm it actually ran.
 - Before a run that wipes old reports, copy the results you'll compare against.
 - Before moving or deleting a folder, check what reads, writes, clears or links to it (including redirects and URLs).
@@ -109,6 +110,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - When asking to run a live-browser regression check, also confirm whether it runs headless. By default it is not headless (a visible browser).
 - Before verifying a fix, grep for the actual affected call sites/routes and scope the verification run to just those tests first, rather than defaulting to a full/large suite batch — cheaper to confirm the fix, and avoids exhausting shared-machine resources on a broad run when a narrow one would do.
 - Any code change resets a consecutive-clean-runs count — only runs on the final code count.
+- Before finishing a test, check every setup line sits under `// Initialize`.
 
 ## Subagents / Long-Running Tasks
 

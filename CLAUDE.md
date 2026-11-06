@@ -61,6 +61,8 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - PHPStan and deptrac use baselines (`config/phpstan-baseline.neon`, `config/deptrac.baseline.yaml`) for code from before the move; don't add new entries to them.
 - Admin controller tests extend `tests/Controller/Admin/AdminTestCase.php` (logs in as `zim`, `createUser()`, `findUser()`, `activityActions()`). Build school data with `tests/SchoolFixturesTrait.php` (`schoolYear()`, `plan()`, `school()`, `assign()`, `plainUser()`); it wipes school data in `setUp` but keeps the seeded plans. No transaction rollback between tests.
 - New tests group their body with `// Initialize`, `// Execute`, `// Assert` comments (`// Expect` first when an exception is expected). Existing tests don't; leave them as they are.
+- Don't name test helpers after PHPUnit `TestCase` methods (`count`, `output`, `name`…); many are final.
+- Write test logs and coverage files to a temp folder outside the repo, not onto the Docker bind mount.
 
 ## Git
 
