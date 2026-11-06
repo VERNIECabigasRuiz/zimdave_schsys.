@@ -59,3 +59,5 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 ## Git
 
 Git-flow: `feature/*` branches off `develop`, merged back into `develop`; `main` holds releases. Commit messages describe the change plainly, with no ticket/plan references.
+
+Commits use the Base project's commit message hook, set once per clone: `git config core.hooksPath P:/ProgramData/Projects/Base/git/git-hooks`. Without it a global hooks path (another project's) may rewrite the subject line.
