@@ -45,6 +45,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Before planning files to share through git, run `git check-ignore -v` on them (the global gitignore counts too).
 - In Git Bash, prefix docker exec commands that take container paths with `MSYS_NO_PATHCONV=1`, and never pass /dev/null as an argument — paths get rewritten to Windows ones (/dev/null becomes nul and creates a file in the mounted repo).
 - Write helper scripts to a scratchpad file and run that, rather than an inline heredoc.
+- Before writing a helper script, check the scratchpad for one already written.
 - Don't put `pkill -f` in a shell whose command line contains the same pattern; run it on its own.
 - When you add a new setup step, check the first run's log to confirm it actually ran.
 - Before a run that wipes old reports, copy the results you'll compare against.
@@ -151,6 +152,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Never run `git push` on your own initiative or as a suggestion to accept. Exception: when I explicitly say "push" or "git push" in my message, run it for what I named, then report the result.
 - When a skill, workflow, or plan presents a menu of options that includes "push and create a PR" (or similar) as a choice, drop that option from the menu entirely rather than presenting it and waiting for it to be declined — PRs are mine and push happens only when I say so, so don't ask about them, just note that push/PR is left to me and move on.
 - Before creating a new branch, always ask which base branch to branch from (e.g. `develop`, `main`, the current branch) — never assume it automatically, even when a project's own convention names a default. Wait for the answer, then create the branch using that project's established branch-creation command/convention.
+- Don't use `git add -N .`; add only the files you mean.
 
 ## Comments
 

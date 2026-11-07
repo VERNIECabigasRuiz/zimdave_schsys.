@@ -31,7 +31,7 @@ If `docker ps` shows `zimdave_schsys-web-1` running, use Docker; otherwise assum
 
 The root `.htaccess` denies everything on purpose: only `public/` may be web-served.
 
-Browser checks: Claude in Chrome needs the Chrome extension installed and enabled with `/chrome` (or `claude --chrome`); otherwise use the `playwright` plugin from `.claude/settings.json`.
+Browser checks: Claude in Chrome needs the Chrome extension installed and enabled with `/chrome` (or `claude --chrome`); otherwise use the `playwright` plugin from `.claude/settings.json`. A live check served with `php -S` needs a router script that serves existing files (`public/build`); without one the pages run without their JavaScript.
 
 ## Domain terms
 
@@ -63,7 +63,7 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - Use `/run-tests`. `phpunit.dist.xml` fails on any deprecation, notice or warning; fix those, don't silence them.
 - Suites: `unit`, `integration`, `functional` (`tests/<Module>/Unit|Integration|Functional`), `browser` (`tests/Browser`, Panther) and `legacy` (today's test folders, emptied as modules move). JS tests live in `tests/<Module>/Javascript`.
 - `make test <type>` runs static checks and unit tests in a throwaway container without a database (`composer-audit`, `phpstan`, `deptrac`, `phpcs`, `eslint`, `stylelint`, `phpunit`, `vitest`, or `all`). `make test-feature` runs the database suites in `web` and requires 100% coverage of the moved modules (`src/Core`, `src/Access`, `src/Billing`, `src/Schools`, `src/Classes`; each new module is added to `<source>` in `phpunit.dist.xml`). `make regression-test` runs the browser suite. Reports land in `reports/`.
-- PHPStan runs at most 4 workers (`config/phpstan.neon`); one per CPU filled Docker's memory and got MySQL killed. Keep the cap.
+- PHPStan runs at most 4 workers (`config/phpstan.neon`); one per CPU filled Docker's memory and got MySQL killed. Keep the cap. Clear its cache (`reports/phpstan/.cache`) before a run whose result you rely on; a run on a few folders can report stale results.
 - PHPStan and deptrac use baselines (`config/phpstan-baseline.neon`, `config/deptrac.baseline.yaml`) for code from before the move; don't add new entries to them.
 - Admin controller tests extend `tests/Controller/Admin/AdminTestCase.php` (logs in as `zim`, `createUser()`, `findUser()`, `activityActions()`). Build school data with `tests/SchoolFixturesTrait.php` (`schoolYear()`, `plan()`, `school()`, `assign()`, `plainUser()`); it wipes school data in `setUp` but keeps the seeded plans. No transaction rollback between tests.
 - New tests group their body with `// Initialize`, `// Execute`, `// Assert` comments (`// Expect` first when an exception is expected). Existing tests don't; leave them as they are.
