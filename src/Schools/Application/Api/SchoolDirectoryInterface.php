@@ -33,6 +33,13 @@ interface SchoolDirectoryInterface
      */
     public function teachersOf(School $school, SchoolYear $schoolYear): array;
 
+    /**
+     * Like teachersOf(), without accounts that are no longer teachers (promoted since).
+     *
+     * @return list<User>
+     */
+    public function currentTeachersOf(School $school, SchoolYear $schoolYear): array;
+
     /** Why nothing of the school can be changed now (inactive school, expired plan), or null. */
     public function blockedReason(School $school): ?string;
 }

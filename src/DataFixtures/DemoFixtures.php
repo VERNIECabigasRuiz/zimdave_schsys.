@@ -34,8 +34,8 @@ use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Schools\Application\Service\SchoolTeacherManager;
 use App\Classes\Application\Service\SectionManager;
 use App\Classes\Application\Service\SubjectManager;
-use App\Service\TimetableException;
-use App\Service\TimetableManager;
+use App\Classes\Domain\Exception\TimetableException;
+use App\Classes\Application\Service\Timetable\TimetableManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -281,6 +281,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         $loads = [];
         foreach ($loadable as $i => $subject) {
             $load = $this->timetable->setTeacher($section, $subject, $teachers[$i % \count($teachers)]);
+            $this->entityManager->flush();
             if (null !== $load) {
                 $loads[] = $load;
             }
@@ -306,6 +307,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
                     $period = $periods[($i + $offset + $try) % \count($periods)];
                     try {
                         $this->timetable->plot($section, $load->getSubject(), $day, $period);
+                        $this->entityManager->flush();
                         ++$placed;
                         break;
                     } catch (TimetableException) {

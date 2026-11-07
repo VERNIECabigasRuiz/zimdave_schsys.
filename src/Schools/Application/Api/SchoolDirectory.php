@@ -9,6 +9,7 @@ use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolAssignment;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Schools\Domain\Service\Plan\PlanLimits;
 
@@ -45,6 +46,14 @@ final class SchoolDirectory implements SchoolDirectoryInterface
     public function teachersOf(School $school, SchoolYear $schoolYear): array
     {
         return $this->assignments->findAssignedTeachers($school, $schoolYear);
+    }
+
+    public function currentTeachersOf(School $school, SchoolYear $schoolYear): array
+    {
+        return array_map(
+            static fn (SchoolAssignment $assignment): User => $assignment->getUser(),
+            $this->assignments->findTeacherAssignments($school, $schoolYear),
+        );
     }
 
     public function blockedReason(School $school): ?string

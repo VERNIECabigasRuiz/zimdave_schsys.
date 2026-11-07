@@ -13,7 +13,7 @@ use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Classes\Application\Service\SectionManager;
-use App\Service\TimetableQuery;
+use App\Classes\Application\Service\Timetable\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;

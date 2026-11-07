@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\Classes\Functional;
 
 use App\Classes\Domain\Model\ClassPeriod;
 use App\Schools\Domain\Model\GradeLevel;
@@ -13,7 +13,9 @@ use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
 use App\Tests\Controller\Admin\AdminTestCase;
+use Doctrine\ORM\Events;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\Lock\LockFactory;
 
 class SchoolTimetableControllerTest extends AdminTestCase
 {
@@ -35,7 +37,11 @@ class SchoolTimetableControllerTest extends AdminTestCase
         parent::setUp();
         static::mockTime('2026-10-16');
         $this->sy = $this->schoolYear(2026, current: true);
-        $this->school = $this->school('303456', 'Pagsabungan NHS', planValidUntil: new \DateTimeImmutable('2027-04-30'));
+        $this->school = $this->school(
+            '303456',
+            'Pagsabungan NHS',
+            planValidUntil: new \DateTimeImmutable('2027-04-30'),
+        );
         $this->maria = $this->createUser('maria', User::ROLE_PRINCIPAL, 'Maria Santos');
         $this->assign($this->school, $this->sy, $this->maria);
         $this->santos = $this->createUser('santos', User::ROLE_TEACHER, 'Ana Santos');
@@ -66,9 +72,15 @@ class SchoolTimetableControllerTest extends AdminTestCase
         return $section;
     }
 
-    private function subject(GradeLevel $grade, string $code, string $name, ?int $semester = null, ?int $perWeek = 5): Subject
-    {
-        $subject = (new Subject($this->school, $this->sy))->setGradeLevel($grade)->setCode($code)->setName($name)->setPosition(1)
+    private function subject(
+        GradeLevel $grade,
+        string $code,
+        string $name,
+        ?int $semester = null,
+        ?int $perWeek = 5,
+    ): Subject {
+        $subject = (new Subject($this->school, $this->sy))
+            ->setGradeLevel($grade)->setCode($code)->setName($name)->setPosition(1)
             ->setMeetingsPerWeek($perWeek)->setSemester($semester);
         $this->em->persist($subject);
         $this->em->flush();
@@ -87,7 +99,8 @@ class SchoolTimetableControllerTest extends AdminTestCase
 
     private function url(Section $section, string $suffix = '', ?School $school = null): string
     {
-        return '/schools/'.($school ?? $this->school)->getId().'/sections/'.$section->getId().'/timetable'.$suffix;
+        return '/schools/' . ($school ?? $this->school)->getId()
+            . '/sections/' . $section->getId() . '/timetable' . $suffix;
     }
 
     private function token(?Section $section = null): string
@@ -98,16 +111,39 @@ class SchoolTimetableControllerTest extends AdminTestCase
         return (string) $crawler->filter('[data-controller="timetable"]')->attr('data-timetable-csrf-value');
     }
 
-    /** @param array<string, mixed>|null $body */
+    /**
+     * @param array<string, mixed>|null $body
+     *
+     * @return array<string, mixed>
+     */
     private function json(string $method, string $url, ?array $body, ?string $token): array
     {
         $server = ['CONTENT_TYPE' => 'application/json'];
         if (null !== $token) {
             $server['HTTP_X_CSRF_TOKEN'] = $token;
         }
-        $this->client->request($method, $url, server: $server, content: null === $body ? '' : json_encode($body));
+        $content = null === $body ? '' : json_encode($body, \JSON_THROW_ON_ERROR);
+        $this->client->request($method, $url, server: $server, content: $content);
+        $data = json_decode((string) $this->client->getResponse()->getContent(), true);
 
-        return json_decode((string) $this->client->getResponse()->getContent(), true) ?? [];
+        return \is_array($data) ? $data : [];
+    }
+
+    /**
+     * The timetable a change answers with.
+     *
+     * @param array<string, mixed>|null $body
+     *
+     * @return array{cells: list<array{subjectId: int, day: int}>,
+     *     cards: list<array{subjectId: int, teacherId: ?int, used: int}>}
+     */
+    private function state(string $method, string $url, ?array $body, string $token): array
+    {
+        /** @var array{cells: list<array{subjectId: int, day: int}>,
+         *     cards: list<array{subjectId: int, teacherId: ?int, used: int}>} $state */
+        $state = $this->json($method, $url, $body, $token);
+
+        return $state;
     }
 
     public function testPageRendersGridForPrincipal(): void
@@ -122,12 +158,18 @@ class SchoolTimetableControllerTest extends AdminTestCase
         self::assertSelectorTextContains('h1', 'Grade 8 – Mabini');
         $root = $crawler->filter('[data-controller="timetable"]');
         self::assertCount(1, $root);
-        self::assertStringContainsString($this->url($this->mabini, '/state'), (string) $root->attr('data-timetable-state-url-value'));
+        self::assertStringContainsString(
+            $this->url($this->mabini, '/state'),
+            (string) $root->attr('data-timetable-state-url-value'),
+        );
         self::assertStringContainsString('/entries', (string) $root->attr('data-timetable-plot-url-value'));
         self::assertStringContainsString('__SUBJECT__', (string) $root->attr('data-timetable-load-url-value'));
         self::assertStringContainsString('__ENTRY__', (string) $root->attr('data-timetable-remove-url-value'));
         self::assertSame('0', $root->attr('data-timetable-term-value'));
-        self::assertSame(['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], $crawler->filter('.timetable-grid thead th:not(:first-child)')->each(static fn ($th) => trim($th->text())));
+        self::assertSame(
+            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            $crawler->filter('.timetable-grid thead th:not(:first-child)')->each(static fn ($th) => trim($th->text())),
+        );
         self::assertCount(2, $crawler->filter('.timetable-grid tbody tr'));
         self::assertStringContainsString('Mathematics', $crawler->filter('.timetable-cell--filled')->text());
         self::assertStringContainsString('Ana Santos', $crawler->filter('.timetable-cell--filled')->text());
@@ -139,13 +181,16 @@ class SchoolTimetableControllerTest extends AdminTestCase
 
     public function testNoPeriodsShowsSetupLink(): void
     {
-        $this->em->createQuery('DELETE FROM '.ClassPeriod::class)->execute();
+        $this->em->createQuery('DELETE FROM ' . ClassPeriod::class)->execute();
 
         $crawler = $this->client->request('GET', $this->url($this->mabini));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('body', 'Set up your class periods first');
-        self::assertSame('/schools/'.$this->school->getId().'/class-periods', $crawler->selectLink('Set up your class periods first')->attr('href'));
+        self::assertSame(
+            '/schools/' . $this->school->getId() . '/class-periods',
+            $crawler->selectLink('Set up your class periods first')->attr('href'),
+        );
     }
 
     public function testAdminAllowed(): void
@@ -171,6 +216,19 @@ class SchoolTimetableControllerTest extends AdminTestCase
         self::assertResponseStatusCodeSame(403);
     }
 
+    public function testSectionOfOtherSchoolIs404EvenWithAnUnreadableTerm(): void
+    {
+        // Initialize
+        $other = $this->school('999999', 'Other NHS', planValidUntil: new \DateTimeImmutable('2027-04-30'));
+        $otherSection = $this->section($other, GradeLevel::Grade8, 'Luna');
+
+        // Execute
+        $this->client->request('GET', $this->url($otherSection, '?term=abc'));
+
+        // Assert
+        self::assertResponseStatusCodeSame(404);
+    }
+
     public function testSectionOfOtherSchoolIs404(): void
     {
         $other = $this->school('999999', 'Other NHS', planValidUntil: new \DateTimeImmutable('2027-04-30'));
@@ -190,7 +248,12 @@ class SchoolTimetableControllerTest extends AdminTestCase
         $this->load($this->mabini, $this->math8, $this->santos);
         $token = $this->token();
 
-        $state = $this->json('POST', $this->url($this->mabini, '/entries'), ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()], $token);
+        $state = $this->state(
+            'POST',
+            $this->url($this->mabini, '/entries'),
+            ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()],
+            $token,
+        );
 
         self::assertResponseStatusCodeSame(200);
         self::assertCount(1, $state['cells']);
@@ -206,9 +269,19 @@ class SchoolTimetableControllerTest extends AdminTestCase
         $this->load($this->mabini, $this->sci8, $this->reyes);
         $token = $this->token();
         $url = $this->url($this->mabini, '/entries');
-        $this->json('POST', $url, ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()], $token);
+        $this->json(
+            'POST',
+            $url,
+            ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()],
+            $token,
+        );
 
-        $body = $this->json('POST', $url, ['subjectId' => $this->sci8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()], $token);
+        $body = $this->json(
+            'POST',
+            $url,
+            ['subjectId' => $this->sci8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()],
+            $token,
+        );
 
         self::assertResponseStatusCodeSame(422);
         self::assertSame('Grade 8 – Mabini already has Mathematics on Mon, Period 1.', $body['message']);
@@ -219,7 +292,12 @@ class SchoolTimetableControllerTest extends AdminTestCase
         $this->load($this->mabini, $this->math8, $this->santos);
         $token = $this->token();
 
-        $this->json('POST', $this->url($this->mabini, '/entries'), ['subjectId' => $this->math8->getId(), 'day' => 6, 'periodId' => $this->p1->getId()], $token);
+        $this->json(
+            'POST',
+            $this->url($this->mabini, '/entries'),
+            ['subjectId' => $this->math8->getId(), 'day' => 6, 'periodId' => $this->p1->getId()],
+            $token,
+        );
 
         self::assertResponseStatusCodeSame(422);
     }
@@ -228,7 +306,12 @@ class SchoolTimetableControllerTest extends AdminTestCase
     {
         $token = $this->token();
 
-        $this->json('POST', $this->url($this->mabini, '/entries'), ['subjectId' => 999999, 'day' => 1, 'periodId' => $this->p1->getId()], $token);
+        $this->json(
+            'POST',
+            $this->url($this->mabini, '/entries'),
+            ['subjectId' => 999999, 'day' => 1, 'periodId' => $this->p1->getId()],
+            $token,
+        );
 
         self::assertResponseStatusCodeSame(404);
     }
@@ -237,30 +320,119 @@ class SchoolTimetableControllerTest extends AdminTestCase
     {
         $this->load($this->mabini, $this->math8, $this->santos);
 
-        $this->json('POST', $this->url($this->mabini, '/entries'), ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()], null);
+        $this->json(
+            'POST',
+            $this->url($this->mabini, '/entries'),
+            ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()],
+            null,
+        );
         // Symfony reports an invalid CSRF token as an authentication failure: redirect to the login page
         self::assertResponseRedirects('http://localhost/login');
 
-        $this->json('POST', $this->url($this->mabini, '/entries'), ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()], 'bad-token');
+        $this->json(
+            'POST',
+            $this->url($this->mabini, '/entries'),
+            ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()],
+            'bad-token',
+        );
         self::assertResponseRedirects('http://localhost/login');
         self::assertSame(0, $this->em->getRepository(ScheduleEntry::class)->count([]));
+    }
+
+    public function testAHeldTimetableLockAnswersWithTheBusyMessage(): void
+    {
+        // Initialize
+        $this->load($this->mabini, $this->math8, $this->santos);
+        $token = $this->token();
+        $lock = static::getContainer()->get(LockFactory::class)->createLock(
+            'school-timetable-' . $this->school->getId(),
+        );
+        self::assertTrue($lock->acquire());
+
+        // Execute
+        try {
+            $body = $this->json(
+                'POST',
+                $this->url($this->mabini, '/entries'),
+                ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()],
+                $token,
+            );
+        } finally {
+            $lock->release();
+        }
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertSame(['message' => 'Another change is being saved. Please try again.'], $body);
+        self::assertSame(0, $this->em->getRepository(ScheduleEntry::class)->count([]));
+    }
+
+    public function testASlotSavedByAnotherRequestFirstAnswersWithTheBusyMessage(): void
+    {
+        // Initialize
+        $this->load($this->mabini, $this->math8, $this->santos);
+        $science = $this->load($this->mabini, $this->sci8, $this->reyes);
+        $token = $this->token();
+        $this->client->disableReboot();
+        $this->em->getEventManager()->addEventListener(
+            [Events::onFlush],
+            new SlotTakenOnFlush($science, $this->sy, $this->p1),
+        );
+
+        // Execute
+        $body = $this->json(
+            'POST',
+            $this->url($this->mabini, '/entries'),
+            ['subjectId' => $this->math8->getId(), 'day' => 1, 'periodId' => $this->p1->getId()],
+            $token,
+        );
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertSame(['message' => 'Another change is being saved. Please try again.'], $body);
+        self::assertEquals(0, $this->em->getConnection()->fetchOne('SELECT COUNT(*) FROM schedule_entry'));
     }
 
     public function testSetTeacherAndClear(): void
     {
         $token = $this->token();
-        $url = $this->url($this->mabini, '/loads/'.$this->math8->getId());
+        $url = $this->url($this->mabini, '/loads/' . $this->math8->getId());
 
-        $state = $this->json('PUT', $url, ['teacherId' => $this->santos->getId()], $token);
+        $state = $this->state('PUT', $url, ['teacherId' => $this->santos->getId()], $token);
         self::assertResponseStatusCodeSame(200);
         $card = array_values(array_filter($state['cards'], fn ($c) => $c['subjectId'] === $this->math8->getId()))[0];
         self::assertSame($this->santos->getId(), $card['teacherId']);
 
-        $state = $this->json('PUT', $url, ['teacherId' => null], $token);
+        $state = $this->state('PUT', $url, ['teacherId' => null], $token);
         self::assertResponseStatusCodeSame(200);
         $card = array_values(array_filter($state['cards'], fn ($c) => $c['subjectId'] === $this->math8->getId()))[0];
         self::assertNull($card['teacherId']);
         self::assertSame(0, $this->em->getRepository(TeachingLoad::class)->count([]));
+    }
+
+    public function testATeacherChangeThatClashesListsEachClash(): void
+    {
+        // Initialize
+        $math = $this->load($this->mabini, $this->math8, $this->santos);
+        $luna = $this->section($this->school, GradeLevel::Grade8, 'Luna');
+        $science = $this->load($luna, $this->sci8, $this->reyes);
+        $this->em->persist(new ScheduleEntry($math, Weekday::Monday, $this->p1));
+        $this->em->persist(new ScheduleEntry($science, Weekday::Monday, $this->p1));
+        $this->em->flush();
+        $token = $this->token();
+
+        // Execute
+        $body = $this->json(
+            'PUT',
+            $this->url($this->mabini, '/loads/' . $this->math8->getId()),
+            ['teacherId' => $this->reyes->getId()],
+            $token,
+        );
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        $clash = 'Jose Reyes already teaches Science in Grade 8 – Luna on Mon, Period 1.';
+        self::assertSame(['message' => $clash, 'clashes' => [$clash]], $body);
     }
 
     public function testSetTeacherOfAnotherSchoolIs404(): void
@@ -268,7 +440,12 @@ class SchoolTimetableControllerTest extends AdminTestCase
         $outsider = $this->createUser('outsider', User::ROLE_TEACHER, 'Out Sider');
         $token = $this->token();
 
-        $this->json('PUT', $this->url($this->mabini, '/loads/'.$this->math8->getId()), ['teacherId' => $outsider->getId()], $token);
+        $this->json(
+            'PUT',
+            $this->url($this->mabini, '/loads/' . $this->math8->getId()),
+            ['teacherId' => $outsider->getId()],
+            $token,
+        );
 
         self::assertResponseStatusCodeSame(404);
     }
@@ -281,7 +458,7 @@ class SchoolTimetableControllerTest extends AdminTestCase
         $this->em->flush();
         $token = $this->token();
 
-        $state = $this->json('DELETE', $this->url($this->mabini, '/entries/'.$entry->getId()), null, $token);
+        $state = $this->state('DELETE', $this->url($this->mabini, '/entries/' . $entry->getId()), null, $token);
 
         self::assertResponseStatusCodeSame(200);
         self::assertSame([], $state['cells']);
@@ -298,7 +475,7 @@ class SchoolTimetableControllerTest extends AdminTestCase
 
     public function testShsTermSwitch(): void
     {
-        $this->em->createQuery('DELETE FROM '.Subject::class)->execute();
+        $this->em->createQuery('DELETE FROM ' . Subject::class)->execute();
         $school = $this->school;
         $school->setType(\App\Schools\Domain\Model\SchoolType::SeniorHigh);
         $stem = $this->section($school, GradeLevel::Grade11, 'STEM-A');
@@ -315,6 +492,9 @@ class SchoolTimetableControllerTest extends AdminTestCase
         self::assertCount(1, $cards);
         self::assertStringContainsString('Reading and Writing', $cards[0]);
         self::assertStringNotContainsString('Oral Communication', $crawler->filter('main, body')->first()->html());
-        self::assertSame(['1st sem', '2nd sem'], $crawler->filter('[data-timetable-target="terms"] a')->each(static fn ($a) => trim($a->text())));
+        self::assertSame(
+            ['1st sem', '2nd sem'],
+            $crawler->filter('[data-timetable-target="terms"] a')->each(static fn ($a) => trim($a->text())),
+        );
     }
 }

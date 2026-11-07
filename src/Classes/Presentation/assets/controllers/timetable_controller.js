@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'timetable';
+
 const GENERIC_ERROR = 'Could not save. Please try again.';
 const SESSION_EXPIRED = 'Your session expired. Reload the page.';
 

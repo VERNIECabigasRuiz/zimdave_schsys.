@@ -60,4 +60,8 @@ interface ScheduleEntryRepositoryInterface
 
     /** @return list<ScheduleEntry> */
     public function findAt(School $school, SchoolYear $schoolYear, Weekday $day, ClassPeriod $period): array;
+
+    public function add(ScheduleEntry $entry): void;
+
+    public function remove(ScheduleEntry $entry): void;
 }

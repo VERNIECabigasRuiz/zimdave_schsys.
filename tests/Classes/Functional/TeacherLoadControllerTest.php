@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\Classes\Functional;
 
 use App\Classes\Domain\Model\ClassPeriod;
 use App\Schools\Domain\Model\GradeLevel;
@@ -30,7 +30,11 @@ class TeacherLoadControllerTest extends AdminTestCase
         parent::setUp();
         static::mockTime('2026-10-16');
         $this->sy = $this->schoolYear(2026, current: true);
-        $this->school = $this->school('303456', 'Pagsabungan NHS', planValidUntil: new \DateTimeImmutable('2027-04-30'));
+        $this->school = $this->school(
+            '303456',
+            'Pagsabungan NHS',
+            planValidUntil: new \DateTimeImmutable('2027-04-30'),
+        );
         $this->maria = $this->createUser('maria', User::ROLE_PRINCIPAL, 'Maria Santos');
         $this->assign($this->school, $this->sy, $this->maria);
         $this->santos = $this->createUser('santos', User::ROLE_TEACHER, 'Ana Santos');
@@ -55,12 +59,13 @@ class TeacherLoadControllerTest extends AdminTestCase
             $this->classPeriod($this->school, $this->sy, '08:30', '09:30'),
         ];
         foreach ([['MATH8', 'Mathematics', 0], ['SCI8', 'Science', 1]] as [$code, $name, $i]) {
-            $subject = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade8)->setCode($code)->setName($name)
+            $subject = (new Subject($this->school, $this->sy))
+                ->setGradeLevel(GradeLevel::Grade8)->setCode($code)->setName($name)
                 ->setPosition(1)->setMeetingsPerWeek(5)->setSemester(null);
             $this->em->persist($subject);
             $load = new TeachingLoad($this->mabini, $subject, $this->santos);
             $this->em->persist($load);
-            foreach ([Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday, Weekday::Thursday, Weekday::Friday] as $day) {
+            foreach (Weekday::cases() as $day) {
                 $this->em->persist(new ScheduleEntry($load, $day, $periods[$i]));
             }
         }
@@ -72,7 +77,10 @@ class TeacherLoadControllerTest extends AdminTestCase
         $this->fillWeek();
         $this->client->loginUser($this->maria);
 
-        $crawler = $this->client->request('GET', '/schools/'.$this->school->getId().'/teachers/'.$this->santos->getId().'/load');
+        $crawler = $this->client->request(
+            'GET',
+            '/schools/' . $this->school->getId() . '/teachers/' . $this->santos->getId() . '/load',
+        );
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Ana Santos');
@@ -89,9 +97,26 @@ class TeacherLoadControllerTest extends AdminTestCase
         $this->assign($other, $this->sy, $outsider, User::ROLE_TEACHER);
         $this->client->loginUser($this->maria);
 
-        $this->client->request('GET', '/schools/'.$this->school->getId().'/teachers/'.$outsider->getId().'/load');
+        $this->client->request(
+            'GET',
+            '/schools/' . $this->school->getId() . '/teachers/' . $outsider->getId() . '/load',
+        );
 
         self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testAWholeYearLoadIgnoresAnUnreadableTerm(): void
+    {
+        // Initialize
+        $this->fillWeek();
+        $this->client->loginUser($this->santos);
+
+        // Execute
+        $this->client->request('GET', '/teacher/load?term=abc');
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('body', 'Total: 10 periods per week');
     }
 
     public function testTeacherSeesOwnLoad(): void

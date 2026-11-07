@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Service;
+namespace App\Tests\Classes\Integration\Application;
 
 use App\Core\Domain\Model\ActivityLog;
 use App\Classes\Domain\Model\ClassPeriod;
@@ -14,22 +14,13 @@ use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
-use App\Classes\Domain\Model\Repository\ClassPeriodRepositoryInterface;
-use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
-use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
-use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
-use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Schools\Domain\Exception\PlanLimitException;
-use App\Schools\Domain\Service\Plan\PlanLimits;
-use App\Service\TimetableException;
-use App\Service\TimetableManager;
+use App\Classes\Domain\Exception\TimetableException;
+use App\Classes\Application\Service\Timetable\TimetableManager;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
-use Symfony\Component\Lock\LockFactory;
 
 class TimetableManagerTest extends KernelTestCase
 {
@@ -37,7 +28,7 @@ class TimetableManagerTest extends KernelTestCase
     use SchoolFixturesTrait;
 
     private EntityManagerInterface $em;
-    private TimetableManager $manager;
+    private SavingTimetableManager $manager;
     private SchoolYear $sy;
     private School $school;
     private ClassPeriod $p1;
@@ -57,12 +48,14 @@ class TimetableManagerTest extends KernelTestCase
         self::bootKernel();
         static::mockTime('2026-10-16');
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
-        $container = static::getContainer();
-        // not used by a controller yet, so the test container may have removed it
-        $this->manager = $container->has(TimetableManager::class) ? $container->get(TimetableManager::class) : $this->build($container->get(ScheduleEntryRepositoryInterface::class));
+        $this->manager = new SavingTimetableManager(static::getContainer()->get(TimetableManager::class), $this->em);
         $this->clearSchoolData();
         $this->sy = $this->schoolYear(2026, current: true);
-        $this->school = $this->school('303456', 'Pagsabungan NHS', planValidUntil: new \DateTimeImmutable('2027-04-30'));
+        $this->school = $this->school(
+            '303456',
+            'Pagsabungan NHS',
+            planValidUntil: new \DateTimeImmutable('2027-04-30'),
+        );
         $this->p1 = $this->classPeriod($this->school, $this->sy, '07:30', '08:30');
         $this->p2 = $this->classPeriod($this->school, $this->sy, '08:30', '09:30');
         $this->recess = $this->classPeriod($this->school, $this->sy, '09:30', '09:50', 'Recess');
@@ -74,24 +67,6 @@ class TimetableManagerTest extends KernelTestCase
         $this->math7 = $this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics');
         $this->science7 = $this->subject(GradeLevel::Grade7, 'SCI7', 'Science');
         $this->math8 = $this->subject(GradeLevel::Grade8, 'MATH8', 'Mathematics');
-    }
-
-    private function build(ScheduleEntryRepositoryInterface $entries): TimetableManager
-    {
-        $container = static::getContainer();
-
-        return new TimetableManager(
-            $this->em,
-            $container->get(ManagerRegistry::class),
-            $container->get(TeachingLoadRepositoryInterface::class),
-            $entries,
-            $container->get(SubjectRepositoryInterface::class),
-            $container->get(ClassPeriodRepositoryInterface::class),
-            $container->get(SchoolAssignmentRepositoryInterface::class),
-            $container->get(PlanLimits::class),
-            $container->get(ActivityLoggerInterface::class),
-            $container->get(LockFactory::class),
-        );
     }
 
     private function section(GradeLevel $grade, string $name): Section
@@ -111,8 +86,14 @@ class TimetableManagerTest extends KernelTestCase
         return $teacher;
     }
 
-    private function subject(GradeLevel $grade, string $code, string $name, ?int $meetingsPerWeek = 5, ?int $semester = null, ?Subject $parent = null): Subject
-    {
+    private function subject(
+        GradeLevel $grade,
+        string $code,
+        string $name,
+        ?int $meetingsPerWeek = 5,
+        ?int $semester = null,
+        ?Subject $parent = null,
+    ): Subject {
         $subject = (new Subject($this->school, $this->sy))
             ->setGradeLevel($grade)->setCode($code)->setName($name)->setPosition(1)
             ->setMeetingsPerWeek($meetingsPerWeek)->setSemester($semester)->setParent($parent);
@@ -125,7 +106,10 @@ class TimetableManagerTest extends KernelTestCase
     /** @return list<string> */
     private function log(): array
     {
-        return array_map(static fn (ActivityLog $l) => $l->getAction(), $this->em->getRepository(ActivityLog::class)->findBy([], ['id' => 'ASC']));
+        return array_map(
+            static fn (ActivityLog $l) => $l->getAction(),
+            $this->em->getRepository(ActivityLog::class)->findBy([], ['id' => 'ASC']),
+        );
     }
 
     private function entryCount(): int
@@ -142,7 +126,7 @@ class TimetableManagerTest extends KernelTestCase
 
             return $e;
         }
-        self::fail('Expected TimetableException: '.$message);
+        self::fail('Expected TimetableException: ' . $message);
     }
 
     public function testSetTeacherCreatesChangesAndClears(): void
@@ -172,7 +156,10 @@ class TimetableManagerTest extends KernelTestCase
         $outsider = $this->plainUser('cruz', User::ROLE_TEACHER)->setFullName('Ana Cruz');
         $this->assign($other, $this->sy, $outsider, User::ROLE_TEACHER);
 
-        $this->refused('Ana Cruz is not a teacher of this school this school year.', fn () => $this->manager->setTeacher($this->rizal, $this->math7, $outsider));
+        $this->refused(
+            'Ana Cruz is not a teacher of this school this school year.',
+            fn () => $this->manager->setTeacher($this->rizal, $this->math7, $outsider),
+        );
         self::assertSame(0, $this->em->getRepository(TeachingLoad::class)->count([]));
     }
 
@@ -181,19 +168,28 @@ class TimetableManagerTest extends KernelTestCase
         $mapeh = $this->subject(GradeLevel::Grade7, 'MAPEH7', 'MAPEH', null);
         $this->subject(GradeLevel::Grade7, 'MU7', 'Music', null, parent: $mapeh);
 
-        $this->refused('MAPEH has components. Pick teachers for its components instead.', fn () => $this->manager->setTeacher($this->rizal, $mapeh, $this->santos));
+        $this->refused(
+            'MAPEH has components. Pick teachers for its components instead.',
+            fn () => $this->manager->setTeacher($this->rizal, $mapeh, $this->santos),
+        );
         self::assertSame(0, $this->em->getRepository(TeachingLoad::class)->count([]));
     }
 
     public function testSubjectOfOtherGradeRefused(): void
     {
-        $this->refused('Mathematics is not a subject of Grade 7 – Rizal.', fn () => $this->manager->setTeacher($this->rizal, $this->math8, $this->santos));
+        $this->refused(
+            'Mathematics is not a subject of Grade 7 – Rizal.',
+            fn () => $this->manager->setTeacher($this->rizal, $this->math8, $this->santos),
+        );
         self::assertSame(0, $this->em->getRepository(TeachingLoad::class)->count([]));
     }
 
     public function testPlotRefusesWithoutTeacher(): void
     {
-        $this->refused('Pick a teacher for Mathematics first.', fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1));
+        $this->refused(
+            'Pick a teacher for Mathematics first.',
+            fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1),
+        );
         self::assertSame(0, $this->entryCount());
     }
 
@@ -203,7 +199,10 @@ class TimetableManagerTest extends KernelTestCase
         $this->em->flush();
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
 
-        $this->refused('Set meetings per week for Mathematics on the Subjects page first.', fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1));
+        $this->refused(
+            'Set meetings per week for Mathematics on the Subjects page first.',
+            fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1),
+        );
         self::assertSame(0, $this->entryCount());
     }
 
@@ -215,7 +214,10 @@ class TimetableManagerTest extends KernelTestCase
             self::assertNotNull($entry->getId());
         }
 
-        $this->refused('Mathematics already has all 5 meetings this week.', fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p2));
+        $this->refused(
+            'Mathematics already has all 5 meetings this week.',
+            fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p2),
+        );
         self::assertSame(5, $this->entryCount());
         self::assertContains('Plotted Mathematics (Maria Santos) in Grade 7 – Rizal, Mon, Period 1', $this->log());
         self::assertContains('Plotted Mathematics (Maria Santos) in Grade 7 – Rizal, Fri, Period 1', $this->log());
@@ -227,7 +229,10 @@ class TimetableManagerTest extends KernelTestCase
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
         $this->manager->plot($this->rizal, $this->science7, Weekday::Monday, $this->p1);
 
-        $this->refused('Grade 7 – Rizal already has Science on Mon, Period 1.', fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1));
+        $this->refused(
+            'Grade 7 – Rizal already has Science on Mon, Period 1.',
+            fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1),
+        );
         self::assertSame(1, $this->entryCount());
     }
 
@@ -237,7 +242,10 @@ class TimetableManagerTest extends KernelTestCase
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
         $this->manager->plot($this->mabini, $this->math8, Weekday::Monday, $this->p1);
 
-        $this->refused('Maria Santos already teaches Mathematics in Grade 8 – Mabini on Mon, Period 1.', fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1));
+        $this->refused(
+            'Maria Santos already teaches Mathematics in Grade 8 – Mabini on Mon, Period 1.',
+            fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1),
+        );
         self::assertSame(1, $this->entryCount());
     }
 
@@ -264,7 +272,10 @@ class TimetableManagerTest extends KernelTestCase
         $entry = $this->manager->plot($grade10, $math10, Weekday::Monday, $this->p1);
         self::assertSame(0, $entry->getTerm());
 
-        $this->refused('Maria Santos already teaches Mathematics in Grade 10 – Luna on Mon, Period 1.', fn () => $this->manager->plot($grade11, $genMath, Weekday::Monday, $this->p1));
+        $this->refused(
+            'Maria Santos already teaches Mathematics in Grade 10 – Luna on Mon, Period 1.',
+            fn () => $this->manager->plot($grade11, $genMath, Weekday::Monday, $this->p1),
+        );
         self::assertSame(1, $this->entryCount());
     }
 
@@ -272,7 +283,10 @@ class TimetableManagerTest extends KernelTestCase
     {
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
 
-        $this->refused('Recess is a break, not a class period.', fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->recess));
+        $this->refused(
+            'Recess is a break, not a class period.',
+            fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->recess),
+        );
         self::assertSame(0, $this->entryCount());
     }
 
@@ -282,7 +296,10 @@ class TimetableManagerTest extends KernelTestCase
         $foreign = $this->classPeriod($other, $this->sy, '07:30', '08:30');
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
 
-        $this->refused("That period is not one of this school's class periods.", fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $foreign));
+        $this->refused(
+            "That period is not one of this school's class periods.",
+            fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $foreign),
+        );
         self::assertSame(0, $this->entryCount());
     }
 
@@ -297,7 +314,8 @@ class TimetableManagerTest extends KernelTestCase
         $this->manager->plot($this->mabini, $this->math8, Weekday::Wednesday, $this->p1);
 
         $e = $this->refused(
-            'Jose Reyes already teaches Mathematics in Grade 8 – Mabini on Mon, Period 1. Jose Reyes already teaches Mathematics in Grade 8 – Mabini on Wed, Period 1.',
+            'Jose Reyes already teaches Mathematics in Grade 8 – Mabini on Mon, Period 1.'
+                . ' Jose Reyes already teaches Mathematics in Grade 8 – Mabini on Wed, Period 1.',
             fn () => $this->manager->setTeacher($this->rizal, $this->math7, $this->reyes),
         );
         self::assertSame([
@@ -306,7 +324,10 @@ class TimetableManagerTest extends KernelTestCase
         ], $e->getClashes());
 
         $this->em->clear();
-        $load = $this->em->getRepository(TeachingLoad::class)->findOneBy(['section' => $this->rizal->getId(), 'subject' => $this->math7->getId()]);
+        $load = $this->em->getRepository(TeachingLoad::class)->findOneBy(
+            ['section' => $this->rizal->getId(), 'subject' => $this->math7->getId()],
+        );
+        self::assertNotNull($load);
         self::assertSame('santos', $load->getTeacher()->getUsername());
         foreach ($load->getEntries() as $entry) {
             self::assertSame('santos', $entry->getTeacher()->getUsername());
@@ -335,17 +356,26 @@ class TimetableManagerTest extends KernelTestCase
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
         $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1);
 
-        $this->refused('Remove Mathematics from the timetable before clearing its teacher.', fn () => $this->manager->setTeacher($this->rizal, $this->math7, null));
+        $this->refused(
+            'Remove Mathematics from the timetable before clearing its teacher.',
+            fn () => $this->manager->setTeacher($this->rizal, $this->math7, null),
+        );
         self::assertSame(1, $this->em->getRepository(TeachingLoad::class)->count([]));
     }
 
     /** Another request's meeting: saved in the database, but not in this request's copy of the load. */
-    private function plotElsewhere(TeachingLoad $load, Weekday $day, ClassPeriod $period): void
+    private function plotElsewhere(?TeachingLoad $load, Weekday $day, ClassPeriod $period): void
     {
+        self::assertNotNull($load);
         $load->getEntries()->count(); // this request has already read the load's meetings
         $this->em->getConnection()->insert('schedule_entry', [
-            'load_id' => $load->getId(), 'section_id' => $load->getSection()->getId(), 'teacher_id' => $load->getTeacher()->getId(),
-            'school_year_id' => $this->sy->getId(), 'day' => $day->value, 'period_id' => $period->getId(), 'term' => 0,
+            'load_id' => $load->getId(),
+            'section_id' => $load->getSection()->getId(),
+            'teacher_id' => $load->getTeacher()->getId(),
+            'school_year_id' => $this->sy->getId(),
+            'day' => $day->value,
+            'period_id' => $period->getId(),
+            'term' => 0,
         ]);
     }
 
@@ -355,7 +385,10 @@ class TimetableManagerTest extends KernelTestCase
         $load = $this->manager->setTeacher($this->rizal, $math, $this->santos);
         $this->plotElsewhere($load, Weekday::Monday, $this->p1);
 
-        $this->refused('Remedial Math already has all 1 meetings this week.', fn () => $this->manager->plot($this->rizal, $math, Weekday::Tuesday, $this->p1));
+        $this->refused(
+            'Remedial Math already has all 1 meetings this week.',
+            fn () => $this->manager->plot($this->rizal, $math, Weekday::Tuesday, $this->p1),
+        );
         self::assertSame(1, $this->entryCount());
     }
 
@@ -364,7 +397,10 @@ class TimetableManagerTest extends KernelTestCase
         $load = $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
         $this->plotElsewhere($load, Weekday::Monday, $this->p1);
 
-        $this->refused('Remove Mathematics from the timetable before clearing its teacher.', fn () => $this->manager->setTeacher($this->rizal, $this->math7, null));
+        $this->refused(
+            'Remove Mathematics from the timetable before clearing its teacher.',
+            fn () => $this->manager->setTeacher($this->rizal, $this->math7, null),
+        );
         self::assertSame(1, $this->em->getRepository(TeachingLoad::class)->count([]));
     }
 
@@ -375,12 +411,38 @@ class TimetableManagerTest extends KernelTestCase
         $this->manager->setTeacher($this->mabini, $this->math8, $this->reyes);
         $this->manager->plot($this->mabini, $this->math8, Weekday::Monday, $this->p1);
 
-        $this->refused('Jose Reyes already teaches Mathematics in Grade 8 – Mabini on Mon, Period 1.', fn () => $this->manager->setTeacher($this->rizal, $this->math7, $this->reyes));
+        $this->refused(
+            'Jose Reyes already teaches Mathematics in Grade 8 – Mabini on Mon, Period 1.',
+            fn () => $this->manager->setTeacher($this->rizal, $this->math7, $this->reyes),
+        );
 
-        $this->em->createQuery('DELETE FROM '.ScheduleEntry::class.' e WHERE e.section = :s')->setParameter('s', $this->mabini)->execute();
+        $this->em->createQuery('DELETE FROM ' . ScheduleEntry::class . ' e WHERE e.section = :s')
+            ->setParameter('s', $this->mabini)
+            ->execute();
         $this->manager->setTeacher($this->rizal, $this->math7, $this->reyes);
         $this->em->clear();
-        self::assertSame(['reyes'], array_map(static fn (ScheduleEntry $e) => $e->getTeacher()->getUsername(), $this->em->getRepository(ScheduleEntry::class)->findAll()));
+        self::assertSame(
+            ['reyes'],
+            array_map(
+                static fn (ScheduleEntry $e) => $e->getTeacher()->getUsername(),
+                $this->em->getRepository(ScheduleEntry::class)->findAll(),
+            ),
+        );
+    }
+
+    public function testClearingAMissingLoadOrPickingTheSameTeacherChangesNothing(): void
+    {
+        // Initialize
+        $load = $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
+
+        // Execute
+        $cleared = $this->manager->setTeacher($this->rizal, $this->science7, null);
+        $same = $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
+
+        // Assert
+        self::assertNull($cleared);
+        self::assertSame($load, $same);
+        self::assertSame(['Set teacher santos for MATH7 – Mathematics in Grade 7 – Rizal'], $this->log());
     }
 
     public function testRemove(): void
@@ -397,39 +459,6 @@ class TimetableManagerTest extends KernelTestCase
         self::assertSame(1, $this->entryCount());
     }
 
-    public function testUniqueViolationBecomesFriendlyMessage(): void
-    {
-        $this->manager->setTeacher($this->rizal, $this->science7, $this->santos);
-        $this->manager->setTeacher($this->rizal, $this->math7, $this->reyes);
-        $this->manager->plot($this->rizal, $this->science7, Weekday::Monday, $this->p1);
-
-        $entries = $this->createStub(ScheduleEntryRepositoryInterface::class);
-        $entries->method('findSectionClash')->willReturn(null);
-        $entries->method('findTeacherClash')->willReturn(null);
-        $manager = $this->build($entries);
-
-        $this->refused('Another change is being saved. Please try again.', fn () => $manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1));
-
-        self::assertTrue($this->em->isOpen());
-        $left = $this->em->getRepository(ScheduleEntry::class)->findAll();
-        self::assertCount(1, $left);
-        self::assertSame('SCI7', $left[0]->getLoad()->getSubject()->getCode());
-    }
-
-    public function testLockHeldGivesFriendlyMessage(): void
-    {
-        $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
-        $lock = static::getContainer()->get(LockFactory::class)->createLock('school-timetable-'.$this->school->getId());
-        self::assertTrue($lock->acquire());
-
-        try {
-            $this->refused('Another change is being saved. Please try again.', fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Monday, $this->p1));
-        } finally {
-            $lock->release();
-        }
-        self::assertSame(0, $this->entryCount());
-    }
-
     public function testBlockedPlanRefuses(): void
     {
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
@@ -437,11 +466,13 @@ class TimetableManagerTest extends KernelTestCase
         $this->school->setActive(false);
         $this->em->flush();
 
-        foreach ([
+        foreach (
+            [
             fn () => $this->manager->setTeacher($this->rizal, $this->science7, $this->santos),
             fn () => $this->manager->plot($this->rizal, $this->math7, Weekday::Tuesday, $this->p1),
             fn () => $this->manager->remove($entry),
-        ] as $change) {
+            ] as $change
+        ) {
             try {
                 $change();
                 self::fail('Expected PlanLimitException');

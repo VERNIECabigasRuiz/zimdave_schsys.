@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Tests\Service;
+namespace App\Tests\Classes\Integration\Application;
 
 use App\Classes\Domain\Model\ClassPeriod;
+use App\Classes\Domain\Model\ScheduleEntry;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolType;
@@ -11,21 +12,13 @@ use App\Classes\Domain\Model\Section;
 use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
-use App\Classes\Domain\Model\Repository\ClassPeriodRepositoryInterface;
 use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
-use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
-use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
-use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Schools\Domain\Service\Plan\PlanLimits;
-use App\Service\TimetableManager;
-use App\Service\TimetableQuery;
+use App\Classes\Application\Service\Timetable\TimetableManager;
+use App\Classes\Application\Service\Timetable\TimetableQuery;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
-use Symfony\Component\Lock\LockFactory;
 
 class TimetableNowTest extends KernelTestCase
 {
@@ -33,17 +26,15 @@ class TimetableNowTest extends KernelTestCase
     use SchoolFixturesTrait;
 
     private EntityManagerInterface $em;
-    private TimetableManager $manager;
+    private SavingTimetableManager $manager;
     private TimetableQuery $query;
     private SchoolYear $sy;
     private School $school;
     private ClassPeriod $p1;
-    private ClassPeriod $recess;
     private ClassPeriod $p2;
     private Section $rizal;
     private Section $mabini;
     private User $santos;
-    private User $reyes;
     private Subject $math7;
     private Subject $science8;
 
@@ -52,27 +43,24 @@ class TimetableNowTest extends KernelTestCase
         self::bootKernel();
         $c = static::getContainer();
         $this->em = $c->get(EntityManagerInterface::class);
-        $this->manager = new TimetableManager(
-            $this->em, $c->get(ManagerRegistry::class), $c->get(TeachingLoadRepositoryInterface::class), $c->get(ScheduleEntryRepositoryInterface::class),
-            $c->get(SubjectRepositoryInterface::class), $c->get(ClassPeriodRepositoryInterface::class), $c->get(SchoolAssignmentRepositoryInterface::class),
-            $c->get(PlanLimits::class), $c->get(ActivityLoggerInterface::class), $c->get(LockFactory::class),
-        );
-        $this->query = new TimetableQuery(
-            $c->get(ScheduleEntryRepositoryInterface::class), $c->get(TeachingLoadRepositoryInterface::class), $c->get(SubjectRepositoryInterface::class),
-            $c->get(ClassPeriodRepositoryInterface::class), $c->get(SchoolAssignmentRepositoryInterface::class),
-        );
+        $this->manager = new SavingTimetableManager($c->get(TimetableManager::class), $this->em);
+        $this->query = $c->get(TimetableQuery::class);
         $this->clearSchoolData();
         $this->sy = $this->schoolYear(2026, current: true);
-        $this->school = $this->school('303456', 'Pagsabungan NHS', planValidUntil: new \DateTimeImmutable('2027-04-30'));
+        $this->school = $this->school(
+            '303456',
+            'Pagsabungan NHS',
+            planValidUntil: new \DateTimeImmutable('2027-04-30'),
+        );
         $this->school->setType(SchoolType::Integrated);
         $this->em->flush();
         $this->p1 = $this->classPeriod($this->school, $this->sy, '07:30', '08:30');
-        $this->recess = $this->classPeriod($this->school, $this->sy, '08:30', '08:50', 'Recess');
+        $this->classPeriod($this->school, $this->sy, '08:30', '08:50', 'Recess');
         $this->p2 = $this->classPeriod($this->school, $this->sy, '08:50', '09:50');
         $this->rizal = $this->section(GradeLevel::Grade7, 'Rizal');
         $this->mabini = $this->section(GradeLevel::Grade8, 'Mabini');
         $this->santos = $this->teacher('santos', 'Maria Santos');
-        $this->reyes = $this->teacher('reyes', 'Jose Reyes');
+        $this->teacher('reyes', 'Jose Reyes');
         $this->math7 = $this->subject(GradeLevel::Grade7, 'MATH7', 'Mathematics');
         $this->science8 = $this->subject(GradeLevel::Grade8, 'SCI8', 'Science');
         $this->manager->setTeacher($this->rizal, $this->math7, $this->santos);
@@ -117,7 +105,7 @@ class TimetableNowTest extends KernelTestCase
 
     private function at(string $time): \DateTimeImmutable
     {
-        return new \DateTimeImmutable($time.' Asia/Manila');
+        return new \DateTimeImmutable($time . ' Asia/Manila');
     }
 
     public function testDuringPeriodListsClassesAndFreeTeachers(): void
@@ -125,10 +113,53 @@ class TimetableNowTest extends KernelTestCase
         $now = $this->query->now($this->school, $this->sy, $this->at('2026-10-19 08:00'));
 
         self::assertSame('class', $now['state']);
-        self::assertSame('Period 1', $now['period']['label']);
+        self::assertSame('Period 1', $now['period']['label'] ?? null);
         self::assertSame('07:30–08:30', $now['period']['timeRange']);
-        self::assertSame([['teacherName' => 'Maria Santos', 'subjectName' => 'Mathematics', 'sectionLabel' => 'Grade 7 – Rizal']], $now['classes']);
+        self::assertSame(
+            [['teacherName' => 'Maria Santos', 'subjectName' => 'Mathematics', 'sectionLabel' => 'Grade 7 – Rizal']],
+            $now['classes'],
+        );
         self::assertSame(['Jose Reyes'], $now['free']);
+    }
+
+    public function testAClassOfTheOtherSemesterIsNotRunningNow(): void
+    {
+        // Initialize
+        $cruz = $this->teacher('cruz', 'Ana Cruz');
+        $stem = $this->section(GradeLevel::Grade11, 'STEM-A');
+        $statistics = $this->subject(GradeLevel::Grade11, 'STAT', 'Statistics')->setSemester(2);
+        $this->em->flush();
+        $this->manager->setTeacher($stem, $statistics, $cruz);
+        $this->manager->plot($stem, $statistics, Weekday::Monday, $this->p1);
+
+        // Execute
+        $now = $this->query->now($this->school, $this->sy, $this->at('2026-10-19 08:00'));
+
+        // Assert
+        self::assertSame(['Mathematics'], array_column($now['classes'], 'subjectName'));
+        self::assertContains('Ana Cruz', $now['free']);
+    }
+
+    public function testATeacherWithoutASchoolHasNoPeriods(): void
+    {
+        // Initialize
+        $newcomer = $this->plainUser('newcomer', User::ROLE_TEACHER);
+
+        // Execute
+        $now = $this->query->nowForTeacher($newcomer, $this->sy, $this->at('2026-10-19 08:00'));
+
+        // Assert
+        self::assertSame(['state' => 'no_periods', 'current' => null, 'next' => null], $now);
+    }
+
+    public function testATeacherBeforeTheFirstPeriodSeesTheFirstClass(): void
+    {
+        // Execute
+        $now = $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-19 07:00'));
+
+        // Assert
+        self::assertSame('before', $now['state']);
+        self::assertSame('Mathematics', $now['next']['subjectName'] ?? null);
     }
 
     public function testDuringBreak(): void
@@ -136,9 +167,9 @@ class TimetableNowTest extends KernelTestCase
         $now = $this->query->now($this->school, $this->sy, $this->at('2026-10-19 08:35'));
 
         self::assertSame('break', $now['state']);
-        self::assertSame('Recess', $now['period']['label']);
+        self::assertSame('Recess', $now['period']['label'] ?? null);
         self::assertSame([], $now['classes']);
-        self::assertSame('Period 2', $now['next']['label']);
+        self::assertSame('Period 2', $now['next']['label'] ?? null);
         self::assertSame('08:50', $now['next']['startsAt']);
     }
 
@@ -164,10 +195,13 @@ class TimetableNowTest extends KernelTestCase
 
     public function testNoPeriods(): void
     {
-        $this->em->createQuery('DELETE FROM '.\App\Classes\Domain\Model\ScheduleEntry::class)->execute();
-        $this->em->createQuery('DELETE FROM '.ClassPeriod::class)->execute();
+        $this->em->createQuery('DELETE FROM ' . ScheduleEntry::class)->execute();
+        $this->em->createQuery('DELETE FROM ' . ClassPeriod::class)->execute();
 
-        self::assertSame('no_periods', $this->query->now($this->school, $this->sy, $this->at('2026-10-19 08:00'))['state']);
+        self::assertSame(
+            'no_periods',
+            $this->query->now($this->school, $this->sy, $this->at('2026-10-19 08:00'))['state'],
+        );
     }
 
     public function testBoundaryBelongsToNextPeriod(): void
@@ -175,7 +209,7 @@ class TimetableNowTest extends KernelTestCase
         $now = $this->query->now($this->school, $this->sy, $this->at('2026-10-19 08:50'));
 
         self::assertSame('class', $now['state']);
-        self::assertSame('Period 2', $now['period']['label']);
+        self::assertSame('Period 2', $now['period']['label'] ?? null);
         self::assertSame(['Science'], array_column($now['classes'], 'subjectName'));
         self::assertSame(['Jose Reyes'], $now['free']);
     }
@@ -185,8 +219,14 @@ class TimetableNowTest extends KernelTestCase
         $now = $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-19 08:00'));
 
         self::assertSame('class', $now['state']);
-        self::assertSame(['subjectName' => 'Mathematics', 'sectionLabel' => 'Grade 7 – Rizal', 'endsAt' => '08:30'], $now['current']);
-        self::assertSame(['subjectName' => 'Science', 'sectionLabel' => 'Grade 8 – Mabini', 'startsAt' => '08:50'], $now['next']);
+        self::assertSame(
+            ['subjectName' => 'Mathematics', 'sectionLabel' => 'Grade 7 – Rizal', 'endsAt' => '08:30'],
+            $now['current'],
+        );
+        self::assertSame(
+            ['subjectName' => 'Science', 'sectionLabel' => 'Grade 8 – Mabini', 'startsAt' => '08:50'],
+            $now['next'],
+        );
     }
 
     public function testTeacherDoneForTheDay(): void
@@ -202,18 +242,23 @@ class TimetableNowTest extends KernelTestCase
     {
         $now = $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-19 08:40'));
         self::assertSame('break', $now['state']);
-        self::assertSame('Science', $now['next']['subjectName']);
+        self::assertSame('Science', $now['next']['subjectName'] ?? null);
 
-        $this->em->createQuery('DELETE FROM '.\App\Classes\Domain\Model\ScheduleEntry::class.' e WHERE e.period = :p')->setParameter('p', $this->p1)->execute();
+        $this->em->createQuery('DELETE FROM ' . ScheduleEntry::class . ' e WHERE e.period = :p')
+            ->setParameter('p', $this->p1)
+            ->execute();
         $free = $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-19 08:00'));
         self::assertSame('free', $free['state']);
         self::assertNull($free['current']);
-        self::assertSame('08:50', $free['next']['startsAt']);
+        self::assertSame('08:50', $free['next']['startsAt'] ?? null);
     }
 
     public function testTeacherWeekend(): void
     {
-        self::assertSame('weekend', $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-24 08:00'))['state']);
+        self::assertSame(
+            'weekend',
+            $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-24 08:00'))['state'],
+        );
     }
 
     public function testPeriodToPeriodBoundaryBelongsToNextPeriod(): void
@@ -224,12 +269,15 @@ class TimetableNowTest extends KernelTestCase
 
         $now = $this->query->now($this->school, $this->sy, $this->at('2026-10-19 09:50'));
         self::assertSame('class', $now['state']);
-        self::assertSame('Period 3', $now['period']['label']);
+        self::assertSame('Period 3', $now['period']['label'] ?? null);
         self::assertSame(['Mathematics'], array_column($now['classes'], 'subjectName'));
 
         $mine = $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-19 09:50'));
         self::assertSame('class', $mine['state']);
-        self::assertSame(['subjectName' => 'Mathematics', 'sectionLabel' => 'Grade 7 – Rizal', 'endsAt' => '10:50'], $mine['current']);
+        self::assertSame(
+            ['subjectName' => 'Mathematics', 'sectionLabel' => 'Grade 7 – Rizal', 'endsAt' => '10:50'],
+            $mine['current'],
+        );
     }
 
     public function testEntryQueriesLoadTheirRelationsInOneGo(): void
@@ -249,19 +297,49 @@ class TimetableNowTest extends KernelTestCase
             );
             self::assertNotEmpty($entries, $method);
             foreach ($entries as $entry) {
-                foreach (['load' => $entry->getLoad(), 'section' => $entry->getSection(), 'period' => $entry->getPeriod()] as $name => $related) {
-                    self::assertFalse($em->isUninitializedObject($related), $method.' leaves the '.$name.' to a later query');
+                $relations = [
+                    'load' => $entry->getLoad(),
+                    'section' => $entry->getSection(),
+                    'period' => $entry->getPeriod(),
+                ];
+                foreach ($relations as $name => $related) {
+                    self::assertFalse(
+                        $em->isUninitializedObject($related),
+                        $method . ' leaves the ' . $name . ' to a later query',
+                    );
                 }
-                self::assertFalse($em->isUninitializedObject($entry->getLoad()->getSubject()), $method.' leaves the subject to a later query');
+                self::assertFalse(
+                    $em->isUninitializedObject($entry->getLoad()->getSubject()),
+                    $method . ' leaves the subject to a later query',
+                );
             }
 
             return array_map(static fn ($e) => $e->getDay(), $entries);
         };
 
         $check('findForSection', static fn ($santos, $rizal) => $repository->findForSection($rizal, 0));
-        self::assertCount(3, $check('findForTeacher', static fn ($santos, $rizal, $school, $sy) => $repository->findForTeacher($santos, $sy)));
-        $check('findAt', static fn ($santos, $rizal, $school, $sy, $p1) => $repository->findAt($school, $sy, Weekday::Monday, $p1));
+        self::assertCount(
+            3,
+            $check(
+                'findForTeacher',
+                static fn ($santos, $rizal, $school, $sy) => $repository->findForTeacher($santos, $sy),
+            ),
+        );
+        $check(
+            'findAt',
+            static fn ($santos, $rizal, $school, $sy, $p1) => $repository->findAt($school, $sy, Weekday::Monday, $p1),
+        );
         // Only the asked day
-        self::assertSame([Weekday::Monday, Weekday::Monday], $check('findForTeacherOn', static fn ($santos, $rizal, $school, $sy) => $repository->findForTeacherOn($santos, $sy, Weekday::Monday)));
+        self::assertSame(
+            [Weekday::Monday, Weekday::Monday],
+            $check(
+                'findForTeacherOn',
+                static fn ($santos, $rizal, $school, $sy) => $repository->findForTeacherOn(
+                    $santos,
+                    $sy,
+                    Weekday::Monday,
+                ),
+            ),
+        );
     }
 }

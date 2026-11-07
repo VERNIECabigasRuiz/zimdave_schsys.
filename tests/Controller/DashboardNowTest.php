@@ -9,7 +9,7 @@ use App\Classes\Domain\Model\Section;
 use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
-use App\Service\TimetableManager;
+use App\Classes\Application\Service\Timetable\TimetableManager;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
@@ -44,7 +44,9 @@ class DashboardNowTest extends AdminTestCase
         $this->em->flush();
         $manager = static::getContainer()->get(TimetableManager::class);
         $manager->setTeacher($section, $subject, $this->santos);
+        $this->em->flush();
         $manager->plot($section, $subject, Weekday::Monday, $p1);
+        $this->em->flush();
     }
 
     protected function tearDown(): void

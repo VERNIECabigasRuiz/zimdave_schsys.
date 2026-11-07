@@ -173,4 +173,14 @@ class DoctrineScheduleEntryRepository extends ServiceEntityRepository implements
     {
         return $this->find($id);
     }
+
+    public function add(ScheduleEntry $entry): void
+    {
+        $this->getEntityManager()->persist($entry);
+    }
+
+    public function remove(ScheduleEntry $entry): void
+    {
+        $this->getEntityManager()->remove($entry);
+    }
 }

@@ -6,7 +6,7 @@ use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Service\TimetableQuery;
+use App\Classes\Application\Service\Timetable\TimetableQuery;
 use App\Sf1\Sf1Remarks;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

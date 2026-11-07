@@ -29,4 +29,8 @@ interface TeachingLoadRepositoryInterface
 
     /** @return list<TeachingLoad> */
     public function findForTeacher(User $teacher, SchoolYear $schoolYear): array;
+
+    public function add(TeachingLoad $load): void;
+
+    public function remove(TeachingLoad $load): void;
 }

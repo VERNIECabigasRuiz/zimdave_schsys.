@@ -1,22 +1,28 @@
 <?php
 
-namespace App\Service;
+declare(strict_types=1);
 
-use App\Classes\Domain\Model\ClassPeriod;
-use App\Classes\Domain\Model\ScheduleEntry;
-use App\Schools\Domain\Model\School;
-use App\Schools\Domain\Model\SchoolYear;
-use App\Classes\Domain\Model\Section;
+namespace App\Classes\Application\Service\Timetable;
+
 use App\Access\Domain\Model\User;
-use App\Classes\Domain\Model\Weekday;
+use App\Classes\Domain\Model\ClassPeriod;
 use App\Classes\Domain\Model\Repository\ClassPeriodRepositoryInterface;
 use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
-use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
+use App\Classes\Domain\Model\ScheduleEntry;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Weekday;
+use App\Schools\Application\Api\SchoolDirectoryInterface;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 
 /**
  * Read side of the timetable: the data the timetable pages render. Never writes.
+ *
+ * @phpstan-type PeriodRow array{id: ?int, label: string, number: ?int, isBreak: bool, startsAt: ?string,
+ *     endsAt: ?string}
+ * @phpstan-type Day array{value: int, label: string}
  */
 class TimetableQuery
 {
@@ -25,7 +31,7 @@ class TimetableQuery
         private readonly TeachingLoadRepositoryInterface $loads,
         private readonly SubjectRepositoryInterface $subjects,
         private readonly ClassPeriodRepositoryInterface $periods,
-        private readonly SchoolAssignmentRepositoryInterface $assignments,
+        private readonly SchoolDirectoryInterface $schools,
     ) {
     }
 
@@ -39,15 +45,23 @@ class TimetableQuery
         return $section->getGradeLevel()?->isSeniorHigh() ? [1, 2] : [0];
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array{term: int, terms: list<int>, days: list<Day>, periods: list<PeriodRow>,
+     *     teachers: list<array{id: ?int, name: string}>,
+     *     cards: list<array{subjectId: ?int, name: string, teacherId: ?int, teacherName: ?string, used: int,
+     *         perWeek: ?int}>,
+     *     cells: list<array{entryId: ?int, day: int, periodId: ?int, subjectId: ?int, name: string,
+     *         teacherName: string}>,
+     *     busy: array<array-key, array<string, string>>}
+     */
     public function sectionState(Section $section, int $term): array
     {
         $school = $section->getSchool();
         $schoolYear = $section->getSchoolYear();
 
         $teachers = [];
-        foreach ($this->assignments->findTeacherAssignments($school, $schoolYear) as $assignment) {
-            $teachers[] = ['id' => $assignment->getUser()->getId(), 'name' => $assignment->getUser()->getFullName()];
+        foreach ($this->schools->currentTeachersOf($school, $schoolYear) as $teacher) {
+            $teachers[] = ['id' => $teacher->getId(), 'name' => $teacher->getFullName()];
         }
 
         $used = [];
@@ -88,8 +102,8 @@ class TimetableQuery
 
         $busy = [];
         foreach ($this->entries->findBusy($school, $schoolYear, $term, $section) as $entry) {
-            $busy[(string) $entry->getTeacher()->getId()][$entry->getDay()->value.'-'.$entry->getPeriod()->getId()]
-                = $entry->getLoad()->getSubject()->getName().', '.$entry->getSection()->getLabel();
+            $busy[(string) $entry->getTeacher()->getId()][$entry->getDay()->value . '-' . $entry->getPeriod()->getId()]
+                = $entry->getLoad()->getSubject()->getName() . ', ' . $entry->getSection()->getLabel();
         }
 
         return [
@@ -104,7 +118,12 @@ class TimetableQuery
         ];
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array{periods: list<PeriodRow>, days: list<Day>,
+     *     cells: list<array{day: int, periodId: ?int, name: string, sectionLabel: string}>,
+     *     loads: list<array{subjectName: string, sectionLabel: string, perWeek: ?int, semester: ?int}>,
+     *     totalPerWeek: int}
+     */
     public function teacherWeek(User $teacher, SchoolYear $schoolYear, int $term): array
     {
         $entries = array_values(array_filter(
@@ -146,7 +165,9 @@ class TimetableQuery
     /**
      * What is happening at this moment in a school: the classes running, the teachers with none, or why nothing is.
      *
-     * @return array{state: string, period: array{label: string, timeRange: string}|null, classes: list<array{teacherName: string, subjectName: string, sectionLabel: string}>, free: list<string>, next: array{label: string, startsAt: string}|null}
+     * @return array{state: string, period: array{label: string, timeRange: string}|null,
+     *     classes: list<array{teacherName: string, subjectName: string, sectionLabel: string}>,
+     *     free: list<string>, next: array{label: string, startsAt: string}|null}
      */
     public function now(School $school, SchoolYear $schoolYear, \DateTimeImmutable $at): array
     {
@@ -167,25 +188,27 @@ class TimetableQuery
         foreach ($periods as $period) {
             if ($this->contains($period, $time)) {
                 $current = $period;
-            } elseif (null === $next && !$period->isBreak() && $period->getStartsAt()->format('H:i:s') > $time) {
+            } elseif (null === $next && !$period->isBreak() && self::time($period->getStartsAt(), 'H:i:s') > $time) {
                 $next = $period;
             }
         }
         $result['next'] = null === $next ? null : [
-            'label' => 'Period '.$numbers[$next->getId()],
-            'startsAt' => $next->getStartsAt()->format('H:i'),
+            'label' => 'Period ' . $numbers[(int) $next->getId()],
+            'startsAt' => self::time($next->getStartsAt()),
         ];
 
         if (null === $current) {
-            $result['state'] = $time < $periods[0]->getStartsAt()->format('H:i:s') ? 'before'
-                : ($time >= end($periods)->getEndsAt()->format('H:i:s') ? 'after' : 'break');
+            $result['state'] = $time < self::time($periods[0]->getStartsAt(), 'H:i:s') ? 'before'
+                : ($time >= self::time(end($periods)->getEndsAt(), 'H:i:s') ? 'after' : 'break');
 
             return $result;
         }
 
         $result['period'] = [
-            'label' => $current->isBreak() ? (string) $current->getBreakLabel() : 'Period '.$numbers[$current->getId()],
-            'timeRange' => $current->getStartsAt()->format('H:i').'–'.$current->getEndsAt()->format('H:i'),
+            'label' => $current->isBreak()
+                ? (string) $current->getBreakLabel()
+                : 'Period ' . $numbers[(int) $current->getId()],
+            'timeRange' => self::time($current->getStartsAt()) . '–' . self::time($current->getEndsAt()),
         ];
         if ($current->isBreak()) {
             $result['state'] = 'break';
@@ -206,9 +229,9 @@ class TimetableQuery
                 'sectionLabel' => $entry->getSection()->getLabel(),
             ];
         }
-        foreach ($this->assignments->findTeacherAssignments($school, $schoolYear) as $assignment) {
-            if (!isset($busy[$assignment->getUser()->getId()])) {
-                $result['free'][] = $assignment->getUser()->getFullName();
+        foreach ($this->schools->currentTeachersOf($school, $schoolYear) as $teacher) {
+            if (!isset($busy[$teacher->getId()])) {
+                $result['free'][] = $teacher->getFullName();
             }
         }
         $result['state'] = 'class';
@@ -219,12 +242,14 @@ class TimetableQuery
     /**
      * A teacher's own view of the moment: the class now and the next one today.
      *
-     * @return array{state: string, current: array{subjectName: string, sectionLabel: string, endsAt: string}|null, next: array{subjectName: string, sectionLabel: string, startsAt: string}|null}
+     * @return array{state: string,
+     *     current: array{subjectName: string, sectionLabel: string, endsAt: string}|null,
+     *     next: array{subjectName: string, sectionLabel: string, startsAt: string}|null}
      */
     public function nowForTeacher(User $teacher, SchoolYear $schoolYear, \DateTimeImmutable $at): array
     {
         $result = ['state' => 'no_periods', 'current' => null, 'next' => null];
-        $school = $this->assignments->findSchoolOf($teacher, $schoolYear, User::ROLE_TEACHER);
+        $school = $this->schools->schoolOf($teacher, $schoolYear, User::ROLE_TEACHER);
         $periods = null === $school ? [] : $this->periods->findForSchool($school, $schoolYear);
         if ([] === $periods) {
             return $result;
@@ -240,33 +265,37 @@ class TimetableQuery
             $this->entries->findForTeacherOn($teacher, $schoolYear, $day),
             fn (ScheduleEntry $e) => $this->countsIn($e, $term),
         ));
-        usort($today, static fn (ScheduleEntry $a, ScheduleEntry $b) => $a->getPeriod()->getStartsAt() <=> $b->getPeriod()->getStartsAt());
+        usort(
+            $today,
+            static fn (ScheduleEntry $a, ScheduleEntry $b) => $a->getPeriod()->getStartsAt()
+                <=> $b->getPeriod()->getStartsAt(),
+        );
 
         $current = null;
         $next = null;
         foreach ($today as $entry) {
             if ($this->contains($entry->getPeriod(), $time)) {
                 $current = $entry;
-            } elseif (null === $next && $entry->getPeriod()->getStartsAt()->format('H:i:s') > $time) {
+            } elseif (null === $next && self::time($entry->getPeriod()->getStartsAt(), 'H:i:s') > $time) {
                 $next = $entry;
             }
         }
         $result['current'] = null === $current ? null : [
             'subjectName' => $current->getLoad()->getSubject()->getName(),
             'sectionLabel' => $current->getSection()->getLabel(),
-            'endsAt' => $current->getPeriod()->getEndsAt()->format('H:i'),
+            'endsAt' => self::time($current->getPeriod()->getEndsAt()),
         ];
         $result['next'] = null === $next ? null : [
             'subjectName' => $next->getLoad()->getSubject()->getName(),
             'sectionLabel' => $next->getSection()->getLabel(),
-            'startsAt' => $next->getPeriod()->getStartsAt()->format('H:i'),
+            'startsAt' => self::time($next->getPeriod()->getStartsAt()),
         ];
 
         if (null !== $current) {
             $result['state'] = 'class';
         } elseif (null === $next) {
             $result['state'] = 'done';
-        } elseif ($time < $periods[0]->getStartsAt()->format('H:i:s')) {
+        } elseif ($time < self::time($periods[0]->getStartsAt(), 'H:i:s')) {
             $result['state'] = 'before';
         } else {
             $inBreak = false;
@@ -281,14 +310,21 @@ class TimetableQuery
 
     private function contains(ClassPeriod $period, string $time): bool
     {
-        return $period->getStartsAt()->format('H:i:s') <= $time && $time < $period->getEndsAt()->format('H:i:s');
+        return self::time($period->getStartsAt(), 'H:i:s') <= $time
+            && $time < self::time($period->getEndsAt(), 'H:i:s');
+    }
+
+    /** A saved period's start or end time, which is always set. */
+    private static function time(?\DateTimeImmutable $time, string $format = 'H:i'): string
+    {
+        return (string) $time?->format($format);
     }
 
     /** Semester 1 before the school year's midpoint, semester 2 from then on. */
     private function termAt(SchoolYear $schoolYear, \DateTimeImmutable $at): int
     {
-        $start = $schoolYear->getStartDate()->getTimestamp();
-        $midpoint = $start + intdiv($schoolYear->getEndDate()->getTimestamp() - $start, 2);
+        $start = (int) $schoolYear->getStartDate()?->getTimestamp();
+        $midpoint = $start + intdiv((int) $schoolYear->getEndDate()?->getTimestamp() - $start, 2);
 
         return $at->getTimestamp() < $midpoint ? 1 : 2;
     }
@@ -298,7 +334,7 @@ class TimetableQuery
         return 0 === $entry->getTerm() || $entry->getTerm() === $term;
     }
 
-    /** @return list<array{value: int, label: string}> */
+    /** @return list<Day> */
     private function days(): array
     {
         return array_map(static fn (Weekday $d) => ['value' => $d->value, 'label' => $d->short()], Weekday::cases());
@@ -307,7 +343,7 @@ class TimetableQuery
     /**
      * @param list<ClassPeriod> $periods in time order
      *
-     * @return list<array<string, mixed>>
+     * @return list<PeriodRow>
      */
     private function periodRows(array $periods): array
     {
@@ -315,7 +351,7 @@ class TimetableQuery
 
         return array_map(static fn (ClassPeriod $p) => [
             'id' => $p->getId(),
-            'label' => $p->isBreak() ? (string) $p->getBreakLabel() : 'Period '.$numbers[$p->getId()],
+            'label' => $p->isBreak() ? (string) $p->getBreakLabel() : 'Period ' . $numbers[(int) $p->getId()],
             'number' => $numbers[$p->getId()] ?? null,
             'isBreak' => $p->isBreak(),
             'startsAt' => $p->getStartsAt()?->format('H:i'),

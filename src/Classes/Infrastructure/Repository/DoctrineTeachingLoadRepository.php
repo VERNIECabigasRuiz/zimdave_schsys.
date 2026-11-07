@@ -77,4 +77,14 @@ class DoctrineTeachingLoadRepository extends ServiceEntityRepository implements 
     {
         return $this->find($id);
     }
+
+    public function add(TeachingLoad $load): void
+    {
+        $this->getEntityManager()->persist($load);
+    }
+
+    public function remove(TeachingLoad $load): void
+    {
+        $this->getEntityManager()->remove($load);
+    }
 }

@@ -68,6 +68,30 @@ final class SchoolDirectoryTest extends KernelTestCase
         self::assertSame([$ana, $zed], $teachers);
     }
 
+    public function testCurrentTeachersLeaveOutAccountsNoLongerTeachers(): void
+    {
+        // Initialize
+        $sy = $this->schoolYear(2026, true);
+        $school = $this->school('300001', 'Alpha NHS');
+        $zed = $this->plainUser('rt-zed', User::ROLE_TEACHER)->setFullName('Zed Teacher');
+        $ana = $this->plainUser('rt-ana', User::ROLE_TEACHER)->setFullName('Ana Teacher');
+        $promoted = $this->plainUser('rt-promoted', User::ROLE_TEACHER)->setFullName('Ben Promoted');
+        $this->assign($school, $sy, $zed, User::ROLE_TEACHER);
+        $this->assign($school, $sy, $ana, User::ROLE_TEACHER);
+        $this->assign($school, $sy, $promoted, User::ROLE_TEACHER);
+        $promoted->setRole(User::ROLE_PRINCIPAL);
+        $this->em->flush();
+        $directory = static::getContainer()->get(SchoolDirectoryInterface::class);
+
+        // Execute
+        $current = $directory->currentTeachersOf($school, $sy);
+        $assigned = $directory->teachersOf($school, $sy);
+
+        // Assert
+        self::assertSame([$ana, $zed], $current);
+        self::assertSame([$ana, $promoted, $zed], $assigned);
+    }
+
     public function testTellsWhyASchoolIsBlocked(): void
     {
         // Initialize
