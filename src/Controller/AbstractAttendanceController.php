@@ -7,10 +7,10 @@ use App\Attendance\AttendanceRules;
 use App\Attendance\Sf2ReportBuilder;
 use App\Attendance\Sf2Roster;
 use App\Attendance\Sf2Writer;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Repository\RollCallRepository;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Security\Voter\AttendanceVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -30,7 +30,7 @@ abstract class AbstractAttendanceController extends AbstractController
         protected readonly Sf2Roster $roster,
         protected readonly RollCallRepository $rollCalls,
         protected readonly SchoolYearRepositoryInterface $schoolYears,
-        protected readonly SectionRepository $sections,
+        protected readonly SectionRepositoryInterface $sections,
     ) {
     }
 

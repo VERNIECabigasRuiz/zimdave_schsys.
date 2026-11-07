@@ -5,7 +5,7 @@ namespace App\Twig;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use Twig\Attribute\AsTwigFunction;
 
 class AppExtension
@@ -13,7 +13,7 @@ class AppExtension
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
-        private readonly SectionRepository $sections,
+        private readonly SectionRepositoryInterface $sections,
     ) {
     }
 

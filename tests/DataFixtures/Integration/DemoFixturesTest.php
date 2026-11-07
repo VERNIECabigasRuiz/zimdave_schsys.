@@ -12,7 +12,7 @@ use App\Entity\LessonPlan;
 use App\Entity\RollCall;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Schools\Domain\Service\Plan\PlanLimits;

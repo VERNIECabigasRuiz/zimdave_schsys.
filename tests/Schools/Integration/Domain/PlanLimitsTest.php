@@ -9,7 +9,7 @@ use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Billing\Domain\Model\Plan;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Exception\PlanLimitException;
 use App\Schools\Domain\Service\Plan\PlanLimits;

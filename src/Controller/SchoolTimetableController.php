@@ -4,19 +4,19 @@ namespace App\Controller;
 
 use App\Dto\TimetablePlotInput;
 use App\Dto\TimetableTeacherInput;
-use App\Entity\ClassPeriod;
-use App\Entity\ScheduleEntry;
+use App\Classes\Domain\Model\ClassPeriod;
+use App\Classes\Domain\Model\ScheduleEntry;
 use App\Schools\Domain\Model\School;
-use App\Entity\Section;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
-use App\Entity\Weekday;
-use App\Repository\ClassPeriodRepository;
-use App\Repository\ScheduleEntryRepository;
+use App\Classes\Domain\Model\Weekday;
+use App\Classes\Domain\Model\Repository\ClassPeriodRepositoryInterface;
+use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SectionRepository;
-use App\Repository\SubjectRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use App\Schools\Presentation\Security\SchoolVoter;
 use App\Schools\Domain\Exception\PlanLimitException;
@@ -42,10 +42,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class SchoolTimetableController extends AbstractController
 {
     public function __construct(
-        private readonly SectionRepository $sections,
-        private readonly SubjectRepository $subjects,
-        private readonly ClassPeriodRepository $periods,
-        private readonly ScheduleEntryRepository $entries,
+        private readonly SectionRepositoryInterface $sections,
+        private readonly SubjectRepositoryInterface $subjects,
+        private readonly ClassPeriodRepositoryInterface $periods,
+        private readonly ScheduleEntryRepositoryInterface $entries,
         private readonly UserRepositoryInterface $users,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly SchoolYearRepositoryInterface $schoolYears,
@@ -99,7 +99,7 @@ class SchoolTimetableController extends AbstractController
     {
         $section = $this->requireSection($school, $section);
         $subject = $this->requireSubject($school, (int) $input->subjectId);
-        $period = $this->periods->find((int) $input->periodId);
+        $period = $this->periods->findById((int) $input->periodId);
         if (!$period instanceof ClassPeriod || $period->getSchool() !== $school || $period->getSchoolYear() !== $section->getSchoolYear()) {
             throw $this->createNotFoundException('This class period is not in the school this school year.');
         }
@@ -118,7 +118,7 @@ class SchoolTimetableController extends AbstractController
     public function remove(Request $request, School $school, int $section, int $entry): JsonResponse
     {
         $section = $this->requireSection($school, $section);
-        $entry = $this->entries->find($entry);
+        $entry = $this->entries->findById($entry);
         if (!$entry instanceof ScheduleEntry || $entry->getSection() !== $section) {
             throw $this->createNotFoundException('This class is not in the section.');
         }
@@ -161,7 +161,7 @@ class SchoolTimetableController extends AbstractController
     /** A section of this school in the current school year. */
     private function requireSection(School $school, int $id): Section
     {
-        $section = $this->sections->find($id);
+        $section = $this->sections->findById($id);
         if (null === $section || $section->getSchool() !== $school || $section->getSchoolYear() !== $this->schoolYears->findCurrent()) {
             throw $this->createNotFoundException('This section is not in the school this school year.');
         }
@@ -171,7 +171,7 @@ class SchoolTimetableController extends AbstractController
 
     private function requireSubject(School $school, int $id): Subject
     {
-        $subject = $this->subjects->find($id);
+        $subject = $this->subjects->findById($id);
         if (null === $subject || $subject->getSchool() !== $school || $subject->getSchoolYear() !== $this->schoolYears->findCurrent()) {
             throw $this->createNotFoundException('This subject is not in the school this school year.');
         }

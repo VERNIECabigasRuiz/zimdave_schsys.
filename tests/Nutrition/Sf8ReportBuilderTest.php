@@ -9,7 +9,7 @@ use App\Entity\NutritionAssessment;
 use App\Entity\NutritionMeasurement;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf8Submission;
 use App\Entity\TransferRequest;
@@ -27,7 +27,7 @@ use App\Nutrition\Sf8Summary;
 use App\Repository\EnrollmentRepository;
 use App\Repository\NutritionAssessmentRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Repository\Sf8SubmissionRepository;
 use App\Repository\TransferRequestRepository;
 use App\Core\Infrastructure\Clock\SchoolClock;
@@ -99,7 +99,7 @@ class Sf8ReportBuilderTest extends KernelTestCase
             new NutritionClassifier(\dirname(__DIR__, 2)),
             $c->get(NutritionAssessmentRepository::class),
             $c->get(Sf8SubmissionRepository::class),
-            $c->get(SectionRepository::class),
+            $c->get(SectionRepositoryInterface::class),
             $c->get(SchoolAssignmentRepositoryInterface::class),
             new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
         );

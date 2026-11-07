@@ -4,7 +4,7 @@ namespace App\Sf1;
 
 use App\Entity\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Repository\EnrollmentRepository;

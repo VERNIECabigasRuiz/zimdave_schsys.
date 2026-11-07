@@ -2,7 +2,7 @@
 
 namespace App\Service\SchoolsHooks;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Repository\EnrollmentRepository;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;

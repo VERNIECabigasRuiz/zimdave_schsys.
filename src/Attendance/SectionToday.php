@@ -2,7 +2,7 @@
 
 namespace App\Attendance;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 
 /** A section's attendance today, for the principal's overview. */
 final readonly class SectionToday

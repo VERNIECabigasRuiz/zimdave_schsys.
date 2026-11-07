@@ -9,7 +9,7 @@ use App\Entity\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Entity\TransferRequest;

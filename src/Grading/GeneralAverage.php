@@ -2,7 +2,7 @@
 
 namespace App\Grading;
 
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Subject;
 
 /**
  * A learner's general average for a term, as the card slip prints it: the mean of the top-level subjects'

@@ -6,7 +6,7 @@ use App\Entity\GradeChangeRequest;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Nutrition\NutritionPeriod;
 use App\Repository\Sf8SubmissionRepository;

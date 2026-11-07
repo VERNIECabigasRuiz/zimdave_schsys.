@@ -163,19 +163,19 @@ parameters:
 			path: ../src/Controller/AbstractLearnerController.php
 
 		-
-			message: '#^Parameter \#2 \$section of method App\\Controller\\AbstractLearnerController\:\:redirectToClassList\(\) expects App\\Entity\\Section, mixed given\.$#'
+			message: '#^Parameter \#2 \$section of method App\\Controller\\AbstractLearnerController\:\:redirectToClassList\(\) expects App\\Classes\\Domain\\Model\\Section, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/AbstractLearnerController.php
 
 		-
-			message: '#^Parameter \#2 \$section of method App\\Service\\LearnerEnrollment\:\:enrollExisting\(\) expects App\\Entity\\Section, mixed given\.$#'
+			message: '#^Parameter \#2 \$section of method App\\Service\\LearnerEnrollment\:\:enrollExisting\(\) expects App\\Classes\\Domain\\Model\\Section, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/AbstractLearnerController.php
 
 		-
-			message: '#^Parameter \#2 \$section of method App\\Service\\LearnerEnrollment\:\:enrollNew\(\) expects App\\Entity\\Section, mixed given\.$#'
+			message: '#^Parameter \#2 \$section of method App\\Service\\LearnerEnrollment\:\:enrollNew\(\) expects App\\Classes\\Domain\\Model\\Section, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/AbstractLearnerController.php
@@ -203,42 +203,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/AbstractNutritionController.php
-
-		-
-			message: '#^Cannot access property \$value on App\\Schools\\Domain\\Model\\GradeLevel\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: ../src/Controller/AbstractSubjectController.php
-
-		-
-			message: '#^Cannot call method isSeniorHigh\(\) on App\\Schools\\Domain\\Model\\GradeLevel\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Controller/AbstractSubjectController.php
-
-		-
-			message: '#^Cannot call method label\(\) on App\\Schools\\Domain\\Model\\GradeLevel\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../src/Controller/AbstractSubjectController.php
-
-		-
-			message: '#^Parameter \#1 \$grade of static method App\\Data\\DepEdSubjects\:\:hasPreset\(\) expects App\\Schools\\Domain\\Model\\GradeLevel, App\\Schools\\Domain\\Model\\GradeLevel\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/AbstractSubjectController.php
-
-		-
-			message: '#^Parameter \#3 \$grade of method App\\Repository\\SubjectRepository\:\:nextPosition\(\) expects App\\Schools\\Domain\\Model\\GradeLevel, App\\Schools\\Domain\\Model\\GradeLevel\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/AbstractSubjectController.php
-
-		-
-			message: '#^Parameter \#3 \$grade of method App\\Service\\SubjectManager\:\:addDepEdSet\(\) expects App\\Schools\\Domain\\Model\\GradeLevel, App\\Schools\\Domain\\Model\\GradeLevel\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/AbstractSubjectController.php
 
 		-
 			message: '#^Parameter \#2 \$schoolYear of method App\\Attendance\\AttendanceStatistics\:\:today\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
@@ -319,12 +283,6 @@ parameters:
 			path: ../src/Controller/SchoolGradeController.php
 
 		-
-			message: '#^Cannot call method label\(\) on App\\Schools\\Domain\\Model\\GradeLevel\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Controller/SchoolSectionController.php
-
-		-
 			message: '#^Cannot call method getId\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -343,7 +301,7 @@ parameters:
 			path: ../src/Controller/SchoolTransferController.php
 
 		-
-			message: '#^Parameter \#2 \$to of method App\\Service\\TransferManager\:\:request\(\) expects App\\Entity\\Section, mixed given\.$#'
+			message: '#^Parameter \#2 \$to of method App\\Service\\TransferManager\:\:request\(\) expects App\\Classes\\Domain\\Model\\Section, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/SchoolTransferController.php
@@ -367,19 +325,19 @@ parameters:
 			path: ../src/Controller/TeacherCardSlipController.php
 
 		-
-			message: '#^Parameter \#1 \$section of method App\\Controller\\AbstractLearnerController\:\:downloadIds\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#1 \$section of method App\\Controller\\AbstractLearnerController\:\:downloadIds\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherClassController.php
 
 		-
-			message: '#^Parameter \#1 \$section of method App\\Controller\\AbstractLearnerController\:\:downloadSf1\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#1 \$section of method App\\Controller\\AbstractLearnerController\:\:downloadSf1\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherClassController.php
 
 		-
-			message: '#^Parameter \#2 \$section of method App\\Controller\\AbstractLearnerController\:\:renderClassList\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#2 \$section of method App\\Controller\\AbstractLearnerController\:\:renderClassList\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherClassController.php
@@ -397,19 +355,19 @@ parameters:
 			path: ../src/Controller/TeacherLessonPlanController.php
 
 		-
-			message: '#^Parameter \#1 \$load of method App\\LessonPlan\\LessonWeek\:\:start\(\) expects App\\Entity\\TeachingLoad, mixed given\.$#'
+			message: '#^Parameter \#1 \$load of method App\\LessonPlan\\LessonWeek\:\:start\(\) expects App\\Classes\\Domain\\Model\\TeachingLoad, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherLessonPlanController.php
 
 		-
-			message: '#^Parameter \#1 \$load of method App\\Repository\\LessonPlanRepository\:\:findOneFor\(\) expects App\\Entity\\TeachingLoad, mixed given\.$#'
+			message: '#^Parameter \#1 \$load of method App\\Repository\\LessonPlanRepository\:\:findOneFor\(\) expects App\\Classes\\Domain\\Model\\TeachingLoad, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherLessonPlanController.php
 
 		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\TeachingLoadRepository\:\:findForTeacher\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
+			message: '#^Parameter \#2 \$schoolYear of method App\\Classes\\Domain\\Model\\Repository\\TeachingLoadRepositoryInterface\:\:findForTeacher\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherLessonPlanController.php
@@ -437,18 +395,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherNutritionController.php
-
-		-
-			message: '#^Parameter \#3 \$grades of class App\\Controller\\SubjectScope constructor expects list\<App\\Schools\\Domain\\Model\\GradeLevel\>, array\{App\\Schools\\Domain\\Model\\GradeLevel\|null\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/TeacherSubjectController.php
-
-		-
-			message: '#^Method App\\Data\\DepEdSubjects\:\:forGrade\(\) should return list\<array\{code\: string, name\: string, components\: list\<array\{code\: string, name\: string\}\>\}\> but returns array\<0\|1\|2\|3\|4\|5\|6\|7, array\{components\: array\{\}\|array\{array\{code\: non\-empty\-string, name\: mixed\}, array\{code\: non\-empty\-string, name\: mixed\}, array\{code\: non\-empty\-string, name\: mixed\}, array\{code\: non\-empty\-string, name\: mixed\}\}\|array\{array\{code\: non\-empty\-string, name\: mixed\}, array\{code\: non\-empty\-string, name\: mixed\}\}, code\: non\-empty\-string, name\: mixed\}\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Data/DepEdSubjects.php
 
 		-
 			message: '#^Parameter \#1 \$array \(list\<string\>\) of array_values is already a list, call has no effect\.$#'
@@ -667,12 +613,6 @@ parameters:
 			path: ../src/Form/CardSlipCommentsFormType.php
 
 		-
-			message: '#^Class App\\Form\\ClassPeriodFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/ClassPeriodFormType.php
-
-		-
 			message: '#^Class App\\Form\\EnrollSectionFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -883,12 +823,6 @@ parameters:
 			path: ../src/Form/RollCallFormType.php
 
 		-
-			message: '#^Class App\\Form\\SectionFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/SectionFormType.php
-
-		-
 			message: '#^Class App\\Form\\ServiceRecordEntryFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -925,18 +859,6 @@ parameters:
 			path: ../src/Form/StaffIdDetailsFormType.php
 
 		-
-			message: '#^Class App\\Form\\SubjectFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/SubjectFormType.php
-
-		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Form/SubjectFormType.php
-
-		-
 			message: '#^Parameter \#4 \$failedSubjects of class App\\Grading\\FailingLearner constructor expects array\<string, int\>, array\<string, int\<min, 74\>\|null\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -965,12 +887,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../src/Repository/CardSlipCommentRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ClassPeriodRepository\:\:numbering\(\) should return array\<int, int\> but returns array\<int\|string, int\<1, max\>\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/ClassPeriodRepository.php
 
 		-
 			message: '#^Cannot access offset ''sectionId'' on mixed\.$#'
@@ -1075,18 +991,6 @@ parameters:
 			path: ../src/Repository/RollCallRepository.php
 
 		-
-			message: '#^Method App\\Repository\\ScheduleEntryRepository\:\:findSectionClash\(\) should return App\\Entity\\ScheduleEntry\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/ScheduleEntryRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ScheduleEntryRepository\:\:findTeacherClash\(\) should return App\\Entity\\ScheduleEntry\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/ScheduleEntryRepository.php
-
-		-
 			message: '#^Method App\\Repository\\Sf2SubmissionRepository\:\:findForMonth\(\) should return array\<int, App\\Entity\\Sf2Submission\> but returns array\<int\|string, App\\Entity\\Sf2Submission\>\.$#'
 			identifier: return.type
 			count: 1
@@ -1097,24 +1001,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../src/Repository/Sf8SubmissionRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubjectRepository\:\:findBringBackCandidates\(\) should return list\<App\\Entity\\Subject\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/SubjectRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubjectRepository\:\:findForSchool\(\) should return list\<App\\Entity\\Subject\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/SubjectRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubjectRepository\:\:findForSection\(\) should return list\<App\\Entity\\Subject\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/SubjectRepository.php
 
 		-
 			message: '#^Cannot call method getId\(\) on App\\Entity\\Enrollment\|null\.$#'
@@ -1141,55 +1027,55 @@ parameters:
 			path: ../src/Repository/TransferRequestRepository.php
 
 		-
-			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getFromSchool\(\)\.$#'
+			message: '#^Call to an undefined method App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getFromSchool\(\)\.$#'
 			identifier: method.notFound
 			count: 2
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getFromSection\(\)\.$#'
+			message: '#^Call to an undefined method App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getFromSection\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getSchool\(\)\.$#'
+			message: '#^Call to an undefined method App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getSchool\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getSchoolYear\(\)\.$#'
+			message: '#^Call to an undefined method App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getSchoolYear\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getToSchool\(\)\.$#'
+			message: '#^Call to an undefined method App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:getToSchool\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Call to an undefined method App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:isPending\(\)\.$#'
+			message: '#^Call to an undefined method App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School\:\:isPending\(\)\.$#'
 			identifier: method.notFound
 			count: 2
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Parameter \#2 \$learner of method App\\Security\\Voter\\LearnerVoter\:\:voteOnLearner\(\) expects App\\Entity\\Learner, App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School given\.$#'
+			message: '#^Parameter \#2 \$learner of method App\\Security\\Voter\\LearnerVoter\:\:voteOnLearner\(\) expects App\\Entity\\Learner, App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Parameter \#2 \$school of method App\\Security\\Voter\\LearnerVoter\:\:isPrincipalOf\(\) expects App\\Schools\\Domain\\Model\\School, App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School given\.$#'
+			message: '#^Parameter \#2 \$school of method App\\Security\\Voter\\LearnerVoter\:\:isPrincipalOf\(\) expects App\\Schools\\Domain\\Model\\School, App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Security/Voter/LearnerVoter.php
 
 		-
-			message: '#^Parameter \#2 \$section of method App\\Security\\Voter\\LearnerVoter\:\:advises\(\) expects App\\Entity\\Section, App\\Entity\\Learner\|App\\Entity\\Section\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School given\.$#'
+			message: '#^Parameter \#2 \$section of method App\\Security\\Voter\\LearnerVoter\:\:advises\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|App\\Entity\\Learner\|App\\Entity\\TransferRequest\|App\\Schools\\Domain\\Model\\School given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Security/Voter/LearnerVoter.php
@@ -1247,18 +1133,6 @@ parameters:
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../src/Sf1/Sf1Writer.php
-
-		-
-			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../src/Validator/NoOverlappingPeriodValidator.php
-
-		-
-			message: '#^Offset int\|null might not exist on array\<int, int\>\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../src/Validator/NoOverlappingPeriodValidator.php
 
 		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
@@ -1711,18 +1585,6 @@ parameters:
 			path: ../tests/Controller/SchoolCardSlipTest.php
 
 		-
-			message: '#^Cannot call method setPlanValidUntil\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolClassPeriodControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../tests/Controller/SchoolClassPeriodControllerTest.php
-
-		-
 			message: '#^Cannot call method change\(\) on App\\Entity\\Grade\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -1747,7 +1609,7 @@ parameters:
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$load of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\TeachingLoad, App\\Entity\\TeachingLoad\|null given\.$#'
+			message: '#^Parameter \#1 \$load of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Classes\\Domain\\Model\\TeachingLoad, App\\Classes\\Domain\\Model\\TeachingLoad\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
@@ -1969,90 +1831,6 @@ parameters:
 			path: ../tests/Controller/SchoolNutritionControllerTest.php
 
 		-
-			message: '#^Cannot call method getSchool\(\) on App\\Entity\\Section\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolSectionControllerTest.php
-
-		-
-			message: '#^Cannot call method getSchoolYear\(\) on App\\Entity\\Section\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolSectionControllerTest.php
-
-		-
-			message: '#^Cannot call method setPlanValidUntil\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolSectionControllerTest.php
-
-		-
-			message: '#^Cannot call method setType\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolSectionControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$section of method App\\Service\\SectionManager\:\:delete\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/SchoolSectionControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$section of method App\\Service\\SectionManager\:\:save\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/SchoolSectionControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$from of method App\\Service\\SectionManager\:\:bringBack\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/SchoolSectionControllerTest.php
-
-		-
-			message: '#^Cannot call method getGradeLevel\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: ../tests/Controller/SchoolSubjectControllerTest.php
-
-		-
-			message: '#^Cannot call method getId\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/SchoolSubjectControllerTest.php
-
-		-
-			message: '#^Cannot call method getLabel\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolSubjectControllerTest.php
-
-		-
-			message: '#^Cannot call method getMeetingsPerWeek\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolSubjectControllerTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/SchoolSubjectControllerTest.php
-
-		-
-			message: '#^Cannot call method getPosition\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolSubjectControllerTest.php
-
-		-
-			message: '#^Cannot call method setPlanValidUntil\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolSubjectControllerTest.php
-
-		-
 			message: '#^Method App\\Tests\\Controller\\SchoolTimetableControllerTest\:\:json\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2129,12 +1907,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
-			message: '#^Cannot call method getUsername\(\) on App\\Access\\Domain\\Model\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherAreaTest.php
 
 		-
 			message: '#^Method App\\Tests\\Controller\\TeacherAttendanceControllerTest\:\:marksOn\(\) should return array\<int, App\\Entity\\LearnerMark\> but returns array\<int\|string, App\\Entity\\LearnerMark\>\.$#'
@@ -2221,7 +1993,7 @@ parameters:
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$section of method App\\CardSlip\\CardSlipBuilder\:\:forEnrollment\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#1 \$section of method App\\CardSlip\\CardSlipBuilder\:\:forEnrollment\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
@@ -2299,7 +2071,7 @@ parameters:
 			path: ../tests/Controller/TeacherClassControllerTest.php
 
 		-
-			message: '#^Cannot call method setAdviser\(\) on App\\Entity\\Section\|null\.$#'
+			message: '#^Cannot call method setAdviser\(\) on App\\Classes\\Domain\\Model\\Section\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/TeacherClassControllerTest.php
@@ -2335,7 +2107,7 @@ parameters:
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Cannot call method setTeacher\(\) on App\\Entity\\TeachingLoad\|null\.$#'
+			message: '#^Cannot call method setTeacher\(\) on App\\Classes\\Domain\\Model\\TeachingLoad\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
@@ -2347,7 +2119,7 @@ parameters:
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$load of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Entity\\TeachingLoad, App\\Entity\\TeachingLoad\|null given\.$#'
+			message: '#^Parameter \#1 \$load of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Classes\\Domain\\Model\\TeachingLoad, App\\Classes\\Domain\\Model\\TeachingLoad\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
@@ -2365,7 +2137,7 @@ parameters:
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$section of class App\\Entity\\GradeUnlock constructor expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#1 \$section of class App\\Entity\\GradeUnlock constructor expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
@@ -2401,7 +2173,7 @@ parameters:
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Parameter \#2 \$subject of class App\\Entity\\GradeUnlock constructor expects App\\Entity\\Subject, App\\Entity\\Subject\|null given\.$#'
+			message: '#^Parameter \#2 \$subject of class App\\Entity\\GradeUnlock constructor expects App\\Classes\\Domain\\Model\\Subject, App\\Classes\\Domain\\Model\\Subject\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
@@ -2425,7 +2197,7 @@ parameters:
 			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
-			message: '#^Parameter \#3 \$section of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:enroll\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#3 \$section of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:enroll\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherGradeControllerTest.php
@@ -2491,7 +2263,7 @@ parameters:
 			path: ../tests/Controller/TeacherNutritionControllerTest.php
 
 		-
-			message: '#^Parameter \#3 \$section of class App\\Entity\\Enrollment constructor expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#3 \$section of class App\\Entity\\Enrollment constructor expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherNutritionControllerTest.php
@@ -2501,24 +2273,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherNutritionControllerTest.php
-
-		-
-			message: '#^Cannot call method getGradeLevel\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherSubjectsTest.php
-
-		-
-			message: '#^Cannot call method getMeetingsPerWeek\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherSubjectsTest.php
-
-		-
-			message: '#^Method App\\Tests\\Entity\\ClassPeriodTest\:\:violations\(\) should return list\<string\> but returns array\<int, string\|Stringable\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/ClassPeriodTest.php
 
 		-
 			message: '#^Cannot call method getEnrollment\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
@@ -2713,7 +2467,7 @@ parameters:
 			path: ../tests/Entity/NutritionEntitiesTest.php
 
 		-
-			message: '#^Parameter \#1 \$section of method App\\Repository\\NutritionAssessmentRepository\:\:findFor\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#1 \$section of method App\\Repository\\NutritionAssessmentRepository\:\:findFor\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Entity/NutritionEntitiesTest.php
@@ -2741,42 +2495,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../tests/Entity/PersonalDataSheetTest.php
-
-		-
-			message: '#^Cannot call method getAdviser\(\) on App\\Entity\\Section\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/SectionTest.php
-
-		-
-			message: '#^Method App\\Tests\\Entity\\SectionTest\:\:violations\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/SectionTest.php
-
-		-
-			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:codes\(\) has parameter \$subjects with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../tests/Entity/SubjectTest.php
-
-		-
-			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:codes\(\) should return list\<string\> but returns array\<string\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/SubjectTest.php
-
-		-
-			message: '#^Method App\\Tests\\Entity\\SubjectTest\:\:violations\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Entity/SubjectTest.php
-
-		-
-			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\Subject\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Entity/SubjectTest.php
 
 		-
 			message: '#^Cannot call method getDecidedAt\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
@@ -2863,7 +2581,7 @@ parameters:
 			path: ../tests/Grading/GradeRecorderTest.php
 
 		-
-			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$load \(App\\Entity\\TeachingLoad\) does not accept App\\Entity\\TeachingLoad\|null\.$#'
+			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$load \(App\\Classes\\Domain\\Model\\TeachingLoad\) does not accept App\\Classes\\Domain\\Model\\TeachingLoad\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Grading/GradeRecorderTest.php
@@ -2989,7 +2707,7 @@ parameters:
 			path: ../tests/Nutrition/NutritionRecorderTest.php
 
 		-
-			message: '#^Property App\\Tests\\Nutrition\\NutritionRecorderTest\:\:\$artistic \(App\\Entity\\Section\) does not accept App\\Entity\\Section\|null\.$#'
+			message: '#^Property App\\Tests\\Nutrition\\NutritionRecorderTest\:\:\$artistic \(App\\Classes\\Domain\\Model\\Section\) does not accept App\\Classes\\Domain\\Model\\Section\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Nutrition/NutritionRecorderTest.php
@@ -3151,19 +2869,19 @@ parameters:
 			path: ../tests/Repository/RollCallRepositoryTest.php
 
 		-
-			message: '#^Parameter \#1 \$section of method App\\Repository\\RollCallRepository\:\:findBetween\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#1 \$section of method App\\Repository\\RollCallRepository\:\:findBetween\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Repository/RollCallRepositoryTest.php
 
 		-
-			message: '#^Parameter \#1 \$section of method App\\Repository\\RollCallRepository\:\:findOne\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#1 \$section of method App\\Repository\\RollCallRepository\:\:findOne\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../tests/Repository/RollCallRepositoryTest.php
 
 		-
-			message: '#^Parameter \#1 \$section of method App\\Repository\\Sf2SubmissionRepository\:\:findOne\(\) expects App\\Entity\\Section, App\\Entity\\Section\|null given\.$#'
+			message: '#^Parameter \#1 \$section of method App\\Repository\\Sf2SubmissionRepository\:\:findOne\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../tests/Repository/RollCallRepositoryTest.php
@@ -3209,42 +2927,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../tests/Service/IdCardPdfTest.php
-
-		-
-			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Service/InUseProtectionTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Section\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Service/InUseProtectionTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Service/InUseProtectionTest.php
-
-		-
-			message: '#^Cannot call method getStartsAt\(\) on App\\Entity\\ClassPeriod\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Service/InUseProtectionTest.php
-
-		-
-			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/InUseProtectionTest.php
-
-		-
-			message: '#^Parameter \#1 \$period of method App\\Service\\ClassPeriodManager\:\:delete\(\) expects App\\Entity\\ClassPeriod, App\\Entity\\ClassPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/InUseProtectionTest.php
 
 		-
 			message: '#^Cannot call method getFirstName\(\) on App\\Entity\\Learner\|null\.$#'
@@ -3349,91 +3031,19 @@ parameters:
 			path: ../tests/Service/Sf1WriterTest.php
 
 		-
-			message: '#^Cannot call method getMeetingsPerWeek\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Cannot call method getPosition\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Cannot call method getSemester\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Cannot call method getStrand\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Cannot call method getTrack\(\) on App\\Entity\\Subject\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Parameter \#1 \$lrn of method App\\Tests\\Service\\SubjectManagerTest\:\:learner\(\) expects string, int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\Grade\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Parameter \#1 \$subject of method App\\Service\\SubjectManager\:\:delete\(\) expects App\\Entity\\Subject, App\\Entity\\Subject\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\Grade constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Ternary operator condition is always false\.$#'
-			identifier: ternary.alwaysFalse
-			count: 1
-			path: ../tests/Service/SubjectManagerTest.php
-
-		-
-			message: '#^Cannot call method getEntries\(\) on App\\Entity\\TeachingLoad\|null\.$#'
+			message: '#^Cannot call method getEntries\(\) on App\\Classes\\Domain\\Model\\TeachingLoad\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Service/TimetableManagerTest.php
 
 		-
-			message: '#^Cannot call method getTeacher\(\) on App\\Entity\\TeachingLoad\|null\.$#'
+			message: '#^Cannot call method getTeacher\(\) on App\\Classes\\Domain\\Model\\TeachingLoad\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Service/TimetableManagerTest.php
 
 		-
-			message: '#^Parameter \#1 \$load of method App\\Tests\\Service\\TimetableManagerTest\:\:plotElsewhere\(\) expects App\\Entity\\TeachingLoad, App\\Entity\\TeachingLoad\|null given\.$#'
+			message: '#^Parameter \#1 \$load of method App\\Tests\\Service\\TimetableManagerTest\:\:plotElsewhere\(\) expects App\\Classes\\Domain\\Model\\TeachingLoad, App\\Classes\\Domain\\Model\\TeachingLoad\|null given\.$#'
 			identifier: argument.type
 			count: 3
 			path: ../tests/Service/TimetableManagerTest.php

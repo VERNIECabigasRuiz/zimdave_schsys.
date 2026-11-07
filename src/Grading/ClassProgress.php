@@ -2,8 +2,8 @@
 
 namespace App\Grading;
 
-use App\Entity\Section;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
 
 /** How far a class (a subject of a section) is with its grades for a period; $listed counts the learners who can be graded. */
 final readonly class ClassProgress

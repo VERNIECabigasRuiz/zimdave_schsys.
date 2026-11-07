@@ -6,7 +6,7 @@ use App\Core\Presentation\Form\ImageUploadFormType;
 use App\Entity\Enrollment;
 use App\Entity\Learner;
 use App\Schools\Domain\Model\School;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Form\EnrollmentRecordFormType;
 use App\Form\EnrollSectionFormType;
@@ -18,7 +18,7 @@ use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
 use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Security\Voter\LearnerVoter;
 use App\Service\EnrollmentException;
@@ -52,7 +52,7 @@ abstract class AbstractLearnerController extends AbstractController
     public function __construct(
         protected readonly SchoolYearRepositoryInterface $schoolYears,
         protected readonly SchoolRepositoryInterface $schools,
-        protected readonly SectionRepository $sections,
+        protected readonly SectionRepositoryInterface $sections,
         protected readonly EnrollmentRepository $enrollments,
         protected readonly LearnerRepository $learners,
         protected readonly TransferRequestRepository $transfers,
@@ -378,7 +378,7 @@ abstract class AbstractLearnerController extends AbstractController
     protected function handleTransfer(Request $request, LearnerScope $scope, int $id, User $user): Response
     {
         [$learner, $current] = $this->requireLearner($scope, $id, false);
-        $to = $this->sections->find($request->getPayload()->getInt('section'));
+        $to = $this->sections->findById($request->getPayload()->getInt('section'));
         if (null === $to || $to->getSchool()->getId() === $scope->school->getId()
             || $to->getSchoolYear()->getId() !== $scope->schoolYear->getId()) {
             throw $this->createNotFoundException('This section is not at another school this school year.');
@@ -446,7 +446,7 @@ abstract class AbstractLearnerController extends AbstractController
     /** A section of the page's school this school year (the adviser's own, on their pages). */
     protected function requireSection(LearnerScope $scope, int $id): Section
     {
-        $section = $this->sections->find($id);
+        $section = $this->sections->findById($id);
         if (null === $section || $section->getSchool()->getId() !== $scope->school->getId()
             || $section->getSchoolYear()->getId() !== $scope->schoolYear->getId()
             || (null !== $scope->fixedSection && $section->getId() !== $scope->fixedSection->getId())) {

@@ -3,13 +3,13 @@
 namespace App\CardSlip;
 
 use App\Schools\Domain\Model\GradingPeriod;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Grading\GeneralAverage;
 use App\Grading\GridColumn;
 use App\Grading\SectionGradeGrid;
 use App\Repository\CardSlipCommentRepository;
 use App\Repository\GradeLockRepository;
-use App\Repository\SubjectRepository;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 
 /**
  * Assembles each learner's card slip for a term from the section's grade grid, the term's
@@ -19,7 +19,7 @@ class CardSlipBuilder
 {
     public function __construct(
         private readonly SectionGradeGrid $grid,
-        private readonly SubjectRepository $subjects,
+        private readonly SubjectRepositoryInterface $subjects,
         private readonly TermAttendance $attendance,
         private readonly CardSlipCommentRepository $comments,
         private readonly GradeLockRepository $locks,

@@ -4,12 +4,12 @@ namespace App\Controller;
 
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\TransferRequest;
 use App\Access\Domain\Model\User;
 use App\Form\EnrollSectionFormType;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Security\Voter\LearnerVoter;
 use App\Schools\Presentation\Security\SchoolVoter;
@@ -40,7 +40,7 @@ class SchoolTransferController extends AbstractController
 
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
-        private readonly SectionRepository $sections,
+        private readonly SectionRepositoryInterface $sections,
         private readonly TransferRequestRepository $requests,
         private readonly LearnerLookup $lookup,
         private readonly TransferManager $transfers,

@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Nutrition\NutritionPeriod;
 use App\Nutrition\NutritionRecorder;
 use App\Nutrition\NutritionRules;
@@ -10,7 +10,7 @@ use App\Nutrition\Sf8Report;
 use App\Nutrition\Sf8ReportBuilder;
 use App\Nutrition\Sf8Writer;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Security\Voter\NutritionVoter;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +29,7 @@ abstract class AbstractNutritionController extends AbstractController
         protected readonly NutritionRules $rules,
         protected readonly NutritionRecorder $recorder,
         protected readonly SchoolYearRepositoryInterface $schoolYears,
-        protected readonly SectionRepository $sections,
+        protected readonly SectionRepositoryInterface $sections,
     ) {
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Domain\Model\Section;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;

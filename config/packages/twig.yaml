@@ -5,6 +5,7 @@ twig:
         '%kernel.project_dir%/src/Access/Presentation/templates': Access
         '%kernel.project_dir%/src/Billing/Presentation/templates': Billing
         '%kernel.project_dir%/src/Schools/Presentation/templates': Schools
+        '%kernel.project_dir%/src/Classes/Presentation/templates': Classes
 
 when@test:
     twig:

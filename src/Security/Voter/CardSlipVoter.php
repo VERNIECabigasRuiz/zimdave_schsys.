@@ -3,7 +3,7 @@
 namespace App\Security\Voter;
 
 use App\Schools\Domain\Model\School;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;

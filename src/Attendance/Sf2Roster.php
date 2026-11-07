@@ -3,7 +3,7 @@
 namespace App\Attendance;
 
 use App\Entity\Enrollment;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Repository\EnrollmentRepository;

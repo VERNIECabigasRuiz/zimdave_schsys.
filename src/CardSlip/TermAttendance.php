@@ -7,7 +7,7 @@ use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Roster;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Entity\LearnerMark;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Repository\EnrollmentRepository;
 use App\Repository\RollCallRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;

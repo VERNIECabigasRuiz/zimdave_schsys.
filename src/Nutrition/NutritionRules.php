@@ -2,7 +2,7 @@
 
 namespace App\Nutrition;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Repository\NutritionAssessmentRepository;
 use App\Repository\Sf8SubmissionRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;

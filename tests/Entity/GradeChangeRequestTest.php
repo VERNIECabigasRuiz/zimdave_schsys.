@@ -9,8 +9,8 @@ use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Learner;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
 use PHPUnit\Framework\TestCase;
 

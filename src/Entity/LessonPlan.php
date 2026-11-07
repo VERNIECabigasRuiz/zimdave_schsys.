@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Repository\LessonPlanRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

@@ -150,6 +150,21 @@ class DoctrineSchoolAssignmentRepository extends ServiceEntityRepository impleme
             ->getResult();
     }
 
+    public function findAssignedTeachers(School $school, SchoolYear $schoolYear): array
+    {
+        /** @var list<User> */
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u')
+            ->innerJoin(SchoolAssignment::class, 'a', 'WITH', 'a.user = u')
+            ->andWhere('a.school = :school')->setParameter('school', $school)
+            ->andWhere('a.schoolYear = :sy')->setParameter('sy', $schoolYear)
+            ->andWhere('a.role = :role')->setParameter('role', User::ROLE_TEACHER)
+            ->orderBy('u.fullName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findTeachersToBringBack(School $school, SchoolYear $previous, SchoolYear $current): array
     {
         /** @var list<SchoolAssignment> */

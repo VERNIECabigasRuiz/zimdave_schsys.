@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\NutritionAssessment;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Nutrition\NutritionPeriod;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

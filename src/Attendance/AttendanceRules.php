@@ -3,7 +3,7 @@
 namespace App\Attendance;
 
 use App\Schools\Domain\Service\Calendar\SchoolCalendar;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Repository\RollCallRepository;
 use App\Repository\Sf2SubmissionRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;

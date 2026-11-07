@@ -5,8 +5,8 @@ namespace App\Grading;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Repository\SectionRepository;
-use App\Repository\SubjectRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 
 /**
  * The school's learners who failed the general average of a term, from the same grade grid and average as the
@@ -16,8 +16,8 @@ use App\Repository\SubjectRepository;
 class FailingLearners
 {
     public function __construct(
-        private readonly SectionRepository $sections,
-        private readonly SubjectRepository $subjects,
+        private readonly SectionRepositoryInterface $sections,
+        private readonly SubjectRepositoryInterface $subjects,
         private readonly SectionGradeGrid $grid,
     ) {
     }

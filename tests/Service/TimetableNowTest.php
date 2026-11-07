@@ -2,20 +2,20 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\ClassPeriod;
+use App\Classes\Domain\Model\ClassPeriod;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolType;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
-use App\Entity\Weekday;
-use App\Repository\ClassPeriodRepository;
-use App\Repository\ScheduleEntryRepository;
+use App\Classes\Domain\Model\Weekday;
+use App\Classes\Domain\Model\Repository\ClassPeriodRepositoryInterface;
+use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Repository\SubjectRepository;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Service\TimetableManager;
@@ -53,13 +53,13 @@ class TimetableNowTest extends KernelTestCase
         $c = static::getContainer();
         $this->em = $c->get(EntityManagerInterface::class);
         $this->manager = new TimetableManager(
-            $this->em, $c->get(ManagerRegistry::class), $c->get(TeachingLoadRepository::class), $c->get(ScheduleEntryRepository::class),
-            $c->get(SubjectRepository::class), $c->get(ClassPeriodRepository::class), $c->get(SchoolAssignmentRepositoryInterface::class),
+            $this->em, $c->get(ManagerRegistry::class), $c->get(TeachingLoadRepositoryInterface::class), $c->get(ScheduleEntryRepositoryInterface::class),
+            $c->get(SubjectRepositoryInterface::class), $c->get(ClassPeriodRepositoryInterface::class), $c->get(SchoolAssignmentRepositoryInterface::class),
             $c->get(PlanLimits::class), $c->get(ActivityLoggerInterface::class), $c->get(LockFactory::class),
         );
         $this->query = new TimetableQuery(
-            $c->get(ScheduleEntryRepository::class), $c->get(TeachingLoadRepository::class), $c->get(SubjectRepository::class),
-            $c->get(ClassPeriodRepository::class), $c->get(SchoolAssignmentRepositoryInterface::class),
+            $c->get(ScheduleEntryRepositoryInterface::class), $c->get(TeachingLoadRepositoryInterface::class), $c->get(SubjectRepositoryInterface::class),
+            $c->get(ClassPeriodRepositoryInterface::class), $c->get(SchoolAssignmentRepositoryInterface::class),
         );
         $this->clearSchoolData();
         $this->sy = $this->schoolYear(2026, current: true);
@@ -164,7 +164,7 @@ class TimetableNowTest extends KernelTestCase
 
     public function testNoPeriods(): void
     {
-        $this->em->createQuery('DELETE FROM '.\App\Entity\ScheduleEntry::class)->execute();
+        $this->em->createQuery('DELETE FROM '.\App\Classes\Domain\Model\ScheduleEntry::class)->execute();
         $this->em->createQuery('DELETE FROM '.ClassPeriod::class)->execute();
 
         self::assertSame('no_periods', $this->query->now($this->school, $this->sy, $this->at('2026-10-19 08:00'))['state']);
@@ -204,7 +204,7 @@ class TimetableNowTest extends KernelTestCase
         self::assertSame('break', $now['state']);
         self::assertSame('Science', $now['next']['subjectName']);
 
-        $this->em->createQuery('DELETE FROM '.\App\Entity\ScheduleEntry::class.' e WHERE e.period = :p')->setParameter('p', $this->p1)->execute();
+        $this->em->createQuery('DELETE FROM '.\App\Classes\Domain\Model\ScheduleEntry::class.' e WHERE e.period = :p')->setParameter('p', $this->p1)->execute();
         $free = $this->query->nowForTeacher($this->santos, $this->sy, $this->at('2026-10-19 08:00'));
         self::assertSame('free', $free['state']);
         self::assertNull($free['current']);
@@ -235,7 +235,7 @@ class TimetableNowTest extends KernelTestCase
     public function testEntryQueriesLoadTheirRelationsInOneGo(): void
     {
         $this->manager->plot($this->rizal, $this->math7, Weekday::Tuesday, $this->p2);
-        $repository = static::getContainer()->get(ScheduleEntryRepository::class);
+        $repository = static::getContainer()->get(ScheduleEntryRepositoryInterface::class);
         $em = $this->em;
         // Each query runs on an empty entity manager, so nothing is already loaded by an earlier one
         $check = function (string $method, callable $query) use ($em): array {

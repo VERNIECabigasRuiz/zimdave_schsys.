@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Form\NutritionSheet;
 use App\Form\NutritionSheetFormType;

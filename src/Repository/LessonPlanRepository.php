@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\LessonPlan;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;

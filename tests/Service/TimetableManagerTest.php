@@ -3,22 +3,22 @@
 namespace App\Tests\Service;
 
 use App\Core\Domain\Model\ActivityLog;
-use App\Entity\ClassPeriod;
+use App\Classes\Domain\Model\ClassPeriod;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\ScheduleEntry;
+use App\Classes\Domain\Model\ScheduleEntry;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolType;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
-use App\Entity\Subject;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
-use App\Entity\Weekday;
-use App\Repository\ClassPeriodRepository;
-use App\Repository\ScheduleEntryRepository;
+use App\Classes\Domain\Model\Weekday;
+use App\Classes\Domain\Model\Repository\ClassPeriodRepositoryInterface;
+use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Repository\SubjectRepository;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Schools\Domain\Exception\PlanLimitException;
 use App\Schools\Domain\Service\Plan\PlanLimits;
@@ -59,7 +59,7 @@ class TimetableManagerTest extends KernelTestCase
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
         $container = static::getContainer();
         // not used by a controller yet, so the test container may have removed it
-        $this->manager = $container->has(TimetableManager::class) ? $container->get(TimetableManager::class) : $this->build($container->get(ScheduleEntryRepository::class));
+        $this->manager = $container->has(TimetableManager::class) ? $container->get(TimetableManager::class) : $this->build($container->get(ScheduleEntryRepositoryInterface::class));
         $this->clearSchoolData();
         $this->sy = $this->schoolYear(2026, current: true);
         $this->school = $this->school('303456', 'Pagsabungan NHS', planValidUntil: new \DateTimeImmutable('2027-04-30'));
@@ -76,17 +76,17 @@ class TimetableManagerTest extends KernelTestCase
         $this->math8 = $this->subject(GradeLevel::Grade8, 'MATH8', 'Mathematics');
     }
 
-    private function build(ScheduleEntryRepository $entries): TimetableManager
+    private function build(ScheduleEntryRepositoryInterface $entries): TimetableManager
     {
         $container = static::getContainer();
 
         return new TimetableManager(
             $this->em,
             $container->get(ManagerRegistry::class),
-            $container->get(TeachingLoadRepository::class),
+            $container->get(TeachingLoadRepositoryInterface::class),
             $entries,
-            $container->get(SubjectRepository::class),
-            $container->get(ClassPeriodRepository::class),
+            $container->get(SubjectRepositoryInterface::class),
+            $container->get(ClassPeriodRepositoryInterface::class),
             $container->get(SchoolAssignmentRepositoryInterface::class),
             $container->get(PlanLimits::class),
             $container->get(ActivityLoggerInterface::class),
@@ -403,7 +403,7 @@ class TimetableManagerTest extends KernelTestCase
         $this->manager->setTeacher($this->rizal, $this->math7, $this->reyes);
         $this->manager->plot($this->rizal, $this->science7, Weekday::Monday, $this->p1);
 
-        $entries = $this->createStub(ScheduleEntryRepository::class);
+        $entries = $this->createStub(ScheduleEntryRepositoryInterface::class);
         $entries->method('findSectionClash')->willReturn(null);
         $entries->method('findTeacherClash')->willReturn(null);
         $manager = $this->build($entries);

@@ -3,8 +3,8 @@
 namespace App\Grading;
 
 use App\Schools\Domain\Model\School;
-use App\Entity\Section;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
 use App\Service\LearnerLock;
 use Symfony\Component\Lock\LockFactory;
 

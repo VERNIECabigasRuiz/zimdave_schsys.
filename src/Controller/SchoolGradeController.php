@@ -7,8 +7,8 @@ use App\CardSlip\CardSlipPdf;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
 use App\Form\GradeLockFormType;
 use App\Grading\ClassProgress;
@@ -22,8 +22,8 @@ use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeLockRepository;
 use App\Repository\GradeOpeningRepository;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SectionRepository;
-use App\Repository\SubjectRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 use App\Security\Voter\CardSlipVoter;
 use App\Security\Voter\GradeVoter;
 use App\Schools\Presentation\Security\SchoolVoter;
@@ -49,8 +49,8 @@ class SchoolGradeController extends AbstractController
 {
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
-        private readonly SectionRepository $sections,
-        private readonly SubjectRepository $subjects,
+        private readonly SectionRepositoryInterface $sections,
+        private readonly SubjectRepositoryInterface $subjects,
         private readonly GradeLockRepository $locks,
         private readonly GradeOpeningRepository $openings,
         private readonly GradeRules $rules,
@@ -283,7 +283,7 @@ class SchoolGradeController extends AbstractController
 
     private function requireSection(School $school, int $id): Section
     {
-        $section = $this->sections->find($id);
+        $section = $this->sections->findById($id);
         if (null === $section || $section->getSchool()->getId() !== $school->getId()) {
             throw $this->createNotFoundException();
         }
@@ -295,7 +295,7 @@ class SchoolGradeController extends AbstractController
     private function requireClass(School $school, int $sectionId, int $subjectId): array
     {
         $section = $this->requireSection($school, $sectionId);
-        $subject = $this->subjects->find($subjectId);
+        $subject = $this->subjects->findById($subjectId);
         if (null === $subject || !\in_array($subject, $this->subjects->findForSection($section), true) || !$this->rules->isGradableSubject($section, $subject)) {
             throw $this->createNotFoundException();
         }

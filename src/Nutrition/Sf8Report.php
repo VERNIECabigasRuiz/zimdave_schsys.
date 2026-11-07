@@ -2,7 +2,7 @@
 
 namespace App\Nutrition;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\Sf8Submission;
 
 /** Everything a section's SF8 (Report on Nutritional Status) shows for one weighing period. */

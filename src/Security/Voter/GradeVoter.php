@@ -4,8 +4,8 @@ namespace App\Security\Voter;
 
 use App\Entity\GradeChangeRequest;
 use App\Schools\Domain\Model\School;
-use App\Entity\Section;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Grading\GradeRules;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;

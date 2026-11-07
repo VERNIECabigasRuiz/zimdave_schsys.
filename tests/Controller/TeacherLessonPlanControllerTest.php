@@ -6,11 +6,11 @@ use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LessonPlan;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\ScheduleEntry;
-use App\Entity\Subject;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\ScheduleEntry;
+use App\Classes\Domain\Model\Subject;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
-use App\Entity\Weekday;
+use App\Classes\Domain\Model\Weekday;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 

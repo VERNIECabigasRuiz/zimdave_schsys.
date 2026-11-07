@@ -9,7 +9,7 @@ use App\Core\Application\Bus\Result;
 use App\Core\Application\Bus\UseCaseBusInterface;
 use App\Core\Domain\Model\ActivityLog;
 use App\Entity\RollCall;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Schools\Application\UseCase\Command\AddDaysOffCommand;
 use App\Schools\Application\UseCase\Command\RemoveDayOffCommand;
 use App\Schools\Domain\Exception\DayOffNotFoundException;

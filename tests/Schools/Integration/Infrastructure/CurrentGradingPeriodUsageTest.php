@@ -7,7 +7,7 @@ namespace App\Tests\Schools\Integration\Infrastructure;
 use App\Access\Domain\Model\User;
 use App\Entity\Grade;
 use App\Entity\GradeLock;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Subject;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\GradingSystem;

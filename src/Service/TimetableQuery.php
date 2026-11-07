@@ -2,18 +2,18 @@
 
 namespace App\Service;
 
-use App\Entity\ClassPeriod;
-use App\Entity\ScheduleEntry;
+use App\Classes\Domain\Model\ClassPeriod;
+use App\Classes\Domain\Model\ScheduleEntry;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
-use App\Entity\Weekday;
-use App\Repository\ClassPeriodRepository;
-use App\Repository\ScheduleEntryRepository;
+use App\Classes\Domain\Model\Weekday;
+use App\Classes\Domain\Model\Repository\ClassPeriodRepositoryInterface;
+use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Repository\SubjectRepository;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 
 /**
  * Read side of the timetable: the data the timetable pages render. Never writes.
@@ -21,10 +21,10 @@ use App\Repository\TeachingLoadRepository;
 class TimetableQuery
 {
     public function __construct(
-        private readonly ScheduleEntryRepository $entries,
-        private readonly TeachingLoadRepository $loads,
-        private readonly SubjectRepository $subjects,
-        private readonly ClassPeriodRepository $periods,
+        private readonly ScheduleEntryRepositoryInterface $entries,
+        private readonly TeachingLoadRepositoryInterface $loads,
+        private readonly SubjectRepositoryInterface $subjects,
+        private readonly ClassPeriodRepositoryInterface $periods,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
     ) {
     }

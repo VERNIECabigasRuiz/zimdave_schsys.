@@ -9,7 +9,7 @@ use App\CardSlip\CardSlipComments;
 use App\CardSlip\CardSlipLine;
 use App\CardSlip\CardSlipPdf;
 use App\Schools\Domain\Model\GradingPeriod;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Form\CardSlipCommentsData;
 use App\Form\CardSlipCommentsFormType;
@@ -17,7 +17,7 @@ use App\Grading\GradeRules;
 use App\Grading\SectionGradeGrid;
 use App\Repository\GradeLockRepository;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Security\Voter\CardSlipVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,7 +43,7 @@ class TeacherCardSlipController extends AbstractController
 
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
-        private readonly SectionRepository $sections,
+        private readonly SectionRepositoryInterface $sections,
         private readonly EntityManagerInterface $entityManager,
         private readonly CardSlipBuilder $builder,
         private readonly CardSlipCommentRecorder $recorder,

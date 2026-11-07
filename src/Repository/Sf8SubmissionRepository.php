@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\Sf8Submission;
 use App\Nutrition\NutritionPeriod;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

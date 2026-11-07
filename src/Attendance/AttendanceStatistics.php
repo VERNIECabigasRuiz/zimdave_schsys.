@@ -8,7 +8,7 @@ use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Sf2Submission;
 use App\Repository\RollCallRepository;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Repository\Sf2SubmissionRepository;
 
 /** The school's attendance at a glance, for the principal: today, a month, and who needs a follow-up. */
@@ -18,7 +18,7 @@ class AttendanceStatistics
     private const DUE_DAY = 5;
 
     public function __construct(
-        private readonly SectionRepository $sections,
+        private readonly SectionRepositoryInterface $sections,
         private readonly RollCallRepository $rollCalls,
         private readonly Sf2SubmissionRepository $submissions,
         private readonly Sf2Roster $roster,
@@ -80,7 +80,7 @@ class AttendanceStatistics
     /**
      * @param list<SectionMonth> $months
      *
-     * @return list<array{section: \App\Entity\Section, row: Sf2Row}> learners absent 5 school days in a row
+     * @return list<array{section: \App\Classes\Domain\Model\Section, row: Sf2Row}> learners absent 5 school days in a row
      */
     public function followUps(array $months): array
     {

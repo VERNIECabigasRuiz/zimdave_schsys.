@@ -6,7 +6,7 @@ use App\Entity\Enrollment;
 use App\Entity\Learner;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

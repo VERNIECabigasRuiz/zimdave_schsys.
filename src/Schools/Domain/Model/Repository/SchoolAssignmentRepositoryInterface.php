@@ -42,6 +42,13 @@ interface SchoolAssignmentRepositoryInterface
     public function findTeacherAssignments(School $school, SchoolYear $schoolYear): array;
 
     /**
+     * Accounts assigned to $school as teachers in $schoolYear, by name.
+     *
+     * @return list<User>
+     */
+    public function findAssignedTeachers(School $school, SchoolYear $schoolYear): array;
+
+    /**
      * Last year's teachers of $school who are not yet teachers of it in $current, by name.
      *
      * @return list<SchoolAssignment>

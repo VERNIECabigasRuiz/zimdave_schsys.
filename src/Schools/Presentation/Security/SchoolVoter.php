@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Schools\Presentation\Security;
 
 use App\Access\Domain\Model\User;
+use App\Schools\Application\Api\SchoolDirectoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Schools\Domain\Model\School;
@@ -20,7 +21,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  */
 final class SchoolVoter extends Voter
 {
-    public const MANAGE = 'SCHOOL_MANAGE';
+    public const MANAGE = SchoolDirectoryInterface::MANAGE;
 
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,

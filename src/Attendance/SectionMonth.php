@@ -2,7 +2,7 @@
 
 namespace App\Attendance;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 
 /** A section's month, for the principal's overview. */
 final readonly class SectionMonth

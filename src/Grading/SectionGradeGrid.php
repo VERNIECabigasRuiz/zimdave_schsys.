@@ -5,12 +5,12 @@ namespace App\Grading;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
 use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
-use App\Repository\SubjectRepository;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
 /**
@@ -21,8 +21,8 @@ use App\Core\Domain\Service\Clock\SchoolClockInterface;
 class SectionGradeGrid
 {
     public function __construct(
-        private readonly SubjectRepository $subjects,
-        private readonly TeachingLoadRepository $loads,
+        private readonly SubjectRepositoryInterface $subjects,
+        private readonly TeachingLoadRepositoryInterface $loads,
         private readonly GradeRepository $grades,
         private readonly GradeRules $rules,
         private readonly GradeOpeningRepository $openings,

@@ -5,8 +5,8 @@ namespace App\Repository;
 use App\Entity\GradeUnlock;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
-use App\Entity\Section;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

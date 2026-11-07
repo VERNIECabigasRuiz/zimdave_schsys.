@@ -11,9 +11,9 @@ use Doctrine\ORM\Events;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\SchoolAssignment;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
-use App\Entity\Subject;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 
 class TeacherSchoolControllerTest extends AdminTestCase

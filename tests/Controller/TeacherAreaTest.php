@@ -93,46 +93,12 @@ class TeacherAreaTest extends AdminTestCase
         self::assertSelectorTextContains('main', 'No advisory class this S.Y.');
         self::assertSelectorNotExists('a:contains("Create my section")');
 
-        $section = (new \App\Entity\Section($this->school, $this->sy))->setGradeLevel(\App\Schools\Domain\Model\GradeLevel::Grade7)->setName('Sampaguita')->setAdviser($this->ana);
+        $section = (new \App\Classes\Domain\Model\Section($this->school, $this->sy))->setGradeLevel(\App\Schools\Domain\Model\GradeLevel::Grade7)->setName('Sampaguita')->setAdviser($this->ana);
         $this->em->persist($section);
         $this->em->flush();
 
         $this->client->request('GET', '/teacher');
         self::assertSelectorTextContains('main', 'Adviser of Grade 7 – Sampaguita');
-    }
-
-    public function testBasicPlanTeacherCannotCreateOwnSection(): void
-    {
-        $this->assign($this->school, $this->sy, $this->ana, User::ROLE_TEACHER);
-
-        $this->client->request('GET', '/teacher/section');
-
-        self::assertResponseStatusCodeSame(403);
-    }
-
-    public function testIndividualPlanTeacherCreatesOneOwnSection(): void
-    {
-        $own = $this->school('303999', 'Ana Home Class', plan: 'Individual', planValidUntil: new \DateTimeImmutable('2027-04-30'));
-        $this->assign($own, $this->sy, $this->ana, User::ROLE_TEACHER);
-
-        $this->client->request('GET', '/teacher');
-        $this->client->clickLink('Create my section');
-        $this->client->submitForm('Create my section', [
-            'section_form[gradeLevel]' => '8',
-            'section_form[name]' => 'Narra',
-        ]);
-
-        self::assertResponseRedirects('/teacher');
-        $this->em->clear();
-        $sections = $this->em->getRepository(\App\Entity\Section::class)->findAll();
-        self::assertCount(1, $sections);
-        self::assertSame(['Grade 8 – Narra', 'ana', $own->getId()], [$sections[0]->getLabel(), $sections[0]->getAdviser()->getUsername(), $sections[0]->getSchool()->getId()]);
-        self::assertSelectorNotExists('input[name="section_form[adviser]"]');
-
-        $this->client->request('GET', '/teacher/section');
-        self::assertResponseRedirects('/teacher');
-        $this->client->followRedirect();
-        self::assertSelectorTextContains('main', 'You already advise Grade 8 – Narra.');
     }
 
     public function testIndividualPlanTeacherHasNoTimetableExtras(): void

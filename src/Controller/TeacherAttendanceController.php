@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Attendance\AttendanceException;
 use App\Attendance\RosterEntry;
 use App\Entity\LearnerMark;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Form\RollCallFormType;
 use App\Form\Sf2SubmitFormType;

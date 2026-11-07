@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\GradeChangeRequest;
 use App\Schools\Domain\Model\GradingPeriod;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Form\GradeChange;
 use App\Form\GradeChangeFormType;
@@ -21,7 +21,7 @@ use App\Grading\SheetLearner;
 use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeRepository;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 use App\Security\Voter\GradeVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -44,7 +44,7 @@ class TeacherGradeController extends AbstractController
 {
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
-        private readonly TeachingLoadRepository $loads,
+        private readonly TeachingLoadRepositoryInterface $loads,
         private readonly GradeRepository $grades,
         private readonly GradeRules $rules,
         private readonly GradeRecorder $recorder,
@@ -231,7 +231,7 @@ class TeacherGradeController extends AbstractController
     /** @return array{TeachingLoad, GradingPeriod} */
     private function findClass(int $loadId, int $periodId): array
     {
-        $load = $this->loads->find($loadId);
+        $load = $this->loads->findById($loadId);
         $period = $this->entityManager->find(GradingPeriod::class, $periodId);
         if (null === $load || null === $period || $period->getSchoolYear() !== $load->getSection()->getSchoolYear()) {
             throw $this->createNotFoundException('No such class or grading period.');

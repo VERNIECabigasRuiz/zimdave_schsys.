@@ -6,7 +6,7 @@ use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Subject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

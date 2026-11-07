@@ -44,6 +44,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Schools/Domain'
                 prefix: 'App\Schools\Domain'
                 alias: Schools
+            Classes:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Classes/Domain'
+                prefix: 'App\Classes\Domain'
+                alias: Classes
 
 when@test:
     doctrine:

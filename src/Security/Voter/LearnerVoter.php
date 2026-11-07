@@ -5,7 +5,7 @@ namespace App\Security\Voter;
 use App\Entity\Learner;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\TransferRequest;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;

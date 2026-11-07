@@ -11,7 +11,7 @@ use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Twig\Environment;

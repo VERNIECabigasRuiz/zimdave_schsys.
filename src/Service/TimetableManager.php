@@ -5,19 +5,19 @@ namespace App\Service;
 use App\Schools\Domain\Exception\PlanLimitException;
 use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Entity\ClassPeriod;
-use App\Entity\ScheduleEntry;
+use App\Classes\Domain\Model\ClassPeriod;
+use App\Classes\Domain\Model\ScheduleEntry;
 use App\Schools\Domain\Model\School;
-use App\Entity\Section;
-use App\Entity\Subject;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
-use App\Entity\Weekday;
-use App\Repository\ClassPeriodRepository;
-use App\Repository\ScheduleEntryRepository;
+use App\Classes\Domain\Model\Weekday;
+use App\Classes\Domain\Model\Repository\ClassPeriodRepositoryInterface;
+use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Repository\SubjectRepository;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -35,10 +35,10 @@ class TimetableManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ManagerRegistry $registry,
-        private readonly TeachingLoadRepository $loads,
-        private readonly ScheduleEntryRepository $entries,
-        private readonly SubjectRepository $subjects,
-        private readonly ClassPeriodRepository $periods,
+        private readonly TeachingLoadRepositoryInterface $loads,
+        private readonly ScheduleEntryRepositoryInterface $entries,
+        private readonly SubjectRepositoryInterface $subjects,
+        private readonly ClassPeriodRepositoryInterface $periods,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly PlanLimits $planLimits,
         private readonly ActivityLoggerInterface $activityLogger,

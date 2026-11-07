@@ -5,7 +5,7 @@ namespace App\Attendance;
 use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\Sf2Submission;
 use App\Access\Domain\Model\User;
 use App\Repository\RollCallRepository;

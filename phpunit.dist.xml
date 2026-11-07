@@ -39,7 +39,6 @@
             <directory>tests/Attendance</directory>
             <directory>tests/CardSlip</directory>
             <directory>tests/Controller</directory>
-            <directory>tests/Data</directory>
             <directory>tests/Entity</directory>
             <directory>tests/Grading</directory>
             <directory>tests/LessonPlan</directory>
@@ -63,6 +62,7 @@
             <directory>src/Access</directory>
             <directory>src/Billing</directory>
             <directory>src/Schools</directory>
+            <directory>src/Classes</directory>
         </include>
 
         <deprecationTrigger>

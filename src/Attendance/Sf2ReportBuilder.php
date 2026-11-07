@@ -5,7 +5,7 @@ namespace App\Attendance;
 use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Repository\RollCallRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;

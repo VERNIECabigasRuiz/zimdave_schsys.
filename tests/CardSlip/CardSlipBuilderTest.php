@@ -17,10 +17,10 @@ use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Subject;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Access\Domain\Model\User;
@@ -31,7 +31,7 @@ use App\Repository\EnrollmentRepository;
 use App\Repository\GradeLockRepository;
 use App\Repository\RollCallRepository;
 use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
-use App\Repository\SubjectRepository;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
@@ -356,7 +356,7 @@ class CardSlipBuilderTest extends KernelTestCase
 
         return new CardSlipBuilder(
             $c->get(SectionGradeGrid::class),
-            $c->get(SubjectRepository::class),
+            $c->get(SubjectRepositoryInterface::class),
             new TermAttendance(
                 new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class)),
                 new SchoolCalendar($c->get(SchoolDayOffRepositoryInterface::class)),

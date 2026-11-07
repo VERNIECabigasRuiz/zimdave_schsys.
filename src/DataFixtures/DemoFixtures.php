@@ -6,7 +6,7 @@ namespace App\DataFixtures;
 
 use App\Attendance\AttendanceRecorder;
 use App\Schools\Domain\Service\Calendar\SchoolCalendar;
-use App\Entity\ClassPeriod;
+use App\Classes\Domain\Model\ClassPeriod;
 use App\Schools\Domain\Model\Division;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Learner;
@@ -15,25 +15,25 @@ use App\Billing\Domain\Model\Plan;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolType;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\SexAtBirth;
-use App\Entity\Subject;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\Subject;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
-use App\Entity\Weekday;
+use App\Classes\Domain\Model\Weekday;
 use App\Grading\GradeRecorder;
 use App\LessonPlan\LessonWeek;
 use App\Repository\EnrollmentRepository;
 use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\SubjectRepository;
-use App\Service\ClassPeriodManager;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
+use App\Classes\Application\Service\ClassPeriodManager;
 use App\Service\LearnerEnrollment;
 use App\Schools\Application\Service\PrincipalAssigner;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Schools\Application\Service\SchoolTeacherManager;
-use App\Service\SectionManager;
-use App\Service\SubjectManager;
+use App\Classes\Application\Service\SectionManager;
+use App\Classes\Application\Service\SubjectManager;
 use App\Service\TimetableException;
 use App\Service\TimetableManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -79,7 +79,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         private readonly SchoolClockInterface $clock,
         private readonly SchoolRepositoryInterface $schools,
         private readonly SchoolYearRepositoryInterface $schoolYears,
-        private readonly SubjectRepository $subjects,
+        private readonly SubjectRepositoryInterface $subjects,
         private readonly EnrollmentRepository $enrollments,
         private readonly SchoolTeacherManager $teachers,
         private readonly PrincipalAssigner $principals,
@@ -240,7 +240,8 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
                 ->setPosition($i + 1)
                 ->setStartsAt($start->modify(\sprintf('+%d hours', $i)))
                 ->setEndsAt($start->modify(\sprintf('+%d hours', $i + 1)));
-            $this->periods->save($period);
+            $this->periods->create($period);
+            $this->entityManager->flush();
             $periods[] = $period;
         }
 
@@ -257,7 +258,8 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
             ->setGradeLevel($grade)
             ->setName($name . ' ' . $grade->value)
             ->setAdviser($adviser);
-        $this->sections->save($section);
+        $this->sections->create($section);
+        $this->entityManager->flush();
 
         return $section;
     }

@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Enrollment;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 
 /** Which learners a Learners page manages, and where its links and layout point. */
 final readonly class LearnerScope

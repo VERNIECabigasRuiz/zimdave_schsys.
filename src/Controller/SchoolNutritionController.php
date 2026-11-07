@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Schools\Domain\Model\School;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Nutrition\NutritionException;
 use App\Nutrition\NutritionPeriod;
@@ -100,7 +100,7 @@ class SchoolNutritionController extends AbstractNutritionController
 
     private function requireSection(School $school, int $id): Section
     {
-        $section = $this->sections->find($id);
+        $section = $this->sections->findById($id);
         if (null === $section || $section->getSchool()->getId() !== $school->getId()) {
             throw $this->createNotFoundException();
         }

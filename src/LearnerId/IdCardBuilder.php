@@ -4,7 +4,7 @@ namespace App\LearnerId;
 
 use App\Entity\Enrollment;
 use App\Entity\Learner;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\Sf1Remark;
 use App\Repository\EnrollmentRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;

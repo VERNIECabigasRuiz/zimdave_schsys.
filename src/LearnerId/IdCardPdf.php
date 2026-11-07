@@ -3,7 +3,7 @@
 namespace App\LearnerId;
 
 use App\Core\Domain\Service\Pdf\PdfRendererInterface;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use Twig\Environment;
 
 /** Learner ID cards (CR80, 54 × 86 mm) as a PDF, on A4 sheets or card-sized pages. */

@@ -8,9 +8,9 @@ use App\Schools\Domain\Model\SchoolYear;
 use App\Repository\GradeLockRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
-use App\Repository\SectionRepository;
-use App\Repository\SubjectRepository;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 
 /**
  * Every gradable class of a school for one period, with its teacher, progress and status. The school's
@@ -19,9 +19,9 @@ use App\Repository\TeachingLoadRepository;
 class SchoolGradeOverview
 {
     public function __construct(
-        private readonly SectionRepository $sections,
-        private readonly SubjectRepository $subjects,
-        private readonly TeachingLoadRepository $loads,
+        private readonly SectionRepositoryInterface $sections,
+        private readonly SubjectRepositoryInterface $subjects,
+        private readonly TeachingLoadRepositoryInterface $loads,
         private readonly GradeRepository $grades,
         private readonly GradeLockRepository $locks,
         private readonly GradeUnlockRepository $unlocks,

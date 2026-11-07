@@ -7,12 +7,12 @@ use App\Entity\NutritionAssessment;
 use App\Entity\NutritionMeasurement;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\Sf8Submission;
 use App\Access\Domain\Model\User;
 use App\Repository\NutritionAssessmentRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Repository\SectionRepository;
+use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Repository\Sf8SubmissionRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
@@ -30,7 +30,7 @@ class Sf8ReportBuilder
         private readonly NutritionClassifier $classifier,
         private readonly NutritionAssessmentRepository $assessments,
         private readonly Sf8SubmissionRepository $submissions,
-        private readonly SectionRepository $sections,
+        private readonly SectionRepositoryInterface $sections,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly SchoolClockInterface $clock,
     ) {

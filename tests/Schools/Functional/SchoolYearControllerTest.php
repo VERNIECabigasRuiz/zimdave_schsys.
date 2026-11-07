@@ -10,7 +10,7 @@ use App\Entity\GradeOpening;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\GradingSystem;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Subject;
+use App\Classes\Domain\Model\Subject;
 
 class SchoolYearControllerTest extends AdminTestCase
 {

@@ -3,7 +3,7 @@
 namespace App\Tests\LessonPlan;
 
 use App\Entity\LessonPlan;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\TeachingLoad;
 use PHPUnit\Framework\TestCase;
 
 class LessonPlanEntityTest extends TestCase

@@ -8,11 +8,11 @@ use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
-use App\Entity\Subject;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\Subject;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Access\Domain\Model\User;
@@ -24,8 +24,8 @@ use App\Repository\GradeLockRepository;
 use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
-use App\Repository\SubjectRepository;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
@@ -114,7 +114,7 @@ class SectionGradeGridTest extends KernelTestCase
             $c->get(GradeOpeningRepository::class),
         );
 
-        return new SectionGradeGrid($c->get(SubjectRepository::class), $c->get(TeachingLoadRepository::class), $c->get(GradeRepository::class), $rules, $c->get(GradeOpeningRepository::class), $c->get(SchoolClock::class));
+        return new SectionGradeGrid($c->get(SubjectRepositoryInterface::class), $c->get(TeachingLoadRepositoryInterface::class), $c->get(GradeRepository::class), $rules, $c->get(GradeOpeningRepository::class), $c->get(SchoolClock::class));
     }
 
     /** @param list<GridColumn> $columns */

@@ -6,7 +6,7 @@ use App\Schools\Domain\Exception\PlanLimitException;
 use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\Enrollment;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Access\Domain\Model\User;

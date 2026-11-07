@@ -6,7 +6,7 @@ use App\Entity\CardSlipComment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Repository\CardSlipCommentRepository;
 use App\Tests\SchoolFixturesTrait;

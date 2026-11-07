@@ -3,9 +3,9 @@
 namespace App\LessonPlan;
 
 use App\Entity\LessonPlan;
-use App\Entity\TeachingLoad;
-use App\Entity\Weekday;
-use App\Repository\ScheduleEntryRepository;
+use App\Classes\Domain\Model\TeachingLoad;
+use App\Classes\Domain\Model\Weekday;
+use App\Classes\Domain\Model\Repository\ScheduleEntryRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 
 /**
@@ -15,7 +15,7 @@ use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 class LessonWeek
 {
     public function __construct(
-        private readonly ScheduleEntryRepository $entries,
+        private readonly ScheduleEntryRepositoryInterface $entries,
         private readonly SchoolDayOffRepositoryInterface $daysOff,
     ) {
     }

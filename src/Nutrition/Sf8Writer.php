@@ -2,7 +2,7 @@
 
 namespace App\Nutrition;
 
-use App\Entity\Section;
+use App\Classes\Domain\Model\Section;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;

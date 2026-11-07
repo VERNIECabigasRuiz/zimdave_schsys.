@@ -7,7 +7,7 @@ use App\Entity\LessonPlan;
 use App\Entity\Announcement;
 use App\Entity\AttendanceMark;
 use App\Entity\CardSlipComment;
-use App\Entity\ClassPeriod;
+use App\Classes\Domain\Model\ClassPeriod;
 use App\Schools\Domain\Model\Division;
 use App\Entity\StaffIdDetails;
 use App\Entity\Enrollment;
@@ -26,8 +26,8 @@ use App\Billing\Domain\Model\Plan;
 use App\Entity\RollCall;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolAssignment;
-use App\Entity\ScheduleEntry;
-use App\Entity\Section;
+use App\Classes\Domain\Model\ScheduleEntry;
+use App\Classes\Domain\Model\Section;
 use App\Entity\ServiceRecord;
 use App\Entity\ServiceRecordEntry;
 use App\Schools\Domain\Model\SchoolDayOff;
@@ -36,8 +36,8 @@ use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf2Submission;
 use App\Entity\Sf8Submission;
-use App\Entity\Subject;
-use App\Entity\TeachingLoad;
+use App\Classes\Domain\Model\Subject;
+use App\Classes\Domain\Model\TeachingLoad;
 use App\Entity\TransferRequest;
 use App\Access\Domain\Model\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -77,7 +77,7 @@ trait SchoolFixturesTrait
             ->setStartsAt(new \DateTimeImmutable($start))
             ->setEndsAt(new \DateTimeImmutable($end))
             ->setBreakLabel($breakLabel)
-            ->setPosition(\count($this->em->getRepository(ClassPeriod::class)->findForSchool($school, $sy)) + 1);
+            ->setPosition($this->em->getRepository(ClassPeriod::class)->count(['school' => $school, 'schoolYear' => $sy]) + 1);
         $this->em->persist($period);
         $this->em->flush();
 

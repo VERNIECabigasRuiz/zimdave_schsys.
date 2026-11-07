@@ -12,7 +12,7 @@ use App\LessonPlan\LessonWeek;
 use App\Repository\LessonPlanRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\TeachingLoadRepository;
+use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
 use App\Security\Voter\LessonPlanVoter;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,7 +33,7 @@ class TeacherLessonPlanController extends AbstractController
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
-        private readonly TeachingLoadRepository $loads,
+        private readonly TeachingLoadRepositoryInterface $loads,
         private readonly LessonPlanRepository $plans,
         private readonly LessonWeek $week,
         private readonly SchoolClockInterface $clock,
