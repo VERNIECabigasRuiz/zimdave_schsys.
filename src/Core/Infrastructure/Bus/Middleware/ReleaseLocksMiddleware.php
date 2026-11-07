@@ -10,8 +10,8 @@ use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 
 /**
- * Releases the handler's transaction locks once the rest of the stack, the database
- * transaction included, has finished.
+ * Lets the handler take transaction locks, and releases them once the rest of the stack,
+ * the database transaction included, has finished.
  */
 final class ReleaseLocksMiddleware implements MiddlewareInterface
 {
@@ -21,6 +21,7 @@ final class ReleaseLocksMiddleware implements MiddlewareInterface
 
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
+        $this->locks->open();
         try {
             return $stack->next()->handle($envelope, $stack);
         } finally {

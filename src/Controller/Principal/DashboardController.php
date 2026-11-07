@@ -11,7 +11,7 @@ use App\Repository\GradeChangeRequestRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\TransferRequestRepository;
-use App\Service\PlanLimits;
+use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Service\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

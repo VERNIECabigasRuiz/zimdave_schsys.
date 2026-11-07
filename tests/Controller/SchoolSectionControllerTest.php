@@ -288,7 +288,7 @@ class SchoolSectionControllerTest extends AdminTestCase
             try {
                 $write();
                 self::fail('Expected the expired plan to block the write');
-            } catch (\App\Service\PlanLimitException $e) {
+            } catch (\App\Schools\Domain\Exception\PlanLimitException $e) {
                 self::assertStringContainsString('expired on Oct 15, 2026', $e->getMessage());
             }
         }

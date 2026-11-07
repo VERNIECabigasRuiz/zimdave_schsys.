@@ -7,10 +7,10 @@ use App\Access\Application\UseCase\Handler\ToggleAccountActiveHandler;
 use App\Access\Application\UseCase\Handler\UpdateAccountHandler;
 use App\Access\Domain\Model\User;
 use App\Access\Presentation\Controller\AccountController;
-use App\Controller\Admin\TeacherSchoolController;
+use App\Schools\Presentation\Controller\TeacherSchoolController;
 use App\Service\AccessHooks\LearnerRoleChangeGuard;
 use App\Schools\Infrastructure\Access\PrincipalRoleChangeGuard;
-use App\Service\AccessHooks\TeacherSeatReactivationGuard;
+use App\Schools\Infrastructure\Access\TeacherSeatReactivationGuard;
 use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -474,6 +474,22 @@ class AccountControllerTest extends AdminTestCase
 
         self::assertSelectorTextContains('.alert--error', 'The Individual plan allows 1 teacher(s) (1 used).');
         self::assertFalse($this->findUser('ana')->isActive());
+    }
+
+    public function testATeacherWithoutASchoolThisYearCanBeReactivated(): void
+    {
+        // Initialize
+        $this->schoolYear((int) date('Y'), current: true);
+        $this->createUser('ana', User::ROLE_TEACHER, 'Ana Reyes', active: false);
+        $crawler = $this->client->request('GET', '/admin/teachers');
+        $activate = $crawler->filter('tr:contains("Ana Reyes")')->selectButton('Activate')->form();
+
+        // Execute
+        $this->client->submit($activate);
+
+        // Assert
+        self::assertResponseRedirects('/admin/teachers');
+        self::assertTrue($this->findUser('ana')->isActive());
     }
 
     public function testReactivationWaitsForAnotherChangeToTheSchoolsTeachers(): void

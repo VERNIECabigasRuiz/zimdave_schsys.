@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Schools\Domain\Exception\PlanLimitException;
+use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\ClassPeriod;
 use App\Entity\ScheduleEntry;

@@ -11,7 +11,7 @@ use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Schools\Presentation\Security\SchoolVoter;
 use App\Service\InUseException;
-use App\Service\PlanLimitException;
+use App\Schools\Domain\Exception\PlanLimitException;
 use App\Service\SectionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;

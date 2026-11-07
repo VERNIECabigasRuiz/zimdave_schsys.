@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Schools\Domain\Exception\PlanLimitException;
+use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\Enrollment;
 use App\Entity\Section;
@@ -90,7 +92,7 @@ class TransferManager
             if (null !== $reason = $this->planLimits->blockedReason($request->getFromSchool())) {
                 throw new PlanLimitException($reason);
             }
-            $this->planLimits->assertCanAddStudent($to->getSchool(), $schoolYear, $to);
+            $this->planLimits->assertCanAddStudent($to->getSchool(), $schoolYear, (int) $to->getId(), $to->getLabel());
 
             $enrollment->moveTo($to);
             $request->decide(TransferStatus::Approved, $by, $this->clock->now());

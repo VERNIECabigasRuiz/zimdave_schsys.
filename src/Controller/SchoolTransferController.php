@@ -16,7 +16,7 @@ use App\Schools\Presentation\Security\SchoolVoter;
 use App\Service\EnrollmentException;
 use App\Service\LearnerLookup;
 use App\Service\LookupKind;
-use App\Service\PlanLimitException;
+use App\Schools\Domain\Exception\PlanLimitException;
 use App\Service\TransferManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;

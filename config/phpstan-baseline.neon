@@ -271,13 +271,13 @@ parameters:
 			path: ../src/Controller/Principal/DashboardController.php
 
 		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Service\\PlanLimits\:\:countStudents\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
+			message: '#^Parameter \#2 \$schoolYear of method App\\Schools\\Domain\\Service\\Plan\\PlanLimits\:\:countStudents\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/Principal/DashboardController.php
 
 		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Service\\PlanLimits\:\:countTeachers\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
+			message: '#^Parameter \#2 \$schoolYear of method App\\Schools\\Domain\\Service\\Plan\\PlanLimits\:\:countTeachers\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/Principal/DashboardController.php
@@ -323,12 +323,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: ../src/Controller/SchoolSectionController.php
-
-		-
-			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/SchoolTeacherController.php
 
 		-
 			message: '#^Cannot call method getId\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
@@ -691,12 +685,6 @@ parameters:
 			path: ../src/Form/EnrollmentRecordFormType.php
 
 		-
-			message: '#^Class App\\Form\\ExistingTeacherFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/ExistingTeacherFormType.php
-
-		-
 			message: '#^Class App\\Form\\FamilyBackgroundFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -859,12 +847,6 @@ parameters:
 			path: ../src/Form/PersonalInfoFormType.php
 
 		-
-			message: '#^Class App\\Form\\PrincipalAssignmentFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/PrincipalAssignmentFormType.php
-
-		-
 			message: '#^Class App\\Form\\QuestionsFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -953,18 +935,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Form/SubjectFormType.php
-
-		-
-			message: '#^Class App\\Form\\TeacherFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/TeacherFormType.php
-
-		-
-			message: '#^Class App\\Form\\TeacherSchoolFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/TeacherSchoolFormType.php
 
 		-
 			message: '#^Parameter \#4 \$failedSubjects of class App\\Grading\\FailingLearner constructor expects array\<string, int\>, array\<string, int\<min, 74\>\|null\> given\.$#'
@@ -1251,12 +1221,6 @@ parameters:
 		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: ../src/Service/PlanLimits.php
-
-		-
-			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
 			count: 12
 			path: ../src/Service/TimetableQuery.php
 
@@ -1433,12 +1397,6 @@ parameters:
 			identifier: method.nonObject
 			count: 2
 			path: ../tests/Controller/Admin/LearnerControllerTest.php
-
-		-
-			message: '#^Cannot call method setActive\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/Admin/SchoolPrincipalTest.php
 
 		-
 			message: '#^Cannot call method getCallName\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
@@ -2093,24 +2051,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/SchoolSubjectControllerTest.php
-
-		-
-			message: '#^Cannot call method setCurrent\(\) on App\\Schools\\Domain\\Model\\SchoolYear\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolTeacherControllerTest.php
-
-		-
-			message: '#^Cannot call method setPlan\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolTeacherControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$uri of method Symfony\\Component\\BrowserKit\\AbstractBrowser\<Symfony\\Component\\HttpFoundation\\Request,Symfony\\Component\\HttpFoundation\\Response\>\:\:request\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/SchoolTeacherControllerTest.php
 
 		-
 			message: '#^Method App\\Tests\\Controller\\SchoolTimetableControllerTest\:\:json\(\) return type has no value type specified in iterable type array\.$#'

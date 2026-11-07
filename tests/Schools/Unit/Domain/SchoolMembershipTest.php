@@ -31,7 +31,7 @@ final class SchoolMembershipTest extends TestCase
         self::assertSame($otherTeacher, $assignment->getUser());
         self::assertSame($schoolYear, $assignment->getSchoolYear());
         self::assertSame(User::ROLE_TEACHER, $assignment->getRole());
-        self::assertInstanceOf(\DateTimeImmutable::class, $assignment->getCreatedAt());
+        self::assertLessThanOrEqual(new \DateTimeImmutable(), $assignment->getCreatedAt());
     }
 
     public function testADayOffKeepsTheDateWithoutTimeAndTheTrimmedReason(): void

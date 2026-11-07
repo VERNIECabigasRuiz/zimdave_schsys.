@@ -31,6 +31,19 @@ final class ReleaseLocksMiddlewareTest extends TestCase
         self::assertSame($envelope, $returned);
     }
 
+    public function testOpensTheLocksBeforeTheStack(): void
+    {
+        // Expect
+        $locks = $this->createMock(TransactionLock::class);
+        $locks->expects(self::once())->method('open');
+
+        // Initialize
+        $stack = new StackMiddleware(new CallbackMiddleware(static fn (Envelope $handled): Envelope => $handled));
+
+        // Execute
+        (new ReleaseLocksMiddleware($locks))->handle(new Envelope(new SampleUseCase()), $stack);
+    }
+
     public function testReleasesWhenTheStackThrows(): void
     {
         // Expect

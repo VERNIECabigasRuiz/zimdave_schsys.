@@ -13,7 +13,8 @@ use App\Core\Domain\Exception\ResourceBusyException;
 interface TransactionLockInterface
 {
     /**
-     * Takes the lock on $resource without waiting.
+     * Takes the lock on $resource without waiting. Only inside a use case handler; taking a lock
+     * the use case already holds does nothing.
      *
      * @throws ResourceBusyException with $busyMessage when another change holds it
      */

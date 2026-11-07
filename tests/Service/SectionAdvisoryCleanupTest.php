@@ -8,7 +8,7 @@ use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
-use App\Service\SchoolTeacherManager;
+use App\Schools\Application\Service\SchoolTeacherManager;
 use App\Service\SectionManager;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;

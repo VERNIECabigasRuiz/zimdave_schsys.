@@ -11,8 +11,11 @@ use Symfony\Component\Lock\SharedLockInterface;
 
 class TransactionLock implements TransactionLockInterface
 {
-    /** @var list<SharedLockInterface> */
+    /** @var array<string, SharedLockInterface> held locks keyed by resource */
     private array $held = [];
+
+    /** How many use cases are running (one inside another counts twice). */
+    private int $openUseCases = 0;
 
     public function __construct(private readonly LockFactory $lockFactory)
     {
@@ -20,16 +23,33 @@ class TransactionLock implements TransactionLockInterface
 
     public function acquire(string $resource, string $busyMessage): void
     {
+        if (0 === $this->openUseCases) {
+            throw new \LogicException('Transaction locks are taken in use case handlers only.');
+        }
+        if (isset($this->held[$resource])) {
+            return;
+        }
+
         $lock = $this->lockFactory->createLock($resource);
         if (!$lock->acquire()) {
             throw new ResourceBusyException($busyMessage);
         }
-        $this->held[] = $lock;
+        $this->held[$resource] = $lock;
     }
 
-    /** Releases every lock taken since the last call. */
+    /** A use case starts; its locks are kept until the outermost one ends. */
+    public function open(): void
+    {
+        ++$this->openUseCases;
+    }
+
+    /** A use case ended; the outermost one releases every lock taken meanwhile. */
     public function releaseAll(): void
     {
+        $this->openUseCases = max(0, $this->openUseCases - 1);
+        if ($this->openUseCases > 0) {
+            return;
+        }
         foreach ($this->held as $lock) {
             $lock->release();
         }

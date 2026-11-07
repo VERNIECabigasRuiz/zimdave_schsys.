@@ -10,7 +10,7 @@ use App\Form\SubjectFormType;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Service\InUseException;
-use App\Service\PlanLimitException;
+use App\Schools\Domain\Exception\PlanLimitException;
 use App\Service\SubjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

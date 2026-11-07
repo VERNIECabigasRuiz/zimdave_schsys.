@@ -11,7 +11,7 @@ use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Schools\Presentation\Security\SchoolVoter;
 use App\Service\ClassPeriodManager;
 use App\Service\InUseException;
-use App\Service\PlanLimitException;
+use App\Schools\Domain\Exception\PlanLimitException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;

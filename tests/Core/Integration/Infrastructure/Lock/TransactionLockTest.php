@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Core\Integration\Infrastructure\Lock;
 
 use App\Core\Application\Bus\UseCaseBusInterface;
+use App\Core\Infrastructure\Lock\TransactionLock;
 use App\Tests\Core\Integration\Bus\Fixture\LockThenSaveCommand;
 use App\Tests\Core\Integration\Bus\Fixture\LockThenWaitCommand;
 use App\Tests\Core\Integration\Bus\Fixture\LockThenWaitHandler;
@@ -90,6 +91,66 @@ final class TransactionLockTest extends KernelTestCase
         // Assert
         self::assertSame('INTERNAL_ERROR', $result->errorCode());
         self::assertTrue($this->canLock(), 'The lock was still held after the failed use case');
+    }
+
+    public function testTheSameKeyCanBeTakenTwiceInOneUseCase(): void
+    {
+        // Initialize
+        $locks = new TransactionLock($this->lockFactory);
+        $locks->open();
+
+        // Execute
+        $locks->acquire('core-test', 'Busy, try again.');
+        $locks->acquire('core-test', 'Busy, try again.');
+        $heldInside = !$this->canLock();
+        $locks->releaseAll();
+
+        // Assert
+        self::assertTrue($heldInside);
+        self::assertTrue($this->canLock(), 'The lock was still held after the use case');
+    }
+
+    public function testANestedUseCaseKeepsTheLocksUntilTheOuterOneEnds(): void
+    {
+        // Initialize
+        $locks = new TransactionLock($this->lockFactory);
+        $locks->open();
+        $locks->acquire('core-test', 'Busy, try again.');
+        $locks->open();
+
+        // Execute
+        $locks->releaseAll();
+        $heldAfterInner = !$this->canLock();
+        $locks->releaseAll();
+
+        // Assert
+        self::assertTrue($heldAfterInner, 'The inner use case released the outer one\'s lock');
+        self::assertTrue($this->canLock());
+    }
+
+    public function testLocksAreRefusedOutsideAUseCase(): void
+    {
+        // Expect
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessageIsOrContains('Transaction locks are taken in use case handlers only.');
+
+        // Initialize
+        $locks = new TransactionLock($this->lockFactory);
+
+        // Execute
+        $locks->acquire('core-test', 'Busy, try again.');
+    }
+
+    public function testAnExtraReleaseDoesNothing(): void
+    {
+        // Initialize
+        $locks = new TransactionLock($this->lockFactory);
+
+        // Execute
+        $locks->releaseAll();
+
+        // Assert
+        self::assertTrue($this->canLock());
     }
 
     private function canLock(): bool

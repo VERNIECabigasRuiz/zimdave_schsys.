@@ -19,7 +19,7 @@ use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
 use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use App\Schools\Presentation\Security\SchoolVoter;
-use App\Service\PlanLimitException;
+use App\Schools\Domain\Exception\PlanLimitException;
 use App\Service\TimetableException;
 use App\Service\TimetableManager;
 use App\Service\TimetableQuery;

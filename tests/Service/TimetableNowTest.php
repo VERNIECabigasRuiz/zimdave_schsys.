@@ -17,7 +17,7 @@ use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Service\PlanLimits;
+use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Service\TimetableManager;
 use App\Service\TimetableQuery;
 use App\Tests\SchoolFixturesTrait;

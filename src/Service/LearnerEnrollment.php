@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Schools\Domain\Exception\PlanLimitException;
+use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Access\Domain\Service\Password\TemporaryPasswordGenerator;
 use App\Core\Domain\Exception\ImageProcessingException;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
@@ -58,7 +60,7 @@ class LearnerEnrollment
         $this->guard->assertCurrentSection($section, $schoolYear);
 
         return $this->lock->forSchool($section->getSchool(), function () use ($learner, $section, $by, $schoolYear): string {
-            $this->planLimits->assertCanAddStudent($section->getSchool(), $schoolYear, $section);
+            $this->planLimits->assertCanAddStudent($section->getSchool(), $schoolYear, (int) $section->getId(), $section->getLabel());
             $this->assertUsernameFree($learner->getLrn(), null);
 
             $user = $learner->getUser();
@@ -90,7 +92,7 @@ class LearnerEnrollment
                     ? \sprintf('%s is already enrolled in %s.', $learner->getUser()->getFullName(), $current->getSection()->getLabel())
                     : \sprintf('%s is enrolled at %s.', $learner->getUser()->getFullName(), $current->getSchool()->getName()));
             }
-            $this->planLimits->assertCanAddStudent($section->getSchool(), $schoolYear, $section);
+            $this->planLimits->assertCanAddStudent($section->getSchool(), $schoolYear, (int) $section->getId(), $section->getLabel());
 
             $this->entityManager->persist(new Enrollment($learner, $schoolYear, $section, $by, $this->clock->now()));
             $this->activityLogger->log(\sprintf('Enrolled %s in %s', $learner->getLrn(), $section->getLabel()));
@@ -180,7 +182,7 @@ class LearnerEnrollment
             }
             $this->guard->assertNoPendingTransfer($learner);
             // the school's seat count doesn't change, so only the plan state and the section's room matter
-            $reason = $this->planLimits->blockedReason($to->getSchool()) ?? $this->planLimits->sectionFullReason($to->getSchool(), $to);
+            $reason = $this->planLimits->blockedReason($to->getSchool()) ?? $this->planLimits->sectionFullReason($to->getSchool(), (int) $to->getId(), $to->getLabel());
             if (null !== $reason) {
                 throw new PlanLimitException($reason);
             }
@@ -258,7 +260,7 @@ class LearnerEnrollment
             if (null !== $reason = $this->planLimits->blockedReason($from)) {
                 throw new PlanLimitException($reason);
             }
-            $this->planLimits->assertCanAddStudent($to->getSchool(), $schoolYear, $to);
+            $this->planLimits->assertCanAddStudent($to->getSchool(), $schoolYear, (int) $to->getId(), $to->getLabel());
 
             $enrollment->moveTo($to);
             $this->activityLogger->log(\sprintf('Transferred %s from %s to %s', $learner->getLrn(), $from->getName(), $to->getSchool()->getName()));

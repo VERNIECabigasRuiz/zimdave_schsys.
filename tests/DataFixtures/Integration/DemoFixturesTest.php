@@ -15,7 +15,7 @@ use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Service\PlanLimits;
+use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\ORM\EntityManagerInterface;
