@@ -3,9 +3,9 @@
 namespace App\Tests\Controller\Principal;
 
 use App\Entity\GradeChangeRequest;
-use App\Entity\GradeLevel;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Subject;
 use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;

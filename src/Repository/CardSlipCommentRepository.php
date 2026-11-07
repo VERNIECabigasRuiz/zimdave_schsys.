@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CardSlipComment;
-use App\Entity\GradingPeriod;
+use App\Schools\Domain\Model\GradingPeriod;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

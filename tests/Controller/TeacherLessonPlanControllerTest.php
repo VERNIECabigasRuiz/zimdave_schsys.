@@ -2,10 +2,10 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LessonPlan;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\ScheduleEntry;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;

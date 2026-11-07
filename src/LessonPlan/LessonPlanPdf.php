@@ -5,8 +5,8 @@ namespace App\LessonPlan;
 use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\Entity\LessonPlan;
 use App\Access\Domain\Model\User;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
 use Twig\Environment;
 
@@ -22,8 +22,8 @@ class LessonPlanPdf
         private readonly PdfRendererInterface $pdf,
         private readonly Environment $twig,
         private readonly ServiceRecordEntryRepository $entries,
-        private readonly SchoolAssignmentRepository $assignments,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
     ) {
     }
 

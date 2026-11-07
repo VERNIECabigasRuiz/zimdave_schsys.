@@ -3,16 +3,16 @@
 namespace App\Tests\Service;
 
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Learner;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Sf1\Sf1ReportBuilder;
 use App\Sf1\Sf1Remarks;
@@ -59,7 +59,7 @@ class Sf1ReportBuilderTest extends KernelTestCase
 
         return new Sf1ReportBuilder(
             $c->get(EnrollmentRepository::class),
-            $c->get(SchoolAssignmentRepository::class),
+            $c->get(SchoolAssignmentRepositoryInterface::class),
             new Sf1Remarks($c->get(TransferRequestRepository::class)),
             $c->get(ClockInterface::class),
         );

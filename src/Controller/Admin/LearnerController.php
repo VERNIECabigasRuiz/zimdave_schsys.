@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -21,7 +21,7 @@ class LearnerController extends AbstractController
     public function __construct(
         private readonly LearnerRepository $learners,
         private readonly EnrollmentRepository $enrollments,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
     ) {
     }
 

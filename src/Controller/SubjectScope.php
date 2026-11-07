@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\GradeLevel;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\ShsTrack;
 
 /** Which subjects a Subjects page manages, and where its links and layout point. */

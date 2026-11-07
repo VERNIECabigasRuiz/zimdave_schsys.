@@ -4,11 +4,11 @@ namespace App\ServiceRecord;
 
 use App\Core\Domain\Service\Pdf\PdfRendererInterface;
 use App\Entity\PersonalDataSheet;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Access\Domain\Model\User;
 use App\Repository\PersonalDataSheetRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Repository\ServiceRecordRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
@@ -33,8 +33,8 @@ class ServiceRecordPdf
         private readonly PersonalDataSheetRepository $sheets,
         private readonly ServiceRecordRepository $records,
         private readonly ServiceRecordEntryRepository $entries,
-        private readonly SchoolAssignmentRepository $assignments,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SchoolClockInterface $clock,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,

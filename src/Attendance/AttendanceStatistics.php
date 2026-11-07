@@ -2,9 +2,10 @@
 
 namespace App\Attendance;
 
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Entity\LearnerMark;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Sf2Submission;
 use App\Repository\RollCallRepository;
 use App\Repository\SectionRepository;

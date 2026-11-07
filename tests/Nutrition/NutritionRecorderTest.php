@@ -4,11 +4,11 @@ namespace App\Tests\Nutrition;
 
 use App\Attendance\Sf2Roster;
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\NutritionAssessment;
 use App\Entity\NutritionMeasurement;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf8Submission;
@@ -22,7 +22,7 @@ use App\Nutrition\NutritionRules;
 use App\Nutrition\Sf8ReportBuilder;
 use App\Repository\EnrollmentRepository;
 use App\Repository\NutritionAssessmentRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Repository\Sf8SubmissionRepository;
 use App\Repository\TransferRequestRepository;
@@ -97,7 +97,7 @@ class NutritionRecorderTest extends KernelTestCase
                 $c->get(NutritionAssessmentRepository::class),
                 $c->get(Sf8SubmissionRepository::class),
                 $c->get(SectionRepository::class),
-                $c->get(SchoolAssignmentRepository::class),
+                $c->get(SchoolAssignmentRepositoryInterface::class),
                 $clock,
             ),
             $c->get(NutritionAssessmentRepository::class),

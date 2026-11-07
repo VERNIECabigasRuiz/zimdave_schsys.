@@ -3,8 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\ClassPeriod;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Access\Domain\Model\Repository\UserRepositoryInterface;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use App\Service\TimetableQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,8 +21,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class TeacherLoadController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly UserRepositoryInterface $users,
         private readonly TimetableQuery $query,
     ) {

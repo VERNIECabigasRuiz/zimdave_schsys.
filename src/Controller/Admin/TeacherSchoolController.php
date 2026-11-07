@@ -4,11 +4,11 @@ namespace App\Controller\Admin;
 
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Access\Domain\Model\User;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Form\TeacherSchoolFormType;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Service\AssignmentException;
 use App\Service\PlanLimitException;
 use App\Service\SchoolTeacherLock;
@@ -31,8 +31,8 @@ class TeacherSchoolController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly SchoolTeacherLock $teacherLock,
     ) {
     }

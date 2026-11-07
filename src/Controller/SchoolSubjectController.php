@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
+use App\Schools\Presentation\Security\SchoolVoter;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

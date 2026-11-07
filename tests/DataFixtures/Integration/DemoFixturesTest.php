@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Tests\DataFixtures\Integration;
 
 use App\DataFixtures\DemoFixtures;
-use App\Entity\Division;
+use App\Schools\Domain\Model\Division;
 use App\Entity\Enrollment;
 use App\Entity\Grade;
 use App\Entity\LessonPlan;
 use App\Entity\RollCall;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Service\PlanLimits;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -118,7 +118,7 @@ final class DemoFixturesTest extends KernelTestCase
 
     private function currentSchoolYear(): SchoolYear
     {
-        $schoolYear = static::getContainer()->get(SchoolYearRepository::class)->findCurrent();
+        $schoolYear = static::getContainer()->get(SchoolYearRepositoryInterface::class)->findCurrent();
         self::assertInstanceOf(SchoolYear::class, $schoolYear);
 
         return $schoolYear;

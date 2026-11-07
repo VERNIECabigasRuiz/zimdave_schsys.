@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Lock\LockFactory;
 

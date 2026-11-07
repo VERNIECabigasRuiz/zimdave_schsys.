@@ -3,14 +3,14 @@
 namespace App\Security\Voter;
 
 use App\Entity\Learner;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\TransferRequest;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -36,8 +36,8 @@ final class LearnerVoter extends Voter
     public const CANCEL_TRANSFER = 'TRANSFER_CANCEL';
 
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly EnrollmentRepository $enrollments,
     ) {
     }

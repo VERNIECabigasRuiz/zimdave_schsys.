@@ -4,11 +4,11 @@ namespace App\Tests\Repository;
 
 use App\Entity\AttendanceMark;
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Sf2Submission;
 use App\Access\Domain\Model\User;

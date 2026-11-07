@@ -3,12 +3,12 @@
 namespace App\Sf1;
 
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use Symfony\Component\Clock\ClockInterface;
 
 /** Gathers a section's SF1 (School Register) from its enrollments. */
@@ -16,7 +16,7 @@ class Sf1ReportBuilder
 {
     public function __construct(
         private readonly EnrollmentRepository $enrollments,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly Sf1Remarks $remarks,
         private readonly ClockInterface $clock,
     ) {

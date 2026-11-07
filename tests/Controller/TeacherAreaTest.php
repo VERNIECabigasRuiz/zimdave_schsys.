@@ -2,8 +2,8 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
@@ -93,7 +93,7 @@ class TeacherAreaTest extends AdminTestCase
         self::assertSelectorTextContains('main', 'No advisory class this S.Y.');
         self::assertSelectorNotExists('a:contains("Create my section")');
 
-        $section = (new \App\Entity\Section($this->school, $this->sy))->setGradeLevel(\App\Entity\GradeLevel::Grade7)->setName('Sampaguita')->setAdviser($this->ana);
+        $section = (new \App\Entity\Section($this->school, $this->sy))->setGradeLevel(\App\Schools\Domain\Model\GradeLevel::Grade7)->setName('Sampaguita')->setAdviser($this->ana);
         $this->em->persist($section);
         $this->em->flush();
 

@@ -4,9 +4,9 @@ namespace App\Controller\Admin;
 
 use App\Access\Domain\Model\User;
 use App\Core\Domain\Model\Repository\ActivityLogRepositoryInterface;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockInterface;
@@ -21,9 +21,9 @@ class DashboardController extends AbstractController
     public function index(
         UserRepositoryInterface $users,
         ActivityLogRepositoryInterface $activity,
-        SchoolYearRepository $schoolYears,
-        SchoolRepository $schools,
-        SchoolAssignmentRepository $assignments,
+        SchoolYearRepositoryInterface $schoolYears,
+        SchoolRepositoryInterface $schools,
+        SchoolAssignmentRepositoryInterface $assignments,
         ClockInterface $clock,
     ): Response {
         $currentYear = $schoolYears->findCurrent();
@@ -32,7 +32,7 @@ class DashboardController extends AbstractController
             'plans_expiring' => $schools->countExpiringBy($clock->now()->modify('+30 days')),
             'school_year' => $currentYear,
             'year_stats' => $currentYear ? [
-                'schools' => $schools->count(['active' => true]),
+                'schools' => $schools->countActive(),
                 'assigned' => $assignments->countPrincipals($currentYear),
                 'unassigned' => \count($assignments->findAssignablePrincipals($currentYear)),
                 'without_principal' => $schools->countActiveWithoutPrincipal($currentYear),

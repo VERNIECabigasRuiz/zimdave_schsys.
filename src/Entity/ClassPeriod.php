@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Repository\ClassPeriodRepository;
 use App\Validator\NoOverlappingPeriod;
 use Doctrine\DBAL\Types\Types;

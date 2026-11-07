@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use Symfony\Component\Clock\ClockInterface;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Component\Clock\ClockInterface;
 class PlanLimits
 {
     public function __construct(
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly EnrollmentRepository $enrollments,
         private readonly ClockInterface $clock,
     ) {

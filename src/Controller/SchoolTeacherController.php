@@ -2,21 +2,21 @@
 
 namespace App\Controller;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Form\ExistingTeacherFormType;
 use App\Form\TeacherFormType;
 use App\Entity\PersonalDataSheet;
 use App\Repository\PersonalDataSheetRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Service\PdsPdfRenderer;
 use Symfony\Component\HttpFoundation\HeaderUtils;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use App\Service\AssignmentException;
 use Symfony\Component\Form\FormError;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
@@ -42,8 +42,8 @@ class SchoolTeacherController extends AbstractController
     public function __construct(
         private readonly SchoolTeacherManager $teachers,
         private readonly PlanLimits $planLimits,
-        private readonly SchoolAssignmentRepository $assignments,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly EntityManagerInterface $entityManager,
         private readonly ActivityLoggerInterface $activityLogger,
         private readonly SchoolTeacherLock $lock,

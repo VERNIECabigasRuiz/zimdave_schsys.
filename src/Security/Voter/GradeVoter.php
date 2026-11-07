@@ -3,13 +3,13 @@
 namespace App\Security\Voter;
 
 use App\Entity\GradeChangeRequest;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Entity\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Grading\GradeRules;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -34,8 +34,8 @@ final class GradeVoter extends Voter
     public const CHANGE_DECIDE = 'GRADE_CHANGE_DECIDE';
 
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly GradeRules $rules,
     ) {
     }

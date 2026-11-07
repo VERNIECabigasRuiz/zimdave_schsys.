@@ -4,11 +4,11 @@ namespace App\Controller;
 
 use App\Attendance\AttendanceException;
 use App\Attendance\AttendanceStatistics;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
 use App\Security\Voter\AttendanceVoter;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;

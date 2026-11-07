@@ -3,12 +3,12 @@
 namespace App\Tests\Attendance;
 
 use App\Attendance\RosterEntry;
-use App\Attendance\SchoolCalendar;
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Roster;
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
@@ -16,7 +16,7 @@ use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolDayOffRepository;
+use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Sf1\Sf1Remarks;
 use App\Tests\SchoolFixturesTrait;

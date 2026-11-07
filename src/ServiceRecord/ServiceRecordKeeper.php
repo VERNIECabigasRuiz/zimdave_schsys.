@@ -2,7 +2,7 @@
 
 namespace App\ServiceRecord;
 
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\ServiceRecordEntry;
 use App\Access\Domain\Model\User;
 use App\Repository\ServiceRecordEntryRepository;

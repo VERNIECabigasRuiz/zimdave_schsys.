@@ -6,8 +6,8 @@ use App\Access\Domain\Exception\AccountReactivationRefusedException;
 use App\Access\Domain\Model\User;
 use App\Access\Domain\Service\Account\AccountReactivationGuardInterface;
 use App\Core\Domain\Service\Lock\TransactionLockInterface;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Service\PlanLimits;
 
 /**
@@ -16,8 +16,8 @@ use App\Service\PlanLimits;
 class TeacherSeatReactivationGuard implements AccountReactivationGuardInterface
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly PlanLimits $planLimits,
         private readonly TransactionLockInterface $locks,
     ) {

@@ -2,12 +2,13 @@
 
 namespace App\Attendance;
 
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
 use App\Entity\Section;
 use App\Repository\RollCallRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolDayOffRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Repository\Sf2SubmissionRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
@@ -25,8 +26,8 @@ class Sf2ReportBuilder
         private readonly SchoolCalendar $calendar,
         private readonly RollCallRepository $rollCalls,
         private readonly Sf2SubmissionRepository $submissions,
-        private readonly SchoolDayOffRepository $daysOff,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolDayOffRepositoryInterface $daysOff,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly AttendanceRules $rules,
         private readonly SchoolClockInterface $clock,
     ) {

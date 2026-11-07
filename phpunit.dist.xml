@@ -62,6 +62,7 @@
             <directory>src/Core</directory>
             <directory>src/Access</directory>
             <directory>src/Billing</directory>
+            <directory>src/Schools</directory>
         </include>
 
         <deprecationTrigger>

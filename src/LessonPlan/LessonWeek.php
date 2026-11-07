@@ -6,7 +6,7 @@ use App\Entity\LessonPlan;
 use App\Entity\TeachingLoad;
 use App\Entity\Weekday;
 use App\Repository\ScheduleEntryRepository;
-use App\Repository\SchoolDayOffRepository;
+use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 
 /**
  * The days of a lesson plan week: the weekdays the class meets in the timetable (for the semester the week falls
@@ -16,7 +16,7 @@ class LessonWeek
 {
     public function __construct(
         private readonly ScheduleEntryRepository $entries,
-        private readonly SchoolDayOffRepository $daysOff,
+        private readonly SchoolDayOffRepositoryInterface $daysOff,
     ) {
     }
 

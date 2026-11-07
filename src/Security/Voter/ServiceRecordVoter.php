@@ -2,10 +2,10 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Access\Domain\Model\User;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -22,8 +22,8 @@ final class ServiceRecordVoter extends Voter
     public const EDIT = 'SERVICE_RECORD_EDIT';
 
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
     ) {
     }
 

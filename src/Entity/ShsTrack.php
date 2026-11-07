@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Schools\Domain\Model\School;
+
 /** Senior High School tracks (old curriculum names and the strengthened SHS "TechPro"). */
 enum ShsTrack: string
 {

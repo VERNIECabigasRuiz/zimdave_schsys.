@@ -3,10 +3,10 @@
 namespace App\Tests\Controller;
 
 use App\Entity\ClassPeriod;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\ScheduleEntry;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
@@ -300,7 +300,7 @@ class SchoolTimetableControllerTest extends AdminTestCase
     {
         $this->em->createQuery('DELETE FROM '.Subject::class)->execute();
         $school = $this->school;
-        $school->setType(\App\Entity\SchoolType::SeniorHigh);
+        $school->setType(\App\Schools\Domain\Model\SchoolType::SeniorHigh);
         $stem = $this->section($school, GradeLevel::Grade11, 'STEM-A');
         $s1 = $this->subject(GradeLevel::Grade11, 'ORAL', 'Oral Communication', 1);
         $s2 = $this->subject(GradeLevel::Grade11, 'READ', 'Reading and Writing', 2);

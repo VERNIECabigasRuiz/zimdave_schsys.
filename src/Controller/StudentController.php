@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Service\TimetableQuery;
 use App\Sf1\Sf1Remarks;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +21,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class StudentController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly LearnerRepository $learners,
         private readonly EnrollmentRepository $enrollments,
         private readonly TimetableQuery $timetable,

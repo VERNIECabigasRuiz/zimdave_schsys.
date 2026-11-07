@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use Doctrine\ORM\Mapping as ORM;

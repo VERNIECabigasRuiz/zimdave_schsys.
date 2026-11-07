@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Learner;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Lock\LockFactory;

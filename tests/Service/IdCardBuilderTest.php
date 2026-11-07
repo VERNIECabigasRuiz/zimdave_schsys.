@@ -3,10 +3,10 @@
 namespace App\Tests\Service;
 
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Learner;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
@@ -15,7 +15,7 @@ use App\LearnerId\IdCard;
 use App\LearnerId\IdCardBuilder;
 use App\LearnerId\QrCode;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -54,7 +54,7 @@ class IdCardBuilderTest extends KernelTestCase
 
         return new IdCardBuilder(
             $c->get(EnrollmentRepository::class),
-            $c->get(SchoolAssignmentRepository::class),
+            $c->get(SchoolAssignmentRepositoryInterface::class),
             $c->get(ImageProcessorInterface::class),
             new QrCode(),
             $c->getParameter('kernel.project_dir'),

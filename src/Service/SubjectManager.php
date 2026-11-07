@@ -4,9 +4,9 @@ namespace App\Service;
 
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Data\DepEdSubjects;
-use App\Entity\GradeLevel;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Subject;
 use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeRepository;

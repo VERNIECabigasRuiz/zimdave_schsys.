@@ -9,7 +9,7 @@ use App\Nutrition\NutritionRules;
 use App\Nutrition\Sf8Report;
 use App\Nutrition\Sf8ReportBuilder;
 use App\Nutrition\Sf8Writer;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Security\Voter\NutritionVoter;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -28,7 +28,7 @@ abstract class AbstractNutritionController extends AbstractController
         protected readonly Sf8Writer $writer,
         protected readonly NutritionRules $rules,
         protected readonly NutritionRecorder $recorder,
-        protected readonly SchoolYearRepository $schoolYears,
+        protected readonly SchoolYearRepositoryInterface $schoolYears,
         protected readonly SectionRepository $sections,
     ) {
     }

@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Core\Presentation\Form\ImageUploadFormType;
 use App\Entity\Enrollment;
 use App\Entity\Learner;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
 use App\Form\EnrollmentRecordFormType;
@@ -16,8 +16,8 @@ use App\LearnerId\IdCardPdf;
 use App\LearnerId\IdLayout;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
-use App\Repository\SchoolRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Repository\TransferRequestRepository;
 use App\Security\Voter\LearnerVoter;
@@ -50,8 +50,8 @@ abstract class AbstractLearnerController extends AbstractController
     private const PER_PAGE = 50;
 
     public function __construct(
-        protected readonly SchoolYearRepository $schoolYears,
-        protected readonly SchoolRepository $schools,
+        protected readonly SchoolYearRepositoryInterface $schoolYears,
+        protected readonly SchoolRepositoryInterface $schools,
         protected readonly SectionRepository $sections,
         protected readonly EnrollmentRepository $enrollments,
         protected readonly LearnerRepository $learners,
@@ -166,7 +166,7 @@ abstract class AbstractLearnerController extends AbstractController
         $here = $scope->covers($current);
         $canMove = $here && null === $scope->fixedSection && $this->isGranted(LearnerVoter::MOVE, $learner);
         $canTransfer = $here && null === $scope->fixedSection && $this->isGranted(User::ROLE_ADMIN);
-        $toSchool = $canTransfer && null !== $toSchoolId ? $this->schools->find($toSchoolId) : null;
+        $toSchool = $canTransfer && null !== $toSchoolId ? $this->schools->findById($toSchoolId) : null;
         if (null !== $toSchool && ($toSchool->getId() === $scope->school->getId() || !$toSchool->isActive())) {
             $toSchool = null;
         }

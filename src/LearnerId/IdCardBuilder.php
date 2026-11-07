@@ -7,7 +7,7 @@ use App\Entity\Learner;
 use App\Entity\Section;
 use App\Entity\Sf1Remark;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -18,7 +18,7 @@ class IdCardBuilder
 
     public function __construct(
         private readonly EnrollmentRepository $enrollments,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly ImageProcessorInterface $images,
         private readonly QrCode $qrCode,
         #[Autowire('%kernel.project_dir%')]

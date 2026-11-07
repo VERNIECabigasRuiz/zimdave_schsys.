@@ -3,12 +3,12 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
-use App\Entity\School;
-use App\Entity\SchoolDayOff;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolDayOff;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Sf2Submission;
 use App\Access\Domain\Model\User;
@@ -46,58 +46,6 @@ class SchoolAttendanceControllerTest extends AdminTestCase
     private function url(string $path = ''): string
     {
         return '/schools/'.$this->school->getId().$path;
-    }
-
-    public function testCalendarAddsARangeAndRemoves(): void
-    {
-        $this->client->request('GET', $this->url('/calendar'));
-        self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('.sidebar__link.is-active', 'Attendance');
-
-        $form = $this->client->getCrawler()->selectButton('Add days off')->form([
-            'day_off_form[from]' => '2025-12-19',
-            'day_off_form[to]' => '2026-01-02',
-            'day_off_form[reason]' => 'Christmas break',
-        ]);
-        $this->client->submit($form);
-        self::assertResponseRedirects($this->url('/calendar'));
-        $this->client->followRedirect();
-        self::assertSelectorTextContains('.alert--success', '11 days off added.');
-        self::assertSelectorTextContains('main', 'Christmas break');
-        self::assertSame(11, $this->em->getRepository(SchoolDayOff::class)->count([]));
-
-        $dayOff = $this->em->getRepository(SchoolDayOff::class)->findOneBy(['date' => new \DateTimeImmutable('2025-12-19')]);
-        $this->client->request('POST', $this->url('/calendar/'.$dayOff->getId().'/remove'), ['_token' => $this->csrfToken('day-off-'.$dayOff->getId())]);
-        self::assertResponseRedirects($this->url('/calendar'));
-        self::assertSame(10, $this->em->getRepository(SchoolDayOff::class)->count([]));
-    }
-
-    public function testCalendarWarnsAboutTakenAttendance(): void
-    {
-        $this->em->persist(new RollCall($this->artistic, new \DateTimeImmutable('2025-08-20'), $this->adviser, new \DateTimeImmutable()));
-        $this->em->flush();
-
-        $this->client->request('GET', $this->url('/calendar'));
-        $this->client->submit($this->client->getCrawler()->selectButton('Add days off')->form([
-            'day_off_form[from]' => '2025-08-20',
-            'day_off_form[reason]' => 'Typhoon suspension',
-        ]));
-        $this->client->followRedirect();
-
-        self::assertSelectorTextContains('.alert--success', '1 day off added.');
-        self::assertSelectorTextContains('.alert--warning', '1 section already took attendance on those days; those days no longer count.');
-    }
-
-    public function testCalendarRefusesAnotherSchoolsDayOff(): void
-    {
-        $dayOff = new SchoolDayOff($this->other, $this->sy, new \DateTimeImmutable('2025-08-20'), 'Foundation Day', $this->principal, new \DateTimeImmutable());
-        $this->em->persist($dayOff);
-        $this->em->flush();
-        $this->client->request('GET', $this->url('/calendar'));
-
-        $this->client->request('POST', $this->url('/calendar/'.$dayOff->getId().'/remove'), ['_token' => $this->csrfToken('day-off-'.$dayOff->getId())]);
-
-        self::assertResponseStatusCodeSame(404);
     }
 
     public function testOverview(): void

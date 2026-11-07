@@ -3,12 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\ClassPeriod;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Form\ClassPeriodFormType;
 use App\Repository\ClassPeriodRepository;
-use App\Repository\SchoolYearRepository;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
+use App\Schools\Presentation\Security\SchoolVoter;
 use App\Service\ClassPeriodManager;
 use App\Service\InUseException;
 use App\Service\PlanLimitException;
@@ -28,7 +28,7 @@ class SchoolClassPeriodController extends AbstractController
     public function __construct(
         private readonly ClassPeriodRepository $periods,
         private readonly ClassPeriodManager $manager,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
     ) {
     }
 

@@ -3,17 +3,17 @@
 namespace App\Tests\Service;
 
 use App\Entity\ClassPeriod;
-use App\Entity\GradeLevel;
-use App\Entity\School;
-use App\Entity\SchoolType;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolType;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\Repository\ClassPeriodRepository;
 use App\Repository\ScheduleEntryRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
@@ -56,12 +56,12 @@ class TimetableQueryTest extends KernelTestCase
         $this->em = $c->get(EntityManagerInterface::class);
         $this->manager = new TimetableManager(
             $this->em, $c->get(ManagerRegistry::class), $c->get(TeachingLoadRepository::class), $c->get(ScheduleEntryRepository::class),
-            $c->get(SubjectRepository::class), $c->get(ClassPeriodRepository::class), $c->get(SchoolAssignmentRepository::class),
+            $c->get(SubjectRepository::class), $c->get(ClassPeriodRepository::class), $c->get(SchoolAssignmentRepositoryInterface::class),
             $c->get(PlanLimits::class), $c->get(ActivityLoggerInterface::class), $c->get(LockFactory::class),
         );
         $this->query = new TimetableQuery(
             $c->get(ScheduleEntryRepository::class), $c->get(TeachingLoadRepository::class), $c->get(SubjectRepository::class),
-            $c->get(ClassPeriodRepository::class), $c->get(SchoolAssignmentRepository::class),
+            $c->get(ClassPeriodRepository::class), $c->get(SchoolAssignmentRepositoryInterface::class),
         );
         $this->clearSchoolData();
         $this->sy = $this->schoolYear(2026, current: true);

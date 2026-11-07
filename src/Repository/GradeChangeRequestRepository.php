@@ -4,9 +4,9 @@ namespace App\Repository;
 
 use App\Entity\GradeChangeRequest;
 use App\Entity\GradeChangeStatus;
-use App\Entity\GradingPeriod;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

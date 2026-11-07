@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\ShsTrack;
 use App\Entity\Subject;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;

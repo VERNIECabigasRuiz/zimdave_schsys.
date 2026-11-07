@@ -2,17 +2,17 @@
 
 namespace App\Tests\StaffId;
 
-use App\Entity\Division;
+use App\Schools\Domain\Model\Division;
 use App\Entity\PersonalDataSheet;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\ServiceRecordEntry;
 use App\Entity\SexAtBirth;
 use App\Access\Domain\Model\User;
-use App\Repository\DivisionRepository;
+use App\Schools\Domain\Model\Repository\DivisionRepositoryInterface;
 use App\Repository\PersonalDataSheetRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Repository\StaffIdDetailsRepository;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
@@ -63,9 +63,9 @@ class StaffIdCardBuilderTest extends KernelTestCase
             $c->get(PersonalDataSheetRepository::class),
             $c->get(ServiceRecordEntryRepository::class),
             $c->get(StaffIdDetailsRepository::class),
-            $c->get(SchoolAssignmentRepository::class),
-            $c->get(SchoolYearRepository::class),
-            $c->get(DivisionRepository::class),
+            $c->get(SchoolAssignmentRepositoryInterface::class),
+            $c->get(SchoolYearRepositoryInterface::class),
+            $c->get(DivisionRepositoryInterface::class),
             $c->get(ImageProcessorInterface::class),
             $c->getParameter('kernel.project_dir'),
         );

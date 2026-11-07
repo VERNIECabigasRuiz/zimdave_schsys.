@@ -2,9 +2,9 @@
 
 namespace App\Tests\Controller\Admin;
 
-use App\Entity\School;
-use App\Entity\SchoolAssignment;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolAssignment;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
 
 class SchoolPrincipalTest extends AdminTestCase

@@ -5,7 +5,7 @@ namespace App\Service;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\ClassPeriod;
 use App\Entity\ScheduleEntry;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
@@ -13,7 +13,7 @@ use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\Repository\ClassPeriodRepository;
 use App\Repository\ScheduleEntryRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -37,7 +37,7 @@ class TimetableManager
         private readonly ScheduleEntryRepository $entries,
         private readonly SubjectRepository $subjects,
         private readonly ClassPeriodRepository $periods,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly PlanLimits $planLimits,
         private readonly ActivityLoggerInterface $activityLogger,
         private readonly LockFactory $lockFactory,

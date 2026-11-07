@@ -4,10 +4,10 @@ namespace App\Service;
 
 use App\Entity\Enrollment;
 use App\Entity\Learner;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -21,7 +21,7 @@ class EnrollmentGuard
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly TransferRequestRepository $transfers,
     ) {
     }

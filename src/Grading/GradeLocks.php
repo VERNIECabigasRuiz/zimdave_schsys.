@@ -2,7 +2,7 @@
 
 namespace App\Grading;
 
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Service\LearnerLock;

@@ -2,14 +2,14 @@
 
 namespace App\Controller;
 
-use App\Attendance\SchoolCalendar;
-use App\Entity\School;
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
 use App\Form\SectionFormType;
 use App\Repository\RollCallRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Repository\TransferRequestRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
@@ -28,8 +28,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class TeacherController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly SectionRepository $sections,
         private readonly SectionManager $sectionManager,
         private readonly TimetableQuery $timetable,

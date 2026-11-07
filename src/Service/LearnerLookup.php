@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Repository\EnrollmentRepository;
 use App\Repository\LearnerRepository;
 

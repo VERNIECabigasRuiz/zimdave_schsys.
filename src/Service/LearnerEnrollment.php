@@ -8,13 +8,13 @@ use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\Enrollment;
 use App\Entity\Learner;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\ClockInterface;
@@ -34,7 +34,7 @@ class LearnerEnrollment
         private readonly LearnerLock $lock,
         private readonly EnrollmentRepository $enrollments,
         private readonly EnrollmentGuard $guard,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly UserRepositoryInterface $users,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TemporaryPasswordGenerator $passwordGenerator,

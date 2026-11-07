@@ -2,8 +2,8 @@
 
 namespace App\Data;
 
-use App\Entity\GradeLevel;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\SchoolYear;
 
 /**
  * DepEd's standard subjects per grade level, in report-card order, from the MATATAG

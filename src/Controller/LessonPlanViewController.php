@@ -6,8 +6,8 @@ use App\Entity\LessonPlan;
 use App\Access\Domain\Model\User;
 use App\LessonPlan\LessonPlanPdf;
 use App\Repository\LessonPlanRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Security\Voter\LessonPlanVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -21,7 +21,7 @@ class LessonPlanViewController extends AbstractController
 {
     #[Route('/principal/lesson-plans', name: 'principal_lesson_plans', methods: ['GET'])]
     #[IsGranted(User::ROLE_PRINCIPAL)]
-    public function school(#[CurrentUser] User $user, SchoolYearRepository $schoolYears, SchoolAssignmentRepository $assignments, LessonPlanRepository $plans): Response
+    public function school(#[CurrentUser] User $user, SchoolYearRepositoryInterface $schoolYears, SchoolAssignmentRepositoryInterface $assignments, LessonPlanRepository $plans): Response
     {
         $schoolYear = $schoolYears->findCurrent();
         $school = null === $schoolYear ? null : $assignments->findSchoolOf($user, $schoolYear, User::ROLE_PRINCIPAL);

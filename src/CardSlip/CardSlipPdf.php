@@ -3,7 +3,7 @@
 namespace App\CardSlip;
 
 use App\Core\Domain\Service\Pdf\PdfRendererInterface;
-use App\Entity\GradingPeriod;
+use App\Schools\Domain\Model\GradingPeriod;
 use App\Entity\Section;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Twig\Environment;

@@ -2,7 +2,7 @@
 
 namespace App\Tests\CardSlip;
 
-use App\Attendance\SchoolCalendar;
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Roster;
 use App\CardSlip\CardSlip;
 use App\CardSlip\CardSlipBuilder;
@@ -13,10 +13,10 @@ use App\CardSlip\TermAttendance;
 use App\Entity\CardSlipComment;
 use App\Entity\Enrollment;
 use App\Entity\Grade;
-use App\Entity\GradeLevel;
-use App\Entity\GradingPeriod;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
@@ -30,7 +30,7 @@ use App\Repository\CardSlipCommentRepository;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeLockRepository;
 use App\Repository\RollCallRepository;
-use App\Repository\SchoolDayOffRepository;
+use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Repository\TransferRequestRepository;
 use App\Core\Infrastructure\Clock\SchoolClock;
@@ -359,7 +359,7 @@ class CardSlipBuilderTest extends KernelTestCase
             $c->get(SubjectRepository::class),
             new TermAttendance(
                 new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class)),
-                new SchoolCalendar($c->get(SchoolDayOffRepository::class)),
+                new SchoolCalendar($c->get(SchoolDayOffRepositoryInterface::class)),
                 $c->get(RollCallRepository::class),
                 new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
                 $c->get(EnrollmentRepository::class),

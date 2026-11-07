@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\GradingPeriod;
+use App\Schools\Domain\Model\GradingPeriod;
 use App\Access\Domain\Model\User;
 use App\Grading\SectionGradeGrid;
 use App\Security\Voter\GradeVoter;

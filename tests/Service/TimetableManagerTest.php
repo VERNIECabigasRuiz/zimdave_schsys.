@@ -4,11 +4,11 @@ namespace App\Tests\Service;
 
 use App\Core\Domain\Model\ActivityLog;
 use App\Entity\ClassPeriod;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\ScheduleEntry;
-use App\Entity\School;
-use App\Entity\SchoolType;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolType;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
@@ -16,7 +16,7 @@ use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\Repository\ClassPeriodRepository;
 use App\Repository\ScheduleEntryRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
@@ -87,7 +87,7 @@ class TimetableManagerTest extends KernelTestCase
             $entries,
             $container->get(SubjectRepository::class),
             $container->get(ClassPeriodRepository::class),
-            $container->get(SchoolAssignmentRepository::class),
+            $container->get(SchoolAssignmentRepositoryInterface::class),
             $container->get(PlanLimits::class),
             $container->get(ActivityLoggerInterface::class),
             $container->get(LockFactory::class),

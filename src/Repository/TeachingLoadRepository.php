@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;

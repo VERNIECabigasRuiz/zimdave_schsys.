@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Data\DepEdSubjects;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Subject;
 use App\Form\SectionFormType;
 use App\Form\SubjectFormType;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Service\InUseException;
 use App\Service\PlanLimitException;
@@ -25,7 +25,7 @@ abstract class AbstractSubjectController extends AbstractController
     public function __construct(
         protected readonly SubjectRepository $subjects,
         protected readonly SubjectManager $manager,
-        protected readonly SchoolYearRepository $schoolYears,
+        protected readonly SchoolYearRepositoryInterface $schoolYears,
     ) {
     }
 

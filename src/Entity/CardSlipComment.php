@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Schools\Domain\Model\GradingPeriod;
 use App\Access\Domain\Model\User;
 use App\Repository\CardSlipCommentRepository;
 use Doctrine\ORM\Mapping as ORM;

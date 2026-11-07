@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
 use App\Service\SubjectManager;
@@ -28,8 +28,8 @@ class TeacherSubjectController extends AbstractSubjectController
     public function __construct(
         SubjectRepository $subjects,
         SubjectManager $manager,
-        SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly SectionRepository $sections,
     ) {
         parent::__construct($subjects, $manager, $schoolYears);

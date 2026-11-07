@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Repository\SubjectRepository;
 use App\Validator\UniqueSubject;
 use Doctrine\Common\Collections\ArrayCollection;

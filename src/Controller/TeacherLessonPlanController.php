@@ -3,15 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\LessonPlan;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Form\LessonPlanFormType;
 use App\Form\LessonPlanStartFormType;
 use App\LessonPlan\LessonWeek;
 use App\Repository\LessonPlanRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\TeachingLoadRepository;
 use App\Security\Voter\LessonPlanVoter;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
@@ -31,8 +31,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class TeacherLessonPlanController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly TeachingLoadRepository $loads,
         private readonly LessonPlanRepository $plans,
         private readonly LessonWeek $week,

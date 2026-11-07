@@ -2,9 +2,9 @@
 
 namespace App\Tests\Controller\Admin;
 
-use App\Entity\GradeLevel;
-use App\Entity\SchoolAssignment;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\SchoolAssignment;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;

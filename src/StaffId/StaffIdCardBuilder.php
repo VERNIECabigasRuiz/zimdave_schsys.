@@ -2,15 +2,15 @@
 
 namespace App\StaffId;
 
-use App\Data\PhilippineDivisions;
+use App\Schools\Domain\Model\PhilippineDivisions;
 use App\Entity\PersonalDataSheet;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\SexAtBirth;
 use App\Access\Domain\Model\User;
-use App\Repository\DivisionRepository;
+use App\Schools\Domain\Model\Repository\DivisionRepositoryInterface;
 use App\Repository\PersonalDataSheetRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Repository\StaffIdDetailsRepository;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
@@ -29,9 +29,9 @@ class StaffIdCardBuilder
         private readonly PersonalDataSheetRepository $sheets,
         private readonly ServiceRecordEntryRepository $entries,
         private readonly StaffIdDetailsRepository $details,
-        private readonly SchoolAssignmentRepository $assignments,
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly DivisionRepository $divisions,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly DivisionRepositoryInterface $divisions,
         private readonly ImageProcessorInterface $images,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,

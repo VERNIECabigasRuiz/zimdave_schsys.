@@ -3,9 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\GradeOpening;
-use App\Entity\GradingPeriod;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -38,6 +38,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Billing/Domain'
                 prefix: 'App\Billing\Domain'
                 alias: Billing
+            Schools:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Schools/Domain'
+                prefix: 'App\Schools\Domain'
+                alias: Schools
 
 when@test:
     doctrine:

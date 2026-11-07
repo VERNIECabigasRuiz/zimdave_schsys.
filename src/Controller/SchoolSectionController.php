@@ -2,14 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Form\SectionFormType;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use App\Service\InUseException;
 use App\Service\PlanLimitException;
 use App\Service\SectionManager;
@@ -31,7 +31,7 @@ class SchoolSectionController extends AbstractController
 {
     public function __construct(
         private readonly SectionRepository $sections,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SectionManager $manager,
         private readonly EnrollmentRepository $enrollments,
     ) {

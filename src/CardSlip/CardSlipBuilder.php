@@ -2,7 +2,7 @@
 
 namespace App\CardSlip;
 
-use App\Entity\GradingPeriod;
+use App\Schools\Domain\Model\GradingPeriod;
 use App\Entity\Section;
 use App\Grading\GeneralAverage;
 use App\Grading\GridColumn;

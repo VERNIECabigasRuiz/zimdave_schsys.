@@ -3,12 +3,12 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
 use PHPUnit\Framework\TestCase;

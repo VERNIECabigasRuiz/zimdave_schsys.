@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\GradeChangeRequest;
-use App\Entity\GradingPeriod;
+use App\Schools\Domain\Model\GradingPeriod;
 use App\Entity\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Form\GradeChange;
@@ -20,7 +20,7 @@ use App\Grading\SectionGradeGrid;
 use App\Grading\SheetLearner;
 use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\TeachingLoadRepository;
 use App\Security\Voter\GradeVoter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,7 +43,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class TeacherGradeController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly TeachingLoadRepository $loads,
         private readonly GradeRepository $grades,
         private readonly GradeRules $rules,

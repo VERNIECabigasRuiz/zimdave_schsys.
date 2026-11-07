@@ -4,8 +4,8 @@ namespace App\Service;
 
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Entity\ClassPeriod;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Repository\ClassPeriodRepository;
 use App\Repository\ScheduleEntryRepository;
 use Doctrine\ORM\EntityManagerInterface;

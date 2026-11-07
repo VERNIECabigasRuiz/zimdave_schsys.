@@ -3,11 +3,11 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\NutritionAssessment;
 use App\Entity\NutritionMeasurement;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Sf8Submission;
 use App\Access\Domain\Model\User;

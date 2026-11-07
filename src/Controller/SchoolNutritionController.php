@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
 use App\Nutrition\NutritionException;
@@ -10,7 +10,7 @@ use App\Nutrition\NutritionPeriod;
 use App\Nutrition\Sf8Report;
 use App\Nutrition\Sf8Summary;
 use App\Security\Voter\NutritionVoter;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;

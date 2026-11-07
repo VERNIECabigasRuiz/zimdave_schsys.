@@ -2,6 +2,7 @@
 
 namespace App\Attendance;
 
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Entity\Section;
 use App\Repository\RollCallRepository;
 use App\Repository\Sf2SubmissionRepository;

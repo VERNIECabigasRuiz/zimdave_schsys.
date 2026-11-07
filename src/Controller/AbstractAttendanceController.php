@@ -9,7 +9,7 @@ use App\Attendance\Sf2Roster;
 use App\Attendance\Sf2Writer;
 use App\Entity\Section;
 use App\Repository\RollCallRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Security\Voter\AttendanceVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +29,7 @@ abstract class AbstractAttendanceController extends AbstractController
         protected readonly AttendanceRecorder $recorder,
         protected readonly Sf2Roster $roster,
         protected readonly RollCallRepository $rollCalls,
-        protected readonly SchoolYearRepository $schoolYears,
+        protected readonly SchoolYearRepositoryInterface $schoolYears,
         protected readonly SectionRepository $sections,
     ) {
     }

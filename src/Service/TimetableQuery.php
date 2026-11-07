@@ -4,14 +4,14 @@ namespace App\Service;
 
 use App\Entity\ClassPeriod;
 use App\Entity\ScheduleEntry;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\Repository\ClassPeriodRepository;
 use App\Repository\ScheduleEntryRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Repository\TeachingLoadRepository;
 
@@ -25,7 +25,7 @@ class TimetableQuery
         private readonly TeachingLoadRepository $loads,
         private readonly SubjectRepository $subjects,
         private readonly ClassPeriodRepository $periods,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
     ) {
     }
 

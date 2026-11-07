@@ -3,13 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\PersonalDataSheet;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\ServiceRecordEntry;
 use App\Access\Domain\Model\User;
 use App\Form\ServiceRecordEntryFormType;
 use App\Repository\PersonalDataSheetRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
 use App\Repository\ServiceRecordRepository;
 use App\Security\Voter\ServiceRecordVoter;
@@ -43,8 +43,8 @@ class ServiceRecordController extends AbstractController
     ];
 
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly PersonalDataSheetRepository $sheets,
         private readonly ServiceRecordRepository $records,
         private readonly ServiceRecordEntryRepository $entries,

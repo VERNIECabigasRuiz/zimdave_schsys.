@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Access\Domain\Model\User;
 use App\Form\StaffIdDetailsFormType;
-use App\Repository\DivisionRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\DivisionRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\StaffIdDetailsRepository;
 use App\StaffId\StaffIdCardBuilder;
 use App\StaffId\StaffIdPdf;
@@ -27,11 +27,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class MyIdController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly StaffIdCardBuilder $builder,
         private readonly StaffIdDetailsRepository $details,
-        private readonly DivisionRepository $divisions,
+        private readonly DivisionRepositoryInterface $divisions,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }

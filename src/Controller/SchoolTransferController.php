@@ -2,17 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\TransferRequest;
 use App\Access\Domain\Model\User;
 use App\Form\EnrollSectionFormType;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Repository\TransferRequestRepository;
 use App\Security\Voter\LearnerVoter;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use App\Service\EnrollmentException;
 use App\Service\LearnerLookup;
 use App\Service\LookupKind;
@@ -39,7 +39,7 @@ class SchoolTransferController extends AbstractController
     private const TABS = ['incoming', 'outgoing'];
 
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SectionRepository $sections,
         private readonly TransferRequestRepository $requests,
         private readonly LearnerLookup $lookup,

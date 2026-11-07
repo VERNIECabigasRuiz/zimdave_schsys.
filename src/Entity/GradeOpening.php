@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
 use App\Access\Domain\Model\User;
 use App\Repository\GradeOpeningRepository;
 use Doctrine\ORM\Mapping as ORM;

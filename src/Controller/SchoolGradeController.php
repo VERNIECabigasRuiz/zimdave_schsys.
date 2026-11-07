@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\CardSlip\CardSlipBuilder;
 use App\CardSlip\CardSlipPdf;
-use App\Entity\GradingPeriod;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Access\Domain\Model\User;
@@ -21,12 +21,12 @@ use App\Grading\SectionGradeGrid;
 use App\Repository\GradeChangeRequestRepository;
 use App\Repository\GradeLockRepository;
 use App\Repository\GradeOpeningRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
 use App\Security\Voter\CardSlipVoter;
 use App\Security\Voter\GradeVoter;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\FormInterface;
@@ -48,7 +48,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class SchoolGradeController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SectionRepository $sections,
         private readonly SubjectRepository $subjects,
         private readonly GradeLockRepository $locks,

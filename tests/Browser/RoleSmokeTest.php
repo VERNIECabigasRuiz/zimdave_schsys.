@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Browser;
 
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\SexAtBirth;
 use App\Access\Domain\Model\User;

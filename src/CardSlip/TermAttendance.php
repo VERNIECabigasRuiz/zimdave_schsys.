@@ -3,9 +3,9 @@
 namespace App\CardSlip;
 
 use App\Attendance\RosterEntry;
-use App\Attendance\SchoolCalendar;
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Roster;
-use App\Entity\GradingPeriod;
+use App\Schools\Domain\Model\GradingPeriod;
 use App\Entity\LearnerMark;
 use App\Entity\Section;
 use App\Repository\EnrollmentRepository;

@@ -9,7 +9,7 @@ use App\Access\Domain\Model\User;
 use App\Access\Presentation\Controller\AccountController;
 use App\Controller\Admin\TeacherSchoolController;
 use App\Service\AccessHooks\LearnerRoleChangeGuard;
-use App\Service\AccessHooks\PrincipalRoleChangeGuard;
+use App\Schools\Infrastructure\Access\PrincipalRoleChangeGuard;
 use App\Service\AccessHooks\TeacherSeatReactivationGuard;
 use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\Lock\LockFactory;

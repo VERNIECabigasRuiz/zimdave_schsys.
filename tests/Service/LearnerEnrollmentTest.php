@@ -5,11 +5,11 @@ namespace App\Tests\Service;
 use App\Core\Domain\Model\ActivityLog;
 use App\Entity\Enrollment;
 use App\Entity\Grade;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Learner;
 use App\Billing\Domain\Model\Plan;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Subject;
@@ -18,7 +18,7 @@ use App\Entity\TransferStatus;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\GradeRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Access\Domain\Model\Repository\UserRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
@@ -82,8 +82,8 @@ class LearnerEnrollmentTest extends KernelTestCase
             $c->get(PlanLimits::class),
             new LearnerLock($c->get(LockFactory::class), $c->get(ManagerRegistry::class)),
             $enrollments ?? $realEnrollments,
-            new EnrollmentGuard($this->em, $c->get(SchoolYearRepository::class), $c->get(TransferRequestRepository::class)),
-            $c->get(SchoolYearRepository::class),
+            new EnrollmentGuard($this->em, $c->get(SchoolYearRepositoryInterface::class), $c->get(TransferRequestRepository::class)),
+            $c->get(SchoolYearRepositoryInterface::class),
             $c->get(UserRepositoryInterface::class),
             $c->get(UserPasswordHasherInterface::class),
             new TemporaryPasswordGenerator(),

@@ -3,10 +3,10 @@
 namespace App\Tests\LessonPlan;
 
 use App\Entity\ClassPeriod;
-use App\Entity\GradeLevel;
-use App\Entity\School;
-use App\Entity\SchoolDayOff;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolDayOff;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\ScheduleEntry;
 use App\Entity\Subject;
 use App\Entity\TeachingLoad;
@@ -14,7 +14,7 @@ use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\LessonPlan\LessonWeek;
 use App\Repository\ScheduleEntryRepository;
-use App\Repository\SchoolDayOffRepository;
+use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -50,7 +50,7 @@ class LessonWeekTest extends KernelTestCase
     {
         $c = static::getContainer();
 
-        return new LessonWeek($c->get(ScheduleEntryRepository::class), $c->get(SchoolDayOffRepository::class));
+        return new LessonWeek($c->get(ScheduleEntryRepository::class), $c->get(SchoolDayOffRepositoryInterface::class));
     }
 
     /** @param list<Weekday> $days */

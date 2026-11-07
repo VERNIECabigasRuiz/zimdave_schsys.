@@ -3,9 +3,9 @@
 namespace App\Grading;
 
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
-use App\Entity\GradingPeriod;
-use App\Entity\School;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;

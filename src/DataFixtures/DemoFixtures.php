@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Attendance\AttendanceRecorder;
-use App\Attendance\SchoolCalendar;
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Entity\ClassPeriod;
-use App\Entity\Division;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\Division;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\Learner;
 use App\Entity\LearnerMark;
 use App\Billing\Domain\Model\Plan;
-use App\Entity\School;
-use App\Entity\SchoolType;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolType;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Subject;
@@ -24,8 +24,8 @@ use App\Entity\Weekday;
 use App\Grading\GradeRecorder;
 use App\LessonPlan\LessonWeek;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SubjectRepository;
 use App\Service\ClassPeriodManager;
 use App\Service\LearnerEnrollment;
@@ -77,8 +77,8 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly SchoolClockInterface $clock,
-        private readonly SchoolRepository $schools,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolRepositoryInterface $schools,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SubjectRepository $subjects,
         private readonly EnrollmentRepository $enrollments,
         private readonly SchoolTeacherManager $teachers,
@@ -102,7 +102,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
 
     public function load(ObjectManager $manager): void
     {
-        if (null !== $this->schools->findOneBy(['schoolId' => self::BASIC_SCHOOL_ID])) {
+        if (null !== $this->schools->findBySchoolId(self::BASIC_SCHOOL_ID)) {
             throw new \RuntimeException('Demo data is already loaded. Run make fixture-load first.');
         }
 

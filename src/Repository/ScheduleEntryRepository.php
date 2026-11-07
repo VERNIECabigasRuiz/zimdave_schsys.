@@ -3,9 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\ClassPeriod;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\ScheduleEntry;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\TeachingLoad;
 use App\Access\Domain\Model\User;

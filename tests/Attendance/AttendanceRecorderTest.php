@@ -5,24 +5,24 @@ namespace App\Tests\Attendance;
 use App\Attendance\AttendanceException;
 use App\Attendance\AttendanceRecorder;
 use App\Attendance\AttendanceRules;
-use App\Attendance\SchoolCalendar;
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Roster;
 use App\Core\Domain\Model\ActivityLog;
 use App\Entity\AttendanceMark;
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
-use App\Entity\School;
-use App\Entity\SchoolDayOff;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolDayOff;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Sf1Remark;
 use App\Entity\Sf2Submission;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\RollCallRepository;
-use App\Repository\SchoolDayOffRepository;
+use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Repository\Sf2SubmissionRepository;
 use App\Repository\TransferRequestRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
@@ -81,7 +81,7 @@ class AttendanceRecorderTest extends KernelTestCase
         $c = static::getContainer();
 
         return new AttendanceRules(
-            new SchoolCalendar($c->get(SchoolDayOffRepository::class)),
+            new SchoolCalendar($c->get(SchoolDayOffRepositoryInterface::class)),
             $c->get(RollCallRepository::class),
             $c->get(Sf2SubmissionRepository::class),
             new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
@@ -91,7 +91,7 @@ class AttendanceRecorderTest extends KernelTestCase
     private function recorder(): AttendanceRecorder
     {
         $c = static::getContainer();
-        $calendar = new SchoolCalendar($c->get(SchoolDayOffRepository::class));
+        $calendar = new SchoolCalendar($c->get(SchoolDayOffRepositoryInterface::class));
 
         return new AttendanceRecorder(
             $this->em,
@@ -101,7 +101,6 @@ class AttendanceRecorderTest extends KernelTestCase
             $calendar,
             $c->get(RollCallRepository::class),
             $c->get(Sf2SubmissionRepository::class),
-            $c->get(SchoolDayOffRepository::class),
             $c->get(ActivityLoggerInterface::class),
             new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
         );
@@ -229,43 +228,4 @@ class AttendanceRecorderTest extends KernelTestCase
         $this->recorder()->reopen($this->artistic, new \DateTimeImmutable('2025-07-01'));
     }
 
-    public function testAddDaysOffRange(): void
-    {
-        static::mockTime('2025-12-19 10:00:00');
-        $this->recorder()->takeRollCall($this->artistic, new \DateTimeImmutable('2025-12-19'), [], $this->adviser);
-
-        $result = $this->recorder()->addDaysOff($this->school, $this->sy, new \DateTimeImmutable('2025-12-19'), new \DateTimeImmutable('2026-01-02'), 'Christmas break', $this->principal);
-
-        self::assertSame(['added' => 11, 'sectionsWithAttendance' => 1], $result);
-        self::assertSame(12, $this->em->getRepository(SchoolDayOff::class)->count([]));
-        self::assertContains('Added day off 2025-12-19 to 2026-01-02: Christmas break', $this->logs());
-
-        self::assertSame(['added' => 0, 'sectionsWithAttendance' => 0], $this->recorder()->addDaysOff($this->school, $this->sy, new \DateTimeImmutable('2025-12-22'), null, 'Again', $this->principal));
-    }
-
-    public static function badRanges(): iterable
-    {
-        yield 'to before from' => ['2025-09-10', '2025-09-08', 'The end date must be on or after the start date.'];
-        yield 'outside' => ['2026-04-28', '2026-05-04', 'Days off must be inside the school year (Jun 1, 2025 – Apr 30, 2026).'];
-        yield 'too long' => ['2025-09-01', '2025-11-28', 'Add at most 62 days at a time.'];
-    }
-
-    #[DataProvider('badRanges')]
-    public function testBadRangesAreRefused(string $from, string $to, string $message): void
-    {
-        $this->expectException(AttendanceException::class);
-        $this->expectExceptionMessageIsOrContains($message);
-
-        $this->recorder()->addDaysOff($this->school, $this->sy, new \DateTimeImmutable($from), new \DateTimeImmutable($to), 'Something', $this->principal);
-    }
-
-    public function testRemoveDayOff(): void
-    {
-        $dayOff = $this->em->getRepository(SchoolDayOff::class)->findOneBy([]);
-
-        $this->recorder()->removeDayOff($dayOff);
-
-        self::assertSame(0, $this->em->getRepository(SchoolDayOff::class)->count([]));
-        self::assertSame(['Removed day off 2025-08-21 (Ninoy Aquino Day)'], $this->logs());
-    }
 }

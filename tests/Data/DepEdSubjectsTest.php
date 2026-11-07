@@ -3,8 +3,8 @@
 namespace App\Tests\Data;
 
 use App\Data\DepEdSubjects;
-use App\Entity\GradeLevel;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\SchoolYear;
 use PHPUnit\Framework\TestCase;
 
 class DepEdSubjectsTest extends TestCase

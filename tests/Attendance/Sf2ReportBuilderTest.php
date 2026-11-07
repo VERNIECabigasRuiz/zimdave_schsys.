@@ -3,18 +3,18 @@
 namespace App\Tests\Attendance;
 
 use App\Attendance\AttendanceRules;
-use App\Attendance\SchoolCalendar;
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Report;
 use App\Attendance\Sf2ReportBuilder;
 use App\Attendance\Sf2Roster;
 use App\Attendance\Sf2Row;
 use App\Entity\Enrollment;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
-use App\Entity\School;
-use App\Entity\SchoolDayOff;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolDayOff;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\SexAtBirth;
 use App\Entity\Sf1Remark;
@@ -23,8 +23,8 @@ use App\Entity\TransferStatus;
 use App\Access\Domain\Model\User;
 use App\Repository\EnrollmentRepository;
 use App\Repository\RollCallRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolDayOffRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Repository\Sf2SubmissionRepository;
 use App\Repository\TransferRequestRepository;
 use App\Core\Infrastructure\Clock\SchoolClock;
@@ -113,7 +113,7 @@ class Sf2ReportBuilderTest extends KernelTestCase
     private function build(string $month = '2025-08-01', ?Section $section = null): Sf2Report
     {
         $c = static::getContainer();
-        $calendar = new SchoolCalendar($c->get(SchoolDayOffRepository::class));
+        $calendar = new SchoolCalendar($c->get(SchoolDayOffRepositoryInterface::class));
         $clock = new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila');
 
         return (new Sf2ReportBuilder(
@@ -121,8 +121,8 @@ class Sf2ReportBuilderTest extends KernelTestCase
             $calendar,
             $c->get(RollCallRepository::class),
             $c->get(Sf2SubmissionRepository::class),
-            $c->get(SchoolDayOffRepository::class),
-            $c->get(SchoolAssignmentRepository::class),
+            $c->get(SchoolDayOffRepositoryInterface::class),
+            $c->get(SchoolAssignmentRepositoryInterface::class),
             new AttendanceRules($calendar, $c->get(RollCallRepository::class), $c->get(Sf2SubmissionRepository::class), $clock),
             $clock,
         ))->build($section ?? $this->artistic, new \DateTimeImmutable($month));

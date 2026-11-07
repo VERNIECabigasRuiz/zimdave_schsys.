@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\Sf2Submission;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

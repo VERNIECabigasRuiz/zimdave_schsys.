@@ -3,17 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\GradeChangeRequest;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Form\GradeChangeDeclineFormType;
 use App\Grading\GradeChangeManager;
 use App\Grading\GradeRecorder;
 use App\Grading\GradingException;
 use App\Repository\GradeChangeRequestRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Security\Voter\GradeVoter;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -35,7 +35,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class SchoolGradeChangeController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly GradeChangeRequestRepository $requests,
         private readonly GradeChangeManager $manager,
         private readonly FormFactoryInterface $formFactory,

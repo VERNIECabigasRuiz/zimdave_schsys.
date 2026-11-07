@@ -2,9 +2,9 @@
 
 namespace App\Grading;
 
-use App\Entity\GradingPeriod;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
 

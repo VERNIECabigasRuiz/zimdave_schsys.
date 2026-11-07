@@ -2,14 +2,14 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
-use App\Entity\GradeLevel;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Billing\Domain\Model\Plan;
 use App\Entity\Section;
 use App\Repository\EnrollmentRepository;
-use App\Repository\SchoolAssignmentRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Service\PlanLimitException;
 use App\Service\PlanLimits;
 use App\Tests\SchoolFixturesTrait;
@@ -33,7 +33,7 @@ class PlanLimitsTest extends KernelTestCase
         static::mockTime('2026-10-16');
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
         // Built by hand: the container only keeps it once a page uses it (the teachers page does)
-        $this->limits = new PlanLimits(static::getContainer()->get(SchoolAssignmentRepository::class), static::getContainer()->get(EnrollmentRepository::class), new Clock());
+        $this->limits = new PlanLimits(static::getContainer()->get(SchoolAssignmentRepositoryInterface::class), static::getContainer()->get(EnrollmentRepository::class), new Clock());
         $this->clearSchoolData();
         $this->sy = $this->schoolYear(2026, current: true);
     }

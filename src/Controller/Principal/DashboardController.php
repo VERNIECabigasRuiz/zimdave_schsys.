@@ -3,13 +3,13 @@
 namespace App\Controller\Principal;
 
 use App\Attendance\AttendanceStatistics;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Access\Domain\Model\User;
 use App\Grading\FailingLearners;
 use App\Grading\SectionGradeGrid;
 use App\Repository\GradeChangeRequestRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\TransferRequestRepository;
 use App\Service\PlanLimits;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
@@ -25,8 +25,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DashboardController extends AbstractController
 {
     public function __construct(
-        private readonly SchoolYearRepository $schoolYears,
-        private readonly SchoolAssignmentRepository $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly PlanLimits $planLimits,
         private readonly TimetableQuery $timetable,
         private readonly SchoolClockInterface $clock,

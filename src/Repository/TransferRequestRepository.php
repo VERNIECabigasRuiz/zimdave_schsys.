@@ -4,8 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Enrollment;
 use App\Entity\Learner;
-use App\Entity\School;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\Section;
 use App\Entity\TransferRequest;
 use App\Entity\TransferStatus;

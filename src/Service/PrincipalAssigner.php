@@ -3,12 +3,12 @@
 namespace App\Service;
 
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Entity\School;
-use App\Entity\SchoolAssignment;
-use App\Entity\SchoolYear;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolAssignment;
+use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -18,8 +18,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class PrincipalAssigner
 {
     public function __construct(
-        private readonly SchoolAssignmentRepository $assignments,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly EntityManagerInterface $entityManager,
         private readonly ActivityLoggerInterface $activityLogger,
     ) {

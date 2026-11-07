@@ -6,19 +6,19 @@ use App\Dto\TimetablePlotInput;
 use App\Dto\TimetableTeacherInput;
 use App\Entity\ClassPeriod;
 use App\Entity\ScheduleEntry;
-use App\Entity\School;
+use App\Schools\Domain\Model\School;
 use App\Entity\Section;
 use App\Entity\Subject;
 use App\Access\Domain\Model\User;
 use App\Entity\Weekday;
 use App\Repository\ClassPeriodRepository;
 use App\Repository\ScheduleEntryRepository;
-use App\Repository\SchoolAssignmentRepository;
-use App\Repository\SchoolYearRepository;
+use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\SectionRepository;
 use App\Repository\SubjectRepository;
 use App\Access\Domain\Model\Repository\UserRepositoryInterface;
-use App\Security\Voter\SchoolVoter;
+use App\Schools\Presentation\Security\SchoolVoter;
 use App\Service\PlanLimitException;
 use App\Service\TimetableException;
 use App\Service\TimetableManager;
@@ -47,8 +47,8 @@ class SchoolTimetableController extends AbstractController
         private readonly ClassPeriodRepository $periods,
         private readonly ScheduleEntryRepository $entries,
         private readonly UserRepositoryInterface $users,
-        private readonly SchoolAssignmentRepository $assignments,
-        private readonly SchoolYearRepository $schoolYears,
+        private readonly SchoolAssignmentRepositoryInterface $assignments,
+        private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly TimetableManager $manager,
         private readonly TimetableQuery $query,
     ) {
