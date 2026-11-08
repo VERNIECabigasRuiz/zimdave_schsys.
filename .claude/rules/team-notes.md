@@ -27,6 +27,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Detect a failure where it happens rather than predicting it from separate logic.
 - Before explaining what happens in an edge case, check for scheduled jobs that change that data first.
 - Save long command output to a file and read it, rather than piping it through filters.
+- Read a check's output before recording it as passed.
 - When a fix depends on how an external system stores data, check its metadata before changing code.
 - When replacing a method by text, match its full signature and body, not a closing-brace pattern.
 - When splitting or moving a class, carry its class-level attributes (access checks, route prefixes) to every piece.
@@ -114,6 +115,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Before verifying a fix, grep for the actual affected call sites/routes and scope the verification run to just those tests first, rather than defaulting to a full/large suite batch — cheaper to confirm the fix, and avoids exhausting shared-machine resources on a broad run when a narrow one would do.
 - Any code change resets a consecutive-clean-runs count — only runs on the final code count.
 - Before finishing a test, check every setup line sits under `// Initialize`.
+- Check each test's `// Execute` section actually runs the code under test.
 
 ## Subagents / Long-Running Tasks
 
