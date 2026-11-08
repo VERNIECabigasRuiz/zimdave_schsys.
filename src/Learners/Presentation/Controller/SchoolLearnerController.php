@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Learners\Presentation\Controller;
 
 use App\Access\Domain\Model\User;
+use App\Learners\Application\Query\Command\GetLearnerIdCardCommand;
+use App\Learners\Application\Query\Command\GetSectionIdCardsCommand;
+use App\Learners\Application\Query\Command\GetSf1FileCommand;
 use App\Schools\Application\Api\SchoolDirectoryInterface;
 use App\Schools\Domain\Model\School;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -110,6 +113,44 @@ class SchoolLearnerController extends AbstractLearnerController
     public function classList(School $school, int $section, #[CurrentUser] User $user): Response
     {
         return $this->renderClassList($this->page($school, $user), $section);
+    }
+
+    /** ID cards of every learner in the section, as a PDF. */
+    #[Route('/sections/{section}/ids', name: 'school_learners_ids', methods: ['GET'])]
+    public function sectionIds(
+        School $school,
+        int $section,
+        #[CurrentUser] User $user,
+        #[MapQueryParameter] string $layout = 'sheet',
+    ): Response {
+        return $this->download(
+            new GetSectionIdCardsCommand((int) $user->getId(), (int) $school->getId(), null, $section, $layout),
+            'application/pdf',
+        );
+    }
+
+    /** One learner's ID card, e.g. to replace a lost one. */
+    #[Route('/learners/{learner}/id', name: 'school_learners_id', methods: ['GET'])]
+    public function learnerId(
+        School $school,
+        int $learner,
+        #[CurrentUser] User $user,
+        #[MapQueryParameter] string $layout = 'sheet',
+    ): Response {
+        return $this->download(
+            new GetLearnerIdCardCommand((int) $user->getId(), (int) $school->getId(), null, $learner, $layout),
+            'application/pdf',
+        );
+    }
+
+    /** The section's SF1 (School Register) as an .xls file laid out like LIS's. */
+    #[Route('/sections/{section}/sf1', name: 'school_learners_sf1', methods: ['GET'])]
+    public function sf1(School $school, int $section, #[CurrentUser] User $user): Response
+    {
+        return $this->download(
+            new GetSf1FileCommand((int) $user->getId(), (int) $school->getId(), null, $section),
+            'application/vnd.ms-excel',
+        );
     }
 
     private function page(School $school, User $user): LearnerPage

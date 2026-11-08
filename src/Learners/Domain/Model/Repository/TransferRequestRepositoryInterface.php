@@ -35,4 +35,11 @@ interface TransferRequestRepositoryInterface
 
     /** @return list<TransferRequest> newest first */
     public function findForLearner(Learner $learner): array;
+
+    public function findById(int $id): ?TransferRequest;
+
+    /** The request as it is saved now, even when an older copy was loaded earlier in the same request. */
+    public function findFresh(int $id): ?TransferRequest;
+
+    public function add(TransferRequest $request): void;
 }

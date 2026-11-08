@@ -26,6 +26,9 @@ interface SchoolDirectoryInterface
     /** The school $user works at in $schoolYear with $role, if any. */
     public function schoolOf(User $user, SchoolYear $schoolYear, string $role): ?School;
 
+    /** The account heading $school in $schoolYear, if any. */
+    public function principalOf(School $school, SchoolYear $schoolYear): ?User;
+
     /**
      * Accounts assigned to $school as teachers in $schoolYear, by name.
      *

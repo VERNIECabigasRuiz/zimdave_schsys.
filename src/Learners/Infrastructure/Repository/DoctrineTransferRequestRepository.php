@@ -13,6 +13,7 @@ use App\Classes\Domain\Model\Section;
 use App\Learners\Domain\Model\TransferRequest;
 use App\Learners\Domain\Model\TransferStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -169,5 +170,26 @@ class DoctrineTransferRequestRepository extends ServiceEntityRepository implemen
             ->addOrderBy('pendingRank', 'ASC')
             ->addOrderBy('t.createdAt', 'DESC')
             ->addOrderBy('t.id', 'DESC');
+    }
+
+    public function findById(int $id): ?TransferRequest
+    {
+        return $this->find($id);
+    }
+
+    public function findFresh(int $id): ?TransferRequest
+    {
+        /** @var TransferRequest|null */
+        return $this->createQueryBuilder('t')
+            ->where('t.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->setHint(Query::HINT_REFRESH, true)
+            ->getOneOrNullResult();
+    }
+
+    public function add(TransferRequest $request): void
+    {
+        $this->getEntityManager()->persist($request);
     }
 }

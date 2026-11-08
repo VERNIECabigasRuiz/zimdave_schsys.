@@ -11,7 +11,7 @@ use App\Access\Domain\Model\User;
 use App\Repository\RollCallRepository;
 use App\Repository\Sf2SubmissionRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Service\LearnerLock;
+use App\Learners\Application\Service\LearnerEnrollment;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Lock\LockFactory;
@@ -141,7 +141,7 @@ class AttendanceRecorder
     {
         $lock = $this->lockFactory->createLock('attendance-section-'.$section->getId());
         if (!$lock->acquire()) {
-            throw new AttendanceException(LearnerLock::BUSY);
+            throw new AttendanceException(LearnerEnrollment::BUSY);
         }
 
         try {

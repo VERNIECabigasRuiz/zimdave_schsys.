@@ -41,6 +41,9 @@ interface EnrollmentRepositoryInterface
     /** @return list<Enrollment> newest school year first */
     public function findHistory(Learner $learner): array;
 
+    /** The enrollment as it is saved now, even when an older copy was loaded earlier in the same request. */
+    public function findFresh(int $id): ?Enrollment;
+
     public function add(Enrollment $enrollment): void;
 
     public function remove(Enrollment $enrollment): void;

@@ -43,6 +43,11 @@ final class SchoolDirectory implements SchoolDirectoryInterface
         return $this->assignments->findSchoolOf($user, $schoolYear, $role);
     }
 
+    public function principalOf(School $school, SchoolYear $schoolYear): ?User
+    {
+        return $this->assignments->findPrincipal($school, $schoolYear)?->getUser();
+    }
+
     public function teachersOf(School $school, SchoolYear $schoolYear): array
     {
         return $this->assignments->findAssignedTeachers($school, $schoolYear);

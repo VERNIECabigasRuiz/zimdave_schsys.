@@ -157,30 +157,6 @@ parameters:
 			path: ../src/Controller/SchoolGradeController.php
 
 		-
-			message: '#^Call to an undefined method App\\Learners\\Domain\\Model\\Repository\\TransferRequestRepositoryInterface\:\:find\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: ../src/Controller/SchoolTransferController.php
-
-		-
-			message: '#^Cannot call method getSchool\(\) on App\\Learners\\Domain\\Model\\Enrollment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Controller/SchoolTransferController.php
-
-		-
-			message: '#^Parameter \#1 \$from of method App\\Service\\TransferManager\:\:request\(\) expects App\\Learners\\Domain\\Model\\Enrollment, App\\Learners\\Domain\\Model\\Enrollment\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/SchoolTransferController.php
-
-		-
-			message: '#^Parameter \#2 \$to of method App\\Service\\TransferManager\:\:request\(\) expects App\\Classes\\Domain\\Model\\Section, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/SchoolTransferController.php
-
-		-
 			message: '#^Method App\\Controller\\TeacherAttendanceController\:\:submitForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -457,12 +433,6 @@ parameters:
 			path: ../src/Form/CardSlipCommentsFormType.php
 
 		-
-			message: '#^Class App\\Form\\EnrollSectionFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/EnrollSectionFormType.php
-
-		-
 			message: '#^Class App\\Form\\FamilyBackgroundFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -703,12 +673,6 @@ parameters:
 			path: ../src/Grading/GradeChangeManager.php
 
 		-
-			message: '#^Method App\\LearnerId\\QrCode\:\:png\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/LearnerId/QrCode.php
-
-		-
 			message: '#^Cannot call method getTimestamp\(\) on DateTimeImmutable\|null\.$#'
 			identifier: method.nonObject
 			count: 2
@@ -827,18 +791,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Service/PdsListGrids.php
-
-		-
-			message: '#^Cannot call method getDefaultStyle\(\) on PhpOffice\\PhpSpreadsheet\\Spreadsheet\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Sf1/Sf1Writer.php
-
-		-
-			message: '#^Offset 0\|1\|2 might not exist on array\{array\{''A1\:A1'', ''B1\:C1'', ''D1\:H1''\}, array\{''I1\:L1'', ''M1\:M1'', ''N1\:U1''\}\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../src/Sf1/Sf1Writer.php
 
 		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
@@ -1379,24 +1331,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/SchoolNutritionControllerTest.php
-
-		-
-			message: '#^Method App\\Tests\\Controller\\SchoolTransferControllerTest\:\:currentEnrollment\(\) should return App\\Learners\\Domain\\Model\\Enrollment but returns App\\Learners\\Domain\\Model\\Enrollment\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Controller/SchoolTransferControllerTest.php
-
-		-
-			message: '#^Method App\\Tests\\Controller\\SchoolTransferControllerTest\:\:reload\(\) should return App\\Learners\\Domain\\Model\\TransferRequest but returns App\\Learners\\Domain\\Model\\TransferRequest\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Controller/SchoolTransferControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$enrollment of class App\\Learners\\Domain\\Model\\TransferRequest constructor expects App\\Learners\\Domain\\Model\\Enrollment, App\\Learners\\Domain\\Model\\Enrollment\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/SchoolTransferControllerTest.php
 
 		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
@@ -2377,88 +2311,10 @@ parameters:
 			path: ../tests/Security/GradeVoterTest.php
 
 		-
-			message: '#^Parameter \#1 \$enrollment of method App\\LearnerId\\IdCardBuilder\:\:forEnrollment\(\) expects App\\Learners\\Domain\\Model\\Enrollment, App\\Learners\\Domain\\Model\\Enrollment\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/IdCardBuilderTest.php
-
-		-
-			message: '#^Parameter \#2 \$string of static method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Service/IdCardBuilderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\IdCardPdfTest\:\:lrns\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../tests/Service/IdCardPdfTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\IdCardPdfTest\:\:pages\(\) should return int but returns int\<0, max\>\|false\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Service/IdCardPdfTest.php
-
-		-
-			message: '#^Cannot use array destructuring on array\<int\|string, int\|string\>\|false\.$#'
-			identifier: offsetAccess.nonArray
-			count: 1
-			path: ../tests/Service/LearnerIdQrCodeTest.php
-
-		-
-			message: '#^Parameter \#1 \$string of function getimagesizefromstring expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/LearnerIdQrCodeTest.php
-
-		-
-			message: '#^Parameter \#2 \$string of static method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/LearnerIdQrCodeTest.php
-
-		-
 			message: '#^Parameter \#2 \$offset of function substr expects int, int\<0, max\>\|false given\.$#'
 			identifier: argument.type
 			count: 3
 			path: ../tests/Service/PdsPdfRendererTest.php
-
-		-
-			message: '#^Cannot call method setRemarkCode\(\) on App\\Learners\\Domain\\Model\\Enrollment\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Service/Sf1ReportBuilderTest.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
-			identifier: cast.int
-			count: 4
-			path: ../tests/Service/Sf1WriterTest.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 4
-			path: ../tests/Service/Sf1WriterTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\Sf1WriterTest\:\:report\(\) has parameter \$female with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../tests/Service/Sf1WriterTest.php
-
-		-
-			message: '#^Parameter \#9 \$female of class App\\Sf1\\Sf1Report constructor expects list\<App\\Sf1\\Sf1Row\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/Sf1WriterTest.php
-
-		-
-			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Service/TransferManagerTest.php
 
 		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'

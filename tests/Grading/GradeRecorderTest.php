@@ -31,7 +31,7 @@ use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Service\LearnerLock;
+use App\Learners\Application\Service\LearnerEnrollment;
 use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -384,7 +384,7 @@ class GradeRecorderTest extends KernelTestCase
         self::assertSame(1, $this->save([$this->id(0) => 85]));
     }
 
-    /** As TransferManager::approve does: the same enrollment row moves to the receiving section. */
+    /** As TransferRequests::approve does: the same enrollment row moves to the receiving section. */
     private function transfer(Enrollment $enrollment, Section $to): void
     {
         $request = new TransferRequest($enrollment, $to, $this->teacher, new \DateTimeImmutable('2025-08-22 08:00'));
@@ -447,7 +447,7 @@ class GradeRecorderTest extends KernelTestCase
         self::assertTrue($locking->acquire());
 
         try {
-            self::assertSame(LearnerLock::BUSY, $this->refusal(fn () => $this->save([$this->id(0) => 85])));
+            self::assertSame(LearnerEnrollment::BUSY, $this->refusal(fn () => $this->save([$this->id(0) => 85])));
         } finally {
             $locking->release();
         }

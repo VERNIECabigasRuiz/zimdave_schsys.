@@ -24,6 +24,7 @@ use App\Learners\Application\Service\LookupKind;
 use App\Learners\Application\UseCase\Command\EnrollLearnerCommand;
 use App\Learners\Application\UseCase\Command\LearnerDetails;
 use App\Learners\Application\UseCase\Command\MoveLearnerCommand;
+use App\Learners\Application\UseCase\Command\RequestTransferCommand;
 use App\Learners\Application\UseCase\Command\ResetLearnerPasswordCommand;
 use App\Learners\Application\UseCase\Command\TransferLearnerCommand;
 use App\Learners\Application\UseCase\Command\UnenrollLearnerCommand;
@@ -33,14 +34,17 @@ use App\Learners\Application\UseCase\Command\UpdateLearnerPhotoCommand;
 use App\Learners\Application\UseCase\Handler\TransferLearnerHandler;
 use App\Learners\Domain\Exception\LearnerNotFoundException;
 use App\Learners\Domain\Exception\LearnersAccessDeniedException;
+use App\Learners\Domain\Exception\TransferNotFoundException;
 use App\Learners\Presentation\Form\EnrollFormType;
 use App\Learners\Presentation\Form\EnrollmentRecordFormType;
 use App\Learners\Presentation\Form\LearnerFormType;
+use App\Learners\Presentation\Form\TransferRequestFormType;
 use App\Schools\Domain\Exception\SchoolNotFoundException;
 use App\Schools\Domain\Exception\SchoolYearNotFoundException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -144,9 +148,14 @@ abstract class AbstractLearnerController extends BusController
             return $this->render('@Learners/learners/enroll.html.twig', $vars);
         }
         if (LookupKind::Elsewhere === $result['kind']) {
-            if (null !== $choices && $result['canRequestTransfer']) {
-                $request = new EnrollLearnerCommand($page->actorId, $page->schoolId, null, $lrn, null, null);
-                $vars['transfer_form'] = $this->createForm(EnrollFormType::class, $request, [
+            if (null !== $choices && $result['canRequestTransfer'] && null !== $result['learner']) {
+                $request = new RequestTransferCommand(
+                    $page->actorId,
+                    $page->schoolId,
+                    $lrn,
+                    (int) $result['learner']['id'],
+                );
+                $vars['transfer_form'] = $this->createForm(TransferRequestFormType::class, $request, [
                     'sections' => $choices,
                     'action' => $this->generateUrl(
                         'school_transfers_request',
@@ -419,6 +428,24 @@ abstract class AbstractLearnerController extends BusController
         return $this->redirectToShow($page, $learnerId);
     }
 
+    /** The file a download query returns, sent as an attachment of $type. */
+    protected function download(Query $query, string $type): Response
+    {
+        /** @var array{fileName: string, content: string} $file */
+        $file = $this->ask($query);
+        // section names may have an Ñ; old browsers get underscores
+        $fallback = (string) preg_replace('/[^\x20-\x7E]/', '_', $file['fileName']);
+
+        return new Response($file['content'], Response::HTTP_OK, [
+            'Content-Type' => $type,
+            'Content-Disposition' => HeaderUtils::makeDisposition(
+                HeaderUtils::DISPOSITION_ATTACHMENT,
+                $file['fileName'],
+                $fallback,
+            ),
+        ]);
+    }
+
     /** The data of a page query; anything not found is a 404, anything not allowed a 403. */
     protected function ask(Query $query): mixed
     {
@@ -444,6 +471,7 @@ abstract class AbstractLearnerController extends BusController
             || $failure instanceof SchoolYearNotFoundException
             || $failure instanceof SchoolNotFoundException
             || $failure instanceof AccountNotFoundException
+            || $failure instanceof TransferNotFoundException
         ) {
             throw $this->createNotFoundException($failure->getMessage());
         }
@@ -520,7 +548,7 @@ abstract class AbstractLearnerController extends BusController
      *
      * @return array<string, ?int>
      */
-    private static function choices(array $sections): array
+    protected static function choices(array $sections): array
     {
         return array_column($sections, 'id', 'label');
     }

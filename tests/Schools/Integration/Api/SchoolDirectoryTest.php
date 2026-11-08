@@ -92,6 +92,25 @@ final class SchoolDirectoryTest extends KernelTestCase
         self::assertSame([$ana, $promoted, $zed], $assigned);
     }
 
+    public function testFindsThePrincipalOfASchool(): void
+    {
+        // Initialize
+        $sy = $this->schoolYear(2026, true);
+        $headed = $this->school('300001', 'Alpha NHS');
+        $unheaded = $this->school('300002', 'Beta NHS');
+        $maria = $this->plainUser('rp-maria', User::ROLE_PRINCIPAL);
+        $this->assign($headed, $sy, $maria);
+        $directory = static::getContainer()->get(SchoolDirectoryInterface::class);
+
+        // Execute
+        $principal = $directory->principalOf($headed, $sy);
+        $nobody = $directory->principalOf($unheaded, $sy);
+
+        // Assert
+        self::assertSame($maria, $principal);
+        self::assertNull($nobody);
+    }
+
     public function testTellsWhyASchoolIsBlocked(): void
     {
         // Initialize

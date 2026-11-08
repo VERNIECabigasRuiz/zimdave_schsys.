@@ -231,7 +231,7 @@ class SectionGradeGridTest extends KernelTestCase
         $this->grade($abad, $this->math, 90);
         $this->grade($abad, $this->music, 85);
         $this->grade($abad, $this->arts, 90);
-        // as TransferManager::approve does: the same enrollment row moves to the receiving section
+        // as TransferRequests::approve does: the same enrollment row moves to the receiving section
         $to = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Brilliant');
         $request = new TransferRequest($abad, $to, $this->teacher, new \DateTimeImmutable('2025-08-22 08:00'));
         $request->decide(TransferStatus::Approved, $this->teacher, new \DateTimeImmutable('2025-08-22 09:00'));

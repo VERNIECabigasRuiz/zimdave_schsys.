@@ -120,6 +120,12 @@ class LearnerPolicy
         }
     }
 
+    /** Whether $user runs all of $school's pages: an administrator, or its principal this school year. */
+    public function managesSchool(User $user, School $school): bool
+    {
+        return \in_array(User::ROLE_ADMIN, $user->getRoles(), true) || $this->isPrincipalOf($user, $school);
+    }
+
     private function voteOnLearner(User $user, Learner $learner, SchoolYear $currentYear, bool $adviserAllowed): bool
     {
         $enrollment = $this->enrollments->findCurrent($learner, $currentYear);

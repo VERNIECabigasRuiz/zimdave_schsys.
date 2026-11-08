@@ -6,9 +6,13 @@ namespace App\Learners\Presentation\Controller;
 
 use App\Access\Domain\Model\User;
 use App\Learners\Application\Query\Command\GetAdvisoryCommand;
+use App\Learners\Application\Query\Command\GetLearnerIdCardCommand;
+use App\Learners\Application\Query\Command\GetSectionIdCardsCommand;
+use App\Learners\Application\Query\Command\GetSf1FileCommand;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
@@ -76,6 +80,51 @@ class TeacherClassController extends AbstractLearnerController
     public function resetPassword(#[CurrentUser] User $user, int $learner): Response
     {
         return $this->handleResetPassword($this->page($user), $learner);
+    }
+
+    /** The class's SF1 (School Register) as an .xls file laid out like LIS's. */
+    #[Route('/sf1', name: 'teacher_class_sf1', methods: ['GET'])]
+    public function sf1(#[CurrentUser] User $user): Response
+    {
+        $page = $this->page($user);
+
+        return $this->download(
+            new GetSf1FileCommand($page->actorId, $page->schoolId, $page->fixedSectionId, (int) $page->fixedSectionId),
+            'application/vnd.ms-excel',
+        );
+    }
+
+    /** ID cards of every learner in the class, as a PDF. */
+    #[Route('/ids', name: 'teacher_class_ids', methods: ['GET'])]
+    public function classIds(#[CurrentUser] User $user, #[MapQueryParameter] string $layout = 'sheet'): Response
+    {
+        $page = $this->page($user);
+
+        return $this->download(
+            new GetSectionIdCardsCommand(
+                $page->actorId,
+                $page->schoolId,
+                $page->fixedSectionId,
+                (int) $page->fixedSectionId,
+                $layout,
+            ),
+            'application/pdf',
+        );
+    }
+
+    /** One learner's ID card, e.g. to replace a lost one. */
+    #[Route('/{learner}/id', name: 'teacher_class_id', methods: ['GET'])]
+    public function learnerId(
+        #[CurrentUser] User $user,
+        int $learner,
+        #[MapQueryParameter] string $layout = 'sheet',
+    ): Response {
+        $page = $this->page($user);
+
+        return $this->download(
+            new GetLearnerIdCardCommand($page->actorId, $page->schoolId, $page->fixedSectionId, $learner, $layout),
+            'application/pdf',
+        );
     }
 
     /** The adviser's own section this school year; without one the class pages are refused. */

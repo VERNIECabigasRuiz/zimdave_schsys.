@@ -5,13 +5,13 @@ namespace App\Grading;
 use App\Schools\Domain\Model\School;
 use App\Classes\Domain\Model\Section;
 use App\Classes\Domain\Model\Subject;
-use App\Service\LearnerLock;
+use App\Learners\Application\Service\LearnerEnrollment;
 use Symfony\Component\Lock\LockFactory;
 
 /**
  * The locks that keep grade changes apart: a class's own lock, held while its grades change, and the school's grade
  * lock, held exclusively while the principal changes locks or openings and shared while a class's grades change.
- * Never blocks: a lock that is taken refuses with LearnerLock::BUSY.
+ * Never blocks: a lock that is taken refuses with LearnerEnrollment::BUSY.
  */
 class GradeLocks
 {
@@ -60,7 +60,7 @@ class GradeLocks
     {
         $lock = $this->lockFactory->createLock($key);
         if (!($shared ? $lock->acquireRead() : $lock->acquire())) {
-            throw new GradingException(LearnerLock::BUSY);
+            throw new GradingException(LearnerEnrollment::BUSY);
         }
 
         try {

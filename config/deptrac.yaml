@@ -407,6 +407,7 @@ deptrac:
       - DoctrineMapping
       - ValidatorConstraints
       - Framework
+      - Vendor
     Learners_Presentation:
       - Learners_Application
       - Learners_Domain

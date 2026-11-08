@@ -282,7 +282,7 @@ class TeacherGradeControllerTest extends AdminTestCase
     {
         $abad = $this->enrollments['Abad'];
         $this->em->persist(new Grade($abad, $this->math, $this->term1, 91, $this->teacher, new \DateTimeImmutable('2025-08-21')));
-        // as TransferManager::approve does: the same enrollment row moves to the receiving section
+        // as TransferRequests::approve does: the same enrollment row moves to the receiving section
         $to = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Brilliant');
         $request = new TransferRequest($abad, $to, $this->teacher, new \DateTimeImmutable('2025-08-22 08:00'));
         $request->decide(TransferStatus::Approved, $this->principal, new \DateTimeImmutable('2025-08-22 09:00'));

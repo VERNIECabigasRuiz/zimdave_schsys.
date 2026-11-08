@@ -12,7 +12,7 @@ use App\Access\Domain\Model\User;
 use App\Repository\NutritionAssessmentRepository;
 use App\Repository\Sf8SubmissionRepository;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Service\LearnerLock;
+use App\Learners\Application\Service\LearnerEnrollment;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Lock\LockFactory;
@@ -156,7 +156,7 @@ class NutritionRecorder
     {
         $lock = $this->lockFactory->createLock('nutrition-section-'.$section->getId());
         if (!$lock->acquire()) {
-            throw new NutritionException(LearnerLock::BUSY);
+            throw new NutritionException(LearnerEnrollment::BUSY);
         }
 
         try {

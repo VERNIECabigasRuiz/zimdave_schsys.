@@ -12,6 +12,7 @@ use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
 use App\Learners\Domain\Model\SexAtBirth;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -104,6 +105,17 @@ class DoctrineEnrollmentRepository extends ServiceEntityRepository implements En
         $enrollments = iterator_to_array($paginator, false);
 
         return ['enrollments' => $enrollments, 'matches' => \count($paginator)];
+    }
+
+    public function findFresh(int $id): ?Enrollment
+    {
+        /** @var Enrollment|null */
+        return $this->createQueryBuilder('e')
+            ->where('e.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->setHint(Query::HINT_REFRESH, true)
+            ->getOneOrNullResult();
     }
 
     public function add(Enrollment $enrollment): void

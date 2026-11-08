@@ -374,6 +374,23 @@ class TeacherClassControllerTest extends AdminTestCase
         );
     }
 
+    public function testAdviserPrintsOneLearnersId(): void
+    {
+        // Initialize
+        $learner = $this->enrolled('111111111111', 'Abad', 'Ana');
+
+        // Execute
+        $this->client->request('GET', '/teacher/class/' . $learner->getId() . '/id?layout=card');
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/pdf');
+        self::assertStringContainsString(
+            'filename=ID_111111111111.pdf',
+            (string) $this->client->getResponse()->headers->get('Content-Disposition'),
+        );
+    }
+
     public function testTeacherWithoutAdvisoryCannotPrintIds(): void
     {
         $this->sampaguita->setAdviser(null);
