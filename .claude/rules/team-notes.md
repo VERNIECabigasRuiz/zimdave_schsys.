@@ -46,6 +46,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Don't switch branches unless asked; read other branches with git commands instead.
 - Before planning files to share through git, run `git check-ignore -v` on them (the global gitignore counts too).
 - In Git Bash, prefix docker exec commands that take container paths with `MSYS_NO_PATHCONV=1`, and never pass /dev/null as an argument — paths get rewritten to Windows ones (/dev/null becomes nul and creates a file in the mounted repo).
+- In Git Bash, pass script arguments that start with `//` through a file, not on the command line.
 - Write helper scripts to a scratchpad file and run that, rather than an inline heredoc.
 - Helper scripts write files with LF line endings (binary mode).
 - Before writing a helper script, check the scratchpad for one already written.
@@ -116,6 +117,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Any code change resets a consecutive-clean-runs count — only runs on the final code count.
 - Before finishing a test, check every setup line sits under `// Initialize`.
 - Check each test's `// Execute` section actually runs the code under test.
+- For a test meant to guard a fix, break the fix once and watch the test fail.
 
 ## Subagents / Long-Running Tasks
 

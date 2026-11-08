@@ -53,6 +53,7 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - `@Core/base.html.twig` (`src/Core/Presentation/templates/`) sets `turbo-prefetch=false` deliberately so one-time passwords shown on a page aren't consumed by prefetch.
 - Uploaded photos/logos are personal data: stored under `public/uploads/` (git-ignored), or `var/test_public` in tests (`app.upload_root`). `ImageProcessorInterface` re-encodes everything to webp.
 - Schema changes only through migrations with MySQL syntax (use `/new-migration`).
+- Domain entities write column types as strings (`'date_immutable'`), not DBAL `Types` constants; deptrac blocks DBAL in Domain.
 - Every Twig page needs the built assets (`public/build/.vite/entrypoints.json`); without them `vite_entry_*_tags()` throws. The web container builds them on start; rebuild with `make bash-exec CMD='pnpm build'`.
 - `assets/controllers/csrf_protection_controller.js` isn't a Stimulus controller: `assets/bootstrap.js` imports it for its side effect (the CSRF cookie on submit). Keep it out of the controller list, or forms and login stop working.
 - Stimulus controllers in a module's `Presentation/assets/controllers/` set `import.meta.stimulusIdentifier` so their names don't change when they move.
@@ -76,6 +77,8 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - When moving validation off an entity, grep the tests for validator calls on it.
 - In functional tests, reload an entity through its repository after a request before changing it; the object loaded before the request is detached, so the change isn't saved.
 - Write test logs and coverage files to a temp folder outside the repo, not onto the Docker bind mount.
+- After moving a test, check its class name matches the file, its `__DIR__` paths still resolve, and its folder has left the legacy suite.
+- Run a new module's tests with coverage before the full `make test-feature`.
 
 ## Git
 
