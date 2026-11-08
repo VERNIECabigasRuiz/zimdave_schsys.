@@ -32,6 +32,8 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - When replacing a method by text, match its full signature and body, not a closing-brace pattern.
 - When splitting or moving a class, carry its class-level attributes (access checks, route prefixes) to every piece.
 - After moving classes to a new namespace, grep their short names in every file that used them without an import.
+- When moving classes, also grep templates and config for their full old names.
+- After a scripted import rewrite, check for repeated and same-namespace imports.
 - When adding a status or marker column, update every query that decides "already done".
 - When adding a skip or exclusion, update every query that counts "not sent yet".
 - Before calling something an open issue, check memory and the code for an existing decision.
@@ -77,6 +79,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - When writing a plan or spec, write the tests as part of the plan/spec but do not run them at that stage. Defer running the test(s) until the end of the plan/spec's implementation, then run them as part of verification.
 - During implementation of a plan/spec, record when each task starts and when it completes, and note the duration; update the plan document with these timelines as each task finishes.
 - Record task start/end times even for a design agreed in chat, not only for plan documents.
+- Compute durations with a command, not by hand.
 - After every change or implementation of a plan/spec, first show a summary of work done per task (task title, started, ended, duration), then show a list summarizing the changes plus a proposed commit message.
 - When executing a plan or spec, do not commit per task/step. Batch all changes and commit once in bulk at the very end of the implementation, and only after getting explicit approval to do so. Exception: Subagent-Driven execution mode (see Subagents / Long-Running Tasks) commits per task, with approval given retroactively via the end-of-run commit list.
 - When choosing how to execute a plan/design, offer "Developer Driven" as an execution option alongside the others. Its procedure, per change:
