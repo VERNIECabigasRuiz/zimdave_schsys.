@@ -29,6 +29,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Save long command output to a file and read it, rather than piping it through filters.
 - When a fix depends on how an external system stores data, check its metadata before changing code.
 - When replacing a method by text, match its full signature and body, not a closing-brace pattern.
+- When splitting or moving a class, carry its class-level attributes (access checks, route prefixes) to every piece.
 - When adding a status or marker column, update every query that decides "already done".
 - When adding a skip or exclusion, update every query that counts "not sent yet".
 - Before calling something an open issue, check memory and the code for an existing decision.
@@ -45,6 +46,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Before planning files to share through git, run `git check-ignore -v` on them (the global gitignore counts too).
 - In Git Bash, prefix docker exec commands that take container paths with `MSYS_NO_PATHCONV=1`, and never pass /dev/null as an argument — paths get rewritten to Windows ones (/dev/null becomes nul and creates a file in the mounted repo).
 - Write helper scripts to a scratchpad file and run that, rather than an inline heredoc.
+- Helper scripts write files with LF line endings (binary mode).
 - Before writing a helper script, check the scratchpad for one already written.
 - Don't put `pkill -f` in a shell whose command line contains the same pattern; run it on its own.
 - When you add a new setup step, check the first run's log to confirm it actually ran.
