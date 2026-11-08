@@ -55,6 +55,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Helper scripts write files with LF line endings (binary mode).
 - Before writing a helper script, check the scratchpad for one already written.
 - Don't put `pkill -f` in a shell whose command line contains the same pattern; run it on its own.
+- Don't bundle cleanup removals into a start command; remove only what's there, as its own step.
 - When you add a new setup step, check the first run's log to confirm it actually ran.
 - Before a run that wipes old reports, copy the results you'll compare against.
 - Before moving or deleting a folder, check what reads, writes, clears or links to it (including redirects and URLs).
@@ -80,6 +81,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - During implementation of a plan/spec, record when each task starts and when it completes, and note the duration; update the plan document with these timelines as each task finishes.
 - Record task start/end times even for a design agreed in chat, not only for plan documents.
 - Compute durations with a command, not by hand.
+- Log a task's end and the next task's start together, in the same command.
 - After every change or implementation of a plan/spec, first show a summary of work done per task (task title, started, ended, duration), then show a list summarizing the changes plus a proposed commit message.
 - When executing a plan or spec, do not commit per task/step. Batch all changes and commit once in bulk at the very end of the implementation, and only after getting explicit approval to do so. Exception: Subagent-Driven execution mode (see Subagents / Long-Running Tasks) commits per task, with approval given retroactively via the end-of-run commit list.
 - When choosing how to execute a plan/design, offer "Developer Driven" as an execution option alongside the others. Its procedure, per change:

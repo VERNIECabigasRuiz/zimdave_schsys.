@@ -82,6 +82,7 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - Admin controller tests extend `tests/Controller/Admin/AdminTestCase.php` (logs in as `zim`, `createUser()`, `findUser()`, `activityActions()`). Build school data with `tests/SchoolFixturesTrait.php` (`schoolYear()`, `plan()`, `school()`, `assign()`, `plainUser()`); it wipes school data in `setUp` but keeps the seeded plans. No transaction rollback between tests.
 - New tests group their body with `// Initialize`, `// Execute`, `// Assert` comments (`// Expect` first when an exception is expected). Existing tests don't; leave them as they are.
 - Don't name test helpers after PHPUnit `TestCase` methods (`count`, `output`, `name`…); many are final.
+- Before naming a test helper, check `SchoolFixturesTrait` for the same name (it has `plan()`, `school()`…).
 - When moving validation off an entity, grep the tests for validator calls on it.
 - In functional tests, reload an entity through its repository after a request before changing it; the object loaded before the request is detached, so the change isn't saved.
 - Write test logs and coverage files to a temp folder outside the repo, not onto the Docker bind mount.
