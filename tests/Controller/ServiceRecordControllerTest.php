@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\PersonalDataSheet;
+use App\Staff\Domain\Model\PersonalDataSheet;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolAssignment;
 use App\Schools\Domain\Model\SchoolYear;

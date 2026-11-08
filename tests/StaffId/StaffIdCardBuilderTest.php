@@ -3,14 +3,14 @@
 namespace App\Tests\StaffId;
 
 use App\Schools\Domain\Model\Division;
-use App\Entity\PersonalDataSheet;
+use App\Staff\Domain\Model\PersonalDataSheet;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\ServiceRecordEntry;
 use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\DivisionRepositoryInterface;
-use App\Repository\PersonalDataSheetRepository;
+use App\Staff\Domain\Model\Repository\PersonalDataSheetRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
@@ -60,7 +60,7 @@ class StaffIdCardBuilderTest extends KernelTestCase
         $c = static::getContainer();
 
         return new StaffIdCardBuilder(
-            $c->get(PersonalDataSheetRepository::class),
+            $c->get(PersonalDataSheetRepositoryInterface::class),
             $c->get(ServiceRecordEntryRepository::class),
             $c->get(StaffIdDetailsRepository::class),
             $c->get(SchoolAssignmentRepositoryInterface::class),

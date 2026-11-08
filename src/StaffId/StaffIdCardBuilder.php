@@ -2,13 +2,13 @@
 
 namespace App\StaffId;
 
+use App\Staff\Domain\Model\Repository\PersonalDataSheetRepositoryInterface;
 use App\Schools\Domain\Model\PhilippineDivisions;
-use App\Entity\PersonalDataSheet;
+use App\Staff\Domain\Model\PersonalDataSheet;
 use App\Schools\Domain\Model\School;
 use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\DivisionRepositoryInterface;
-use App\Repository\PersonalDataSheetRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
@@ -26,7 +26,7 @@ class StaffIdCardBuilder
     private const SEAL = '/assets/images/deped-seal.png';
 
     public function __construct(
-        private readonly PersonalDataSheetRepository $sheets,
+        private readonly PersonalDataSheetRepositoryInterface $sheets,
         private readonly ServiceRecordEntryRepository $entries,
         private readonly StaffIdDetailsRepository $details,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
@@ -40,7 +40,7 @@ class StaffIdCardBuilder
 
     public function build(User $person, School $school): StaffIdCard
     {
-        $sheet = $this->sheets->findOneBy(['user' => $person]);
+        $sheet = $this->sheets->findFor($person);
         $details = $this->details->findOrNew($person);
         [$fullName, $surname, $givenNames] = $this->names($person);
         [$headName, $headPosition, $headSignature] = $this->head($person, $school);
@@ -99,7 +99,7 @@ class StaffIdCardBuilder
     /** @return array{0: string, 1: string, 2: string} full name, surname, given names; from the PDS, else the account */
     private function names(User $person): array
     {
-        $sheet = $this->sheets->findOneBy(['user' => $person]);
+        $sheet = $this->sheets->findFor($person);
         $surname = trim((string) $sheet?->surname);
         if (null === $sheet || '' === $surname) {
             $full = mb_strtoupper(trim($person->getFullName()));

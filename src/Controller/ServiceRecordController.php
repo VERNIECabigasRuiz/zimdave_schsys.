@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\PersonalDataSheet;
+use App\Staff\Domain\Model\Repository\PersonalDataSheetRepositoryInterface;
+use App\Staff\Domain\Model\PersonalDataSheet;
 use App\Schools\Domain\Model\School;
 use App\Entity\ServiceRecordEntry;
 use App\Access\Domain\Model\User;
 use App\Form\ServiceRecordEntryFormType;
-use App\Repository\PersonalDataSheetRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
@@ -45,7 +45,7 @@ class ServiceRecordController extends AbstractController
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
-        private readonly PersonalDataSheetRepository $sheets,
+        private readonly PersonalDataSheetRepositoryInterface $sheets,
         private readonly ServiceRecordRepository $records,
         private readonly ServiceRecordEntryRepository $entries,
         private readonly EntityManagerInterface $entityManager,
@@ -58,7 +58,7 @@ class ServiceRecordController extends AbstractController
     public function show(School $school, int $employee): Response
     {
         $employee = $this->requireEmployee($school, $employee);
-        $sheet = $this->sheets->findOneBy(['user' => $employee]);
+        $sheet = $this->sheets->findFor($employee);
 
         return $this->render('service_record/show.html.twig', [
             'school' => $school,

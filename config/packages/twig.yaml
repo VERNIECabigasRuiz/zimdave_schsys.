@@ -11,6 +11,7 @@ twig:
         '%kernel.project_dir%/src/Grading/Presentation/templates': Grading
         '%kernel.project_dir%/src/Nutrition/Presentation/templates': Nutrition
         '%kernel.project_dir%/src/LessonPlans/Presentation/templates': LessonPlans
+        '%kernel.project_dir%/src/Staff/Presentation/templates': Staff
 
 when@test:
     twig:

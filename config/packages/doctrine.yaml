@@ -74,6 +74,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/LessonPlans/Domain'
                 prefix: 'App\LessonPlans\Domain'
                 alias: LessonPlans
+            Staff:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Staff/Domain'
+                prefix: 'App\Staff\Domain'
+                alias: Staff
             Grading:
                 type: attribute
                 is_bundle: false

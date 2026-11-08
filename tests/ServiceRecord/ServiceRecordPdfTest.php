@@ -2,7 +2,7 @@
 
 namespace App\Tests\ServiceRecord;
 
-use App\Entity\PersonalDataSheet;
+use App\Staff\Domain\Model\PersonalDataSheet;
 use App\Schools\Domain\Model\School;
 use App\Entity\ServiceRecord;
 use App\Entity\ServiceRecordEntry;

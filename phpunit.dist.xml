@@ -37,9 +37,7 @@
         <!-- Tests not yet moved into a module; each move takes its folders out of here -->
         <testsuite name="legacy">
             <directory>tests/Controller</directory>
-            <directory>tests/Entity</directory>
             <directory>tests/Repository</directory>
-            <directory>tests/Service</directory>
             <directory>tests/ServiceRecord</directory>
             <directory>tests/StaffId</directory>
             <file>tests/KernelTimezoneTest.php</file>
@@ -62,6 +60,7 @@
             <directory>src/Grading</directory>
             <directory>src/Nutrition</directory>
             <directory>src/LessonPlans</directory>
+            <directory>src/Staff</directory>
         </include>
 
         <deprecationTrigger>

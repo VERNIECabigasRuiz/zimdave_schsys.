@@ -2,11 +2,11 @@
 
 namespace App\ServiceRecord;
 
+use App\Staff\Domain\Model\Repository\PersonalDataSheetRepositoryInterface;
 use App\Core\Domain\Service\Pdf\PdfRendererInterface;
-use App\Entity\PersonalDataSheet;
+use App\Staff\Domain\Model\PersonalDataSheet;
 use App\Schools\Domain\Model\School;
 use App\Access\Domain\Model\User;
-use App\Repository\PersonalDataSheetRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Repository\ServiceRecordEntryRepository;
@@ -30,7 +30,7 @@ class ServiceRecordPdf
     public function __construct(
         private readonly PdfRendererInterface $pdf,
         private readonly Environment $twig,
-        private readonly PersonalDataSheetRepository $sheets,
+        private readonly PersonalDataSheetRepositoryInterface $sheets,
         private readonly ServiceRecordRepository $records,
         private readonly ServiceRecordEntryRepository $entries,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
@@ -91,6 +91,6 @@ class ServiceRecordPdf
 
     private function sheet(User $employee): ?PersonalDataSheet
     {
-        return $this->sheets->findOneBy(['user' => $employee]);
+        return $this->sheets->findFor($employee);
     }
 }

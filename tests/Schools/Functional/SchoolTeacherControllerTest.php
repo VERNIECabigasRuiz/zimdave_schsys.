@@ -503,7 +503,7 @@ class SchoolTeacherControllerTest extends AdminTestCase
         self::assertStringStartsWith('%PDF', $this->client->getInternalResponse()->getContent());
         self::assertSame(
             0,
-            $this->em->getRepository(\App\Entity\PersonalDataSheet::class)->count([]),
+            $this->em->getRepository(\App\Staff\Domain\Model\PersonalDataSheet::class)->count([]),
             'Downloading must not create the teacher\'s PDS',
         );
         self::assertContains('Downloaded PDS of ana', $this->activityActions());
