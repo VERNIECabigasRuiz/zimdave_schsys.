@@ -2,12 +2,13 @@
 
 namespace App\Tests\Controller;
 
+use App\Tests\Grading\Integration\Application\SavesGrades;
 use App\CardSlip\CardSlipBuilder;
 use App\CardSlip\CardSlipComments;
 use App\CardSlip\CardSlipPdf;
-use App\Entity\CardSlipComment;
+use App\Grading\Domain\Model\CardSlipComment;
 use App\Learners\Domain\Model\Enrollment;
-use App\Entity\Grade;
+use App\Grading\Domain\Model\Grade;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
@@ -17,7 +18,6 @@ use App\Learners\Domain\Model\SexAtBirth;
 use App\Learners\Domain\Model\Sf1Remark;
 use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
-use App\Grading\GradeRecorder;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
@@ -29,6 +29,8 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class TeacherCardSlipControllerTest extends AdminTestCase
 {
+    use SavesGrades;
+
     use ClockSensitiveTrait;
 
     private const NOT_LOCKED = "Term 1 isn't locked yet. Slips will print as DRAFT until the principal locks the grades.";
@@ -106,7 +108,7 @@ class TeacherCardSlipControllerTest extends AdminTestCase
         $this->createUser('rosa', User::ROLE_PRINCIPAL);
         // the recorder's entity manager, which is a new one once the client has made a request
         $em = static::getContainer()->get(EntityManagerInterface::class);
-        static::getContainer()->get(GradeRecorder::class)->lockPeriod(
+        $this->savingRecorder()->lockPeriod(
             $em->find(School::class, $this->school->getId()),
             $em->find(GradingPeriod::class, $this->term1->getId()),
             $em->getRepository(User::class)->findOneBy(['username' => 'rosa']),

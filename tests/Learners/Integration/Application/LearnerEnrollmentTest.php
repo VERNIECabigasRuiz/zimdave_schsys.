@@ -4,7 +4,7 @@ namespace App\Tests\Learners\Integration\Application;
 
 use App\Core\Domain\Model\ActivityLog;
 use App\Learners\Domain\Model\Enrollment;
-use App\Entity\Grade;
+use App\Grading\Domain\Model\Grade;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Learners\Domain\Model\Learner;
 use App\Billing\Domain\Model\Plan;

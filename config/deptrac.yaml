@@ -192,6 +192,32 @@ deptrac:
         - type: classLike
           value: ^App\\Attendance\\Presentation\\.*
 
+    - name: Grading_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Domain\\.*
+
+    - name: Grading_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Application\\(?!Api\\).*
+
+    # What other modules may use from Grading
+    - name: Grading_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Application\\Api\\.*
+
+    - name: Grading_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Infrastructure\\.*
+
+    - name: Grading_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Presentation\\.*
+
     - name: Kernel
       collectors:
         - type: classLike
@@ -201,7 +227,7 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\(?:Domain|Application|Infrastructure|Presentation)\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -524,6 +550,68 @@ deptrac:
       - Learners_Api
       - ValidatorConstraints
       - Framework
+    Grading_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+    Grading_Application:
+      - Grading_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+    Grading_Api:
+      - Grading_Domain
+      - Grading_Application
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Learners_Domain
+      - Learners_Api
+    Grading_Infrastructure:
+      - Grading_Domain
+      - Grading_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+      - Framework
+      - Vendor
+    Grading_Presentation:
+      - Grading_Application
+      - Grading_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+      - Framework
     Kernel:
       - Core_Domain
       - Core_Application
@@ -573,6 +661,11 @@ deptrac:
       - Attendance_Infrastructure
       - Attendance_Presentation
       - Attendance_Api
+      - Grading_Domain
+      - Grading_Application
+      - Grading_Infrastructure
+      - Grading_Presentation
+      - Grading_Api
       - Kernel
       - DoctrineMapping
       - SecurityUserContract

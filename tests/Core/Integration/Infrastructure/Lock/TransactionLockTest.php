@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Core\Integration\Infrastructure\Lock;
 
 use App\Core\Application\Bus\UseCaseBusInterface;
+use App\Core\Domain\Exception\ResourceBusyException;
 use App\Core\Infrastructure\Lock\TransactionLock;
 use App\Tests\Core\Integration\Bus\Fixture\LockThenSaveCommand;
 use App\Tests\Core\Integration\Bus\Fixture\LockThenWaitCommand;
@@ -139,6 +140,79 @@ final class TransactionLockTest extends KernelTestCase
 
         // Execute
         $locks->acquire('core-test', 'Busy, try again.');
+    }
+
+    public function testSharedHoldsCanBeTakenTogether(): void
+    {
+        // Initialize
+        $locks = new TransactionLock($this->lockFactory);
+        $locks->open();
+        $other = $this->lockFactory->createLock('core-test');
+
+        // Execute
+        $locks->acquireShared('core-test', 'Busy, try again.');
+        $otherShared = $other->acquireRead();
+        $other->release();
+        $heldInside = !$this->canLock();
+        $locks->releaseAll();
+
+        // Assert
+        self::assertTrue($otherShared, 'A second shared hold was refused');
+        self::assertTrue($heldInside, 'The shared hold let an exclusive lock in');
+        self::assertTrue($this->canLock(), 'The shared hold was kept after the use case');
+    }
+
+    public function testASharedHoldIsRefusedWhileTheKeyIsHeldExclusively(): void
+    {
+        // Initialize
+        $other = $this->lockFactory->createLock('core-test');
+        self::assertTrue($other->acquire());
+        $locks = new TransactionLock($this->lockFactory);
+        $locks->open();
+
+        // Execute
+        try {
+            $locks->acquireShared('core-test', 'Busy, try again.');
+            $refusal = null;
+        } catch (ResourceBusyException $e) {
+            $refusal = $e->getMessage();
+        }
+        $other->release();
+        $locks->releaseAll();
+
+        // Assert
+        self::assertSame('Busy, try again.', $refusal);
+    }
+
+    public function testAKeyAlreadyHeldIsNotTakenAgainShared(): void
+    {
+        // Initialize
+        $locks = new TransactionLock($this->lockFactory);
+        $locks->open();
+        $locks->acquire('core-test', 'Busy, try again.');
+        $other = $this->lockFactory->createLock('core-test');
+
+        // Execute
+        $locks->acquireShared('core-test', 'Busy, try again.');
+        $otherShared = $other->acquireRead();
+        $locks->releaseAll();
+
+        // Assert
+        self::assertFalse($otherShared, 'The exclusive lock became shared');
+        self::assertTrue($this->canLock());
+    }
+
+    public function testSharedHoldsAreRefusedOutsideAUseCase(): void
+    {
+        // Expect
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessageIsOrContains('Transaction locks are taken in use case handlers only.');
+
+        // Initialize
+        $locks = new TransactionLock($this->lockFactory);
+
+        // Execute
+        $locks->acquireShared('core-test', 'Busy, try again.');
     }
 
     public function testAnExtraReleaseDoesNothing(): void

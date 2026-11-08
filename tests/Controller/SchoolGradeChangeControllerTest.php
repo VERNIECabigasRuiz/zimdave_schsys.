@@ -2,9 +2,10 @@
 
 namespace App\Tests\Controller;
 
+use App\Tests\Grading\Integration\Application\SavesGrades;
 use App\Learners\Domain\Model\Enrollment;
-use App\Entity\Grade;
-use App\Entity\GradeChangeRequest;
+use App\Grading\Domain\Model\Grade;
+use App\Grading\Domain\Model\GradeChangeRequest;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
@@ -15,13 +16,14 @@ use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Grading\GradeChangeManager;
-use App\Grading\GradeRecorder;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class SchoolGradeChangeControllerTest extends AdminTestCase
 {
+    use SavesGrades;
+
     use ClockSensitiveTrait;
 
     private SchoolYear $sy;
@@ -77,7 +79,7 @@ class SchoolGradeChangeControllerTest extends AdminTestCase
     private function sendRequest(): GradeChangeRequest
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
-        static::getContainer()->get(GradeRecorder::class)->lockPeriod(
+        $this->savingRecorder()->lockPeriod(
             $em->find(School::class, $this->school->getId()),
             $em->find(GradingPeriod::class, $this->term1->getId()),
             $em->find(User::class, $this->principal->getId()),

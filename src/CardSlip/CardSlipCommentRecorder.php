@@ -2,13 +2,13 @@
 
 namespace App\CardSlip;
 
-use App\Entity\CardSlipComment;
+use App\Grading\Domain\Model\CardSlipComment;
 use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
-use App\Grading\GradeRules;
-use App\Repository\CardSlipCommentRepository;
+use App\Grading\Application\Service\GradeRules;
+use App\Grading\Domain\Model\Repository\CardSlipCommentRepositoryInterface;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,7 +17,7 @@ class CardSlipCommentRecorder
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly CardSlipCommentRepository $comments,
+        private readonly CardSlipCommentRepositoryInterface $comments,
         private readonly GradeRules $rules,
         private readonly SchoolClockInterface $clock,
     ) {

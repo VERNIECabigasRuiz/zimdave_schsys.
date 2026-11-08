@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Grading\SheetLearner;
+use App\Grading\Application\Service\SheetLearner;
 
 /** A teacher's change request as typed: the corrected grade by enrollment id (null to leave as is) and why. */
 class GradeChange

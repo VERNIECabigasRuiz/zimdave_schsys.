@@ -23,6 +23,16 @@ class TransactionLock implements TransactionLockInterface
 
     public function acquire(string $resource, string $busyMessage): void
     {
+        $this->take($resource, $busyMessage, shared: false);
+    }
+
+    public function acquireShared(string $resource, string $busyMessage): void
+    {
+        $this->take($resource, $busyMessage, shared: true);
+    }
+
+    private function take(string $resource, string $busyMessage, bool $shared): void
+    {
         if (0 === $this->openUseCases) {
             throw new \LogicException('Transaction locks are taken in use case handlers only.');
         }
@@ -31,7 +41,7 @@ class TransactionLock implements TransactionLockInterface
         }
 
         $lock = $this->lockFactory->createLock($resource);
-        if (!$lock->acquire()) {
+        if (!($shared ? $lock->acquireRead() : $lock->acquire())) {
             throw new ResourceBusyException($busyMessage);
         }
         $this->held[$resource] = $lock;

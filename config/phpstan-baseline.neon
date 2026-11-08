@@ -31,25 +31,25 @@ parameters:
 			path: ../src/Controller/Principal/DashboardController.php
 
 		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Grading\\FailingLearners\:\:forSchool\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
+			message: '#^Parameter \#2 \$schoolYear of method App\\Grading\\Application\\Service\\FailingLearners\:\:forSchool\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/Principal/DashboardController.php
 
 		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Grading\\SectionGradeGrid\:\:defaultPeriod\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
+			message: '#^Parameter \#2 \$schoolYear of method App\\Grading\\Application\\Service\\SectionGradeGrid\:\:defaultPeriod\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Controller/Principal/DashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$schoolYear of method App\\Grading\\Domain\\Model\\Repository\\GradeChangeRequestRepositoryInterface\:\:countPendingForSchool\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/Principal/DashboardController.php
 
 		-
 			message: '#^Parameter \#2 \$schoolYear of method App\\Learners\\Domain\\Model\\Repository\\TransferRequestRepositoryInterface\:\:countPendingOutgoing\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/Principal/DashboardController.php
-
-		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\GradeChangeRequestRepository\:\:countPendingForSchool\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/Principal/DashboardController.php
@@ -85,28 +85,10 @@ parameters:
 			path: ../src/Controller/SchoolGradeChangeController.php
 
 		-
-			message: '#^Method App\\Controller\\SchoolGradeController\:\:lockForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Controller/SchoolGradeController.php
-
-		-
-			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/SchoolGradeController.php
-
-		-
 			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherCardSlipController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: ../src/Controller/TeacherGradeController.php
 
 		-
 			message: '#^Parameter \#1 \$any of static method App\\LessonPlan\\LessonWeek\:\:monday\(\) expects DateTimeImmutable, mixed given\.$#'
@@ -143,12 +125,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherNutritionController.php
-
-		-
-			message: '#^Parameter \#1 \$array \(list\<string\>\) of array_values is already a list, call has no effect\.$#'
-			identifier: arrayValues.list
-			count: 1
-			path: ../src/Entity/CardSlipComment.php
 
 		-
 			message: '#^Method App\\Entity\\EducationLevel\:\:order\(\) should return int but returns int\|false\.$#'
@@ -379,30 +355,6 @@ parameters:
 			path: ../src/Form/GradeChangeFormType.php
 
 		-
-			message: '#^Class App\\Form\\GradeLockFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/GradeLockFormType.php
-
-		-
-			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../src/Form/GradeLockFormType.php
-
-		-
-			message: '#^Cannot access offset string on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/Form/GradeSheetFormType.php
-
-		-
-			message: '#^Class App\\Form\\GradeSheetFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/GradeSheetFormType.php
-
-		-
 			message: '#^Cannot access offset ''holiday'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -553,13 +505,7 @@ parameters:
 			path: ../src/Form/StaffIdDetailsFormType.php
 
 		-
-			message: '#^Parameter \#4 \$failedSubjects of class App\\Grading\\FailingLearner constructor expects array\<string, int\>, array\<string, int\<min, 74\>\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Grading/FailingLearners.php
-
-		-
-			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\GradeRepository\:\:findForEnrollments\(\) expects list\<int\>, array\<int, int\> given\.$#'
+			message: '#^Parameter \#1 \$enrollmentIds of method App\\Grading\\Domain\\Model\\Repository\\GradeRepositoryInterface\:\:findForEnrollments\(\) expects list\<int\>, array\<int, int\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Grading/GradeChangeManager.php
@@ -569,54 +515,6 @@ parameters:
 			identifier: method.nonObject
 			count: 2
 			path: ../src/LessonPlan/LessonWeek.php
-
-		-
-			message: '#^Method App\\Repository\\CardSlipCommentRepository\:\:findForEnrollments\(\) should return array\<int, App\\Entity\\CardSlipComment\> but returns array\<int\|string, App\\Entity\\CardSlipComment\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/CardSlipCommentRepository.php
-
-		-
-			message: '#^Method App\\Repository\\GradeChangeRequestRepository\:\:findDecidedForSchool\(\) should return list\<App\\Entity\\GradeChangeRequest\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/GradeChangeRequestRepository.php
-
-		-
-			message: '#^Method App\\Repository\\GradeChangeRequestRepository\:\:findPendingFor\(\) should return App\\Entity\\GradeChangeRequest\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/GradeChangeRequestRepository.php
-
-		-
-			message: '#^Method App\\Repository\\GradeChangeRequestRepository\:\:findPendingForSchool\(\) should return list\<App\\Entity\\GradeChangeRequest\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/GradeChangeRequestRepository.php
-
-		-
-			message: '#^Method App\\Repository\\GradeOpeningRepository\:\:findOpenPeriodIds\(\) should return list\<int\> but returns array\<int\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/GradeOpeningRepository.php
-
-		-
-			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''intval'' given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Repository/GradeOpeningRepository.php
-
-		-
-			message: '#^Method App\\Repository\\GradeRepository\:\:findForEnrollments\(\) should return array\<int, App\\Entity\\Grade\> but returns array\<int\|string, App\\Entity\\Grade\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/GradeRepository.php
-
-		-
-			message: '#^Method App\\Repository\\GradeRepository\:\:findForEnrollmentsByPeriod\(\) should return array\<int, array\<int, App\\Entity\\Grade\>\> but returns array\<int\|string, array\<int\|string, App\\Entity\\Grade\>\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/GradeRepository.php
 
 		-
 			message: '#^Method App\\Repository\\NutritionAssessmentRepository\:\:findFor\(\) should return App\\Entity\\NutritionAssessment\|null but returns mixed\.$#'
@@ -763,7 +661,7 @@ parameters:
 			path: ../tests/Controller/Principal/PrincipalAreaTest.php
 
 		-
-			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Grading\\Domain\\Model\\GradeChangeRequest constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/Principal/PrincipalAreaTest.php
@@ -1033,19 +931,19 @@ parameters:
 			path: ../tests/Controller/SchoolCardSlipTest.php
 
 		-
-			message: '#^Cannot call method change\(\) on App\\Entity\\Grade\|null\.$#'
+			message: '#^Cannot call method change\(\) on App\\Grading\\Domain\\Model\\Grade\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
 
 		-
-			message: '#^Cannot call method getValue\(\) on App\\Entity\\Grade\|null\.$#'
+			message: '#^Cannot call method getValue\(\) on App\\Grading\\Domain\\Model\\Grade\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
 
 		-
-			message: '#^Cannot call method isPending\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			message: '#^Cannot call method isPending\(\) on App\\Grading\\Domain\\Model\\GradeChangeRequest\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
@@ -1063,7 +961,7 @@ parameters:
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$school of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
+			message: '#^Parameter \#1 \$school of method App\\Tests\\Grading\\Integration\\Application\\SavingGradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
@@ -1075,13 +973,13 @@ parameters:
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
 
 		-
-			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
+			message: '#^Parameter \#2 \$period of method App\\Tests\\Grading\\Integration\\Application\\SavingGradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
 
 		-
-			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
+			message: '#^Parameter \#3 \$by of method App\\Tests\\Grading\\Integration\\Application\\SavingGradeRecorder\:\:lockPeriod\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
@@ -1097,24 +995,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Controller/SchoolGradeChangeControllerTest.php
-
-		-
-			message: '#^Cannot call method getId\(\) on App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/SchoolGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\GradeOpening\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Controller/SchoolGradeControllerTest.php
-
-		-
-			message: '#^Property App\\Tests\\Controller\\SchoolGradeControllerTest\:\:\$term1 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Controller/SchoolGradeControllerTest.php
 
 		-
 			message: '#^Cannot call method getSf8CertifierName\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
@@ -1195,7 +1075,7 @@ parameters:
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
 
 		-
-			message: '#^Cannot call method change\(\) on App\\Entity\\Grade\|null\.$#'
+			message: '#^Cannot call method change\(\) on App\\Grading\\Domain\\Model\\Grade\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
@@ -1237,13 +1117,13 @@ parameters:
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$school of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
+			message: '#^Parameter \#1 \$school of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:openGrading\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$school of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:openGrading\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
+			message: '#^Parameter \#1 \$school of method App\\Tests\\Grading\\Integration\\Application\\SavingGradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
@@ -1267,19 +1147,19 @@ parameters:
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
 
 		-
-			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherCardSlipControllerTest.php
-
-		-
 			message: '#^Parameter \#2 \$period of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:openGrading\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
 
 		-
-			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
+			message: '#^Parameter \#2 \$period of method App\\Tests\\Grading\\Integration\\Application\\SavingGradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../tests/Controller/TeacherCardSlipControllerTest.php
+
+		-
+			message: '#^Parameter \#3 \$by of method App\\Tests\\Grading\\Integration\\Application\\SavingGradeRecorder\:\:lockPeriod\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
@@ -1289,138 +1169,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Controller/TeacherCardSlipControllerTest.php
-
-		-
-			message: '#^Cannot call method getLabel\(\) on App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Cannot call method isPending\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Cannot call method setRemarkCode\(\) on App\\Learners\\Domain\\Model\\Enrollment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Cannot call method setTeacher\(\) on App\\Classes\\Domain\\Model\\TeachingLoad\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$haystack of function substr_count expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$load of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Classes\\Domain\\Model\\TeachingLoad, App\\Classes\\Domain\\Model\\TeachingLoad\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\GradeOpening\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$section of class App\\Entity\\GradeUnlock constructor expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$by of method App\\Grading\\GradeChangeManager\:\:decline\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$period of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$period of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:openGrading\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$subject of class App\\Entity\\GradeUnlock constructor expects App\\Classes\\Domain\\Model\\Subject, App\\Classes\\Domain\\Model\\Subject\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#3 \$by of method App\\Grading\\GradeRecorder\:\:lockPeriod\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeUnlock constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#3 \$period of method App\\Tests\\Controller\\TeacherGradeControllerTest\:\:grade\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#3 \$section of method App\\Tests\\Controller\\Admin\\AdminTestCase\:\:enroll\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#4 \$unlockedBy of class App\\Entity\\GradeUnlock constructor expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Parameter \#5 \$by of method App\\Grading\\GradeChangeManager\:\:request\(\) expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
-
-		-
-			message: '#^Property App\\Tests\\Controller\\TeacherGradeControllerTest\:\:\$term1 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Controller/TeacherGradeControllerTest.php
 
 		-
 			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Entity\\LessonPlan will always evaluate to true\.$#'
@@ -1475,138 +1223,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/TeacherNutritionControllerTest.php
-
-		-
-			message: '#^Cannot call method getEnrollment\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeChangeRequestTest.php
-
-		-
-			message: '#^Cannot call method getFromValue\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeChangeRequestTest.php
-
-		-
-			message: '#^Cannot call method getToValue\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeChangeRequestTest.php
-
-		-
-			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Entity/GradeChangeRequestTest.php
-
-		-
-			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Repository\\\\GradeLockRepository'' and App\\Repository\\GradeLockRepository will always evaluate to true\.$#'
-			identifier: staticMethod.alreadyNarrowedType
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Repository\\\\GradeRepository'' and App\\Repository\\GradeRepository will always evaluate to true\.$#'
-			identifier: staticMethod.alreadyNarrowedType
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Repository\\\\GradeUnlockRepository'' and App\\Repository\\GradeUnlockRepository will always evaluate to true\.$#'
-			identifier: staticMethod.alreadyNarrowedType
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
-			identifier: staticMethod.alreadyNarrowedType
-			count: 3
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Cannot call method change\(\) on App\\Entity\\Grade\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getEnrollment\(\) on App\\Entity\\Grade\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getGradingPeriod\(\) on App\\Entity\\Grade\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getLockedBy\(\) on App\\Entity\\GradeLock\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getSubject\(\) on App\\Entity\\Grade\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getUpdatedAt\(\) on App\\Entity\\Grade\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getUpdatedBy\(\) on App\\Entity\\Grade\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getValue\(\) on App\\Entity\\Grade\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Offset int\|null might not exist on array\<int, App\\Entity\\Grade\>\.$#'
-			identifier: offsetAccess.notFound
-			count: 4
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Offset int\|null might not exist on array\<int, array\<int, App\\Entity\\Grade\>\>\.$#'
-			identifier: offsetAccess.notFound
-			count: 4
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\GradeRepository\:\:findForEnrollments\(\) expects list\<int\>, array\{int\|null, int\|null\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\GradeRepository\:\:findForEnrollmentsByPeriod\(\) expects list\<int\>, array\{int\|null, int\|null\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Property App\\Tests\\Entity\\GradeEntitiesTest\:\:\$term1 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
-
-		-
-			message: '#^Property App\\Tests\\Entity\\GradeEntitiesTest\:\:\$term2 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Entity/GradeEntitiesTest.php
 
 		-
 			message: '#^Cannot call method getHeightM\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
@@ -1693,37 +1309,37 @@ parameters:
 			path: ../tests/Entity/PersonalDataSheetTest.php
 
 		-
-			message: '#^Cannot call method getDecidedAt\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			message: '#^Cannot call method getDecidedAt\(\) on App\\Grading\\Domain\\Model\\GradeChangeRequest\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Grading/GradeChangeManagerTest.php
 
 		-
-			message: '#^Cannot call method getDecidedBy\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			message: '#^Cannot call method getDecidedBy\(\) on App\\Grading\\Domain\\Model\\GradeChangeRequest\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Grading/GradeChangeManagerTest.php
 
 		-
-			message: '#^Cannot call method getEnrollment\(\) on App\\Entity\\GradeChangeLine\|false\.$#'
+			message: '#^Cannot call method getEnrollment\(\) on App\\Grading\\Domain\\Model\\GradeChangeLine\|false\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Grading/GradeChangeManagerTest.php
 
 		-
-			message: '#^Cannot call method getStatus\(\) on App\\Entity\\GradeChangeRequest\|null\.$#'
+			message: '#^Cannot call method getStatus\(\) on App\\Grading\\Domain\\Model\\GradeChangeRequest\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Grading/GradeChangeManagerTest.php
 
 		-
-			message: '#^Cannot call method getUpdatedAt\(\) on App\\Entity\\Grade\|null\.$#'
+			message: '#^Cannot call method getUpdatedAt\(\) on App\\Grading\\Domain\\Model\\Grade\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Grading/GradeChangeManagerTest.php
 
 		-
-			message: '#^Cannot call method getUpdatedBy\(\) on App\\Entity\\Grade\|null\.$#'
+			message: '#^Cannot call method getUpdatedBy\(\) on App\\Grading\\Domain\\Model\\Grade\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Grading/GradeChangeManagerTest.php
@@ -1735,7 +1351,7 @@ parameters:
 			path: ../tests/Grading/GradeChangeManagerTest.php
 
 		-
-			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Entity\\GradeOpening\|null given\.$#'
+			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Grading\\Domain\\Model\\GradeOpening\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Grading/GradeChangeManagerTest.php
@@ -1745,108 +1361,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Grading/GradeChangeManagerTest.php
-
-		-
-			message: '#^Method App\\Tests\\Grading\\GradeRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Grading\\GradeRecorderTest\:\:savedValues\(\) should return array\<int, int\> but returns array\<int\|string, int\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Parameter \#1 \$values of method App\\Tests\\Grading\\GradeRecorderTest\:\:save\(\) expects array\<int, int\|null\>, array\<int\|string, int\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeUnlock constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Parameter \#3 \$values of method App\\Grading\\GradeRecorder\:\:saveSheet\(\) expects array\<int, int\|null\>, array\<int\|string, int\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$load \(App\\Classes\\Domain\\Model\\TeachingLoad\) does not accept App\\Classes\\Domain\\Model\\TeachingLoad\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$teacher \(App\\Access\\Domain\\Model\\User\) does not accept App\\Access\\Domain\\Model\\User\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Property App\\Tests\\Grading\\GradeRecorderTest\:\:\$term1 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 2
-			path: ../tests/Grading/GradeRecorderTest.php
-
-		-
-			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with ''unlocked'' and ''unlocked'' will always evaluate to true\.$#'
-			identifier: staticMethod.alreadyNarrowedType
-			count: 1
-			path: ../tests/Grading/GradeRulesTest.php
-
-		-
-			message: '#^Parameter \#2 \$componentGrades of method App\\Grading\\GradeRules\:\:parentGrade\(\) expects array\<int, int\|null\>, array\<int\|string, int\> given\.$#'
-			identifier: argument.type
-			count: 5
-			path: ../tests/Grading/GradeRulesTest.php
-
-		-
-			message: '#^Parameter \#2 \$componentGrades of method App\\Grading\\GradeRules\:\:parentGrade\(\) expects array\<int, int\|null\>, array\<int\|string, int\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Grading/GradeRulesTest.php
-
-		-
-			message: '#^Property App\\Tests\\Grading\\GradeRulesTest\:\:\$term1 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Grading/GradeRulesTest.php
-
-		-
-			message: '#^Cannot call method setStartDate\(\) on App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Grading/SectionGradeGridTest.php
-
-		-
-			message: '#^Method App\\Tests\\Grading\\SectionGradeGridTest\:\:byKey\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../tests/Grading/SectionGradeGridTest.php
-
-		-
-			message: '#^Parameter \#2 \$period of method App\\Tests\\Grading\\SectionGradeGridTest\:\:openGrading\(\) expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Grading/SectionGradeGridTest.php
-
-		-
-			message: '#^Property App\\Tests\\Grading\\SectionGradeGridTest\:\:\$term1 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Grading/SectionGradeGridTest.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type App\\Schools\\Domain\\Model\\GradingPeriod\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: ../tests/Grading/SectionGradeGridTest.php
 
 		-
 			message: '#^Method App\\Tests\\LessonPlan\\LessonWeekTest\:\:dates\(\) has parameter \$days with no value type specified in iterable type array\.$#'
@@ -1963,85 +1477,13 @@ parameters:
 			path: ../tests/Nutrition/Sf8WriterTest.php
 
 		-
-			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
-			message: '#^Cannot call method getCodes\(\) on App\\Entity\\CardSlipComment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
-			message: '#^Cannot call method getCustomText\(\) on App\\Entity\\CardSlipComment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
-			message: '#^Cannot call method getId\(\) on App\\Access\\Domain\\Model\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
-			message: '#^Cannot call method getUpdatedAt\(\) on App\\Entity\\CardSlipComment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
-			message: '#^Cannot call method getUpdatedBy\(\) on App\\Entity\\CardSlipComment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
-			message: '#^Offset int\|null might not exist on non\-empty\-array\<int, App\\Entity\\CardSlipComment\>\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\CardSlipCommentRepository\:\:findForEnrollments\(\) expects list\<int\>, array\{int\|null, int\|null\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$enrollmentIds of method App\\Repository\\CardSlipCommentRepository\:\:findForEnrollments\(\) expects list\<int\>, array\{int\|null\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Repository/CardSlipCommentRepositoryTest.php
-
-		-
 			message: '#^Cannot call method label\(\) on App\\Learners\\Domain\\Model\\SexAtBirth\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Repository/EnrollmentRepositoryTest.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\GradeChangeLine\>\:\:isInitialized\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Repository\\GradeChangeRequestRepositoryTest\:\:\$term1 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Repository\\GradeChangeRequestRepositoryTest\:\:\$term2 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
-
-		-
-			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
+			message: '#^Parameter \#3 \$gradingPeriod of class App\\Grading\\Domain\\Model\\GradeChangeRequest constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Security/GradeVoterTest.php

@@ -39,7 +39,7 @@
             <directory>tests/CardSlip</directory>
             <directory>tests/Controller</directory>
             <directory>tests/Entity</directory>
-            <directory>tests/Grading</directory>
+            <file>tests/Grading/GradeChangeManagerTest.php</file>
             <directory>tests/LessonPlan</directory>
             <directory>tests/Nutrition</directory>
             <directory>tests/Repository</directory>
@@ -64,6 +64,10 @@
             <directory>src/Classes</directory>
             <directory>src/Learners</directory>
             <directory>src/Attendance</directory>
+            <directory>src/Grading/Domain</directory>
+            <directory>src/Grading/Application</directory>
+            <directory>src/Grading/Infrastructure</directory>
+            <directory>src/Grading/Presentation</directory>
         </include>
 
         <deprecationTrigger>

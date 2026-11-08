@@ -2,15 +2,15 @@
 
 namespace App\Controller;
 
-use App\Entity\GradeChangeRequest;
+use App\Grading\Domain\Model\GradeChangeRequest;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
 use App\Form\GradeChangeDeclineFormType;
 use App\Grading\GradeChangeManager;
-use App\Grading\GradeRecorder;
+use App\Grading\Application\Service\GradeRecorder;
 use App\Grading\GradingException;
-use App\Repository\GradeChangeRequestRepository;
+use App\Grading\Domain\Model\Repository\GradeChangeRequestRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Security\Voter\GradeVoter;
 use App\Schools\Presentation\Security\SchoolVoter;
@@ -36,7 +36,7 @@ class SchoolGradeChangeController extends AbstractController
 {
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
-        private readonly GradeChangeRequestRepository $requests,
+        private readonly GradeChangeRequestRepositoryInterface $requests,
         private readonly GradeChangeManager $manager,
         private readonly FormFactoryInterface $formFactory,
     ) {
@@ -132,7 +132,7 @@ class SchoolGradeChangeController extends AbstractController
 
     private function requireRequest(School $school, int $id): GradeChangeRequest
     {
-        $change = $this->requests->find($id);
+        $change = $this->requests->findById($id);
         if (null === $change || $change->getSection()->getSchool()->getId() !== $school->getId()) {
             throw $this->createNotFoundException();
         }

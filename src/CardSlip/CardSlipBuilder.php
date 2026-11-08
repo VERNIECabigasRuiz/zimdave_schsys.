@@ -4,11 +4,11 @@ namespace App\CardSlip;
 
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Classes\Domain\Model\Section;
-use App\Grading\GeneralAverage;
-use App\Grading\GridColumn;
-use App\Grading\SectionGradeGrid;
-use App\Repository\CardSlipCommentRepository;
-use App\Repository\GradeLockRepository;
+use App\Grading\Application\Service\GeneralAverage;
+use App\Grading\Application\Service\GridColumn;
+use App\Grading\Application\Service\SectionGradeGrid;
+use App\Grading\Domain\Model\Repository\CardSlipCommentRepositoryInterface;
+use App\Grading\Domain\Model\Repository\GradeLockRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 
 /**
@@ -21,8 +21,8 @@ class CardSlipBuilder
         private readonly SectionGradeGrid $grid,
         private readonly SubjectRepositoryInterface $subjects,
         private readonly TermAttendance $attendance,
-        private readonly CardSlipCommentRepository $comments,
-        private readonly GradeLockRepository $locks,
+        private readonly CardSlipCommentRepositoryInterface $comments,
+        private readonly GradeLockRepositoryInterface $locks,
         private readonly CardSlipSuggester $suggester,
     ) {
     }

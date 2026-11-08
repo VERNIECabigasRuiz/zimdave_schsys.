@@ -3,8 +3,8 @@
 namespace App\Tests\Classes\Integration\Application;
 
 use App\Core\Domain\Model\ActivityLog;
-use App\Entity\Grade;
-use App\Entity\GradeChangeRequest;
+use App\Grading\Domain\Model\Grade;
+use App\Grading\Domain\Model\GradeChangeRequest;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolType;

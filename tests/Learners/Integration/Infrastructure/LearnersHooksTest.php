@@ -6,23 +6,19 @@ namespace App\Tests\Learners\Integration\Infrastructure;
 
 use App\Access\Domain\Model\User;
 use App\Access\Domain\Service\Account\AccountLearnerLinkInterface;
-use App\Classes\Domain\Model\Subject;
-use App\Entity\Grade;
-use App\Learners\Domain\Service\Usage\LearnerGradesInterface;
 use App\Learners\Infrastructure\Access\LearnerRoleChangeGuard;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Service\Plan\EnrolledLearnersInterface;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-/** The hooks Learners implements for Schools and Access, and the legacy implementation of its grades hook. */
+/** The hooks Learners implements for Schools and Access. */
 final class LearnersHooksTest extends KernelTestCase
 {
     use SchoolFixturesTrait;
 
-    private EntityManagerInterface $em;
+    protected EntityManagerInterface $em;
 
     protected function setUp(): void
     {
@@ -77,32 +73,5 @@ final class LearnersHooksTest extends KernelTestCase
         self::assertNull($unchanged);
         self::assertSame('This account belongs to learner 120000000001.', $changed);
         self::assertNull($notALearner);
-    }
-
-    public function testCountsTheGradesOfAnEnrollment(): void
-    {
-        // Initialize
-        $sy = $this->schoolYear(2026, true);
-        $school = $this->school('300001', 'Alpha NHS');
-        $teacher = $this->plainUser('rt-teacher', User::ROLE_TEACHER);
-        $rizal = $this->newSection($school, $sy, GradeLevel::Grade7, 'Rizal');
-        $math = (new Subject($school, $sy))->setGradeLevel(GradeLevel::Grade7)->setCode('MATH7')
-            ->setName('Mathematics')->setPosition(1)->setMeetingsPerWeek(5);
-        $term = new GradingPeriod($sy, 1);
-        $this->em->persist($math);
-        $this->em->persist($term);
-        $graded = $this->enroll($this->learner('120000000001', 'Abad', 'Ana'), $sy, $rizal, $teacher);
-        $ungraded = $this->enroll($this->learner('120000000002', 'Bautista', 'Ben'), $sy, $rizal, $teacher);
-        $this->em->persist(new Grade($graded, $math, $term, 85, $teacher, new \DateTimeImmutable('2026-10-16')));
-        $this->em->flush();
-        $grades = static::getContainer()->get(LearnerGradesInterface::class);
-
-        // Execute
-        $withGrades = $grades->countForEnrollment($graded);
-        $withoutGrades = $grades->countForEnrollment($ungraded);
-
-        // Assert
-        self::assertSame(1, $withGrades);
-        self::assertSame(0, $withoutGrades);
     }
 }

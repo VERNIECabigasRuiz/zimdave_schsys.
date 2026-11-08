@@ -2,7 +2,7 @@
 
 namespace App\Tests\Security;
 
-use App\Entity\GradeChangeRequest;
+use App\Grading\Domain\Model\GradeChangeRequest;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
@@ -90,59 +90,6 @@ class GradeVoterTest extends KernelTestCase
         }
     }
 
-    public function testOnlyTheLoadsTeacherEnters(): void
-    {
-        $this->assertRoles(GradeVoter::EDIT, $this->load, [
-            'teacher' => true, 'other' => false, 'adviser' => false, 'principal' => false, 'admin' => false, 'otherPrincipal' => false, 'student' => false,
-        ]);
-    }
-
-    public function testAdviserWhoAlsoTeachesTheLoadEnters(): void
-    {
-        $this->load->setTeacher($this->users['adviser']);
-        $this->assertRoles(GradeVoter::EDIT, $this->load, ['adviser' => true, 'teacher' => false]);
-    }
-
-    public function testReassignedLoadMovesAccess(): void
-    {
-        $this->load->setTeacher($this->users['other']);
-        $this->assertRoles(GradeVoter::EDIT, $this->load, ['teacher' => false, 'other' => true]);
-        $this->assertRoles(GradeVoter::VIEW, $this->load, ['teacher' => false, 'other' => true]);
-    }
-
-    public function testNoEntryForKinder(): void
-    {
-        $this->assertRoles(GradeVoter::EDIT, $this->kinderLoad, ['teacher' => false]);
-    }
-
-    public function testWhoViewsALoad(): void
-    {
-        $this->assertRoles(GradeVoter::VIEW, $this->load, [
-            'teacher' => true, 'adviser' => true, 'principal' => true, 'admin' => true, 'other' => false, 'otherPrincipal' => false, 'student' => false,
-        ]);
-    }
-
-    public function testWhoViewsASection(): void
-    {
-        $this->assertRoles(GradeVoter::VIEW_SECTION, $this->section, [
-            'adviser' => true, 'principal' => true, 'admin' => true, 'teacher' => false, 'other' => false, 'otherPrincipal' => false, 'student' => false,
-        ]);
-    }
-
-    public function testOnlyThePrincipalLocks(): void
-    {
-        $this->assertRoles(GradeVoter::LOCK, $this->school, [
-            'principal' => true, 'admin' => false, 'otherPrincipal' => false, 'adviser' => false, 'teacher' => false, 'student' => false,
-        ]);
-    }
-
-    public function testOpen(): void
-    {
-        $this->assertRoles(GradeVoter::OPEN, $this->school, [
-            'principal' => true, 'admin' => true, 'otherPrincipal' => false, 'adviser' => false, 'teacher' => false, 'student' => false,
-        ]);
-    }
-
     private function changeRequest(): GradeChangeRequest
     {
         $this->sy->rebuildGradingPeriods();
@@ -168,8 +115,8 @@ class GradeVoterTest extends KernelTestCase
 
     public function testAttributesMatchTheirSubjectType(): void
     {
-        $this->assertRoles(GradeVoter::LOCK, $this->section, ['principal' => false, 'admin' => false]);
-        $this->assertRoles(GradeVoter::EDIT, $this->school, ['teacher' => false]);
-        $this->assertRoles(GradeVoter::VIEW_SECTION, $this->load, ['adviser' => false, 'admin' => false]);
+        $this->assertRoles(GradeVoter::CHANGE_DECIDE, $this->section, ['principal' => false]);
+        $this->assertRoles(GradeVoter::CHANGE_WITHDRAW, $this->load, ['teacher' => false]);
+        $this->assertRoles('GRADE_EDIT', $this->load, ['teacher' => false]);
     }
 }

@@ -98,6 +98,16 @@ final class SectionRoster implements SectionRosterInterface
         return $entries;
     }
 
+    public function classList(Section $section): array
+    {
+        return $this->enrollments->findClassList($section);
+    }
+
+    public function transfersOutSince(Section $section, \DateTimeImmutable $since): array
+    {
+        return $this->transfers->findApprovedOutOf($section, $since);
+    }
+
     private function entry(
         Enrollment $enrollment,
         \DateTimeImmutable $from,

@@ -5,9 +5,9 @@ namespace App\Controller\Principal;
 use App\Attendance\Application\Api\AttendanceDirectoryInterface;
 use App\Schools\Domain\Model\School;
 use App\Access\Domain\Model\User;
-use App\Grading\FailingLearners;
-use App\Grading\SectionGradeGrid;
-use App\Repository\GradeChangeRequestRepository;
+use App\Grading\Application\Service\FailingLearners;
+use App\Grading\Application\Service\SectionGradeGrid;
+use App\Grading\Domain\Model\Repository\GradeChangeRequestRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
@@ -32,7 +32,7 @@ class DashboardController extends AbstractController
         private readonly SchoolClockInterface $clock,
         private readonly TransferRequestRepositoryInterface $transferRequests,
         private readonly AttendanceDirectoryInterface $attendance,
-        private readonly GradeChangeRequestRepository $gradeChanges,
+        private readonly GradeChangeRequestRepositoryInterface $gradeChanges,
         private readonly FailingLearners $failingLearners,
         private readonly SectionGradeGrid $grid,
     ) {

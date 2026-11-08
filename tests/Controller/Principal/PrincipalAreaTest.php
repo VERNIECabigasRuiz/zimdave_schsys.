@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller\Principal;
 
-use App\Entity\GradeChangeRequest;
+use App\Grading\Domain\Model\GradeChangeRequest;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;

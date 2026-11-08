@@ -21,7 +21,7 @@ use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
-use App\Grading\GradeRecorder;
+use App\Grading\Application\Service\GradeRecorder;
 use App\LessonPlan\LessonWeek;
 use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
@@ -379,12 +379,14 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         }
 
         $this->grades->openPeriod($school, $firstPeriod, $principal);
+        $this->entityManager->flush();
         foreach ($loads as $load) {
             $values = [];
             foreach ($this->enrollments->findClassList($load->getSection()) as $enrollment) {
                 $values[(int) $enrollment->getId()] = $this->faker->numberBetween(75, 98);
             }
             $this->grades->saveSheet($load, $firstPeriod, $values, $load->getTeacher());
+            $this->entityManager->flush();
         }
     }
 }

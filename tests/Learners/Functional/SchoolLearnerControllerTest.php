@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Learners\Functional;
 
 use App\Learners\Domain\Model\Enrollment;
-use App\Entity\Grade;
+use App\Grading\Domain\Model\Grade;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Learners\Domain\Model\Learner;
 use App\Schools\Domain\Model\School;

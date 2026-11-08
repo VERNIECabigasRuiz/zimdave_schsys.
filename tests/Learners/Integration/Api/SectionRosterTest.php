@@ -224,6 +224,27 @@ class SectionRosterTest extends KernelTestCase
         self::assertSame([], $entries);
     }
 
+    public function testListsTheClassAndTheTransfersOutSinceADate(): void
+    {
+        // Initialize
+        $otherSchool = $this->school('303197', 'Mandaue City NHS');
+        $mandaue = $this->newSection($otherSchool, $this->sy, GradeLevel::Grade8, 'Rizal');
+        $staying = $this->enrolled('Abad', 'Nena', '2025-05-20');
+        $leaving = $this->enrolled('Estrada', 'Carlo', '2025-05-20', SexAtBirth::Male);
+        $this->transfer($leaving, $mandaue, '2025-08-14');
+
+        // Execute
+        $classList = $this->roster()->classList($this->artistic);
+        $sinceJune = $this->roster()->transfersOutSince($this->artistic, new \DateTimeImmutable('2025-06-01'));
+        $sinceSeptember = $this->roster()->transfersOutSince($this->artistic, new \DateTimeImmutable('2025-09-01'));
+
+        // Assert
+        self::assertSame([$staying], $classList);
+        self::assertCount(1, $sinceJune);
+        self::assertSame($leaving, $sinceJune[0]->getEnrollment());
+        self::assertSame([], $sinceSeptember);
+    }
+
     public function testMalesFirst(): void
     {
         $this->enrolled('Abad', 'Nena', '2025-05-20');

@@ -2,6 +2,7 @@
 
 namespace App\Tests\CardSlip;
 
+use App\Tests\Grading\Integration\Application\SavesGrades;
 use App\Attendance\Application\Api\AttendanceDirectoryInterface;
 use App\CardSlip\CardSlip;
 use App\CardSlip\CardSlipBuilder;
@@ -9,9 +10,9 @@ use App\CardSlip\CardSlipComments;
 use App\CardSlip\CardSlipLine;
 use App\CardSlip\CardSlipSuggester;
 use App\CardSlip\TermAttendance;
-use App\Entity\CardSlipComment;
+use App\Grading\Domain\Model\CardSlipComment;
 use App\Learners\Domain\Model\Enrollment;
-use App\Entity\Grade;
+use App\Grading\Domain\Model\Grade;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
@@ -23,11 +24,10 @@ use App\Classes\Domain\Model\Subject;
 use App\Learners\Domain\Model\TransferRequest;
 use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
-use App\Grading\GradeRecorder;
-use App\Grading\SectionGradeGrid;
-use App\Repository\CardSlipCommentRepository;
+use App\Grading\Application\Service\SectionGradeGrid;
+use App\Grading\Domain\Model\Repository\CardSlipCommentRepositoryInterface;
 use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
-use App\Repository\GradeLockRepository;
+use App\Grading\Domain\Model\Repository\GradeLockRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,6 +41,8 @@ use Symfony\Component\Clock\Test\ClockSensitiveTrait;
  */
 class CardSlipBuilderTest extends KernelTestCase
 {
+    use SavesGrades;
+
     use ClockSensitiveTrait;
     use SchoolFixturesTrait;
 
@@ -187,7 +189,7 @@ class CardSlipBuilderTest extends KernelTestCase
         self::assertTrue($this->slip($abad)->draft);
 
         $this->openGrading($this->school, $this->term1);
-        static::getContainer()->get(GradeRecorder::class)->lockPeriod($this->school, $this->term1, $this->adviser);
+        $this->savingRecorder()->lockPeriod($this->school, $this->term1, $this->adviser);
 
         self::assertFalse($this->slip($abad)->draft);
     }
@@ -355,8 +357,8 @@ class CardSlipBuilderTest extends KernelTestCase
                 $c->get(AttendanceDirectoryInterface::class),
                 $c->get(EnrollmentRepositoryInterface::class),
             ),
-            $c->get(CardSlipCommentRepository::class),
-            $c->get(GradeLockRepository::class),
+            $c->get(CardSlipCommentRepositoryInterface::class),
+            $c->get(GradeLockRepositoryInterface::class),
             new CardSlipSuggester(),
         );
     }

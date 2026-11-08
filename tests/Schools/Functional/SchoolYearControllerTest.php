@@ -3,10 +3,10 @@
 namespace App\Tests\Schools\Functional;
 
 use App\Tests\Controller\Admin\AdminTestCase;
-use App\Entity\Grade;
+use App\Grading\Domain\Model\Grade;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\GradeLock;
-use App\Entity\GradeOpening;
+use App\Grading\Domain\Model\GradeLock;
+use App\Grading\Domain\Model\GradeOpening;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\GradingSystem;
 use App\Schools\Domain\Model\SchoolYear;

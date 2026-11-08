@@ -19,4 +19,13 @@ interface TransactionLockInterface
      * @throws ResourceBusyException with $busyMessage when another change holds it
      */
     public function acquire(string $resource, string $busyMessage): void;
+
+    /**
+     * Takes a shared hold on $resource without waiting: other shared holds may be taken alongside it,
+     * an exclusive lock may not. Only inside a use case handler; a key the use case already holds,
+     * either way, is kept as it is.
+     *
+     * @throws ResourceBusyException with $busyMessage when another change holds it exclusively
+     */
+    public function acquireShared(string $resource, string $busyMessage): void;
 }

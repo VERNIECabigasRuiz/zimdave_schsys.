@@ -13,9 +13,9 @@ use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Form\CardSlipCommentsData;
 use App\Form\CardSlipCommentsFormType;
-use App\Grading\GradeRules;
-use App\Grading\SectionGradeGrid;
-use App\Repository\GradeLockRepository;
+use App\Grading\Application\Service\GradeRules;
+use App\Grading\Application\Service\SectionGradeGrid;
+use App\Grading\Domain\Model\Repository\GradeLockRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Security\Voter\CardSlipVoter;
@@ -48,7 +48,7 @@ class TeacherCardSlipController extends AbstractController
         private readonly CardSlipBuilder $builder,
         private readonly CardSlipCommentRecorder $recorder,
         private readonly CardSlipPdf $pdf,
-        private readonly GradeLockRepository $locks,
+        private readonly GradeLockRepositoryInterface $locks,
         private readonly GradeRules $rules,
         private readonly SectionGradeGrid $grid,
     ) {

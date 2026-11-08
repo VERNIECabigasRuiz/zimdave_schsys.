@@ -2,13 +2,15 @@
 
 namespace App\Tests\Grading;
 
+use App\Learners\Application\Api\SectionRosterInterface;
+use App\Tests\Grading\Integration\Application\SavingGradeRecorder;
 use App\Core\Domain\Model\ActivityLog;
 use App\Learners\Domain\Model\Enrollment;
-use App\Entity\Grade;
-use App\Entity\GradeChangeRequest;
-use App\Entity\GradeChangeStatus;
+use App\Grading\Domain\Model\Grade;
+use App\Grading\Domain\Model\GradeChangeRequest;
+use App\Grading\Domain\Model\GradeChangeStatus;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\GradeOpening;
+use App\Grading\Domain\Model\GradeOpening;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
@@ -20,16 +22,14 @@ use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Grading\GradeChangeManager;
 use App\Grading\GradeLocks;
-use App\Grading\GradeRecorder;
-use App\Grading\GradeRules;
+use App\Grading\Application\Service\GradeRecorder;
+use App\Grading\Application\Service\GradeRules;
 use App\Grading\GradingException;
-use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
-use App\Repository\GradeChangeRequestRepository;
-use App\Repository\GradeLockRepository;
-use App\Repository\GradeOpeningRepository;
-use App\Repository\GradeRepository;
-use App\Repository\GradeUnlockRepository;
-use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
+use App\Grading\Domain\Model\Repository\GradeChangeRequestRepositoryInterface;
+use App\Grading\Domain\Model\Repository\GradeLockRepositoryInterface;
+use App\Grading\Domain\Model\Repository\GradeOpeningRepositoryInterface;
+use App\Grading\Domain\Model\Repository\GradeRepositoryInterface;
+use App\Grading\Domain\Model\Repository\GradeUnlockRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
@@ -75,7 +75,11 @@ class GradeChangeManagerTest extends KernelTestCase
         $this->teacher = $this->plainUser('dave', User::ROLE_TEACHER);
         $this->principal = $this->plainUser('rosa', User::ROLE_PRINCIPAL);
         $this->honest = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Honest');
-        $this->math = (new Subject($this->school, $this->sy))->setGradeLevel(GradeLevel::Grade8)->setCode('MATH8')->setName('Mathematics')->setPosition(1);
+        $this->math = (new Subject($this->school, $this->sy))
+            ->setGradeLevel(GradeLevel::Grade8)
+            ->setCode('MATH8')
+            ->setName('Mathematics')
+            ->setPosition(1);
         $this->math->setMeetingsPerWeek(5);
         $this->em->persist($this->math);
         $this->load = new TeachingLoad($this->honest, $this->math, $this->teacher);
@@ -103,12 +107,11 @@ class GradeChangeManagerTest extends KernelTestCase
         $c = static::getContainer();
 
         return new GradeRules(
-            $c->get(GradeRepository::class),
-            $c->get(GradeLockRepository::class),
-            $c->get(GradeUnlockRepository::class),
-            $c->get(EnrollmentRepositoryInterface::class),
-            $c->get(TransferRequestRepositoryInterface::class),
-            $c->get(GradeOpeningRepository::class),
+            $c->get(GradeRepositoryInterface::class),
+            $c->get(GradeLockRepositoryInterface::class),
+            $c->get(GradeUnlockRepositoryInterface::class),
+            $c->get(SectionRosterInterface::class),
+            $c->get(GradeOpeningRepositoryInterface::class),
         );
     }
 
@@ -117,21 +120,19 @@ class GradeChangeManagerTest extends KernelTestCase
         return new SchoolClock(static::getContainer()->get(ClockInterface::class), 'Asia/Manila');
     }
 
-    private function recorder(): GradeRecorder
+    private function recorder(): SavingGradeRecorder
     {
         $c = static::getContainer();
 
-        return new GradeRecorder(
-            $this->em,
-            new GradeLocks($c->get(LockFactory::class)),
+        return new SavingGradeRecorder(new GradeRecorder(
             $this->rules(),
-            $c->get(GradeRepository::class),
-            $c->get(GradeLockRepository::class),
-            $c->get(GradeUnlockRepository::class),
-            $c->get(GradeOpeningRepository::class),
+            $c->get(GradeRepositoryInterface::class),
+            $c->get(GradeLockRepositoryInterface::class),
+            $c->get(GradeUnlockRepositoryInterface::class),
+            $c->get(GradeOpeningRepositoryInterface::class),
             $c->get(ActivityLoggerInterface::class),
             $this->clock(),
-        );
+        ), $this->em);
     }
 
     private function manager(): GradeChangeManager
@@ -142,8 +143,8 @@ class GradeChangeManagerTest extends KernelTestCase
             $this->em,
             new GradeLocks($c->get(LockFactory::class)),
             $this->rules(),
-            $c->get(GradeRepository::class),
-            $c->get(GradeChangeRequestRepository::class),
+            $c->get(GradeRepositoryInterface::class),
+            $c->get(GradeChangeRequestRepositoryInterface::class),
             $c->get(ActivityLoggerInterface::class),
             $this->clock(),
         );

@@ -2,13 +2,17 @@
 
 namespace App\Grading;
 
-use App\Entity\Grade;
-use App\Entity\GradeChangeRequest;
+use App\Grading\Domain\Model\Grade;
+use App\Grading\Domain\Model\GradeChangeRequest;
+use App\Grading\Domain\Model\ClassGradeStatus;
+use App\Grading\Application\Service\SheetLearner;
+use App\Grading\Application\Service\GradeRules;
+use App\Grading\Application\Service\GradeRecorder;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
-use App\Repository\GradeChangeRequestRepository;
-use App\Repository\GradeRepository;
+use App\Grading\Domain\Model\Repository\GradeChangeRequestRepositoryInterface;
+use App\Grading\Domain\Model\Repository\GradeRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,8 +27,8 @@ class GradeChangeManager
         private readonly EntityManagerInterface $entityManager,
         private readonly GradeLocks $gradeLocks,
         private readonly GradeRules $rules,
-        private readonly GradeRepository $grades,
-        private readonly GradeChangeRequestRepository $requests,
+        private readonly GradeRepositoryInterface $grades,
+        private readonly GradeChangeRequestRepositoryInterface $requests,
         private readonly ActivityLoggerInterface $activityLogger,
         private readonly SchoolClockInterface $clock,
     ) {
@@ -38,8 +42,13 @@ class GradeChangeManager
      *
      * @throws GradingException
      */
-    public function request(TeachingLoad $load, GradingPeriod $period, array $values, string $reason, User $by): GradeChangeRequest
-    {
+    public function request(
+        TeachingLoad $load,
+        GradingPeriod $period,
+        array $values,
+        string $reason,
+        User $by,
+    ): GradeChangeRequest {
         $section = $load->getSection();
         $subject = $load->getSubject();
 
