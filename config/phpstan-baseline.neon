@@ -1,54 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Attendance/AttendanceRecorder.php
-
-		-
-			message: '#^Property App\\Attendance\\AttendanceRecorder\:\:\$calendar is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: ../src/Attendance/AttendanceRecorder.php
-
-		-
-			message: '#^Offset 1\|2\|3\|4\|5\|6\|7 might not exist on array\{1\: ''M'', 2\: ''T'', 3\: ''W'', 4\: ''TH'', 5\: ''F''\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../src/Attendance/Sf2Report.php
-
-		-
-			message: '#^Parameter \$percentAttendance of class App\\Attendance\\Sf2Summary constructor expects array\{float\|null, float\|null, float\|null\}, non\-empty\-list\<float\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Attendance/Sf2ReportBuilder.php
-
-		-
-			message: '#^Parameter \$percentEnrolment of class App\\Attendance\\Sf2Summary constructor expects array\{float\|null, float\|null, float\|null\}, non\-empty\-list\<float\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Attendance/Sf2ReportBuilder.php
-
-		-
-			message: '#^Parameter \#1 \$array \(list\<App\\Attendance\\RosterEntry\>\) of array_values is already a list, call has no effect\.$#'
-			identifier: arrayValues.list
-			count: 1
-			path: ../src/Attendance/Sf2Roster.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 1
-			path: ../src/Attendance/Sf2Writer.php
-
-		-
-			message: '#^Parameter \#2 \$content of method ZipArchive\:\:addFromString\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Attendance/Sf2Writer.php
-
-		-
 			message: '#^Offset ''codes'' on array\{codes\: list\<string\>, text\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
@@ -58,18 +10,6 @@ parameters:
 			message: '#^Parameter \#1 \$content of class Symfony\\Component\\HttpFoundation\\Response constructor expects string\|null, string\|false given\.$#'
 			identifier: argument.type
 			count: 1
-			path: ../src/Controller/AbstractAttendanceController.php
-
-		-
-			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/AbstractAttendanceController.php
-
-		-
-			message: '#^Parameter \#1 \$content of class Symfony\\Component\\HttpFoundation\\Response constructor expects string\|null, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
 			path: ../src/Controller/AbstractNutritionController.php
 
 		-
@@ -79,7 +19,7 @@ parameters:
 			path: ../src/Controller/AbstractNutritionController.php
 
 		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Attendance\\AttendanceStatistics\:\:today\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
+			message: '#^Parameter \#2 \$schoolYear of method App\\Attendance\\Application\\Api\\AttendanceDirectoryInterface\:\:schoolToday\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/Principal/DashboardController.php
@@ -155,18 +95,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/SchoolGradeController.php
-
-		-
-			message: '#^Method App\\Controller\\TeacherAttendanceController\:\:submitForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Controller/TeacherAttendanceController.php
-
-		-
-			message: '#^Parameter \#3 \$marks of method App\\Attendance\\AttendanceRecorder\:\:takeRollCall\(\) expects array\<int, App\\Entity\\LearnerMark\|null\>, array\<int, mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/TeacherAttendanceController.php
 
 		-
 			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
@@ -601,46 +529,10 @@ parameters:
 			path: ../src/Form/ReferencesFormType.php
 
 		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../src/Form/RollCallFormType.php
-
-		-
-			message: '#^Cannot access property \$name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: ../src/Form/RollCallFormType.php
-
-		-
-			message: '#^Class App\\Form\\RollCallFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/RollCallFormType.php
-
-		-
-			message: '#^Parameter \#1 \$entry of static method App\\Form\\RollCallFormType\:\:field\(\) expects App\\Attendance\\RosterEntry, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Form/RollCallFormType.php
-
-		-
 			message: '#^Class App\\Form\\ServiceRecordEntryFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
 			path: ../src/Form/ServiceRecordEntryFormType.php
-
-		-
-			message: '#^Class App\\Form\\Sf2SubmitFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/Sf2SubmitFormType.php
-
-		-
-			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Form/Sf2SubmitFormType.php
 
 		-
 			message: '#^Class App\\Form\\Sf8SubmitFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
@@ -739,30 +631,6 @@ parameters:
 			path: ../src/Repository/NutritionAssessmentRepository.php
 
 		-
-			message: '#^Method App\\Repository\\RollCallRepository\:\:countSectionsOn\(\) has parameter \$dates with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Repository/RollCallRepository.php
-
-		-
-			message: '#^Method App\\Repository\\RollCallRepository\:\:findForSchoolOn\(\) should return array\<int, App\\Entity\\RollCall\> but returns array\<int\|string, App\\Entity\\RollCall\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/RollCallRepository.php
-
-		-
-			message: '#^Method App\\Repository\\RollCallRepository\:\:findOne\(\) should return App\\Entity\\RollCall\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/RollCallRepository.php
-
-		-
-			message: '#^Method App\\Repository\\Sf2SubmissionRepository\:\:findForMonth\(\) should return array\<int, App\\Entity\\Sf2Submission\> but returns array\<int\|string, App\\Entity\\Sf2Submission\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/Sf2SubmissionRepository.php
-
-		-
 			message: '#^Method App\\Repository\\Sf8SubmissionRepository\:\:findForSections\(\) should return array\<int, App\\Entity\\Sf8Submission\> but returns array\<int\|string, App\\Entity\\Sf8Submission\>\.$#'
 			identifier: return.type
 			count: 1
@@ -799,72 +667,6 @@ parameters:
 			path: ../src/Validator/ValidServiceRowValidator.php
 
 		-
-			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Attendance/AttendanceRecorderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Attendance\\AttendanceRecorderTest\:\:refusals\(\) return type has no value type specified in iterable type iterable\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../tests/Attendance/AttendanceRecorderTest.php
-
-		-
-			message: '#^Parameter \#3 \$marks of method App\\Attendance\\AttendanceRecorder\:\:takeRollCall\(\) expects array\<int, App\\Entity\\LearnerMark\|null\>, array\<int\|string, App\\Entity\\LearnerMark\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Attendance/AttendanceRecorderTest.php
-
-		-
-			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Attendance/AttendanceStatisticsTest.php
-
-		-
-			message: '#^Parameter \#1 \$keys of function array_combine expects array\<int\|string\>, list\<int\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Attendance/Sf2ReportBuilderTest.php
-
-		-
-			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Attendance/Sf2ReportBuilderTest.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 1
-			path: ../tests/Attendance/Sf2WriterTest.php
-
-		-
-			message: '#^Method App\\Tests\\Attendance\\Sf2WriterTest\:\:row\(\) has parameter \$cells with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../tests/Attendance/Sf2WriterTest.php
-
-		-
-			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 5
-			path: ../tests/Attendance/Sf2WriterTest.php
-
-		-
-			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Attendance/Sf2WriterTest.php
-
-		-
-			message: '#^Parameter \#5 \$cells of class App\\Attendance\\Sf2Row constructor expects list\<string\>, non\-empty\-array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Attendance/Sf2WriterTest.php
-
-		-
 			message: '#^Method App\\Tests\\CardSlip\\CardSlipBuilderTest\:\:averages\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -895,13 +697,13 @@ parameters:
 			path: ../tests/CardSlip/CardSlipPdfTest.php
 
 		-
-			message: '#^Offset int\|null might not exist on array\<int, App\\CardSlip\\AttendanceTally\|null\>\.$#'
+			message: '#^Offset int\|null might not exist on array\<int, App\\Attendance\\Application\\Api\\AttendanceTally\|null\>\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../tests/CardSlip/TermAttendanceTest.php
 
 		-
-			message: '#^Offset int\|null might not exist on non\-empty\-array\<int, App\\CardSlip\\AttendanceTally\|null\>\.$#'
+			message: '#^Offset int\|null might not exist on non\-empty\-array\<int, App\\Attendance\\Application\\Api\\AttendanceTally\|null\>\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../tests/CardSlip/TermAttendanceTest.php
@@ -913,7 +715,7 @@ parameters:
 			path: ../tests/CardSlip/TermAttendanceTest.php
 
 		-
-			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\>, array\<''''\|int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\> given\.$#'
+			message: '#^Parameter \#1 \$marks of method App\\Attendance\\Domain\\Model\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Attendance\\Domain\\Model\\LearnerMark\}\>, array\<''''\|int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Attendance\\Domain\\Model\\LearnerMark\}\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../tests/CardSlip/TermAttendanceTest.php
@@ -1225,12 +1027,6 @@ parameters:
 			path: ../tests/Controller/ProfileControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\>, non\-empty\-array\<''''\|int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\:\:Absent\}\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/SchoolAttendanceControllerTest.php
-
-		-
 			message: '#^Property App\\Tests\\Controller\\SchoolCardSlipTest\:\:\$term1 \(App\\Schools\\Domain\\Model\\GradingPeriod\) does not accept App\\Schools\\Domain\\Model\\GradingPeriod\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -1373,12 +1169,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
-			message: '#^Method App\\Tests\\Controller\\TeacherAttendanceControllerTest\:\:marksOn\(\) should return array\<int, App\\Entity\\LearnerMark\> but returns array\<int\|string, App\\Entity\\LearnerMark\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Controller/TeacherAttendanceControllerTest.php
 
 		-
 			message: '#^Cannot access offset ''codes'' on mixed\.$#'
@@ -2249,60 +2039,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: ../tests/Repository/GradeChangeRequestRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$marks of method App\\Entity\\RollCall\:\:replaceMarks\(\) expects array\<int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\}\>, non\-empty\-array\<''''\|int, array\{App\\Learners\\Domain\\Model\\Enrollment, App\\Entity\\LearnerMark\:\:Absent\}\> given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Repository/RollCallRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Repository\\RollCallRepository\:\:countSectionsOn\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../tests/Repository/RollCallRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Repository\\RollCallRepository\:\:findForSchoolOn\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Repository/RollCallRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$school of method App\\Repository\\Sf2SubmissionRepository\:\:findForMonth\(\) expects App\\Schools\\Domain\\Model\\School, App\\Schools\\Domain\\Model\\School\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Repository/RollCallRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$section of method App\\Repository\\RollCallRepository\:\:findBetween\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Repository/RollCallRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$section of method App\\Repository\\RollCallRepository\:\:findOne\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Repository/RollCallRepositoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$section of method App\\Repository\\Sf2SubmissionRepository\:\:findOne\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../tests/Repository/RollCallRepositoryTest.php
-
-		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\RollCallRepository\:\:findForSchoolOn\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Repository/RollCallRepositoryTest.php
-
-		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Repository\\Sf2SubmissionRepository\:\:findForMonth\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Repository/RollCallRepositoryTest.php
 
 		-
 			message: '#^Parameter \#3 \$gradingPeriod of class App\\Entity\\GradeChangeRequest constructor expects App\\Schools\\Domain\\Model\\GradingPeriod, App\\Schools\\Domain\\Model\\GradingPeriod\|null given\.$#'

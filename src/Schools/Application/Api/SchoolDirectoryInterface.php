@@ -6,6 +6,7 @@ namespace App\Schools\Application\Api;
 
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolDayOff;
 use App\Schools\Domain\Model\SchoolYear;
 
 /**
@@ -28,6 +29,28 @@ interface SchoolDirectoryInterface
 
     /** The account heading $school in $schoolYear, if any. */
     public function principalOf(School $school, SchoolYear $schoolYear): ?User;
+
+    /** @return list<\DateTimeImmutable> the school days from $from to $to, both included */
+    public function schoolDays(
+        School $school,
+        SchoolYear $schoolYear,
+        \DateTimeImmutable $from,
+        \DateTimeImmutable $to,
+    ): array;
+
+    /** @return list<\DateTimeImmutable> the school days of the calendar month $month falls in */
+    public function monthDays(School $school, SchoolYear $schoolYear, \DateTimeImmutable $month): array;
+
+    /** The school's day off on $date, if it is one. */
+    public function dayOff(School $school, \DateTimeImmutable $date): ?SchoolDayOff;
+
+    /** @return array<string, SchoolDayOff> the school's days off from $from to $to, keyed by Y-m-d */
+    public function daysOffBetween(School $school, \DateTimeImmutable $from, \DateTimeImmutable $to): array;
+
+    public function isSchoolDay(School $school, SchoolYear $schoolYear, \DateTimeImmutable $date): bool;
+
+    /** The enrolment cut-off: the first Friday of the school calendar ("1st Friday of June"). */
+    public function cutOff(SchoolYear $schoolYear): \DateTimeImmutable;
 
     /**
      * Accounts assigned to $school as teachers in $schoolYear, by name.

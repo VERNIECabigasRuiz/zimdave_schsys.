@@ -2,15 +2,14 @@
 
 namespace App\Tests\CardSlip;
 
-use App\Schools\Domain\Service\Calendar\SchoolCalendar;
-use App\Attendance\Sf2Roster;
-use App\CardSlip\AttendanceTally;
+use App\Attendance\Application\Api\AttendanceDirectoryInterface;
+use App\Attendance\Application\Api\AttendanceTally;
 use App\CardSlip\TermAttendance;
 use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
-use App\Entity\LearnerMark;
-use App\Entity\RollCall;
+use App\Attendance\Domain\Model\LearnerMark;
+use App\Attendance\Domain\Model\RollCall;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolDayOff;
 use App\Schools\Domain\Model\SchoolYear;
@@ -19,14 +18,9 @@ use App\Learners\Domain\Model\SexAtBirth;
 use App\Learners\Domain\Model\Sf1Remark;
 use App\Access\Domain\Model\User;
 use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
-use App\Repository\RollCallRepository;
-use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
-use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
-use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 /**
@@ -174,10 +168,7 @@ class TermAttendanceTest extends KernelTestCase
             ->setEndDate(null !== $end ? new \DateTimeImmutable($end) : null);
 
         return (new TermAttendance(
-            new Sf2Roster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class)),
-            new SchoolCalendar($c->get(SchoolDayOffRepositoryInterface::class)),
-            $c->get(RollCallRepository::class),
-            new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
+            $c->get(AttendanceDirectoryInterface::class),
             $c->get(EnrollmentRepositoryInterface::class),
         ))->forSection($this->section, $period);
     }

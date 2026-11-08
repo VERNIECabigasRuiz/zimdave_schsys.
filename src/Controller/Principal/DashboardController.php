@@ -2,7 +2,7 @@
 
 namespace App\Controller\Principal;
 
-use App\Attendance\AttendanceStatistics;
+use App\Attendance\Application\Api\AttendanceDirectoryInterface;
 use App\Schools\Domain\Model\School;
 use App\Access\Domain\Model\User;
 use App\Grading\FailingLearners;
@@ -31,7 +31,7 @@ class DashboardController extends AbstractController
         private readonly TimetableQuery $timetable,
         private readonly SchoolClockInterface $clock,
         private readonly TransferRequestRepositoryInterface $transferRequests,
-        private readonly AttendanceStatistics $attendance,
+        private readonly AttendanceDirectoryInterface $attendance,
         private readonly GradeChangeRequestRepository $gradeChanges,
         private readonly FailingLearners $failingLearners,
         private readonly SectionGradeGrid $grid,
@@ -55,7 +55,7 @@ class DashboardController extends AbstractController
             'students' => $this->planLimits->countStudents($school, $schoolYear),
             'blocked_reason' => $this->planLimits->blockedReason($school),
             'transfers_waiting' => $this->transferRequests->countPendingOutgoing($school, $schoolYear),
-            'attendance_today' => $this->attendance->today($school, $schoolYear),
+            'attendance_today' => $this->attendance->schoolToday($school, $schoolYear),
             'grade_changes_waiting' => $this->gradeChanges->countPendingForSchool($school, $schoolYear),
             'grading_period' => $gradingPeriod,
             'failing' => null === $gradingPeriod ? 0 : \count($this->failingLearners->forSchool($school, $schoolYear, $gradingPeriod)),

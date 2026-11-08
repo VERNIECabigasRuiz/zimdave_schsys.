@@ -2,7 +2,7 @@
 
 namespace App\Nutrition;
 
-use App\Attendance\RosterEntry;
+use App\Learners\Application\Api\RosterEntry;
 
 /** One learner's line on SF8. A row that is not weighed has a result without BMI or categories. */
 final readonly class Sf8Row

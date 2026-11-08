@@ -6,11 +6,14 @@ namespace App\Schools\Application\Api;
 
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
+use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolAssignment;
+use App\Schools\Domain\Model\SchoolDayOff;
 use App\Schools\Domain\Model\SchoolYear;
+use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Schools\Domain\Service\Plan\PlanLimits;
 
 final class SchoolDirectory implements SchoolDirectoryInterface
@@ -20,6 +23,8 @@ final class SchoolDirectory implements SchoolDirectoryInterface
         private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly PlanLimits $planLimits,
+        private readonly SchoolCalendar $calendar,
+        private readonly SchoolDayOffRepositoryInterface $daysOff,
     ) {
     }
 
@@ -46,6 +51,40 @@ final class SchoolDirectory implements SchoolDirectoryInterface
     public function principalOf(School $school, SchoolYear $schoolYear): ?User
     {
         return $this->assignments->findPrincipal($school, $schoolYear)?->getUser();
+    }
+
+    public function schoolDays(
+        School $school,
+        SchoolYear $schoolYear,
+        \DateTimeImmutable $from,
+        \DateTimeImmutable $to,
+    ): array {
+        return $this->calendar->schoolDays($school, $schoolYear, $from, $to);
+    }
+
+    public function monthDays(School $school, SchoolYear $schoolYear, \DateTimeImmutable $month): array
+    {
+        return $this->calendar->monthDays($school, $schoolYear, $month);
+    }
+
+    public function dayOff(School $school, \DateTimeImmutable $date): ?SchoolDayOff
+    {
+        return $this->calendar->dayOff($school, $date);
+    }
+
+    public function daysOffBetween(School $school, \DateTimeImmutable $from, \DateTimeImmutable $to): array
+    {
+        return $this->daysOff->findBetween($school, $from, $to);
+    }
+
+    public function isSchoolDay(School $school, SchoolYear $schoolYear, \DateTimeImmutable $date): bool
+    {
+        return $this->calendar->isSchoolDay($school, $schoolYear, $date);
+    }
+
+    public function cutOff(SchoolYear $schoolYear): \DateTimeImmutable
+    {
+        return $this->calendar->cutOff($schoolYear);
     }
 
     public function teachersOf(School $school, SchoolYear $schoolYear): array

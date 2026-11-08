@@ -3,7 +3,7 @@
 namespace App\Tests\CardSlip;
 
 use App\Core\Domain\Service\Pdf\PdfRendererInterface;
-use App\CardSlip\AttendanceTally;
+use App\Attendance\Application\Api\AttendanceTally;
 use App\CardSlip\CardSlip;
 use App\CardSlip\CardSlipLine;
 use App\CardSlip\CardSlipPdf;

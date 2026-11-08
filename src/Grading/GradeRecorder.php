@@ -2,7 +2,6 @@
 
 namespace App\Grading;
 
-use App\Attendance\AttendanceRecorder;
 use App\Entity\Grade;
 use App\Entity\GradeLock;
 use App\Entity\GradeOpening;
@@ -226,6 +225,6 @@ class GradeRecorder
     /** "Mathematics – Grade 8 – HONEST" */
     public static function classLabel(Section $section, Subject $subject): string
     {
-        return $subject->getName().' – '.AttendanceRecorder::label($section);
+        return $subject->getName().' – '.$section->getFormLabel();
     }
 }

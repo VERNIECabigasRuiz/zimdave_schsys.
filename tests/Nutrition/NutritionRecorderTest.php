@@ -2,7 +2,7 @@
 
 namespace App\Tests\Nutrition;
 
-use App\Attendance\Sf2Roster;
+use App\Learners\Application\Api\SectionRoster;
 use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\NutritionAssessment;
@@ -84,7 +84,7 @@ class NutritionRecorderTest extends KernelTestCase
     {
         $c = static::getContainer();
         $clock = new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila');
-        $roster = new Sf2Roster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class));
+        $roster = new SectionRoster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class));
 
         return new NutritionRecorder(
             $this->em,

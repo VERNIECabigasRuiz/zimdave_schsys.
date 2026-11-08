@@ -12,12 +12,14 @@
     <file>../src/Schools</file>
     <file>../src/Classes</file>
     <file>../src/Learners</file>
+    <file>../src/Attendance</file>
     <file>../tests/Access</file>
     <file>../tests/Billing</file>
     <file>../tests/Core</file>
     <file>../tests/Schools</file>
     <file>../tests/Classes</file>
     <file>../tests/Learners</file>
+    <file>../tests/Attendance</file>
     <file>../tests/DataFixtures</file>
     <file>../tests/Browser</file>
 </ruleset>

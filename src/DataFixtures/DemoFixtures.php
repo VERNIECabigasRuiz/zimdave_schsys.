@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Attendance\AttendanceRecorder;
+use App\Attendance\Application\Service\AttendanceRecorder;
 use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Classes\Domain\Model\ClassPeriod;
 use App\Schools\Domain\Model\Division;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Learners\Domain\Model\Learner;
-use App\Entity\LearnerMark;
+use App\Attendance\Domain\Model\LearnerMark;
 use App\Billing\Domain\Model\Plan;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolType;
@@ -365,6 +365,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
                 $marks[(int) $enrollment->getId()] = $mark;
             }
             $this->attendance->takeRollCall($section, $day, $marks, $adviser);
+            $this->entityManager->flush();
             ++$taken;
         }
     }

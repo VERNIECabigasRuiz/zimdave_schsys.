@@ -148,7 +148,13 @@ deptrac:
     - name: Learners_Application
       collectors:
         - type: classLike
-          value: ^App\\Learners\\Application\\.*
+          value: ^App\\Learners\\Application\\(?!Api\\).*
+
+    # What other modules may use from Learners
+    - name: Learners_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Application\\Api\\.*
 
     - name: Learners_Infrastructure
       collectors:
@@ -160,6 +166,32 @@ deptrac:
         - type: classLike
           value: ^App\\Learners\\Presentation\\.*
 
+    - name: Attendance_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Domain\\.*
+
+    - name: Attendance_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Application\\(?!Api\\).*
+
+    # What other modules may use from Attendance
+    - name: Attendance_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Application\\Api\\.*
+
+    - name: Attendance_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Infrastructure\\.*
+
+    - name: Attendance_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Presentation\\.*
+
     - name: Kernel
       collectors:
         - type: classLike
@@ -169,7 +201,7 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -394,6 +426,12 @@ deptrac:
       - Classes_Domain
       - Classes_Api
       - ValidatorConstraints
+    Learners_Api:
+      - Learners_Domain
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
     Learners_Infrastructure:
       - Learners_Domain
       - Learners_Application
@@ -422,6 +460,68 @@ deptrac:
       - Schools_Api
       - Classes_Domain
       - Classes_Api
+      - ValidatorConstraints
+      - Framework
+    Attendance_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+    Attendance_Application:
+      - Attendance_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+    Attendance_Api:
+      - Attendance_Domain
+      - Attendance_Application
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Learners_Domain
+      - Learners_Api
+    Attendance_Infrastructure:
+      - Attendance_Domain
+      - Attendance_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+      - Framework
+      - Vendor
+    Attendance_Presentation:
+      - Attendance_Application
+      - Attendance_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
       - ValidatorConstraints
       - Framework
     Kernel:
@@ -467,6 +567,12 @@ deptrac:
       - Learners_Application
       - Learners_Infrastructure
       - Learners_Presentation
+      - Learners_Api
+      - Attendance_Domain
+      - Attendance_Application
+      - Attendance_Infrastructure
+      - Attendance_Presentation
+      - Attendance_Api
       - Kernel
       - DoctrineMapping
       - SecurityUserContract

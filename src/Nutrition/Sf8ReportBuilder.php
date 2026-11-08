@@ -2,7 +2,7 @@
 
 namespace App\Nutrition;
 
-use App\Attendance\Sf2Roster;
+use App\Learners\Application\Api\SectionRosterInterface;
 use App\Entity\NutritionAssessment;
 use App\Entity\NutritionMeasurement;
 use App\Schools\Domain\Model\School;
@@ -26,7 +26,7 @@ class Sf8ReportBuilder
     public const PRINCIPAL_POSITION = 'School Principal';
 
     public function __construct(
-        private readonly Sf2Roster $roster,
+        private readonly SectionRosterInterface $roster,
         private readonly NutritionClassifier $classifier,
         private readonly NutritionAssessmentRepository $assessments,
         private readonly Sf8SubmissionRepository $submissions,

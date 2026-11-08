@@ -2,8 +2,7 @@
 
 namespace App\Nutrition;
 
-use App\Attendance\AttendanceRecorder;
-use App\Attendance\Sf2Roster;
+use App\Learners\Application\Api\SectionRosterInterface;
 use App\Entity\NutritionAssessment;
 use App\Entity\NutritionMeasurement;
 use App\Classes\Domain\Model\Section;
@@ -24,7 +23,7 @@ class NutritionRecorder
         private readonly EntityManagerInterface $entityManager,
         private readonly LockFactory $lockFactory,
         private readonly NutritionRules $rules,
-        private readonly Sf2Roster $roster,
+        private readonly SectionRosterInterface $roster,
         private readonly Sf8ReportBuilder $reports,
         private readonly NutritionAssessmentRepository $assessments,
         private readonly Sf8SubmissionRepository $submissions,
@@ -94,7 +93,7 @@ class NutritionRecorder
                     ->setRemarks($remarks);
             }
 
-            $this->activityLogger->log(\sprintf($action, AttendanceRecorder::label($section), $period->label()));
+            $this->activityLogger->log(\sprintf($action, $section->getFormLabel(), $period->label()));
             $this->entityManager->flush();
 
             return $assessment;
@@ -124,7 +123,7 @@ class NutritionRecorder
 
             $submission = new Sf8Submission($section, $period, $by, $this->clock->now());
             $this->entityManager->persist($submission);
-            $this->activityLogger->log(\sprintf('Submitted SF8 of %s for %s', AttendanceRecorder::label($section), $period->label()));
+            $this->activityLogger->log(\sprintf('Submitted SF8 of %s for %s', $section->getFormLabel(), $period->label()));
             $this->entityManager->flush();
 
             return $submission;
@@ -140,7 +139,7 @@ class NutritionRecorder
                 throw new NutritionException(\sprintf('%s is not submitted.', $period->label()));
             }
             $this->entityManager->remove($submission);
-            $this->activityLogger->log(\sprintf('Reopened SF8 of %s for %s', AttendanceRecorder::label($section), $period->label()));
+            $this->activityLogger->log(\sprintf('Reopened SF8 of %s for %s', $section->getFormLabel(), $period->label()));
             $this->entityManager->flush();
         });
     }

@@ -2,8 +2,7 @@
 
 namespace App\Tests\CardSlip;
 
-use App\Schools\Domain\Service\Calendar\SchoolCalendar;
-use App\Attendance\Sf2Roster;
+use App\Attendance\Application\Api\AttendanceDirectoryInterface;
 use App\CardSlip\CardSlip;
 use App\CardSlip\CardSlipBuilder;
 use App\CardSlip\CardSlipComments;
@@ -29,16 +28,11 @@ use App\Grading\SectionGradeGrid;
 use App\Repository\CardSlipCommentRepository;
 use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Repository\GradeLockRepository;
-use App\Repository\RollCallRepository;
-use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
-use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
-use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 /**
@@ -358,10 +352,7 @@ class CardSlipBuilderTest extends KernelTestCase
             $c->get(SectionGradeGrid::class),
             $c->get(SubjectRepositoryInterface::class),
             new TermAttendance(
-                new Sf2Roster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class)),
-                new SchoolCalendar($c->get(SchoolDayOffRepositoryInterface::class)),
-                $c->get(RollCallRepository::class),
-                new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
+                $c->get(AttendanceDirectoryInterface::class),
                 $c->get(EnrollmentRepositoryInterface::class),
             ),
             $c->get(CardSlipCommentRepository::class),

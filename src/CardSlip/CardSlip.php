@@ -2,6 +2,8 @@
 
 namespace App\CardSlip;
 
+use App\Attendance\Application\Api\AttendanceTally;
+
 /** One learner's card slip for a grading term, ready to print. */
 final readonly class CardSlip
 {

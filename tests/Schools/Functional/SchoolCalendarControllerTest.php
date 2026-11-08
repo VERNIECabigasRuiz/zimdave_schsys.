@@ -4,7 +4,7 @@ namespace App\Tests\Schools\Functional;
 
 use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\RollCall;
+use App\Attendance\Domain\Model\RollCall;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolDayOff;
 use App\Schools\Domain\Model\SchoolYear;

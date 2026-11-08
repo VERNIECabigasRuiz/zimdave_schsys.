@@ -153,4 +153,10 @@ class Section
 
         return $label;
     }
+
+    /** "Grade 8 – ARTISTIC", as the school forms print it; just "ARTISTIC" without a grade level. */
+    public function getFormLabel(): string
+    {
+        return ltrim(($this->gradeLevel?->label() ?? '') . ' – ' . mb_strtoupper($this->name), ' –');
+    }
 }

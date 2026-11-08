@@ -36,7 +36,6 @@
         </testsuite>
         <!-- Tests not yet moved into a module; each move takes its folders out of here -->
         <testsuite name="legacy">
-            <directory>tests/Attendance</directory>
             <directory>tests/CardSlip</directory>
             <directory>tests/Controller</directory>
             <directory>tests/Entity</directory>
@@ -64,6 +63,7 @@
             <directory>src/Schools</directory>
             <directory>src/Classes</directory>
             <directory>src/Learners</directory>
+            <directory>src/Attendance</directory>
         </include>
 
         <deprecationTrigger>

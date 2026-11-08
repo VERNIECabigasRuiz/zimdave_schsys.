@@ -6,7 +6,7 @@ use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Schools\Domain\Model\School;
 use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
-use App\Repository\RollCallRepository;
+use App\Attendance\Application\Api\AttendanceDirectoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
@@ -34,7 +34,7 @@ class TeacherController extends AbstractController
         private readonly SchoolClockInterface $clock,
         private readonly TransferRequestRepositoryInterface $transferRequests,
         private readonly SchoolCalendar $calendar,
-        private readonly RollCallRepository $rollCalls,
+        private readonly AttendanceDirectoryInterface $attendance,
     ) {
     }
 
@@ -69,7 +69,7 @@ class TeacherController extends AbstractController
             return ['schoolDay' => false, 'taken' => false];
         }
 
-        return ['schoolDay' => true, 'taken' => null !== $this->rollCalls->findOne($advisory, $today)];
+        return ['schoolDay' => true, 'taken' => $this->attendance->rollCallTaken($advisory, $today)];
     }
 
     /** The "Your class now" card: only the turbo-frame, so the dashboard can reload it in place. */

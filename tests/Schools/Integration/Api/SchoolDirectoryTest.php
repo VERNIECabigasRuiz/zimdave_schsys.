@@ -6,6 +6,7 @@ namespace App\Tests\Schools\Integration\Api;
 
 use App\Access\Domain\Model\User;
 use App\Schools\Application\Api\SchoolDirectoryInterface;
+use App\Schools\Domain\Model\SchoolDayOff;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -90,6 +91,50 @@ final class SchoolDirectoryTest extends KernelTestCase
         // Assert
         self::assertSame([$ana, $zed], $current);
         self::assertSame([$ana, $promoted, $zed], $assigned);
+    }
+
+    public function testReadsTheSchoolCalendar(): void
+    {
+        // Initialize
+        $sy = $this->schoolYear(2025, true);
+        $sy->setStartDate(new \DateTimeImmutable('2025-06-16'))->setEndDate(new \DateTimeImmutable('2026-03-31'));
+        $school = $this->school('300001', 'Alpha NHS');
+        $by = $this->plainUser('rc-maria', User::ROLE_PRINCIPAL);
+        $holiday = new \DateTimeImmutable('2025-08-21');
+        $this->em->persist(new SchoolDayOff($school, $sy, $holiday, 'Ninoy Aquino Day', $by, new \DateTimeImmutable()));
+        $this->em->flush();
+        $directory = static::getContainer()->get(SchoolDirectoryInterface::class);
+
+        // Execute
+        $week = $directory->schoolDays(
+            $school,
+            $sy,
+            new \DateTimeImmutable('2025-08-18'),
+            new \DateTimeImmutable('2025-08-24'),
+        );
+        $month = $directory->monthDays($school, $sy, new \DateTimeImmutable('2025-08-01'));
+        $dayOff = $directory->dayOff($school, $holiday);
+        $between = $directory->daysOffBetween(
+            $school,
+            new \DateTimeImmutable('2025-08-01'),
+            new \DateTimeImmutable('2025-08-31'),
+        );
+        $isSchoolDay = [
+            $directory->isSchoolDay($school, $sy, $holiday),
+            $directory->isSchoolDay($school, $sy, $week[0]),
+        ];
+        $cutOff = $directory->cutOff($sy);
+
+        // Assert
+        self::assertSame(
+            ['2025-08-18', '2025-08-19', '2025-08-20', '2025-08-22'],
+            array_map(static fn (\DateTimeImmutable $d) => $d->format('Y-m-d'), $week),
+        );
+        self::assertCount(20, $month);
+        self::assertSame('Ninoy Aquino Day', $dayOff?->getReason());
+        self::assertSame(['2025-08-21'], array_keys($between));
+        self::assertSame([false, true], $isSchoolDay);
+        self::assertSame('2025-06-20', $cutOff->format('Y-m-d'));
     }
 
     public function testFindsThePrincipalOfASchool(): void

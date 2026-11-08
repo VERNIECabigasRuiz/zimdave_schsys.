@@ -9,7 +9,7 @@ use App\Schools\Domain\Model\Division;
 use App\Learners\Domain\Model\Enrollment;
 use App\Entity\Grade;
 use App\Entity\LessonPlan;
-use App\Entity\RollCall;
+use App\Attendance\Domain\Model\RollCall;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;

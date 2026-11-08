@@ -2,7 +2,7 @@
 
 namespace App\Tests\Nutrition;
 
-use App\Attendance\RosterEntry;
+use App\Learners\Application\Api\RosterEntry;
 use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Learners\Domain\Model\Learner;
