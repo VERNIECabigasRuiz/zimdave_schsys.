@@ -85,6 +85,8 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - Run a new module's tests with coverage before the full `make test-feature`.
 - Tests that boot the kernel go in Integration or Functional, never Unit; `make test` runs Unit without a database.
 - Compare ids, not entities, in assertions that may fail; PHPUnit's diff of an entity can hang.
+- `TEST_TARGET` takes one class, method or path; a `|` in it breaks the Makefile. Run several one at a time.
+- Run deptrac through `make test deptrac`; run directly, it leaves `.deptrac.cache` in the repo root.
 
 ## Git
 

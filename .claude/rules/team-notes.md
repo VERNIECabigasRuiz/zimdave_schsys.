@@ -120,6 +120,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Before finishing a test, check every setup line sits under `// Initialize`.
 - Check each test's `// Execute` section actually runs the code under test.
 - For a test meant to guard a fix, break the fix once and watch the test fail.
+- After fixing one checker's findings, rerun the other checkers on the same files before a full run.
 
 ## Subagents / Long-Running Tasks
 
