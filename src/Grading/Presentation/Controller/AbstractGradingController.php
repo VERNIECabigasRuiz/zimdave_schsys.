@@ -14,6 +14,8 @@ use App\Grading\Domain\Exception\GradingAccessDeniedException;
 use App\Grading\Domain\Exception\GradingNotFoundException;
 use App\Schools\Domain\Exception\SchoolNotFoundException;
 use App\Schools\Domain\Exception\SchoolYearNotFoundException;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\Response;
 
 /** What the grade pages share: asking the bus, and turning refusals into a 404, a 403 or a message. */
 abstract class AbstractGradingController extends BusController
@@ -38,6 +40,27 @@ abstract class AbstractGradingController extends BusController
 
         /** @var array<string, mixed> $data */
         return $data;
+    }
+
+    /** @param array<string, mixed> $file a card slip PDF query's data: content and fileName */
+    protected function download(array $file): Response
+    {
+        \assert(\is_string($file['content']) && \is_string($file['fileName']));
+
+        return $this->pdf($file['content'], $file['fileName']);
+    }
+
+    /** A PDF download; names with an Ñ fall back to underscores for old browsers. */
+    protected function pdf(string $content, string $fileName): Response
+    {
+        return new Response($content, Response::HTTP_OK, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => HeaderUtils::makeDisposition(
+                HeaderUtils::DISPOSITION_ATTACHMENT,
+                $fileName,
+                (string) preg_replace('/[^\x20-\x7E]/', '_', $fileName),
+            ),
+        ]);
     }
 
     /** The message of a refused change, or null when it was saved; not found is a 404, not allowed a 403. */

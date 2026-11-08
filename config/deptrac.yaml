@@ -227,7 +227,7 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\(?:Domain|Application|Infrastructure|Presentation)\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -560,6 +560,7 @@ deptrac:
       - DoctrineMapping
     Grading_Application:
       - Grading_Domain
+      - Attendance_Api
       - Core_Application
       - Core_Domain
       - Core_BusAttributes

@@ -15,4 +15,8 @@ interface CardSlipCommentRepositoryInterface
      * @return array<int, CardSlipComment> keyed by enrollment id
      */
     public function findForEnrollments(array $enrollmentIds, GradingPeriod $period): array;
+
+    public function add(CardSlipComment $comment): void;
+
+    public function remove(CardSlipComment $comment): void;
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Grading\Integration\Application;
 
+use App\Grading\Domain\Model\GradeChangeRequest;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
@@ -94,8 +95,11 @@ class GradePolicyTest extends KernelTestCase
     }
 
     /** @param array<string, bool> $expected */
-    private function assertRoles(string $attribute, TeachingLoad|Section|School $subject, array $expected): void
-    {
+    private function assertRoles(
+        string $attribute,
+        TeachingLoad|Section|School|GradeChangeRequest $subject,
+        array $expected,
+    ): void {
         $policy = static::getContainer()->get(GradePolicy::class);
         foreach ($expected as $who => $granted) {
             self::assertSame(
@@ -183,6 +187,46 @@ class GradePolicyTest extends KernelTestCase
             'otherPrincipal' => false,
             'adviser' => false,
             'teacher' => false,
+            'student' => false,
+        ]);
+    }
+
+    private function changeRequest(): GradeChangeRequest
+    {
+        $this->sy->rebuildGradingPeriods();
+
+        return new GradeChangeRequest(
+            $this->section,
+            $this->load->getSubject(),
+            ($this->sy->getGradingPeriod(1) ?? throw new \LogicException('No period 1')),
+            $this->users['teacher'],
+            'Encoding mistake in the sheet',
+            new \DateTimeImmutable('2025-08-22 10:00:00'),
+        );
+    }
+
+    public function testChangeWithdraw(): void
+    {
+        $request = $this->changeRequest();
+        $this->load->setTeacher($this->users['other']);
+        $this->assertRoles(GradePolicy::CHANGE_WITHDRAW, $request, [
+            'teacher' => true,
+            'other' => false,
+            'principal' => false,
+            'admin' => false,
+            'otherPrincipal' => false,
+            'student' => false,
+        ]);
+    }
+
+    public function testChangeDecide(): void
+    {
+        $this->assertRoles(GradePolicy::CHANGE_DECIDE, $this->changeRequest(), [
+            'principal' => true,
+            'otherPrincipal' => false,
+            'admin' => false,
+            'teacher' => false,
+            'adviser' => false,
             'student' => false,
         ]);
     }

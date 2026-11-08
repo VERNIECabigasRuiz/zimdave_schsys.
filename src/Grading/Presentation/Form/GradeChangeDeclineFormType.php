@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Grading\Presentation\Form;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * The principal declines a grade change request with a note for the teacher. One per pending request, named per id.
+ *
+ * @extends AbstractType<mixed>
+ */
+class GradeChangeDeclineFormType extends AbstractType
+{
+    public const NOTE = 'Write a note for the teacher (at least 5 characters).';
+
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('note', TextareaType::class, [
+            'label' => 'Note for the teacher',
+            // a blank note arrives as '' (trimmed), which Length alone reports, so the message shows once
+            'empty_data' => '',
+            'trim' => true,
+            'attr' => ['rows' => 2, 'maxlength' => 1000],
+            'constraints' => [new Assert\Length(min: 5, max: 1000, minMessage: self::NOTE, maxMessage: self::NOTE)],
+        ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults(['data_class' => null]);
+    }
+}

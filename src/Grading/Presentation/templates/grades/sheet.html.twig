@@ -121,5 +121,5 @@
         {% endif %}
     </div>
 
-    {{ include('grades/_change_requests.html.twig', {requests: change_requests, can_withdraw: true}) }}
+    {{ include('@Grading/grades/_change_requests.html.twig', {requests: change_requests, can_withdraw: true}) }}
 {% endblock %}

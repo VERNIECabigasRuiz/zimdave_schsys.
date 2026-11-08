@@ -82,6 +82,14 @@ final class GetGradeSheetHandler implements QueryHandlerInterface
             'status' => $status,
             'refusal' => $refusal,
             'change_requests' => $changeRequests,
+            // the requests this account sent, which it may withdraw while they wait
+            'withdrawable' => array_values(array_map(
+                static fn (GradeChangeRequest $r): int => (int) $r->getId(),
+                array_filter(
+                    $changeRequests,
+                    fn (GradeChangeRequest $r): bool => $this->policy->can($actor, GradePolicy::CHANGE_WITHDRAW, $r),
+                ),
+            )),
             'pending' => [] !== $waiting,
             // "your" request only for the teacher who sent it, not the adviser or a teacher who took over the class
             'own_pending' => [] !== array_filter(

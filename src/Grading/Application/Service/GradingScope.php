@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Grading\Application\Service;
 
+use App\Grading\Domain\Model\GradeChangeRequest;
+use App\Grading\Domain\Model\Repository\GradeChangeRequestRepositoryInterface;
 use App\Access\Application\Api\AccountDirectoryInterface;
 use App\Access\Domain\Exception\AccountNotFoundException;
 use App\Access\Domain\Model\User;
@@ -36,7 +38,24 @@ class GradingScope
         private readonly GradePolicy $policy,
         private readonly GradeRules $rules,
         private readonly SectionGradeGrid $grid,
+        private readonly GradeChangeRequestRepositoryInterface $changeRequests,
     ) {
+    }
+
+    /**
+     * A grade change request, of the school when one is given.
+     *
+     * @throws GradingNotFoundException
+     */
+    public function changeRequest(int $requestId, ?School $school = null): GradeChangeRequest
+    {
+        $request = $this->changeRequests->findById($requestId);
+        $elsewhere = null !== $school && $request?->getSection()->getSchool()->getId() !== $school->getId();
+        if (null === $request || $elsewhere) {
+            throw new GradingNotFoundException();
+        }
+
+        return $request;
     }
 
     /** @throws AccountNotFoundException */
@@ -95,6 +114,18 @@ class GradingScope
     public function currentPeriod(int $periodId): GradingPeriod
     {
         return self::periodOf($this->currentYear(), $periodId) ?? throw new GradingNotFoundException(self::NO_PERIOD);
+    }
+
+    /**
+     * A grading period of the section's school year.
+     *
+     * @throws GradingNotFoundException
+     */
+    public function sectionPeriod(Section $section, int $periodId): GradingPeriod
+    {
+        return self::periodOf($section->getSchoolYear(), $periodId) ?? throw new GradingNotFoundException(
+            self::NO_PERIOD,
+        );
     }
 
     /**

@@ -1,0 +1,621 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Grading\Functional;
+
+use App\Tests\Grading\Integration\Application\SavesGrades;
+use App\Grading\Application\Service\CardSlipBuilder;
+use App\Grading\Application\Service\CardSlipComments;
+use App\Grading\Domain\Service\CardSlip\CardSlipPdfInterface;
+use App\Grading\Domain\Model\CardSlipComment;
+use App\Learners\Domain\Model\Enrollment;
+use App\Grading\Domain\Model\Grade;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
+use App\Classes\Domain\Model\Section;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
+use App\Classes\Domain\Model\Subject;
+use App\Access\Domain\Model\User;
+use App\Tests\Controller\Admin\AdminTestCase;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
+use Symfony\Component\DomCrawler\Crawler;
+
+/**
+ * Grade 8 – Honest, advised by Tess, with Mathematics only. S.Y. 2025-2026 in terms; it is Aug 22, 2025.
+ * Abad (female) has Math 72, Bautista (male) has Math 90.
+ *
+ * @phpstan-type FormValues array{
+ *     card_slip_comments_form: array{entries: array<int, array{codes: array<int, string>, text: string}>},
+ * }
+ */
+class TeacherCardSlipControllerTest extends AdminTestCase
+{
+    use SavesGrades;
+
+    use ClockSensitiveTrait;
+
+    private const NOT_LOCKED = "Term 1 isn't locked yet. Slips will print as DRAFT until the principal locks "
+        . 'the grades.';
+
+    private SchoolYear $sy;
+    private School $school;
+    private User $teacher;
+    private Section $honest;
+    private Subject $math;
+    private GradingPeriod $term1;
+    /** @var array<string, Enrollment> by last name */
+    private array $enrollments = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        static::mockTime('2025-08-22 10:00:00');
+        $this->sy = $this->schoolYear(2025, current: true);
+        $this->sy->rebuildGradingPeriods();
+        $this->em->flush();
+        $this->term1 = $this->sy->getGradingPeriod(1) ?? throw new \LogicException('No period 1');
+        $this->school = $this->school(
+            '303196',
+            'Pagsabungan NHS',
+            planValidUntil: new \DateTimeImmutable('2026-04-30'),
+        );
+        $this->teacher = $this->createUser('tess', User::ROLE_TEACHER, 'Tess Reyes');
+        $this->assign($this->school, $this->sy, $this->teacher, User::ROLE_TEACHER);
+        $this->honest = $this->newSection($this->school, $this->sy, GradeLevel::Grade8, 'Honest')->setAdviser(
+            $this->teacher,
+        );
+        $this->math = (new Subject($this->school, $this->sy))
+            ->setGradeLevel(GradeLevel::Grade8)
+            ->setCode('MATH8')
+            ->setName('Mathematics')
+            ->setPosition(1)
+            ->setMeetingsPerWeek(5);
+        $this->em->persist($this->math);
+        $learners = ['Abad' => [SexAtBirth::Female, 72], 'Bautista' => [SexAtBirth::Male, 90]];
+        foreach ($learners as $last => [$sex, $grade]) {
+            $learner = $this->learner('1200171700' . \count($this->enrollments), $last, 'Ana')->setSex($sex);
+            $this->em->persist(
+                $enrollment = $this->enrollments[$last] = new Enrollment(
+                    $learner,
+                    $this->sy,
+                    $this->honest,
+                    $this->teacher,
+                    new \DateTimeImmutable('2025-05-20'),
+                ),
+            );
+            $this->em->persist(
+                new Grade(
+                    $enrollment,
+                    $this->math,
+                    $this->term1,
+                    $grade,
+                    $this->teacher,
+                    new \DateTimeImmutable('2025-08-21'),
+                ),
+            );
+        }
+        $this->em->flush();
+        $this->client->loginUser($this->teacher);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->clearSchoolData();
+        parent::tearDown();
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param class-string<T> $class
+     *
+     * @return T
+     */
+    private function found(EntityManagerInterface $em, string $class, mixed $id): object
+    {
+        $entity = $em->find($class, $id);
+        self::assertNotNull($entity);
+
+        return $entity;
+    }
+
+    public function testATeacherWhoIsNoLongerATeacherIsForbidden(): void
+    {
+        // Initialize
+        $teacher = $this->em->getRepository(User::class)->find($this->teacher->getId());
+        self::assertNotNull($teacher);
+        $teacher->setRole(User::ROLE_PRINCIPAL);
+        $this->em->flush();
+        $this->client->loginUser($teacher);
+        $term = (int) $this->term1->getId();
+        $abad = (int) $this->enrollments['Abad']->getId();
+        $pages = [
+            $this->pageUrl(),
+            '/teacher/class/card-slips/' . $term . '.pdf',
+            '/teacher/class/card-slips/' . $term . '/' . $abad . '.pdf',
+        ];
+
+        // Execute
+        $statuses = [];
+        foreach ($pages as $page) {
+            $this->client->request('GET', $page);
+            $statuses[$page] = $this->client->getResponse()->getStatusCode();
+        }
+        $this->client->request('POST', '/teacher/class/card-slips/' . $term . '/' . $abad . '/reset');
+        $statuses['reset'] = $this->client->getResponse()->getStatusCode();
+
+        // Assert
+        self::assertSame(array_fill_keys([...$pages, 'reset'], 403), $statuses);
+    }
+
+    private function pageUrl(?GradingPeriod $period = null): string
+    {
+        return '/teacher/class/card-slips?period=' . ($period ?? $this->term1)->getId();
+    }
+
+    private static function codesName(Enrollment $enrollment): string
+    {
+        return 'card_slip_comments_form[entries][' . $enrollment->getId() . '][codes][]';
+    }
+
+    /** @return FormValues the page's form values, as PHP arrays */
+    private function formValues(Crawler $page): array
+    {
+        /** @var FormValues $values */
+        $values = $page->selectButton('Save comments')->form()->getPhpValues();
+
+        return $values;
+    }
+
+    private static function closest(Crawler $node, string $selector): Crawler
+    {
+        $found = $node->closest($selector);
+        self::assertNotNull($found);
+
+        return $found;
+    }
+
+    /** @param array<string, mixed> $values */
+    private function postForm(Crawler $page, array $values): Crawler
+    {
+        return $this->client->request('POST', $page->selectButton('Save comments')->form()->getUri(), $values);
+    }
+
+    /** Opens a term; the entities are looked up again, as a request resets the entity manager. */
+    private function openTerm(int $number): void
+    {
+        $school = $this->found($this->em, School::class, $this->school->getId());
+        $period = $this->found($this->em, SchoolYear::class, $this->sy->getId())->getGradingPeriod($number);
+        self::assertNotNull($period);
+        $this->openGrading($school, $period);
+    }
+
+    private function lockTerm1(): void
+    {
+        $this->openTerm(1);
+        $rosa = $this->createUser('rosa', User::ROLE_PRINCIPAL);
+        // the recorder's entity manager, which is a new one once the client has made a request
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $this->savingRecorder()->lockPeriod(
+            $this->found($em, School::class, $this->school->getId()),
+            $this->found($em, GradingPeriod::class, $this->term1->getId()),
+            $this->found($em, User::class, $rosa->getId()),
+        );
+    }
+
+    /** @return array<string, CardSlipComment> saved rows by learner last name */
+    private function saved(): array
+    {
+        $this->em->clear();
+        $rows = [];
+        foreach ($this->em->getRepository(CardSlipComment::class)->findAll() as $comment) {
+            $rows[$comment->getEnrollment()->getLearner()->getLastName()] = $comment;
+        }
+
+        return $rows;
+    }
+
+    public function testPageShowsSuggestionsTicked(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Card slips');
+        $abad = $this->enrollments['Abad'];
+        $box = $crawler->filter(
+            \sprintf('input[type=checkbox][name="%s"][value="needs_improvement"]', self::codesName($abad)),
+        );
+        self::assertCount(1, $box);
+        self::assertSame('checked', $box->attr('checked'));
+        $label = $crawler->filter('label[for="' . $box->attr('id') . '"]');
+        self::assertStringContainsString('Needs to improve in Mathematics.', $label->text());
+        self::assertStringContainsString('suggested', self::closest($label, '.card-slip-choice')->text());
+        // not suggested: neither ticked nor marked
+        $other = $crawler->filter(
+            \sprintf('input[type=checkbox][name="%s"][value="participates"]', self::codesName($abad)),
+        );
+        self::assertNull($other->attr('checked'));
+        self::assertStringNotContainsString('suggested', self::closest($other, '.card-slip-choice')->text());
+        self::assertSelectorTextContains('.card-slips', '72.00');
+        // My Class has the button
+        $this->client->request('GET', '/teacher/class');
+        self::assertSelectorExists('a[href="/teacher/class/card-slips"]');
+    }
+
+    public function testSaveComments(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        $abad = $this->enrollments['Abad'];
+        $values = $this->formValues($crawler);
+        $entry = &$values['card_slip_comments_form']['entries'][(int) $abad->getId()];
+        self::assertSame(['needs_improvement', 'perfect_attendance', 'see_adviser'], array_values($entry['codes']));
+        $entry['codes'] = ['needs_improvement', 'perfect_attendance', 'participates'];
+        $entry['text'] = 'Active in class.';
+        unset($entry);
+
+        $this->postForm($crawler, $values);
+
+        self::assertResponseRedirects($this->pageUrl());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert', 'Comments saved for 2 learners.');
+        $saved = $this->saved();
+        self::assertSame(
+            ['needs_improvement', 'participates', 'perfect_attendance'],
+            self::sorted($saved['Abad']->getCodes()),
+        );
+        self::assertSame('Active in class.', $saved['Abad']->getCustomText());
+        self::assertSame('tess', $saved['Abad']->getUpdatedBy()?->getUsername());
+        // the untouched learner keeps following the suggestions: no row
+        self::assertSame(['Abad'], array_keys($saved));
+
+        $section = $this->found($this->em, Section::class, $this->honest->getId());
+        $period = $this->found($this->em, GradingPeriod::class, $this->term1->getId());
+        $slip = static::getContainer()->get(CardSlipBuilder::class)->forEnrollment(
+            $section,
+            $period,
+            (int) $abad->getId(),
+        );
+        self::assertNotNull($slip);
+        $html = static::getContainer()->get(CardSlipPdfInterface::class)->html([$slip]);
+        self::assertStringContainsString('Needs to improve in Mathematics. Please attend remedial sessions.', $html);
+        self::assertStringContainsString(CardSlipComments::text('participates'), $html);
+        self::assertStringContainsString(CardSlipComments::text('perfect_attendance'), $html);
+        self::assertStringContainsString('Active in class.', $html);
+        self::assertStringNotContainsString(CardSlipComments::text('see_adviser'), $html);
+    }
+
+    public function testSavingTheSuggestionsStoresNoRowSoSlipsFollowNewGrades(): void
+    {
+        $abad = $this->enrollments['Abad'];
+        // a row that matches the suggestions (in another order) is dropped on save too
+        $comment = new CardSlipComment($abad, $this->term1);
+        $comment->update(
+            ['see_adviser', 'needs_improvement', 'perfect_attendance'],
+            null,
+            $this->teacher,
+            new \DateTimeImmutable('2025-08-21'),
+        );
+        $this->em->persist($comment);
+        $this->em->flush();
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        $this->postForm($crawler, $this->formValues($crawler));
+
+        self::assertResponseRedirects($this->pageUrl());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert', 'Comments saved for 2 learners.');
+        self::assertSame([], $this->saved());
+
+        // Abad's Math grade goes up: her slip now follows the new suggestion
+        $grade = $this->em->getRepository(Grade::class)->findOneBy(['enrollment' => $abad->getId()]);
+        self::assertNotNull($grade);
+        $grade->change(
+            92,
+            $this->found($this->em, User::class, $this->teacher->getId()),
+            new \DateTimeImmutable('2025-08-22'),
+        );
+        $this->em->flush();
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        self::assertSame(
+            ['excellent', 'perfect_attendance', 'read_daily'],
+            array_values(
+                $this->formValues($crawler)['card_slip_comments_form']['entries'][(int) $abad->getId()]['codes'],
+            ),
+        );
+    }
+
+    public function testNeedsImprovementHiddenWithoutAFailingSubject(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        $bautista = $crawler->filter(
+            \sprintf('input[type=checkbox][name="%s"]', self::codesName($this->enrollments['Bautista'])),
+        );
+        self::assertGreaterThan(0, $bautista->count());
+        self::assertCount(0, $bautista->filter('[value="needs_improvement"]'));
+        self::assertStringNotContainsString('{subjects}', $crawler->filter('.card-slips')->text());
+        $abad = $crawler->filter(
+            \sprintf(
+                'input[type=checkbox][name="%s"][value="needs_improvement"]',
+                self::codesName($this->enrollments['Abad']),
+            ),
+        );
+        self::assertSame(
+            'Needs to improve in Mathematics. Please attend remedial sessions.',
+            $crawler->filter('label[for="' . $abad->attr('id') . '"]')->text(),
+        );
+    }
+
+    public function testResetOnlyForLearnersWithSavedComments(): void
+    {
+        $abad = $this->enrollments['Abad'];
+        $comment = new CardSlipComment($abad, $this->term1);
+        $comment->update(['participates'], null, $this->teacher, new \DateTimeImmutable('2025-08-21'));
+        $this->em->persist($comment);
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        $buttons = $crawler->filter('button[form^="card-slip-reset-"]');
+        self::assertCount(1, $buttons);
+        self::assertSame('card-slip-reset-' . $abad->getId(), $buttons->attr('form'));
+        self::assertSame('Reset to suggestions', trim($buttons->text()));
+        self::assertCount(1, $crawler->filter('form[id^="card-slip-reset-"]'));
+    }
+
+    public function testMoreThanThreeRefused(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        $abad = $this->enrollments['Abad'];
+        $values = $this->formValues($crawler);
+        $values['card_slip_comments_form']['entries'][(int) $abad->getId()]['codes'] = [
+            'needs_improvement',
+            'perfect_attendance',
+            'see_adviser',
+            'participates',
+        ];
+
+        $this->postForm($crawler, $values);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.card-slips', 'Choose at most 3 comments for ABAD, ANA, -.');
+        self::assertSame([], $this->saved());
+        // the learner with the error has the dropdown open, the others stay closed
+        $crawler = $this->client->getCrawler();
+        self::assertNotNull(self::picker($crawler, $abad)->attr('open'));
+        self::assertNull(self::picker($crawler, $this->enrollments['Bautista'])->attr('open'));
+    }
+
+    public function testCommentsAreInAClosedDropdownSummarisingTheChoice(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+
+        $picker = self::picker($crawler, $this->enrollments['Abad']);
+        self::assertNull($picker->attr('open'));
+        $summary = $picker->filter('summary')->text();
+        self::assertStringContainsString('3 comments:', $summary);
+        self::assertStringContainsString('Needs to improve in Mathematics.', $summary);
+        self::assertStringContainsString('Perfect attendance this term!', $summary);
+    }
+
+    private static function picker(Crawler $crawler, Enrollment $enrollment): Crawler
+    {
+        $box = $crawler->filter(\sprintf('input[type=checkbox][name="%s"]', self::codesName($enrollment)))
+            ->first();
+
+        return self::closest($box, 'details.card-slips__picker');
+    }
+
+    public function testTypedTooLong(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        $values = $this->formValues($crawler);
+        $values['card_slip_comments_form']['entries'][(int) $this->enrollments['Abad']->getId()]['text'] = str_repeat(
+            'a',
+            301,
+        );
+
+        $this->postForm($crawler, $values);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.card-slips', 'Keep the comment under 300 characters.');
+        self::assertSame([], $this->saved());
+    }
+
+    public function testReset(): void
+    {
+        $abad = $this->enrollments['Abad'];
+        $comment = new CardSlipComment($abad, $this->term1);
+        $comment->update(['participates'], 'Active in class.', $this->teacher, new \DateTimeImmutable('2025-08-21'));
+        $this->em->persist($comment);
+        $this->em->flush();
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        self::assertSame(
+            ['participates'],
+            array_values(
+                $this->formValues($crawler)['card_slip_comments_form']['entries'][(int) $abad->getId()]['codes'],
+            ),
+        );
+
+        $url = \sprintf('/teacher/class/card-slips/%d/%d/reset', $this->term1->getId(), $abad->getId());
+        // a bad token changes nothing
+        $this->client->request('POST', $url, ['_token' => 'wrong']);
+        self::assertCount(1, $this->saved());
+
+        $this->client->request('POST', $url, ['_token' => $this->csrfToken('card-slip-reset-' . $abad->getId())]);
+
+        self::assertResponseRedirects($this->pageUrl());
+        self::assertSame([], $this->saved());
+        $crawler = $this->client->followRedirect();
+        self::assertSame(
+            ['needs_improvement', 'perfect_attendance', 'see_adviser'],
+            array_values(
+                $this->formValues($crawler)['card_slip_comments_form']['entries'][(int) $abad->getId()]['codes'],
+            ),
+        );
+
+        // a learner not on this class's sheet
+        $this->client->request(
+            'POST',
+            \sprintf('/teacher/class/card-slips/%d/%d/reset', $this->term1->getId(), 999999),
+            ['_token' => $this->csrfToken('card-slip-reset-999999')],
+        );
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testDraftNotice(): void
+    {
+        $this->client->request('GET', $this->pageUrl());
+        self::assertSelectorTextContains('.card-slips-notice', self::NOT_LOCKED);
+
+        $this->lockTerm1();
+        $this->client->loginUser($this->teacher);
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        self::assertStringNotContainsString("isn't locked yet", $crawler->text());
+    }
+
+    public function testClassListChangedRefused(): void
+    {
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        $values = $this->formValues($crawler);
+        $abad = $this->found($this->em, Enrollment::class, $this->enrollments['Abad']->getId());
+        $abad->setRemarkCode(Sf1Remark::Dropped)->setRemarkDetails('b.1 Illness')->setRemarkDate(
+            new \DateTimeImmutable('2025-08-20'),
+        );
+        $this->em->flush();
+
+        $this->postForm($crawler, $values);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains(
+            '.card-slips',
+            'The class list changed while you were editing. Check the rows and save again.',
+        );
+        self::assertSame([], $this->saved());
+    }
+
+    public function testPdfAll(): void
+    {
+        $this->client->request('GET', \sprintf('/teacher/class/card-slips/%d.pdf', $this->term1->getId()));
+
+        self::assertResponseIsSuccessful();
+        $response = $this->client->getResponse();
+        self::assertSame('application/pdf', $response->headers->get('Content-Type'));
+        self::assertStringStartsWith('%PDF', (string) $response->getContent());
+        self::assertStringContainsString(
+            'filename="Card slips - Grade 8 HONEST - Term 1.pdf"',
+            (string) $response->headers->get('Content-Disposition'),
+        );
+    }
+
+    public function testPdfOne(): void
+    {
+        $abad = $this->enrollments['Abad'];
+        $this->client->request(
+            'GET',
+            \sprintf('/teacher/class/card-slips/%d/%d.pdf', $this->term1->getId(), $abad->getId()),
+        );
+
+        self::assertResponseIsSuccessful();
+        $response = $this->client->getResponse();
+        self::assertSame('application/pdf', $response->headers->get('Content-Type'));
+        self::assertStringStartsWith('%PDF', (string) $response->getContent());
+        self::assertStringContainsString(
+            'filename="Card slip - ABAD, ANA, - - Term 1.pdf"',
+            (string) $response->headers->get('Content-Disposition'),
+        );
+
+        $this->client->request('GET', \sprintf('/teacher/class/card-slips/%d/%d.pdf', $this->term1->getId(), 999999));
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testPeriodOfAnotherYearIs404(): void
+    {
+        $other = $this->schoolYear(2024, current: false);
+        $other->rebuildGradingPeriods();
+        $this->em->flush();
+
+        $otherTerm = $other->getGradingPeriod(1);
+        self::assertNotNull($otherTerm);
+        $this->client->request('GET', $this->pageUrl($otherTerm));
+        self::assertResponseStatusCodeSame(404);
+        $this->client->request(
+            'GET',
+            \sprintf('/teacher/class/card-slips/%d.pdf', $otherTerm->getId()),
+        );
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testDefaultPeriodIsLatestLocked(): void
+    {
+        // nothing locked or open: the term today (Aug 22) falls in
+        $this->client->request('GET', '/teacher/class/card-slips');
+        self::assertSelectorTextContains('.grade-tabs [aria-current=page]', 'Term 1');
+
+        // open term 2 only: the open one
+        $this->openTerm(2);
+        $this->client->request('GET', '/teacher/class/card-slips');
+        self::assertSelectorTextContains('.grade-tabs [aria-current=page]', 'Term 2');
+
+        // term 1 locked: the latest locked one wins over the open one
+        $this->lockTerm1();
+        $this->client->loginUser($this->teacher);
+        $this->client->request('GET', '/teacher/class/card-slips');
+        self::assertSelectorTextContains('.grade-tabs [aria-current=page]', 'Term 1');
+    }
+
+    public function testNotAdviser403(): void
+    {
+        $other = $this->createUser('olga', User::ROLE_TEACHER, 'Olga Lim');
+        $this->assign($this->school, $this->sy, $other, User::ROLE_TEACHER);
+        $this->client->loginUser($other);
+
+        $this->client->request('GET', '/teacher/class/card-slips');
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('GET', \sprintf('/teacher/class/card-slips/%d.pdf', $this->term1->getId()));
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request(
+            'GET',
+            \sprintf('/teacher/class/card-slips/%d/%d.pdf', $this->term1->getId(), $this->enrollments['Abad']->getId()),
+        );
+        self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testNoLearners(): void
+    {
+        foreach ($this->enrollments as $enrollment) {
+            $this->found($this->em, Enrollment::class, $enrollment->getId())
+                ->setRemarkCode(Sf1Remark::Dropped)
+                ->setRemarkDetails('b.1 Illness')
+                ->setRemarkDate(new \DateTimeImmutable('2025-08-20'));
+        }
+        $this->em->flush();
+
+        $crawler = $this->client->request('GET', $this->pageUrl());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.card-slips', 'No learners to print slips for.');
+        self::assertCount(0, $crawler->selectButton('Save comments'));
+
+        $this->client->request('GET', \sprintf('/teacher/class/card-slips/%d.pdf', $this->term1->getId()));
+        self::assertResponseRedirects($this->pageUrl());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert', 'No learners to print slips for.');
+    }
+
+    /**
+     * @param list<string> $codes
+     *
+     * @return list<string>
+     */
+    private static function sorted(array $codes): array
+    {
+        sort($codes);
+
+        return $codes;
+    }
+}

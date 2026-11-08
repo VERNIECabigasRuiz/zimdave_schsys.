@@ -15,6 +15,11 @@ interface GradeChangeRequestRepositoryInterface
 {
     public function findById(int $id): ?GradeChangeRequest;
 
+    /** The request as it is saved now, even when an older copy was loaded earlier in the same request. */
+    public function findFresh(int $id): ?GradeChangeRequest;
+
+    public function add(GradeChangeRequest $request): void;
+
     public function findPendingFor(Section $section, Subject $subject, GradingPeriod $period): ?GradeChangeRequest;
 
     /** @return list<GradeChangeRequest> newest first */

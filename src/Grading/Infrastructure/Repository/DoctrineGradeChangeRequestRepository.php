@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Grading\Infrastructure\Repository;
 
+use Doctrine\ORM\Query;
 use App\Grading\Domain\Model\GradeChangeRequest;
 use App\Grading\Domain\Model\Repository\GradeChangeRequestRepositoryInterface;
 use App\Grading\Domain\Model\GradeChangeStatus;
@@ -30,6 +31,19 @@ class DoctrineGradeChangeRequestRepository extends ServiceEntityRepository imple
     public function findById(int $id): ?GradeChangeRequest
     {
         return $this->find($id);
+    }
+
+    public function findFresh(int $id): ?GradeChangeRequest
+    {
+        /** @var GradeChangeRequest|null */
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.id = :id')->setParameter('id', $id)
+            ->getQuery()->setHint(Query::HINT_REFRESH, true)->getOneOrNullResult();
+    }
+
+    public function add(GradeChangeRequest $request): void
+    {
+        $this->getEntityManager()->persist($request);
     }
 
     public function findPendingFor(Section $section, Subject $subject, GradingPeriod $period): ?GradeChangeRequest

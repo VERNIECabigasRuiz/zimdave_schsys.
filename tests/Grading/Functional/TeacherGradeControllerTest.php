@@ -23,7 +23,6 @@ use App\Classes\Domain\Model\TeachingLoad;
 use App\Learners\Domain\Model\TransferRequest;
 use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
-use App\Grading\GradeChangeManager;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
@@ -511,7 +510,7 @@ class TeacherGradeControllerTest extends AdminTestCase
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
 
-        return static::getContainer()->get(GradeChangeManager::class)->request(
+        return $this->savingChangeManager()->request(
             $this->found($em, TeachingLoad::class, $this->load->getId()),
             $this->found($em, GradingPeriod::class, $this->term1->getId()),
             [(int) $this->enrollments['Abad']->getId() => 82],
@@ -562,7 +561,7 @@ class TeacherGradeControllerTest extends AdminTestCase
         $this->gradeAbad78AndLock();
         $request = $this->sendViaManager();
         $em = static::getContainer()->get(EntityManagerInterface::class);
-        static::getContainer()->get(GradeChangeManager::class)->decline(
+        $this->savingChangeManager()->decline(
             $request,
             $this->found($em, User::class, $this->principal->getId()),
             'Attach the class record, please.',

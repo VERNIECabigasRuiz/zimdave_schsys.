@@ -46,4 +46,14 @@ class DoctrineCardSlipCommentRepository extends ServiceEntityRepository implemen
 
         return $found;
     }
+
+    public function add(CardSlipComment $comment): void
+    {
+        $this->getEntityManager()->persist($comment);
+    }
+
+    public function remove(CardSlipComment $comment): void
+    {
+        $this->getEntityManager()->remove($comment);
+    }
 }

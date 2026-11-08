@@ -13,10 +13,7 @@
     <file>../src/Classes</file>
     <file>../src/Learners</file>
     <file>../src/Attendance</file>
-    <file>../src/Grading/Domain</file>
-    <file>../src/Grading/Application</file>
-    <file>../src/Grading/Infrastructure</file>
-    <file>../src/Grading/Presentation</file>
+    <file>../src/Grading</file>
     <file>../tests/Access</file>
     <file>../tests/Billing</file>
     <file>../tests/Core</file>
@@ -24,9 +21,7 @@
     <file>../tests/Classes</file>
     <file>../tests/Learners</file>
     <file>../tests/Attendance</file>
-    <file>../tests/Grading/Unit</file>
-    <file>../tests/Grading/Integration</file>
-    <file>../tests/Grading/Functional</file>
+    <file>../tests/Grading</file>
     <file>../tests/DataFixtures</file>
     <file>../tests/Browser</file>
 </ruleset>

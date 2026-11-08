@@ -36,10 +36,8 @@
         </testsuite>
         <!-- Tests not yet moved into a module; each move takes its folders out of here -->
         <testsuite name="legacy">
-            <directory>tests/CardSlip</directory>
             <directory>tests/Controller</directory>
             <directory>tests/Entity</directory>
-            <file>tests/Grading/GradeChangeManagerTest.php</file>
             <directory>tests/LessonPlan</directory>
             <directory>tests/Nutrition</directory>
             <directory>tests/Repository</directory>
@@ -64,10 +62,7 @@
             <directory>src/Classes</directory>
             <directory>src/Learners</directory>
             <directory>src/Attendance</directory>
-            <directory>src/Grading/Domain</directory>
-            <directory>src/Grading/Application</directory>
-            <directory>src/Grading/Infrastructure</directory>
-            <directory>src/Grading/Presentation</directory>
+            <directory>src/Grading</directory>
         </include>
 
         <deprecationTrigger>
