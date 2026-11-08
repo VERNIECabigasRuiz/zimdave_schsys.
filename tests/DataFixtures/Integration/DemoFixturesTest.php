@@ -8,7 +8,7 @@ use App\DataFixtures\DemoFixtures;
 use App\Schools\Domain\Model\Division;
 use App\Learners\Domain\Model\Enrollment;
 use App\Grading\Domain\Model\Grade;
-use App\Entity\LessonPlan;
+use App\LessonPlans\Domain\Model\LessonPlan;
 use App\Attendance\Domain\Model\RollCall;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;

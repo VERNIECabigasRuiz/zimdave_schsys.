@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Classes\Application\Api;
 
 use App\Access\Domain\Model\User;
+use App\Classes\Domain\Model\ScheduleEntry;
 use App\Classes\Domain\Model\Section;
 use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
@@ -25,4 +26,7 @@ interface TeachingLoadDirectoryInterface
 
     /** The load of $subject in $section, if anyone teaches it. */
     public function loadOf(Section $section, Subject $subject): ?TeachingLoad;
+
+    /** @return list<ScheduleEntry> the load's meetings in the timetable */
+    public function scheduleOf(TeachingLoad $load): array;
 }

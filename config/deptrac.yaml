@@ -223,6 +223,26 @@ deptrac:
         - type: classLike
           value: ^App\\Kernel$
 
+    - name: LessonPlans_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\LessonPlans\\Domain\\.*
+
+    - name: LessonPlans_Application
+      collectors:
+        - type: classLike
+          value: ^App\\LessonPlans\\Application\\.*
+
+    - name: LessonPlans_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\LessonPlans\\Infrastructure\\.*
+
+    - name: LessonPlans_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\LessonPlans\\Presentation\\.*
+
     # Code not yet moved into a module
     - name: Nutrition_Domain
       collectors:
@@ -247,7 +267,7 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Nutrition\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Nutrition\\|LessonPlans\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -698,6 +718,43 @@ deptrac:
       - Learners_Api
       - ValidatorConstraints
       - Framework
+    LessonPlans_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - DoctrineMapping
+    LessonPlans_Application:
+      - LessonPlans_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+    LessonPlans_Infrastructure:
+      - LessonPlans_Domain
+      - LessonPlans_Application
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - DoctrineMapping
+      - Framework
+    LessonPlans_Presentation:
+      - LessonPlans_Application
+      - LessonPlans_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - ValidatorConstraints
+      - Framework
     Legacy:
       - Core_Domain
       - Core_Application
@@ -743,6 +800,10 @@ deptrac:
       - Nutrition_Application
       - Nutrition_Infrastructure
       - Nutrition_Presentation
+      - LessonPlans_Domain
+      - LessonPlans_Application
+      - LessonPlans_Infrastructure
+      - LessonPlans_Presentation
       - Kernel
       - DoctrineMapping
       - SecurityUserContract

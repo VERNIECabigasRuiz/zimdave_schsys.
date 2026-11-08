@@ -22,7 +22,7 @@ use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
 use App\Grading\Application\Service\GradeRecorder;
-use App\LessonPlan\LessonWeek;
+use App\LessonPlans\Application\Service\LessonWeek;
 use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;

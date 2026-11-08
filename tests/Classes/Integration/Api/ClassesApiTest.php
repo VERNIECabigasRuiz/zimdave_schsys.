@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Classes\Integration\Api;
 
+use App\Classes\Domain\Model\Weekday;
+use App\Classes\Domain\Model\ScheduleEntry;
 use App\Access\Domain\Model\User;
 use App\Classes\Application\Api\SectionDirectoryInterface;
 use App\Classes\Application\Api\TeachingLoadDirectoryInterface;
@@ -87,6 +89,34 @@ final class ClassesApiTest extends KernelTestCase
         self::assertEqualsCanonicalizing([$rizalMath, $bonifacioMath], $ofTeacher);
         self::assertSame($bonifacioMath, $one);
         self::assertNull($none);
+    }
+
+    public function testFindsALoadsTimetable(): void
+    {
+        // Initialize
+        $sy = $this->schoolYear(2026, true);
+        $school = $this->school('300001', 'Alpha NHS');
+        $teacher = $this->plainUser('api-teacher', User::ROLE_TEACHER);
+        $rizal = $this->newSection($school, $sy, GradeLevel::Grade7, 'Rizal');
+        $math = $this->subject($school, $sy, GradeLevel::Grade7, 'MATH7', 'Mathematics', 1);
+        $science = $this->subject($school, $sy, GradeLevel::Grade7, 'SCI7', 'Science', 2);
+        $period = $this->classPeriod($school, $sy, '07:30', '08:30');
+        $mathLoad = new TeachingLoad($rizal, $math, $teacher);
+        $scienceLoad = new TeachingLoad($rizal, $science, $teacher);
+        $this->em->persist($mathLoad);
+        $this->em->persist($scienceLoad);
+        $this->em->persist(new ScheduleEntry($mathLoad, Weekday::Monday, $period));
+        $this->em->persist(new ScheduleEntry($mathLoad, Weekday::Wednesday, $period));
+        $this->em->flush();
+        $directory = static::getContainer()->get(TeachingLoadDirectoryInterface::class);
+
+        // Execute
+        $mathDays = array_map(static fn (ScheduleEntry $entry) => $entry->getDay(), $directory->scheduleOf($mathLoad));
+        $scienceDays = $directory->scheduleOf($scienceLoad);
+
+        // Assert
+        self::assertEqualsCanonicalizing([Weekday::Monday, Weekday::Wednesday], $mathDays);
+        self::assertSame([], $scienceDays);
     }
 
     private function subject(

@@ -49,40 +49,10 @@ parameters:
 			path: ../src/Controller/Principal/DashboardController.php
 
 		-
-			message: '#^Parameter \#1 \$any of static method App\\LessonPlan\\LessonWeek\:\:monday\(\) expects DateTimeImmutable, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/TeacherLessonPlanController.php
-
-		-
-			message: '#^Parameter \#1 \$load of method App\\LessonPlan\\LessonWeek\:\:start\(\) expects App\\Classes\\Domain\\Model\\TeachingLoad, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/TeacherLessonPlanController.php
-
-		-
-			message: '#^Parameter \#1 \$load of method App\\Repository\\LessonPlanRepository\:\:findOneFor\(\) expects App\\Classes\\Domain\\Model\\TeachingLoad, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/TeacherLessonPlanController.php
-
-		-
-			message: '#^Parameter \#2 \$schoolYear of method App\\Classes\\Domain\\Model\\Repository\\TeachingLoadRepositoryInterface\:\:findForTeacher\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/TeacherLessonPlanController.php
-
-		-
 			message: '#^Method App\\Entity\\EducationLevel\:\:order\(\) should return int but returns int\|false\.$#'
 			identifier: return.type
 			count: 1
 			path: ../src/Entity/EducationLevel.php
-
-		-
-			message: '#^Parameter \#1 \$array \(list\<array\<string, string\|null\>\>\) of array_values is already a list, call has no effect\.$#'
-			identifier: arrayValues.list
-			count: 1
-			path: ../src/Entity/LessonPlan.php
 
 		-
 			message: '#^Access to an undefined property object\:\:\$position\.$#'
@@ -265,30 +235,6 @@ parameters:
 			path: ../src/Form/FamilyBackgroundFormType.php
 
 		-
-			message: '#^Cannot access offset ''holiday'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/Form/LessonPlanDayFormType.php
-
-		-
-			message: '#^Class App\\Form\\LessonPlanDayFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/LessonPlanDayFormType.php
-
-		-
-			message: '#^Class App\\Form\\LessonPlanFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/LessonPlanFormType.php
-
-		-
-			message: '#^Class App\\Form\\LessonPlanStartFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/LessonPlanStartFormType.php
-
-		-
 			message: '#^Class App\\Form\\OtherInfoFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -383,12 +329,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: ../src/Form/StaffIdDetailsFormType.php
-
-		-
-			message: '#^Cannot call method getTimestamp\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../src/LessonPlan/LessonWeek.php
 
 		-
 			message: '#^Cannot call method formLabel\(\) on App\\Entity\\EducationLevel\|null\.$#'
@@ -769,36 +709,6 @@ parameters:
 			path: ../tests/Controller/ServiceRecordControllerTest.php
 
 		-
-			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Entity\\LessonPlan will always evaluate to true\.$#'
-			identifier: staticMethod.alreadyNarrowedType
-			count: 1
-			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
-
-		-
-			message: '#^Cannot call method getDays\(\) on App\\Entity\\LessonPlan\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
-
-		-
-			message: '#^Cannot call method getId\(\) on App\\Entity\\LessonPlan\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
-
-		-
-			message: '#^Cannot call method getWeekStart\(\) on App\\Entity\\LessonPlan\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
-
-		-
-			message: '#^Method App\\Tests\\Controller\\TeacherLessonPlanControllerTest\:\:reload\(\) should return App\\Entity\\LessonPlan but returns App\\Entity\\LessonPlan\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
-
-		-
 			message: '#^Cannot access property \$name on App\\Entity\\EducationLevel\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -821,12 +731,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../tests/Entity/PersonalDataSheetTest.php
-
-		-
-			message: '#^Method App\\Tests\\LessonPlan\\LessonWeekTest\:\:dates\(\) has parameter \$days with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../tests/LessonPlan/LessonWeekTest.php
 
 		-
 			message: '#^Cannot call method label\(\) on App\\Learners\\Domain\\Model\\SexAtBirth\|null\.$#'

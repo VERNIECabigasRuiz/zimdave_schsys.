@@ -3,7 +3,7 @@
 namespace App\Tests;
 
 use App\Core\Domain\Model\ActivityLog;
-use App\Entity\LessonPlan;
+use App\LessonPlans\Domain\Model\LessonPlan;
 use App\Entity\Announcement;
 use App\Attendance\Domain\Model\AttendanceMark;
 use App\Grading\Domain\Model\CardSlipComment;

@@ -1,0 +1,58 @@
+{% extends 'teacher/_layout.html.twig' %}
+
+{# Edit a lesson plan. Needs plan, topic (what the page heading shows) and form. #}
+
+{% block title %}Lesson plan · {{ topic ?: 'New' }} · ZIM School{% endblock %}
+
+{% set load = plan.load %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ topic ?: 'New lesson plan' }}</h1>
+            <p>{{ load.subject.name }} · {{ load.section.gradeLevel ? load.section.gradeLevel.label }} {{ load.section.name }} · week of {{ plan.weekStart|date('F j, Y') }} · {{ plan.sessionCount }} session{{ plan.sessionCount == 1 ? '' : 's' }}</p>
+        </div>
+        <div class="row-actions">
+            <a class="btn" href="{{ path('lesson_plan_pdf', {id: plan.id}) }}" data-turbo="false">Download PDF</a>
+            <a class="btn btn--ghost" href="{{ path('teacher_lesson_plans') }}">My Lesson Plans</a>
+        </div>
+    </div>
+
+    {{ form_start(form, {attr: {class: 'form lesson-plan', novalidate: 'novalidate'}}) }}
+        {{ form_errors(form) }}
+        <div class="card form-card">
+            {{ form_row(form.topic) }}
+            {{ form_row(form.competencies) }}
+            {{ form_row(form.classNotes) }}
+            {% if plan.sessionCount == 0 %}<p class="form-note">This week has no school days.</p>{% endif %}
+        </div>
+
+        {% for day in form.days %}
+            {% set data = plan.days[loop.index0] %}
+            <div class="card form-card">
+                <h2>Day {{ loop.index }} · {{ data.date|date('l, F j') }}</h2>
+                {% if data.holiday %}
+                    <p><strong>HOLIDAY</strong> ({{ data.holiday }}) — no class.</p>
+                {% else %}
+                    <div class="form-grid">
+                        {% for cell in day %}{{ form_row(cell) }}{% endfor %}
+                    </div>
+                {% endif %}
+                {% do day.setRendered %}
+            </div>
+        {% endfor %}
+
+        <div class="card form-card">
+            {{ form_row(form.references) }}
+            {{ form_row(form.aiDeclaration) }}
+            <div class="form-actions">
+                {{ form_widget(form.save, {attr: {class: 'btn btn--primary'}}) }}
+            </div>
+        </div>
+    {{ form_end(form) }}
+
+    <form method="post" action="{{ path('teacher_lesson_plan_delete', {id: plan.id}) }}" data-turbo-confirm="Delete this lesson plan?">
+        <input type="hidden" name="_token" value="{{ csrf_token('lesson-plan-delete-' ~ plan.id) }}">
+        <button class="btn btn--ghost btn--sm" type="submit">Delete plan</button>
+    </form>
+{% endblock %}

@@ -38,7 +38,6 @@
         <testsuite name="legacy">
             <directory>tests/Controller</directory>
             <directory>tests/Entity</directory>
-            <directory>tests/LessonPlan</directory>
             <directory>tests/Repository</directory>
             <directory>tests/Service</directory>
             <directory>tests/ServiceRecord</directory>
@@ -62,6 +61,7 @@
             <directory>src/Attendance</directory>
             <directory>src/Grading</directory>
             <directory>src/Nutrition</directory>
+            <directory>src/LessonPlans</directory>
         </include>
 
         <deprecationTrigger>

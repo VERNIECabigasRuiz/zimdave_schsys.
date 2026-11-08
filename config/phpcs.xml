@@ -15,6 +15,7 @@
     <file>../src/Attendance</file>
     <file>../src/Grading</file>
     <file>../src/Nutrition</file>
+    <file>../src/LessonPlans</file>
     <file>../tests/Access</file>
     <file>../tests/Billing</file>
     <file>../tests/Core</file>
@@ -24,6 +25,7 @@
     <file>../tests/Attendance</file>
     <file>../tests/Grading</file>
     <file>../tests/Nutrition</file>
+    <file>../tests/LessonPlans</file>
     <file>../tests/DataFixtures</file>
     <file>../tests/Browser</file>
 </ruleset>
