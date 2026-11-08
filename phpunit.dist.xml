@@ -39,9 +39,7 @@
             <directory>tests/Controller</directory>
             <directory>tests/Entity</directory>
             <directory>tests/LessonPlan</directory>
-            <directory>tests/Nutrition</directory>
             <directory>tests/Repository</directory>
-            <directory>tests/Security</directory>
             <directory>tests/Service</directory>
             <directory>tests/ServiceRecord</directory>
             <directory>tests/StaffId</directory>
@@ -63,6 +61,7 @@
             <directory>src/Learners</directory>
             <directory>src/Attendance</directory>
             <directory>src/Grading</directory>
+            <directory>src/Nutrition</directory>
         </include>
 
         <deprecationTrigger>

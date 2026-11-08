@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Nutrition\Presentation\Form;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+/**
+ * One learner's weight, height and remarks on the weighing sheet. The learner is the entry's key in the sheet.
+ *
+ * @extends AbstractType<NutritionEntry>
+ */
+class NutritionEntryFormType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add(
+                'weightKg',
+                NumberType::class,
+                [
+                    'label' => 'Weight (kg)',
+                    'required' => false,
+                    'scale' => 2,
+                    'invalid_message' => 'Enter weight in kilograms, between 5 and 200.',
+                ],
+            )
+            ->add(
+                'heightM',
+                NumberType::class,
+                [
+                    'label' => 'Height (m)',
+                    'required' => false,
+                    'scale' => 2,
+                    'invalid_message' => 'Enter height in metres, e.g. 1.32.',
+                ],
+            )
+            ->add(
+                'remarks',
+                TextType::class,
+                ['label' => 'Remarks', 'required' => false, 'attr' => ['maxlength' => 100]],
+            );
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults(['data_class' => NutritionEntry::class]);
+    }
+}

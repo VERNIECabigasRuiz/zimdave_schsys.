@@ -224,10 +224,30 @@ deptrac:
           value: ^App\\Kernel$
 
     # Code not yet moved into a module
+    - name: Nutrition_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Nutrition\\Domain\\.*
+
+    - name: Nutrition_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Nutrition\\Application\\.*
+
+    - name: Nutrition_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Nutrition\\Infrastructure\\.*
+
+    - name: Nutrition_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Nutrition\\Presentation\\.*
+
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Nutrition\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -626,6 +646,58 @@ deptrac:
       - ValidatorConstraints
       - Framework
       - Vendor
+    Nutrition_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+    Nutrition_Application:
+      - Nutrition_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+    Nutrition_Infrastructure:
+      - Nutrition_Domain
+      - Nutrition_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+      - Framework
+      - Vendor
+    Nutrition_Presentation:
+      - Nutrition_Application
+      - Nutrition_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+      - Framework
     Legacy:
       - Core_Domain
       - Core_Application
@@ -667,6 +739,10 @@ deptrac:
       - Grading_Infrastructure
       - Grading_Presentation
       - Grading_Api
+      - Nutrition_Domain
+      - Nutrition_Application
+      - Nutrition_Infrastructure
+      - Nutrition_Presentation
       - Kernel
       - DoctrineMapping
       - SecurityUserContract

@@ -9,6 +9,7 @@ twig:
         '%kernel.project_dir%/src/Learners/Presentation/templates': Learners
         '%kernel.project_dir%/src/Attendance/Presentation/templates': Attendance
         '%kernel.project_dir%/src/Grading/Presentation/templates': Grading
+        '%kernel.project_dir%/src/Nutrition/Presentation/templates': Nutrition
 
 when@test:
     twig:

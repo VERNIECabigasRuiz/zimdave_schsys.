@@ -62,6 +62,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Attendance/Domain'
                 prefix: 'App\Attendance\Domain'
                 alias: Attendance
+            Nutrition:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Nutrition/Domain'
+                prefix: 'App\Nutrition\Domain'
+                alias: Nutrition
             Grading:
                 type: attribute
                 is_bundle: false

@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Parameter \#1 \$content of class Symfony\\Component\\HttpFoundation\\Response constructor expects string\|null, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/AbstractNutritionController.php
-
-		-
-			message: '#^Parameter \#3 \$filenameFallback of static method Symfony\\Component\\HttpFoundation\\HeaderUtils\:\:makeDisposition\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/AbstractNutritionController.php
-
-		-
 			message: '#^Parameter \#2 \$schoolYear of method App\\Attendance\\Application\\Api\\AttendanceDirectoryInterface\:\:schoolToday\(\) expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -83,18 +71,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Controller/TeacherLessonPlanController.php
-
-		-
-			message: '#^Method App\\Controller\\TeacherNutritionController\:\:submitForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Controller/TeacherNutritionController.php
-
-		-
-			message: '#^Parameter \#3 \$weighedOn of method App\\Nutrition\\NutritionRecorder\:\:save\(\) expects DateTimeImmutable, DateTimeImmutable\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Controller/TeacherNutritionController.php
 
 		-
 			message: '#^Method App\\Entity\\EducationLevel\:\:order\(\) should return int but returns int\|false\.$#'
@@ -313,24 +289,6 @@ parameters:
 			path: ../src/Form/LessonPlanStartFormType.php
 
 		-
-			message: '#^Class App\\Form\\NutritionEntryFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/NutritionEntryFormType.php
-
-		-
-			message: '#^Cannot access offset string on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/Form/NutritionSheetFormType.php
-
-		-
-			message: '#^Class App\\Form\\NutritionSheetFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/NutritionSheetFormType.php
-
-		-
 			message: '#^Class App\\Form\\OtherInfoFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -421,18 +379,6 @@ parameters:
 			path: ../src/Form/ServiceRecordEntryFormType.php
 
 		-
-			message: '#^Class App\\Form\\Sf8SubmitFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/Sf8SubmitFormType.php
-
-		-
-			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Form/Sf8SubmitFormType.php
-
-		-
 			message: '#^Class App\\Form\\StaffIdDetailsFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -443,24 +389,6 @@ parameters:
 			identifier: method.nonObject
 			count: 2
 			path: ../src/LessonPlan/LessonWeek.php
-
-		-
-			message: '#^Method App\\Repository\\NutritionAssessmentRepository\:\:findFor\(\) should return App\\Entity\\NutritionAssessment\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/NutritionAssessmentRepository.php
-
-		-
-			message: '#^Method App\\Repository\\NutritionAssessmentRepository\:\:findForSections\(\) should return array\<int, App\\Entity\\NutritionAssessment\> but returns array\<int\|string, App\\Entity\\NutritionAssessment\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/NutritionAssessmentRepository.php
-
-		-
-			message: '#^Method App\\Repository\\Sf8SubmissionRepository\:\:findForSections\(\) should return array\<int, App\\Entity\\Sf8Submission\> but returns array\<int\|string, App\\Entity\\Sf8Submission\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Repository/Sf8SubmissionRepository.php
 
 		-
 			message: '#^Cannot call method formLabel\(\) on App\\Entity\\EducationLevel\|null\.$#'
@@ -799,18 +727,6 @@ parameters:
 			path: ../tests/Controller/ProfileControllerTest.php
 
 		-
-			message: '#^Cannot call method getSf8CertifierName\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolNutritionControllerTest.php
-
-		-
-			message: '#^Cannot call method getSf8CertifierPosition\(\) on App\\Schools\\Domain\\Model\\School\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/SchoolNutritionControllerTest.php
-
-		-
 			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -883,90 +799,6 @@ parameters:
 			path: ../tests/Controller/TeacherLessonPlanControllerTest.php
 
 		-
-			message: '#^Cannot call method setRemarkCode\(\) on App\\Learners\\Domain\\Model\\Enrollment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/TeacherNutritionControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$schoolYear of class App\\Learners\\Domain\\Model\\Enrollment constructor expects App\\Schools\\Domain\\Model\\SchoolYear, App\\Schools\\Domain\\Model\\SchoolYear\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherNutritionControllerTest.php
-
-		-
-			message: '#^Parameter \#3 \$section of class App\\Learners\\Domain\\Model\\Enrollment constructor expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherNutritionControllerTest.php
-
-		-
-			message: '#^Parameter \#4 \$enrolledBy of class App\\Learners\\Domain\\Model\\Enrollment constructor expects App\\Access\\Domain\\Model\\User, App\\Access\\Domain\\Model\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/TeacherNutritionControllerTest.php
-
-		-
-			message: '#^Cannot call method getHeightM\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getMeasurements\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getPeriod\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getRemarks\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getSection\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getWeighedOn\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Cannot call method getWeightKg\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Cannot call method isWeighed\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Cannot call method measurementFor\(\) on App\\Entity\\NutritionAssessment\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
-			message: '#^Parameter \#1 \$section of method App\\Repository\\NutritionAssessmentRepository\:\:findFor\(\) expects App\\Classes\\Domain\\Model\\Section, App\\Classes\\Domain\\Model\\Section\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Entity/NutritionEntitiesTest.php
-
-		-
 			message: '#^Cannot access property \$name on App\\Entity\\EducationLevel\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -995,114 +827,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: ../tests/LessonPlan/LessonWeekTest.php
-
-		-
-			message: '#^Cannot call method getHeightM\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Cannot call method getRemarks\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Cannot call method getWeightKg\(\) on App\\Entity\\NutritionMeasurement\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Nutrition\\NutritionRecorderTest\:\:id\(\) should return int but returns int\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Method App\\Tests\\Nutrition\\NutritionRecorderTest\:\:saveAt\(\) has parameter \$inputs with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Parameter \#1 \$enrollmentId of class App\\Nutrition\\MeasurementInput constructor expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Parameter \#4 \$inputs of method App\\Nutrition\\NutritionRecorder\:\:save\(\) expects list\<App\\Nutrition\\MeasurementInput\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Property App\\Tests\\Nutrition\\NutritionRecorderTest\:\:\$adviser \(App\\Access\\Domain\\Model\\User\) does not accept App\\Access\\Domain\\Model\\User\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Property App\\Tests\\Nutrition\\NutritionRecorderTest\:\:\$artistic \(App\\Classes\\Domain\\Model\\Section\) does not accept App\\Classes\\Domain\\Model\\Section\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../tests/Nutrition/NutritionRecorderTest.php
-
-		-
-			message: '#^Cannot access property \$birthDate on App\\Nutrition\\Sf8Row\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
-
-		-
-			message: '#^Cannot access property \$heightM on App\\Nutrition\\Sf8Row\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
-
-		-
-			message: '#^Cannot access property \$lrn on App\\Nutrition\\Sf8Row\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
-
-		-
-			message: '#^Cannot access property \$result on App\\Nutrition\\Sf8Row\|null\.$#'
-			identifier: property.nonObject
-			count: 3
-			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
-
-		-
-			message: '#^Cannot access property \$weighed on App\\Nutrition\\Sf8Row\|null\.$#'
-			identifier: property.nonObject
-			count: 3
-			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
-
-		-
-			message: '#^Cannot access property \$weightKg on App\\Nutrition\\Sf8Row\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: ../tests/Nutrition/Sf8ReportBuilderTest.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 3
-			path: ../tests/Nutrition/Sf8WriterTest.php
-
-		-
-			message: '#^Parameter \#1 \$excelTimestamp of static method PhpOffice\\PhpSpreadsheet\\Shared\\Date\:\:excelToDateTimeObject\(\) expects float\|int, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../tests/Nutrition/Sf8WriterTest.php
-
-		-
-			message: '#^Parameter \#1 \$string of function str_pad expects string, int\<\-99, 99\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Nutrition/Sf8WriterTest.php
 
 		-
 			message: '#^Cannot call method label\(\) on App\\Learners\\Domain\\Model\\SexAtBirth\|null\.$#'
