@@ -56,6 +56,7 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - Uploaded photos/logos are personal data: stored under `public/uploads/` (git-ignored), or `var/test_public` in tests (`app.upload_root`). `ImageProcessorInterface` re-encodes everything to webp.
 - Schema changes only through migrations with MySQL syntax (use `/new-migration`).
 - Domain entities write column types as strings (`'date_immutable'`), not DBAL `Types` constants; deptrac blocks DBAL in Domain.
+- Doctrine refreshes whenever `HINT_REFRESH` is set, even to `false`; set it only when refreshing.
 - Every Twig page needs the built assets (`public/build/.vite/entrypoints.json`); without them `vite_entry_*_tags()` throws. The web container builds them on start; rebuild with `make bash-exec CMD='pnpm build'`.
 - `assets/controllers/csrf_protection_controller.js` isn't a Stimulus controller: `assets/bootstrap.js` imports it for its side effect (the CSRF cookie on submit). Keep it out of the controller list, or forms and login stop working.
 - Stimulus controllers in a module's `Presentation/assets/controllers/` set `import.meta.stimulusIdentifier` so their names don't change when they move.
@@ -73,6 +74,7 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - `make test <type>` runs static checks and unit tests in a throwaway container without a database (`composer-audit`, `phpstan`, `deptrac`, `phpcs`, `eslint`, `stylelint`, `phpunit`, `vitest`, or `all`). `make test-feature` runs the database suites in `web` and requires 100% coverage of the moved modules (`src/Core`, `src/Access`, `src/Billing`, `src/Schools`, `src/Classes`, `src/Learners`, `src/Attendance`, `src/Grading/{Domain,Application,Infrastructure,Presentation}`; each new module is added to `<source>` in `phpunit.dist.xml`). `make regression-test` runs the browser suite. Reports land in `reports/`.
 - PHPStan runs at most 4 workers (`config/phpstan.neon`); one per CPU filled Docker's memory and got MySQL killed. Keep the cap. Clear its cache (`reports/phpstan/.cache`) before a run whose result you rely on; a run on a few folders can report stale results.
 - PHPStan and deptrac use baselines (`config/phpstan-baseline.neon`, `config/deptrac.baseline.yaml`) for code from before the move; don't add new entries to them.
+- After regenerating the PHPStan baseline, compare it with the old one, mapping moved class names, so a truly new entry stands out.
 - Admin controller tests extend `tests/Controller/Admin/AdminTestCase.php` (logs in as `zim`, `createUser()`, `findUser()`, `activityActions()`). Build school data with `tests/SchoolFixturesTrait.php` (`schoolYear()`, `plan()`, `school()`, `assign()`, `plainUser()`); it wipes school data in `setUp` but keeps the seeded plans. No transaction rollback between tests.
 - New tests group their body with `// Initialize`, `// Execute`, `// Assert` comments (`// Expect` first when an exception is expected). Existing tests don't; leave them as they are.
 - Don't name test helpers after PHPUnit `TestCase` methods (`count`, `output`, `name`…); many are final.
@@ -81,6 +83,8 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - Write test logs and coverage files to a temp folder outside the repo, not onto the Docker bind mount.
 - After moving a test, check its class name matches the file, its `__DIR__` paths still resolve, and its folder has left the legacy suite.
 - Run a new module's tests with coverage before the full `make test-feature`.
+- Tests that boot the kernel go in Integration or Functional, never Unit; `make test` runs Unit without a database.
+- Compare ids, not entities, in assertions that may fail; PHPUnit's diff of an entity can hang.
 
 ## Git
 
