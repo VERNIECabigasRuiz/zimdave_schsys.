@@ -72,6 +72,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Before a command prints a secret, say not to paste that line back.
 - Change IDE settings through the IDE, not by editing its files.
 - Note the start time before the first step of any task, including deploys.
+- When swapping one lookup for another, compare their filters, not just their names.
 
 ## Plans / Specs
 

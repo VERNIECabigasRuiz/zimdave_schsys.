@@ -96,6 +96,7 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - `TEST_TARGET` takes one class, method or path; a `|` in it breaks the Makefile. Run several one at a time.
 - Run deptrac through `make test deptrac`; run directly, it leaves `.deptrac.cache` in the repo root.
 - In a stale-read test, take the old value before the fresh read; both return the same object.
+- The bus validates every use case in the Default group before its handler; a test that sends a command must fill what the form requires.
 
 ## Git
 
