@@ -10,7 +10,7 @@ use App\Repository\RollCallRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Classes\Application\Service\SectionManager;
 use App\Classes\Application\Service\Timetable\TimetableQuery;
@@ -32,7 +32,7 @@ class TeacherController extends AbstractController
         private readonly SectionManager $sectionManager,
         private readonly TimetableQuery $timetable,
         private readonly SchoolClockInterface $clock,
-        private readonly TransferRequestRepository $transferRequests,
+        private readonly TransferRequestRepositoryInterface $transferRequests,
         private readonly SchoolCalendar $calendar,
         private readonly RollCallRepository $rollCalls,
     ) {

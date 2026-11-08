@@ -2,13 +2,14 @@
 
 namespace App\Service;
 
-use App\Entity\Enrollment;
-use App\Entity\Learner;
+use App\Learners\Domain\Exception\EnrollmentException;
+use App\Learners\Domain\Model\Enrollment;
+use App\Learners\Domain\Model\Learner;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -22,7 +23,7 @@ class EnrollmentGuard
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly SchoolYearRepositoryInterface $schoolYears,
-        private readonly TransferRequestRepository $transfers,
+        private readonly TransferRequestRepositoryInterface $transfers,
     ) {
     }
 

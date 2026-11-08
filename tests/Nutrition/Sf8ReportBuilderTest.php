@@ -3,17 +3,17 @@
 namespace App\Tests\Nutrition;
 
 use App\Attendance\Sf2Roster;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\NutritionAssessment;
 use App\Entity\NutritionMeasurement;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Entity\Sf8Submission;
-use App\Entity\TransferRequest;
-use App\Entity\TransferStatus;
+use App\Learners\Domain\Model\TransferRequest;
+use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
 use App\Nutrition\BmiCategory;
 use App\Nutrition\HfaCategory;
@@ -24,12 +24,12 @@ use App\Nutrition\Sf8ReportBuilder;
 use App\Nutrition\Sf8Row;
 use App\Nutrition\Sf8Status;
 use App\Nutrition\Sf8Summary;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Repository\NutritionAssessmentRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Repository\Sf8SubmissionRepository;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -95,7 +95,7 @@ class Sf8ReportBuilderTest extends KernelTestCase
         $c = static::getContainer();
 
         return new Sf8ReportBuilder(
-            new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class)),
+            new Sf2Roster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class)),
             new NutritionClassifier(\dirname(__DIR__, 2)),
             $c->get(NutritionAssessmentRepository::class),
             $c->get(Sf8SubmissionRepository::class),

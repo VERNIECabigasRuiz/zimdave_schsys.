@@ -8,7 +8,7 @@ use App\Access\Application\UseCase\Handler\UpdateAccountHandler;
 use App\Access\Domain\Model\User;
 use App\Access\Presentation\Controller\AccountController;
 use App\Schools\Presentation\Controller\TeacherSchoolController;
-use App\Service\AccessHooks\LearnerRoleChangeGuard;
+use App\Learners\Infrastructure\Access\LearnerRoleChangeGuard;
 use App\Schools\Infrastructure\Access\PrincipalRoleChangeGuard;
 use App\Schools\Infrastructure\Access\TeacherSeatReactivationGuard;
 use Symfony\Component\DomCrawler\Field\FormField;

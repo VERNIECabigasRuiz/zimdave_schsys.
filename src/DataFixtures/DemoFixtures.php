@@ -9,26 +9,26 @@ use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Classes\Domain\Model\ClassPeriod;
 use App\Schools\Domain\Model\Division;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Learner;
+use App\Learners\Domain\Model\Learner;
 use App\Entity\LearnerMark;
 use App\Billing\Domain\Model\Plan;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolType;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
 use App\Grading\GradeRecorder;
 use App\LessonPlan\LessonWeek;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 use App\Classes\Application\Service\ClassPeriodManager;
-use App\Service\LearnerEnrollment;
+use App\Learners\Application\Service\LearnerEnrollment;
 use App\Schools\Application\Service\PrincipalAssigner;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Schools\Application\Service\SchoolTeacherManager;
@@ -80,7 +80,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
         private readonly SchoolRepositoryInterface $schools,
         private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SubjectRepositoryInterface $subjects,
-        private readonly EnrollmentRepository $enrollments,
+        private readonly EnrollmentRepositoryInterface $enrollments,
         private readonly SchoolTeacherManager $teachers,
         private readonly PrincipalAssigner $principals,
         private readonly SectionManager $sections,
@@ -331,6 +331,7 @@ final class DemoFixtures extends Fixture implements FixtureGroupInterface
                 ->setSex($sex)
                 ->setBirthDate($this->birthDate($age));
             $this->learnerEnrollment->enrollNew($learner, $section, $by);
+            $this->entityManager->flush();
         }
     }
 

@@ -6,7 +6,7 @@ use App\Entity\Citizenship;
 use App\Entity\CivilStatus;
 use App\Entity\DualCitizenshipBy;
 use App\Entity\PersonalDataSheet;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\SexAtBirth;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

@@ -60,4 +60,23 @@ final class SchoolDirectory implements SchoolDirectoryInterface
     {
         return $this->planLimits->blockedReason($school);
     }
+
+    public function studentRefusal(
+        School $school,
+        SchoolYear $schoolYear,
+        int $sectionId,
+        string $sectionLabel,
+    ): ?string {
+        return $this->planLimits->canAddStudent($school, $schoolYear, $sectionId, $sectionLabel);
+    }
+
+    public function sectionFullReason(School $school, int $sectionId, string $sectionLabel): ?string
+    {
+        return $this->planLimits->sectionFullReason($school, $sectionId, $sectionLabel);
+    }
+
+    public function allSchools(): array
+    {
+        return $this->schools->findAllOrdered();
+    }
 }

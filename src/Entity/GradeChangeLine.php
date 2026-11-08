@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Learners\Domain\Model\Enrollment;
 use Doctrine\ORM\Mapping as ORM;
 
 /** One learner's grade in a change request: what it was and what the teacher wants it to be. */

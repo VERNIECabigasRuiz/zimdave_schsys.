@@ -2,15 +2,15 @@
 
 namespace App\Service;
 
+use App\Learners\Domain\Exception\EnrollmentException;
 use App\Schools\Domain\Exception\PlanLimitException;
 use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Classes\Domain\Model\Section;
-use App\Entity\TransferRequest;
-use App\Entity\TransferStatus;
+use App\Learners\Domain\Model\TransferRequest;
+use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
-use App\Repository\TransferRequestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\ClockInterface;
 
@@ -27,7 +27,6 @@ class TransferManager
         private readonly EntityManagerInterface $entityManager,
         private readonly PlanLimits $planLimits,
         private readonly LearnerLock $lock,
-        private readonly TransferRequestRepository $transfers,
         private readonly EnrollmentGuard $guard,
         private readonly ActivityLoggerInterface $activityLogger,
         private readonly ClockInterface $clock,
@@ -137,7 +136,7 @@ class TransferManager
     private function reloadPending(TransferRequest $request): void
     {
         // refresh() silently keeps the old state of a row that is gone, so look for it first
-        if (0 === $this->transfers->count(['id' => $request->getId()])) {
+        if (0 === $this->entityManager->getRepository(TransferRequest::class)->count(['id' => $request->getId()])) {
             throw new EnrollmentException(self::DECIDED);
         }
         $this->entityManager->refresh($request);

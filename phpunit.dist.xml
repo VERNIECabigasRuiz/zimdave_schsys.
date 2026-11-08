@@ -63,6 +63,7 @@
             <directory>src/Billing</directory>
             <directory>src/Schools</directory>
             <directory>src/Classes</directory>
+            <directory>src/Learners</directory>
         </include>
 
         <deprecationTrigger>

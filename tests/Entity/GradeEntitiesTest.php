@@ -2,7 +2,7 @@
 
 namespace App\Tests\Entity;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Entity\Grade;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\GradeLock;

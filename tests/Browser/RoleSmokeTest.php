@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Browser;
 
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Learner;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\Learner;
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
 use Symfony\Component\Panther\Client;
 

@@ -2,9 +2,9 @@
 
 namespace App\Tests\Entity;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Learner;
+use App\Learners\Domain\Model\Learner;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
 use App\Schools\Domain\Model\School;

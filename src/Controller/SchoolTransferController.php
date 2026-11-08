@@ -5,17 +5,17 @@ namespace App\Controller;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\TransferRequest;
+use App\Learners\Domain\Model\TransferRequest;
 use App\Access\Domain\Model\User;
 use App\Form\EnrollSectionFormType;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
-use App\Repository\TransferRequestRepository;
-use App\Security\Voter\LearnerVoter;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
+use App\Learners\Presentation\Security\LearnerVoter;
 use App\Schools\Presentation\Security\SchoolVoter;
-use App\Service\EnrollmentException;
-use App\Service\LearnerLookup;
-use App\Service\LookupKind;
+use App\Learners\Domain\Exception\EnrollmentException;
+use App\Learners\Application\Service\LearnerLookup;
+use App\Learners\Application\Service\LookupKind;
 use App\Schools\Domain\Exception\PlanLimitException;
 use App\Service\TransferManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,7 +41,7 @@ class SchoolTransferController extends AbstractController
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
         private readonly SectionRepositoryInterface $sections,
-        private readonly TransferRequestRepository $requests,
+        private readonly TransferRequestRepositoryInterface $requests,
         private readonly LearnerLookup $lookup,
         private readonly TransferManager $transfers,
     ) {

@@ -11,7 +11,7 @@ use App\Classes\Domain\Service\Usage\SectionLearnersInterface;
 use App\Classes\Domain\Service\Usage\SubjectRecordsInterface;
 use App\Entity\Grade;
 use App\Entity\GradeChangeRequest;
-use App\Entity\TransferRequest;
+use App\Learners\Domain\Model\TransferRequest;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Service\Assignment\TeacherDepartureInterface;

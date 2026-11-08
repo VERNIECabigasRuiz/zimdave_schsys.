@@ -2,31 +2,31 @@
 
 namespace App\Tests\Grading;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Entity\Grade;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
 use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
-use App\Entity\TransferRequest;
-use App\Entity\TransferStatus;
+use App\Learners\Domain\Model\TransferRequest;
+use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
 use App\Grading\GradeRules;
 use App\Grading\GridColumn;
 use App\Grading\SectionGradeGrid;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Repository\GradeLockRepository;
 use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
 use App\Classes\Domain\Model\Repository\SubjectRepositoryInterface;
 use App\Classes\Domain\Model\Repository\TeachingLoadRepositoryInterface;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -109,8 +109,8 @@ class SectionGradeGridTest extends KernelTestCase
             $c->get(GradeRepository::class),
             $c->get(GradeLockRepository::class),
             $c->get(GradeUnlockRepository::class),
-            $c->get(EnrollmentRepository::class),
-            $c->get(TransferRequestRepository::class),
+            $c->get(EnrollmentRepositoryInterface::class),
+            $c->get(TransferRequestRepositoryInterface::class),
             $c->get(GradeOpeningRepository::class),
         );
 

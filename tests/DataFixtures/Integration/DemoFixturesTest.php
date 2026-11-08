@@ -6,7 +6,7 @@ namespace App\Tests\DataFixtures\Integration;
 
 use App\DataFixtures\DemoFixtures;
 use App\Schools\Domain\Model\Division;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Entity\Grade;
 use App\Entity\LessonPlan;
 use App\Entity\RollCall;

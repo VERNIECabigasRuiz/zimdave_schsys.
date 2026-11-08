@@ -3,7 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Learner;
+use App\Learners\Domain\Model\Learner;
 use App\Classes\Domain\Model\ScheduleEntry;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;

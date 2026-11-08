@@ -2,15 +2,15 @@
 
 namespace App\Tests\Repository;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Learner;
+use App\Learners\Domain\Model\Learner;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +21,7 @@ class EnrollmentRepositoryTest extends KernelTestCase
     use SchoolFixturesTrait;
 
     private EntityManagerInterface $em;
-    private EnrollmentRepository $enrollments;
+    private EnrollmentRepositoryInterface $enrollments;
     private SchoolYear $sy;
     private School $school;
     private Section $section;
@@ -32,7 +32,7 @@ class EnrollmentRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
-        $this->enrollments = static::getContainer()->get(EnrollmentRepository::class);
+        $this->enrollments = static::getContainer()->get(EnrollmentRepositoryInterface::class);
         $this->clearSchoolData();
         $this->sy = $this->schoolYear(2026, current: true);
         $this->school = $this->school('303456', 'Pagsabungan NHS');

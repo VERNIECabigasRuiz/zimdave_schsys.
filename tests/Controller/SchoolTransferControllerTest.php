@@ -2,14 +2,14 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Learner;
+use App\Learners\Domain\Model\Learner;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\TransferRequest;
-use App\Entity\TransferStatus;
+use App\Learners\Domain\Model\TransferRequest;
+use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;

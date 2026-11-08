@@ -8,7 +8,7 @@ use App\Attendance\Sf2Roster;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Entity\LearnerMark;
 use App\Classes\Domain\Model\Section;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Repository\RollCallRepository;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 
@@ -23,7 +23,7 @@ class TermAttendance
         private readonly SchoolCalendar $calendar,
         private readonly RollCallRepository $rollCalls,
         private readonly SchoolClockInterface $clock,
-        private readonly EnrollmentRepository $enrollments,
+        private readonly EnrollmentRepositoryInterface $enrollments,
     ) {
     }
 

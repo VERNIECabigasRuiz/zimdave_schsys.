@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Access\Domain\Model\User;
-use App\Repository\EnrollmentRepository;
-use App\Repository\LearnerRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
+use App\Learners\Domain\Model\Repository\LearnerRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
 use App\Classes\Application\Service\Timetable\TimetableQuery;
-use App\Sf1\Sf1Remarks;
+use App\Learners\Domain\Service\Sf1\Sf1Remarks;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,8 +22,8 @@ class StudentController extends AbstractController
 {
     public function __construct(
         private readonly SchoolYearRepositoryInterface $schoolYears,
-        private readonly LearnerRepository $learners,
-        private readonly EnrollmentRepository $enrollments,
+        private readonly LearnerRepositoryInterface $learners,
+        private readonly EnrollmentRepositoryInterface $enrollments,
         private readonly TimetableQuery $timetable,
         private readonly Sf1Remarks $remarks,
     ) {

@@ -1,0 +1,59 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Learners\Integration\Domain;
+
+use App\Learners\Domain\Model\Enrollment;
+use App\Schools\Domain\Model\GradeLevel;
+use App\Learners\Domain\Model\Learner;
+use App\Learners\Domain\Model\LearningModality;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
+use App\Classes\Domain\Model\Section;
+use App\Learners\Domain\Model\Sf1Remark;
+use App\Access\Domain\Model\User;
+use PHPUnit\Framework\TestCase;
+
+class EnrollmentSf1Test extends TestCase
+{
+    private function enrollment(): Enrollment
+    {
+        $sy = new SchoolYear();
+        $section = (new Section(new School(), $sy))->setGradeLevel(GradeLevel::Grade8)->setName('Artistic');
+
+        $learner = new Learner(new User(), new \DateTimeImmutable());
+
+        return new Enrollment($learner, $sy, $section, new User(), new \DateTimeImmutable());
+    }
+
+    public function testFaceToFaceByDefaultWithoutRemark(): void
+    {
+        $enrollment = $this->enrollment();
+
+        self::assertSame(LearningModality::FaceToFace, $enrollment->getLearningModality());
+        self::assertSame('Face to Face', $enrollment->getLearningModality()->label());
+        self::assertNull($enrollment->getManualRemarkText());
+    }
+
+    public function testManualRemarkText(): void
+    {
+        $enrollment = $this->enrollment()->setRemarkCode(Sf1Remark::Dropped)->setRemarkDetails('Moved abroad')
+            ->setRemarkDate(new \DateTimeImmutable('2025-09-01'));
+        self::assertSame('DRP Moved abroad 2025-09-01', $enrollment->getManualRemarkText());
+
+        $enrollment->setRemarkDetails(' ')->setRemarkDate(null);
+        self::assertNull($enrollment->getRemarkDetails());
+        self::assertSame('DRP', $enrollment->getManualRemarkText());
+    }
+
+    public function testRemarkCodes(): void
+    {
+        self::assertSame(
+            ['T/I', 'DRP', 'LE', 'CCT', 'B/A', 'SNED', 'ACL'],
+            array_map(static fn (Sf1Remark $r) => $r->code(), Sf1Remark::cases()),
+        );
+        self::assertSame('Balik Aral', Sf1Remark::BalikAral->label());
+        self::assertSame('Name of school last attended & year', Sf1Remark::BalikAral->requiredInfo());
+    }
+}

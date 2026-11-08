@@ -50,6 +50,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Classes/Domain'
                 prefix: 'App\Classes\Domain'
                 alias: Classes
+            Learners:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Learners/Domain'
+                prefix: 'App\Learners\Domain'
+                alias: Learners
 
 when@test:
     doctrine:

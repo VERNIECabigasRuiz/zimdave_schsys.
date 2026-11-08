@@ -2,20 +2,20 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Learner;
+use App\Learners\Domain\Model\Learner;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
 use App\Access\Domain\Model\User;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Sf1\Sf1ReportBuilder;
-use App\Sf1\Sf1Remarks;
+use App\Learners\Domain\Service\Sf1\Sf1Remarks;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -58,9 +58,9 @@ class Sf1ReportBuilderTest extends KernelTestCase
         $c = static::getContainer();
 
         return new Sf1ReportBuilder(
-            $c->get(EnrollmentRepository::class),
+            $c->get(EnrollmentRepositoryInterface::class),
             $c->get(SchoolAssignmentRepositoryInterface::class),
-            new Sf1Remarks($c->get(TransferRequestRepository::class)),
+            new Sf1Remarks($c->get(TransferRequestRepositoryInterface::class)),
             $c->get(ClockInterface::class),
         );
     }

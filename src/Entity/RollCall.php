@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Learners\Domain\Model\Enrollment;
 use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
 use App\Repository\RollCallRepository;

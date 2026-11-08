@@ -5,7 +5,7 @@ namespace App\Tests\Entity;
 use App\Entity\Citizenship;
 use App\Entity\CivilStatus;
 use App\Entity\PersonalDataSheet;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

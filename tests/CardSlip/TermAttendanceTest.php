@@ -6,7 +6,7 @@ use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Roster;
 use App\CardSlip\AttendanceTally;
 use App\CardSlip\TermAttendance;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Entity\LearnerMark;
@@ -15,13 +15,13 @@ use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolDayOff;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
 use App\Access\Domain\Model\User;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Repository\RollCallRepository;
 use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -174,11 +174,11 @@ class TermAttendanceTest extends KernelTestCase
             ->setEndDate(null !== $end ? new \DateTimeImmutable($end) : null);
 
         return (new TermAttendance(
-            new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class)),
+            new Sf2Roster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class)),
             new SchoolCalendar($c->get(SchoolDayOffRepositoryInterface::class)),
             $c->get(RollCallRepository::class),
             new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila'),
-            $c->get(EnrollmentRepository::class),
+            $c->get(EnrollmentRepositoryInterface::class),
         ))->forSection($this->section, $period);
     }
 

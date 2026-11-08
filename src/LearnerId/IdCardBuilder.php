@@ -2,11 +2,11 @@
 
 namespace App\LearnerId;
 
-use App\Entity\Enrollment;
-use App\Entity\Learner;
+use App\Learners\Domain\Model\Enrollment;
+use App\Learners\Domain\Model\Learner;
 use App\Classes\Domain\Model\Section;
-use App\Entity\Sf1Remark;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Sf1Remark;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -17,7 +17,7 @@ class IdCardBuilder
     private const SEAL = '/assets/images/deped-seal.png';
 
     public function __construct(
-        private readonly EnrollmentRepository $enrollments,
+        private readonly EnrollmentRepositoryInterface $enrollments,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly ImageProcessorInterface $images,
         private readonly QrCode $qrCode,

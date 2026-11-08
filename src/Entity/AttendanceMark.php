@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Learners\Domain\Model\Enrollment;
 use Doctrine\ORM\Mapping as ORM;
 
 /** One learner absent, late or cutting classes in a roll call. */

@@ -3,14 +3,14 @@
 namespace App\Tests\Nutrition;
 
 use App\Attendance\Sf2Roster;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\NutritionAssessment;
 use App\Entity\NutritionMeasurement;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Entity\Sf8Submission;
 use App\Access\Domain\Model\User;
 use App\Nutrition\MeasurementInput;
@@ -20,12 +20,12 @@ use App\Nutrition\NutritionPeriod;
 use App\Nutrition\NutritionRecorder;
 use App\Nutrition\NutritionRules;
 use App\Nutrition\Sf8ReportBuilder;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Repository\NutritionAssessmentRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Classes\Domain\Model\Repository\SectionRepositoryInterface;
 use App\Repository\Sf8SubmissionRepository;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Core\Infrastructure\Clock\SchoolClock;
 use App\Tests\SchoolFixturesTrait;
@@ -84,7 +84,7 @@ class NutritionRecorderTest extends KernelTestCase
     {
         $c = static::getContainer();
         $clock = new SchoolClock($c->get(ClockInterface::class), 'Asia/Manila');
-        $roster = new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class));
+        $roster = new Sf2Roster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class));
 
         return new NutritionRecorder(
             $this->em,

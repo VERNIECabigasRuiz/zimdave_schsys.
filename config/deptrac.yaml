@@ -122,7 +122,13 @@ deptrac:
     - name: Classes_Application
       collectors:
         - type: classLike
-          value: ^App\\Classes\\Application\\.*
+          value: ^App\\Classes\\Application\\(?!Api\\).*
+
+    # What other modules may use from Classes
+    - name: Classes_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Classes\\Application\\Api\\.*
 
     - name: Classes_Infrastructure
       collectors:
@@ -134,6 +140,26 @@ deptrac:
         - type: classLike
           value: ^App\\Classes\\Presentation\\.*
 
+    - name: Learners_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Domain\\.*
+
+    - name: Learners_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Application\\.*
+
+    - name: Learners_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Infrastructure\\.*
+
+    - name: Learners_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Presentation\\.*
+
     - name: Kernel
       collectors:
         - type: classLike
@@ -143,7 +169,7 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -316,6 +342,11 @@ deptrac:
       - Schools_Domain
       - Schools_Api
       - ValidatorConstraints
+    Classes_Api:
+      - Classes_Domain
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
     Classes_Infrastructure:
       - Classes_Domain
       - Classes_Application
@@ -340,6 +371,56 @@ deptrac:
       - Billing_Api
       - Schools_Domain
       - Schools_Api
+      - ValidatorConstraints
+      - Framework
+    Learners_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - DoctrineMapping
+    Learners_Application:
+      - Learners_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Billing_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - ValidatorConstraints
+    Learners_Infrastructure:
+      - Learners_Domain
+      - Learners_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+    Learners_Presentation:
+      - Learners_Application
+      - Learners_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Billing_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
       - ValidatorConstraints
       - Framework
     Kernel:
@@ -380,6 +461,11 @@ deptrac:
       - Classes_Application
       - Classes_Infrastructure
       - Classes_Presentation
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Application
+      - Learners_Infrastructure
+      - Learners_Presentation
       - Kernel
       - DoctrineMapping
       - SecurityUserContract

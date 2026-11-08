@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Entity\Grade;
 use App\Entity\GradeChangeRequest;
 use App\Schools\Domain\Model\GradeLevel;
@@ -12,12 +12,12 @@ use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
 use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
-use App\Entity\TransferRequest;
-use App\Entity\TransferStatus;
+use App\Learners\Domain\Model\TransferRequest;
+use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
 use App\Grading\GradeChangeManager;
 use App\Grading\GradeRecorder;

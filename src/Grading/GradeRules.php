@@ -2,21 +2,21 @@
 
 namespace App\Grading;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Schools\Domain\Model\School;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
 use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Repository\GradeLockRepository;
 use App\Repository\GradeOpeningRepository;
 use App\Repository\GradeRepository;
 use App\Repository\GradeUnlockRepository;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 
 /** What may be graded, when grades may change, and who is on a grade sheet. Who may do it is a voter's question. */
 class GradeRules
@@ -25,8 +25,8 @@ class GradeRules
         private readonly GradeRepository $grades,
         private readonly GradeLockRepository $locks,
         private readonly GradeUnlockRepository $unlocks,
-        private readonly EnrollmentRepository $enrollments,
-        private readonly TransferRequestRepository $transfers,
+        private readonly EnrollmentRepositoryInterface $enrollments,
+        private readonly TransferRequestRepositoryInterface $transfers,
         private readonly GradeOpeningRepository $openings,
     ) {
     }

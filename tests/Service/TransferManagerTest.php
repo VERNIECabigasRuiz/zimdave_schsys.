@@ -3,18 +3,18 @@
 namespace App\Tests\Service;
 
 use App\Core\Domain\Model\ActivityLog;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\TransferRequest;
-use App\Entity\TransferStatus;
+use App\Learners\Domain\Model\TransferRequest;
+use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
-use App\Service\EnrollmentException;
+use App\Learners\Domain\Exception\EnrollmentException;
 use App\Service\EnrollmentGuard;
 use App\Service\LearnerLock;
 use App\Schools\Domain\Exception\PlanLimitException;
@@ -63,8 +63,7 @@ class TransferManagerTest extends KernelTestCase
             $this->em,
             $c->get(PlanLimits::class),
             new LearnerLock($c->get(LockFactory::class), $c->get(ManagerRegistry::class)),
-            $c->get(TransferRequestRepository::class),
-            new EnrollmentGuard($this->em, $c->get(SchoolYearRepositoryInterface::class), $c->get(TransferRequestRepository::class)),
+            new EnrollmentGuard($this->em, $c->get(SchoolYearRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class)),
             $c->get(ActivityLoggerInterface::class),
             $c->get(ClockInterface::class),
         );
@@ -97,6 +96,7 @@ class TransferManagerTest extends KernelTestCase
         self::assertTrue($request->isPending());
         self::assertEquals(new \DateTimeImmutable('2026-10-16 09:00:00'), $request->getCreatedAt());
         self::assertSame($this->otherSection, $request->getToSection());
+        self::assertSame($this->admin, $request->getRequestedBy());
         self::assertSame($this->school, $this->enrollment->getSchool());
         self::assertSame($this->rizal, $this->enrollment->getSection());
         self::assertContains('Requested transfer of 123456789012 from Pagsabungan NHS', $this->logs());

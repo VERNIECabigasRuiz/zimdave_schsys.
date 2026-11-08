@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
 use App\Repository\PersonalDataSheetRepository;
 use Doctrine\Common\Collections\ArrayCollection;

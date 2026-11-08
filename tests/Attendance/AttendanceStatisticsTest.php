@@ -5,7 +5,7 @@ namespace App\Tests\Attendance;
 use App\Attendance\AttendanceStatistics;
 use App\Attendance\SectionToday;
 use App\Attendance\Sf2Status;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;

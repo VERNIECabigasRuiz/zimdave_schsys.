@@ -2,13 +2,13 @@
 
 namespace App\Attendance;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
-use App\Repository\EnrollmentRepository;
-use App\Repository\TransferRequestRepository;
-use App\Sf1\Sf1Remarks;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
+use App\Learners\Domain\Service\Sf1\Sf1Remarks;
 
 /**
  * The learners of a section's SF2 for a month: its class list, plus the learners who
@@ -17,8 +17,8 @@ use App\Sf1\Sf1Remarks;
 class Sf2Roster
 {
     public function __construct(
-        private readonly EnrollmentRepository $enrollments,
-        private readonly TransferRequestRepository $transfers,
+        private readonly EnrollmentRepositoryInterface $enrollments,
+        private readonly TransferRequestRepositoryInterface $transfers,
     ) {
     }
 

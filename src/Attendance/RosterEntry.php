@@ -2,7 +2,7 @@
 
 namespace App\Attendance;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 
 /** A learner on a section's SF2 and the days they count there: $from to $until, both included. */
 final readonly class RosterEntry

@@ -5,20 +5,20 @@ namespace App\Tests\Attendance;
 use App\Attendance\RosterEntry;
 use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Roster;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
-use App\Entity\TransferRequest;
-use App\Entity\TransferStatus;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
+use App\Learners\Domain\Model\TransferRequest;
+use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
-use App\Repository\TransferRequestRepository;
-use App\Sf1\Sf1Remarks;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
+use App\Learners\Domain\Service\Sf1\Sf1Remarks;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -58,7 +58,7 @@ class Sf2RosterTest extends KernelTestCase
     {
         $c = static::getContainer();
 
-        return new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class));
+        return new Sf2Roster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class));
     }
 
     private function enrolled(string $last, string $first, string $enrolledAt, SexAtBirth $sex = SexAtBirth::Female, ?Section $section = null): Enrollment

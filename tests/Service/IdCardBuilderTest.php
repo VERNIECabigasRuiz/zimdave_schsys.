@@ -2,19 +2,19 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
-use App\Entity\Learner;
+use App\Learners\Domain\Model\Learner;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
 use App\Access\Domain\Model\User;
 use App\LearnerId\IdCard;
 use App\LearnerId\IdCardBuilder;
 use App\LearnerId\QrCode;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Core\Domain\Service\FileStorage\ImageProcessorInterface;
 use App\Tests\SchoolFixturesTrait;
@@ -53,7 +53,7 @@ class IdCardBuilderTest extends KernelTestCase
         $c = static::getContainer();
 
         return new IdCardBuilder(
-            $c->get(EnrollmentRepository::class),
+            $c->get(EnrollmentRepositoryInterface::class),
             $c->get(SchoolAssignmentRepositoryInterface::class),
             $c->get(ImageProcessorInterface::class),
             new QrCode(),

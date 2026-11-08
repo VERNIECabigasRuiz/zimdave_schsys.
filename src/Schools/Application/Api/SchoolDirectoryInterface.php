@@ -42,4 +42,22 @@ interface SchoolDirectoryInterface
 
     /** Why nothing of the school can be changed now (inactive school, expired plan), or null. */
     public function blockedReason(School $school): ?string;
+
+    /** Why the school may not enroll another learner in the section (plan, seats, section full), or null. */
+    public function studentRefusal(
+        School $school,
+        SchoolYear $schoolYear,
+        int $sectionId,
+        string $sectionLabel,
+    ): ?string;
+
+    /** Why the section takes no more learners (only on a plan without a principal), or null. */
+    public function sectionFullReason(School $school, int $sectionId, string $sectionLabel): ?string;
+
+    /**
+     * Every school, in name order.
+     *
+     * @return list<School>
+     */
+    public function allSchools(): array;
 }

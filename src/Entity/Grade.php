@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Learners\Domain\Model\Enrollment;
 use App\Classes\Domain\Model\Subject;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Access\Domain\Model\User;

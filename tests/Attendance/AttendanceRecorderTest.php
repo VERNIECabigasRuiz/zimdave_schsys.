@@ -9,7 +9,7 @@ use App\Schools\Domain\Service\Calendar\SchoolCalendar;
 use App\Attendance\Sf2Roster;
 use App\Core\Domain\Model\ActivityLog;
 use App\Entity\AttendanceMark;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;
@@ -17,17 +17,17 @@ use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolDayOff;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
-use App\Entity\Sf1Remark;
+use App\Learners\Domain\Model\Sf1Remark;
 use App\Entity\Sf2Submission;
 use App\Access\Domain\Model\User;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Repository\RollCallRepository;
 use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Repository\Sf2SubmissionRepository;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Core\Domain\Service\ActivityLog\ActivityLoggerInterface;
 use App\Core\Infrastructure\Clock\SchoolClock;
-use App\Sf1\Sf1Remarks;
+use App\Learners\Domain\Service\Sf1\Sf1Remarks;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -97,7 +97,7 @@ class AttendanceRecorderTest extends KernelTestCase
             $this->em,
             $c->get(LockFactory::class),
             $this->rules(),
-            new Sf2Roster($c->get(EnrollmentRepository::class), $c->get(TransferRequestRepository::class)),
+            new Sf2Roster($c->get(EnrollmentRepositoryInterface::class), $c->get(TransferRequestRepositoryInterface::class)),
             $calendar,
             $c->get(RollCallRepository::class),
             $c->get(Sf2SubmissionRepository::class),

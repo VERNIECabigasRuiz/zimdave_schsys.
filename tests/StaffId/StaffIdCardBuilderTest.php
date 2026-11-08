@@ -7,7 +7,7 @@ use App\Entity\PersonalDataSheet;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Entity\ServiceRecordEntry;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\DivisionRepositoryInterface;
 use App\Repository\PersonalDataSheetRepository;

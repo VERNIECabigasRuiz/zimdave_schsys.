@@ -11,7 +11,7 @@ use App\Classes\Domain\Model\Section;
 use App\Classes\Domain\Model\ShsTrack;
 use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
-use App\Entity\TransferRequest;
+use App\Learners\Domain\Model\TransferRequest;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
 use App\Classes\Application\Service\ClassPeriodManager;

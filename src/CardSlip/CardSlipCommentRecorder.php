@@ -3,7 +3,7 @@
 namespace App\CardSlip;
 
 use App\Entity\CardSlipComment;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradingPeriod;
 use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;

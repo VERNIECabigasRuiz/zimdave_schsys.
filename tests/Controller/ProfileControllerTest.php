@@ -4,7 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\CivilStatus;
 use App\Entity\PersonalDataSheet;
-use App\Entity\SexAtBirth;
+use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
 use App\Tests\Controller\Admin\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;

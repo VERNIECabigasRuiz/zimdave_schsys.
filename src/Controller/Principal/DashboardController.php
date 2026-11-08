@@ -10,7 +10,7 @@ use App\Grading\SectionGradeGrid;
 use App\Repository\GradeChangeRequestRepository;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolYearRepositoryInterface;
-use App\Repository\TransferRequestRepository;
+use App\Learners\Domain\Model\Repository\TransferRequestRepositoryInterface;
 use App\Schools\Domain\Service\Plan\PlanLimits;
 use App\Core\Domain\Service\Clock\SchoolClockInterface;
 use App\Classes\Application\Service\Timetable\TimetableQuery;
@@ -30,7 +30,7 @@ class DashboardController extends AbstractController
         private readonly PlanLimits $planLimits,
         private readonly TimetableQuery $timetable,
         private readonly SchoolClockInterface $clock,
-        private readonly TransferRequestRepository $transferRequests,
+        private readonly TransferRequestRepositoryInterface $transferRequests,
         private readonly AttendanceStatistics $attendance,
         private readonly GradeChangeRequestRepository $gradeChanges,
         private readonly FailingLearners $failingLearners,

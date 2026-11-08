@@ -2,12 +2,13 @@
 
 namespace App\Sf1;
 
-use App\Entity\Enrollment;
+use App\Learners\Domain\Service\Sf1\Sf1Remarks;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Classes\Domain\Model\Section;
-use App\Entity\SexAtBirth;
-use App\Entity\Sf1Remark;
-use App\Repository\EnrollmentRepository;
+use App\Learners\Domain\Model\SexAtBirth;
+use App\Learners\Domain\Model\Sf1Remark;
+use App\Learners\Domain\Model\Repository\EnrollmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use Symfony\Component\Clock\ClockInterface;
 
@@ -15,7 +16,7 @@ use Symfony\Component\Clock\ClockInterface;
 class Sf1ReportBuilder
 {
     public function __construct(
-        private readonly EnrollmentRepository $enrollments,
+        private readonly EnrollmentRepositoryInterface $enrollments,
         private readonly SchoolAssignmentRepositoryInterface $assignments,
         private readonly Sf1Remarks $remarks,
         private readonly ClockInterface $clock,

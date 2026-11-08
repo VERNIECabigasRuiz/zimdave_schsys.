@@ -3,7 +3,7 @@
 namespace App\Tests\Repository;
 
 use App\Entity\AttendanceMark;
-use App\Entity\Enrollment;
+use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Entity\LearnerMark;
 use App\Entity\RollCall;

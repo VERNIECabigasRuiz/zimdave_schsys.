@@ -2,7 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\Learner;
+use App\Learners\Domain\Exception\EnrollmentException;
+use App\Learners\Domain\Model\Learner;
 use App\Schools\Domain\Model\School;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
