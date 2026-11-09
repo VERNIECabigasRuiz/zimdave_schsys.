@@ -87,6 +87,7 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 ## Tests
 
 - Use `/run-tests`. `phpunit.dist.xml` fails on any deprecation, notice or warning; fix those, don't silence them.
+- `make test-feature` exits 0 even when tests fail; read its `OK`/`FAILURES` line.
 - Suites: `unit`, `integration`, `functional` (`tests/<Module>/Unit|Integration|Functional`), `browser` (`tests/Browser`, Panther). JS tests live in `tests/<Module>/Javascript`.
 - `make test <type>` runs static checks and unit tests in a throwaway container without a database (`composer-audit`, `phpstan`, `deptrac`, `phpcs`, `eslint`, `stylelint`, `phpunit`, `vitest`, or `all`). `make test-feature` runs the database suites in `web` and requires 100% coverage of all of `src`. `make regression-test` runs the browser suite. Reports land in `reports/`.
 - PHPStan runs at most 4 workers (`config/phpstan.neon`); one per CPU filled Docker's memory and got MySQL killed. Keep the cap. Clear its cache (`reports/phpstan/.cache`) before a run whose result you rely on; a run on a few folders can report stale results.
