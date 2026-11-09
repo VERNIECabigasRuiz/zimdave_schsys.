@@ -73,6 +73,8 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - `src/Core/Presentation/assets/csrf_protection_controller.js` isn't a Stimulus controller: `bootstrap.js` beside it imports it for its side effect (the CSRF cookie on submit). It sits outside every `controllers/` folder so the controller glob never registers it; keep it there, or forms and login stop working.
 - The Vite entry is `src/Core/Presentation/assets/app.js` (with `bootstrap.js`); its globs are root-relative (`/src/*/Presentation/assets/...`) so the Vue resolver sees `/src/<Module>/` in each key. The only file left in the root `assets/` is `controllers.json`, which Flex writes when a UX package is installed.
 - Every Stimulus controller has a Vitest test in `tests/<Module>/Javascript/`, and `tests/Core/Javascript/controller_identifiers.test.js` lists each controller's Stimulus name: add a new controller there too.
+- Stimulus logs a controller's errors instead of throwing them: controller tests collect them with `application.handleError` and expect none.
+- The live-check worktree shares `/app/vendor`, so Composer loads `App\` from `/app/src`: its server must load the worktree's own `src` and build the worktree's own assets.
 - The DepEd seal is `resources/images/deped-seal.png` (learner and staff IDs, service record PDF); the staff ID backgrounds sit beside `StaffIdPdf` in `Staff/Infrastructure/StaffId/`.
 - Stimulus controllers in a module's `Presentation/assets/controllers/` set `import.meta.stimulusIdentifier` so their names don't change when they move.
 - Tailwind classes only with the prefix (`tw:flex`); it has no preflight, so it can't restyle existing pages.

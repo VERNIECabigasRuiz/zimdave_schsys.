@@ -86,6 +86,8 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Check a search pattern against a known match before trusting a zero.
 - Remove a folder only together with the config that points at it.
 - When removing a folder, grep docs and config comments for its bare name too.
+- Before trusting a clean lint run, check the list of files it actually checked.
+- In a comparison check, confirm each side runs its own code (e.g. print the file a class loads from), not just its own entry point.
 
 ## Plans / Specs
 
@@ -141,6 +143,9 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - For a test meant to guard a fix, break the fix once and watch the test fail.
 - When a test pins old behaviour, check the old code for each starting state, not just one.
 - After fixing one checker's findings, rerun the other checkers on the same files before a full run.
+- Check a framework's default event or behaviour before writing a test that triggers it.
+- Run DOM test events on elements that are on the page; detached ones skip document listeners.
+- After moving a file a feature reads, break its path once to prove a test watches it.
 
 ## Subagents / Long-Running Tasks
 
