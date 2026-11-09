@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 /** The images ID cards print, inlined as data URIs. */
 final class IdCardImages implements IdCardImagesInterface
 {
-    private const SEAL = '/assets/images/deped-seal.png';
+    private const SEAL = '/resources/images/deped-seal.png';
 
     public function __construct(
         private readonly ImageProcessorInterface $images,

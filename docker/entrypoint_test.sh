@@ -67,8 +67,8 @@ run_phpcs() {
 }
 
 run_eslint() {
-  node ./node_modules/eslint/bin/eslint.js --config config/eslint.config.mjs --no-error-on-unmatched-pattern \
-    assets/app.js assets/bootstrap.js vite.config.js config 'src/*/Presentation/assets' 'tests/*/Javascript'
+  node ./node_modules/eslint/bin/eslint.js --config config/eslint.config.mjs \
+    vite.config.js config 'src/*/Presentation/assets/**/*.{js,vue}' 'tests/*/Javascript/**/*.{js,vue}'
 }
 
 run_stylelint() {

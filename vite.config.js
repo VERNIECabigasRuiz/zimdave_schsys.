@@ -7,12 +7,12 @@ export default defineConfig({
     plugins: [
         vue(),
         tailwindcss(),
-        symfonyPlugin({ stimulus: true }),
+        symfonyPlugin({ stimulus: './assets/controllers.json' }),
     ],
     build: {
         rollupOptions: {
             input: {
-                app: './assets/app.js',
+                app: './src/Core/Presentation/assets/app.js',
             },
         },
     },

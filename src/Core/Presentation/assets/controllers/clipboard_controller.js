@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'clipboard';
+
 /*
  * Adds a "Copy" button next to an element and copies textValue when clicked.
  *

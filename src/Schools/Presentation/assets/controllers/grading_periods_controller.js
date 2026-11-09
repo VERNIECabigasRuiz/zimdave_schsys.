@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'grading-periods';
+
 const SYSTEMS = {
     terms: { count: 3, name: 'Term' },
     quarters: { count: 4, name: 'Quarter' },

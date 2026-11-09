@@ -15,7 +15,7 @@ class ServiceRecordPdf implements ServiceRecordPdfInterface
 {
     /** 8.5 × 13 in in points. */
     private const LONG_BOND = [0, 0, 612, 936];
-    private const SEAL = '/assets/images/deped-seal.png';
+    private const SEAL = '/resources/images/deped-seal.png';
 
     public function __construct(
         private readonly PdfRendererInterface $pdf,

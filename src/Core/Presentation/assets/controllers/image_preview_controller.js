@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'image-preview';
+
 const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_BYTES = 5 * 1024 * 1024;
 

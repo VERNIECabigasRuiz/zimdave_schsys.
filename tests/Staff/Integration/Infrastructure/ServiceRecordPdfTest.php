@@ -161,6 +161,15 @@ class ServiceRecordPdfTest extends KernelTestCase
         self::assertStringContainsString('School Principal', $html);
     }
 
+    public function testPrintsTheDepEdSeal(): void
+    {
+        // Execute
+        $html = $this->pdf()->html($this->printout());
+
+        // Assert
+        self::assertStringContainsString('<img src="data:image/png;base64,', $html);
+    }
+
     public function testNoPdsStillRenders(): void
     {
         $bytes = $this->pdf()->render($this->printout());

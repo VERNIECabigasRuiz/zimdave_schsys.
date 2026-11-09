@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'day-picker';
+
 /*
  * Opens the roll call of the date picked: /teacher/class/attendance/2025-08-22.
  *

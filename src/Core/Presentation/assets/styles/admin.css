@@ -211,6 +211,7 @@ body.admin-page {
     width: 1px;
     height: 1px;
     overflow: hidden;
+    /* stylelint-disable-next-line property-no-deprecated -- older browsers hide the text only with clip */
     clip: rect(0 0 0 0);
     white-space: nowrap;
 }
@@ -668,6 +669,7 @@ body.admin-page {
 
 .quarters {
     display: grid;
+
     /* 3 terms or 4 quarters share the row */
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: .75rem;

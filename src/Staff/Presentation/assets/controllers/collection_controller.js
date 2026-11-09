@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'collection';
+
 /*
  * Add/remove rows of a Symfony CollectionType.
  *

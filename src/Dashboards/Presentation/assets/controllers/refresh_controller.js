@@ -1,6 +1,8 @@
 import { Controller } from '@hotwired/stimulus';
 import * as Turbo from '@hotwired/turbo';
 
+import.meta.stimulusIdentifier = 'refresh';
+
 // Reloads the turbo-frame it sits on every `interval` milliseconds.
 export default class extends Controller {
     static values = { interval: { type: Number, default: 60000 } };

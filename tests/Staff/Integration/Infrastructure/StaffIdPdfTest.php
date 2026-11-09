@@ -76,6 +76,20 @@ class StaffIdPdfTest extends KernelTestCase
         }
     }
 
+    public function testBothSizesPrintOnTheTemplateImages(): void
+    {
+        // Initialize
+        $pdf = $this->pdf();
+
+        // Execute
+        $big = $pdf->html(self::card(), StaffIdSize::Big);
+        $small = $pdf->html(self::card(), StaffIdSize::Small);
+
+        // Assert
+        self::assertSame(1, substr_count($big, 'class="bg" src="data:image/jpeg;base64,'));
+        self::assertSame(2, substr_count($small, 'class="bg" src="data:image/jpeg;base64,'));
+    }
+
     public function testSmallHtmlHasBothSides(): void
     {
         $html = $this->pdf()->html(self::card(), StaffIdSize::Small);

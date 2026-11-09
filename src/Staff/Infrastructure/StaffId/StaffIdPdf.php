@@ -17,9 +17,9 @@ class StaffIdPdf implements StaffIdPdfInterface
     /** 8.5 × 13 in and 8.5 × 11 in, in points */
     private const PAPER = ['big' => [0, 0, 612, 936], 'small' => [0, 0, 612, 792]];
     private const BACKGROUNDS = [
-        'big' => '/assets/images/staff-id-big.jpg',
-        'front' => '/assets/images/staff-id-small-front.jpg',
-        'back' => '/assets/images/staff-id-small-back.jpg',
+        'big' => '/src/Staff/Infrastructure/StaffId/staff-id-big.jpg',
+        'front' => '/src/Staff/Infrastructure/StaffId/staff-id-small-front.jpg',
+        'back' => '/src/Staff/Infrastructure/StaffId/staff-id-small-back.jpg',
     ];
 
     public function __construct(

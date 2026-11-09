@@ -19,6 +19,8 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             include: ['src/*/Presentation/assets/**/*.{js,vue}'],
+            // The Vite entry files only run inside Vite; the build and the browser tests check them
+            exclude: ['src/Core/Presentation/assets/app.js', 'src/Core/Presentation/assets/bootstrap.js'],
             reportsDirectory: 'reports/vitest/coverage',
             reporter: ['text', 'clover'],
             thresholds: {

@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'region-division';
+
 /*
  * Narrows the Division dropdown to the divisions of the chosen Region.
  * The server still checks the pair; without this the full list is shown.

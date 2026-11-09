@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'attendance-mark';
+
 const LABELS = { '': 'Present', absent: 'Absent', late: 'Late', cutting: 'Cutting' };
 
 /*

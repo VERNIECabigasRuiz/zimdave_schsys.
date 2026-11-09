@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import Greeting from './Fixture/Greeting.vue';
+import Greeting from './Fixture/GreetingCard.vue';
 import { createVueComponentResolver } from '../../../src/Core/Presentation/assets/vue/createVueComponentResolver.js';
 
 const RollCallGrid = { name: 'RollCallGrid' };

@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+import.meta.stimulusIdentifier = 'comment-picker';
+
 /*
  * Keeps a card slip comment dropdown's summary line in step with its ticked boxes and typed comment.
  *
