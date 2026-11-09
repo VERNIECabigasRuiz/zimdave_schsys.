@@ -15,16 +15,15 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
- * Fills DepEd's SF8 template (templates/forms/sf8-template.xlsx) with a report, values only. Rows are
+ * Fills DepEd's SF8 template (sf8-template.xlsx, beside this class) with a report, values only. Rows are
  * added when a class has more than the template's 50 males or 50 females; every address below them
  * moves down by the rows added.
  */
 class Sf8Writer implements Sf8SpreadsheetInterface
 {
-    private const TEMPLATE = '/templates/forms/sf8-template.xlsx';
+    private const TEMPLATE = __DIR__ . '/sf8-template.xlsx';
     private const FIRST_MALE = 12;
     private const FEMALE_LABEL = 62;
     private const FIRST_FEMALE = 63;
@@ -40,12 +39,6 @@ class Sf8Writer implements Sf8SpreadsheetInterface
     private const HFA_COLUMNS = ['J', 'K', 'L', 'M'];
     private const HFA_TOTAL = 'N';
 
-    public function __construct(
-        #[Autowire('%kernel.project_dir%')]
-        private readonly string $projectDir,
-    ) {
-    }
-
     public function xlsx(Sf8Report $report): string
     {
         $file = tempnam(sys_get_temp_dir(), 'sf8');
@@ -60,7 +53,7 @@ class Sf8Writer implements Sf8SpreadsheetInterface
 
     public function write(Sf8Report $report): Spreadsheet
     {
-        $book = IOFactory::load($this->projectDir . self::TEMPLATE);
+        $book = IOFactory::load(self::TEMPLATE);
         $sheet = $book->getActiveSheet();
         $males = $report->males();
         $females = $report->females();

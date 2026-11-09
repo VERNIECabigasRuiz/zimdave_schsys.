@@ -128,7 +128,7 @@ a controller or a service call for a service, not just "it didn't throw."
 
 PSR-12, checked by PHP_CodeSniffer with `config/phpcs.xml`: run `make test phpcs`,
 and fix with `make bash-exec CMD='vendor/bin/phpcbf --standard=config/phpcs.xml'`.
-Code not yet moved into a module is left out of `config/phpcs.xml` until it moves.
+phpcs covers all of `src` and `tests`.
 
 ## Discover, don't guess
 
@@ -139,7 +139,7 @@ things up in the project instead of relying on memory:
 - `bin/console debug:router`, `debug:container`, `debug:autowiring <name>`,
   `debug:config <bundle>`, `config:dump-reference <bundle>`: what exists and how
   it is configured.
-- `bin/console lint:container`, plus `lint:twig templates/` and
+- `bin/console lint:container`, plus `lint:twig src/` and
   `lint:yaml config/` where those packages are installed: validate before running.
 - Read the installed source and docblocks under `vendor/`.
 - Docs: https://symfony.com/doc/current/ (switch to the version matching

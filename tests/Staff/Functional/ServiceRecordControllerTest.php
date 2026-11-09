@@ -11,7 +11,7 @@ use App\Schools\Domain\Model\SchoolYear;
 use App\Staff\Domain\Model\ServiceRecord;
 use App\Staff\Domain\Model\ServiceRecordEntry;
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\DomCrawler\Field\FormField;

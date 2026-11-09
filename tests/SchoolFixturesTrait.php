@@ -51,19 +51,31 @@ trait SchoolFixturesTrait
 {
     protected function clearSchoolData(): void
     {
-        foreach ([CardSlipComment::class, GradeChangeLine::class, GradeChangeRequest::class, GradeUnlock::class, GradeOpening::class, GradeLock::class, Grade::class, NutritionMeasurement::class, NutritionAssessment::class, Sf8Submission::class, AttendanceMark::class, RollCall::class, Sf2Submission::class, SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class, ScheduleEntry::class, LessonPlan::class,TeachingLoad::class, ClassPeriod::class, Subject::class, Section::class, ServiceRecordEntry::class, ServiceRecord::class, StaffIdDetails::class, Division::class, SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class, User::class] as $class) {
-            $this->em->createQuery('DELETE FROM '.$class)->execute();
+        // Children before parents, so foreign keys allow each delete
+        $classes = [
+            CardSlipComment::class, GradeChangeLine::class, GradeChangeRequest::class, GradeUnlock::class,
+            GradeOpening::class, GradeLock::class, Grade::class, NutritionMeasurement::class,
+            NutritionAssessment::class, Sf8Submission::class, AttendanceMark::class, RollCall::class,
+            Sf2Submission::class, SchoolDayOff::class, TransferRequest::class, Enrollment::class, Learner::class,
+            ScheduleEntry::class, LessonPlan::class, TeachingLoad::class, ClassPeriod::class, Subject::class,
+            Section::class, ServiceRecordEntry::class, ServiceRecord::class, StaffIdDetails::class, Division::class,
+            SchoolAssignment::class, Announcement::class, ActivityLog::class, School::class, SchoolYear::class,
+            User::class,
+        ];
+        foreach ($classes as $class) {
+            $this->em->createQuery('DELETE FROM ' . $class)->execute();
         }
         // Basic and Individual come from the migration and are shared by every test
-        $this->em->createQuery('DELETE FROM '.Plan::class." p WHERE p.name NOT IN ('Basic', 'Individual')")->execute();
+        $this->em->createQuery('DELETE FROM ' . Plan::class . " p WHERE p.name NOT IN ('Basic', 'Individual')")
+            ->execute();
     }
 
     protected function schoolYear(int $startYear, bool $current): SchoolYear
     {
         $sy = (new SchoolYear())
-            ->setName($startYear.'-'.($startYear + 1))
-            ->setStartDate(new \DateTimeImmutable($startYear.'-06-01'))
-            ->setEndDate(new \DateTimeImmutable(($startYear + 1).'-04-30'))
+            ->setName($startYear . '-' . ($startYear + 1))
+            ->setStartDate(new \DateTimeImmutable($startYear . '-06-01'))
+            ->setEndDate(new \DateTimeImmutable(($startYear + 1) . '-04-30'))
             ->setCurrent($current);
         $this->em->persist($sy);
         $this->em->flush();
@@ -71,13 +83,20 @@ trait SchoolFixturesTrait
         return $sy;
     }
 
-    protected function classPeriod(School $school, SchoolYear $sy, string $start, string $end, ?string $breakLabel = null): ClassPeriod
-    {
+    protected function classPeriod(
+        School $school,
+        SchoolYear $sy,
+        string $start,
+        string $end,
+        ?string $breakLabel = null,
+    ): ClassPeriod {
         $period = (new ClassPeriod($school, $sy))
             ->setStartsAt(new \DateTimeImmutable($start))
             ->setEndsAt(new \DateTimeImmutable($end))
             ->setBreakLabel($breakLabel)
-            ->setPosition($this->em->getRepository(ClassPeriod::class)->count(['school' => $school, 'schoolYear' => $sy]) + 1);
+            ->setPosition(
+                $this->em->getRepository(ClassPeriod::class)->count(['school' => $school, 'schoolYear' => $sy]) + 1,
+            );
         $this->em->persist($period);
         $this->em->flush();
 
@@ -93,7 +112,8 @@ trait SchoolFixturesTrait
     /** A plan of its own, so a test never edits the shared Basic row; clearSchoolData removes it. */
     protected function limitedPlan(string $name, int $studentsPerSeat, bool $includesPrincipal = true): Plan
     {
-        $plan = (new Plan())->setName($name)->setTeachersPerSeat(15)->setStudentsPerSeat($studentsPerSeat)->setIncludesPrincipal($includesPrincipal);
+        $plan = (new Plan())->setName($name)->setTeachersPerSeat(15)->setStudentsPerSeat($studentsPerSeat)
+            ->setIncludesPrincipal($includesPrincipal);
         $this->em->persist($plan);
         $this->em->flush();
 
@@ -124,8 +144,12 @@ trait SchoolFixturesTrait
         return $school;
     }
 
-    protected function assign(School $school, SchoolYear $sy, User $user, string $role = User::ROLE_PRINCIPAL): SchoolAssignment
-    {
+    protected function assign(
+        School $school,
+        SchoolYear $sy,
+        User $user,
+        string $role = User::ROLE_PRINCIPAL,
+    ): SchoolAssignment {
         $assignment = new SchoolAssignment($school, $sy, $user, $role);
         $this->em->persist($assignment);
         $this->em->flush();
@@ -140,7 +164,7 @@ trait SchoolFixturesTrait
     {
         $user = (new User())
             ->setUsername($username)
-            ->setFullName(ucfirst($username).' Tester')
+            ->setFullName(ucfirst($username) . ' Tester')
             ->setRole($role)
             ->setActive($active)
             ->setPassword('x');
@@ -161,8 +185,9 @@ trait SchoolFixturesTrait
 
     protected function learner(string $lrn, string $lastName, string $firstName): Learner
     {
-        $user = $this->plainUser('learner'.$lrn, User::ROLE_STUDENT);
-        $learner = (new Learner($user, new \DateTimeImmutable()))->setLrn($lrn)->setLastName($lastName)->setFirstName($firstName)->setSex(SexAtBirth::Female)->setBirthDate(new \DateTimeImmutable('2012-05-01'));
+        $user = $this->plainUser('learner' . $lrn, User::ROLE_STUDENT);
+        $learner = (new Learner($user, new \DateTimeImmutable()))->setLrn($lrn)->setLastName($lastName)
+            ->setFirstName($firstName)->setSex(SexAtBirth::Female)->setBirthDate(new \DateTimeImmutable('2012-05-01'));
         $this->em->persist($learner);
         $this->em->flush();
 

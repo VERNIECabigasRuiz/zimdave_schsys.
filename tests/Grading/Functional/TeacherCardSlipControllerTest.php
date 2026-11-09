@@ -20,7 +20,7 @@ use App\Learners\Domain\Model\SexAtBirth;
 use App\Learners\Domain\Model\Sf1Remark;
 use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DomCrawler\Crawler;

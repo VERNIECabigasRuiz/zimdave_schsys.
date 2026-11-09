@@ -15,7 +15,7 @@ use App\Learners\Domain\Model\Sf1Remark;
 use App\Nutrition\Domain\Model\Sf8Submission;
 use App\Access\Domain\Model\User;
 use App\Nutrition\Presentation\Form\NutritionSheetFormType;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Lock\LockFactory;

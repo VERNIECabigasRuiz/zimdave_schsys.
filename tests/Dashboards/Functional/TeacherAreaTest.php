@@ -9,7 +9,7 @@ use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class TeacherAreaTest extends AdminTestCase

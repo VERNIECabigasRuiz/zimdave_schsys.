@@ -34,12 +34,6 @@
         <testsuite name="browser">
             <directory>tests/Browser</directory>
         </testsuite>
-        <!-- Tests not yet moved into a module; each move takes its folders out of here -->
-        <testsuite name="legacy">
-            <directory>tests/Controller</directory>
-            <directory>tests/Repository</directory>
-            <file>tests/KernelTimezoneTest.php</file>
-        </testsuite>
     </testsuites>
 
     <source ignoreSuppressionOfDeprecations="true"
@@ -48,19 +42,7 @@
             restrictWarnings="true"
     >
         <include>
-            <directory>src/Core</directory>
-            <directory>src/Access</directory>
-            <directory>src/Billing</directory>
-            <directory>src/Schools</directory>
-            <directory>src/Classes</directory>
-            <directory>src/Learners</directory>
-            <directory>src/Attendance</directory>
-            <directory>src/Grading</directory>
-            <directory>src/Nutrition</directory>
-            <directory>src/LessonPlans</directory>
-            <directory>src/Staff</directory>
-            <directory>src/Announcements</directory>
-            <directory>src/Dashboards</directory>
+            <directory>src</directory>
         </include>
 
         <deprecationTrigger>

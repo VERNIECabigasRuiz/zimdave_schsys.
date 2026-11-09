@@ -2,9 +2,6 @@
 # <Module>_Application, <Module>_Infrastructure, <Module>_Presentation.
 # A module's Domain may use the Domain of modules above it; anything else
 # goes through <Module>/Application/Api.
-imports:
-  - deptrac.baseline.yaml
-
 deptrac:
   paths:
     - ../src
@@ -319,10 +316,11 @@ deptrac:
         - type: classLike
           value: ^App\\Nutrition\\Presentation\\.*
 
-    - name: Legacy
+    # Demo data for dev and test (the fixtures bundle is not loaded in prod)
+    - name: DevFixtures
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Nutrition\\|LessonPlans\\|Staff\\|Announcements\\|Dashboards\\|Kernel$).*
+          value: ^App\\DataFixtures\\.*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -709,6 +707,44 @@ deptrac:
       - Learners_Api
       - ValidatorConstraints
       - Framework
+    DevFixtures:
+      - Core_Domain
+      - Core_Application
+      - Core_Infrastructure
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Application
+      - Access_Api
+      - Billing_Domain
+      - Billing_Application
+      - Billing_Api
+      - Schools_Domain
+      - Schools_Application
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Application
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Application
+      - Learners_Api
+      - Attendance_Domain
+      - Attendance_Application
+      - Attendance_Api
+      - Grading_Domain
+      - Grading_Application
+      - Grading_Api
+      - Nutrition_Domain
+      - Nutrition_Application
+      - LessonPlans_Domain
+      - LessonPlans_Application
+      - Staff_Domain
+      - Staff_Application
+      - Announcements_Domain
+      - Announcements_Application
+      - Dashboards_Application
+      - DoctrineMapping
+      - Framework
+      - Vendor
     Kernel:
       - Core_Domain
       - Core_Application
@@ -717,7 +753,6 @@ deptrac:
       - Core_Presentation
       - Access_Domain
       - Access_Infrastructure
-      - Legacy
       - DoctrineMapping
       - ValidatorConstraints
       - Framework
@@ -905,65 +940,6 @@ deptrac:
       - Access_Domain
       - Schools_Domain
       - Framework
-    Legacy:
-      - Core_Domain
-      - Core_Application
-      - Core_Infrastructure
-      - Core_BusAttributes
-      - Core_Presentation
-      - Access_Domain
-      - Access_Application
-      - Access_Infrastructure
-      - Access_Presentation
-      - Access_Api
-      - Billing_Domain
-      - Billing_Application
-      - Billing_Infrastructure
-      - Billing_Presentation
-      - Billing_Api
-      - Schools_Domain
-      - Schools_Application
-      - Schools_Infrastructure
-      - Schools_Presentation
-      - Schools_Api
-      - Classes_Domain
-      - Classes_Application
-      - Classes_Infrastructure
-      - Classes_Presentation
-      - Classes_Api
-      - Learners_Domain
-      - Learners_Application
-      - Learners_Infrastructure
-      - Learners_Presentation
-      - Learners_Api
-      - Attendance_Domain
-      - Attendance_Application
-      - Attendance_Infrastructure
-      - Attendance_Presentation
-      - Attendance_Api
-      - Grading_Domain
-      - Grading_Application
-      - Grading_Infrastructure
-      - Grading_Presentation
-      - Grading_Api
-      - Nutrition_Domain
-      - Nutrition_Application
-      - Nutrition_Infrastructure
-      - Nutrition_Presentation
-      - LessonPlans_Domain
-      - LessonPlans_Application
-      - LessonPlans_Infrastructure
-      - LessonPlans_Presentation
-      - Staff_Domain
-      - Staff_Application
-      - Staff_Infrastructure
-      - Staff_Presentation
-      - Kernel
-      - DoctrineMapping
-      - SecurityUserContract
-      - ValidatorConstraints
-      - Framework
-      - Vendor
     SecurityUserContract: ~
     DoctrineMapping: ~
     ValidatorConstraints: ~

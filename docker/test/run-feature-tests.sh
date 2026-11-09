@@ -17,7 +17,7 @@ if [ $# -gt 0 ]; then
   exit
 fi
 
-php -d pcov.enabled=1 bin/phpunit --testsuite unit,integration,functional,legacy \
+php -d pcov.enabled=1 bin/phpunit --testsuite unit,integration,functional \
   --coverage-clover reports/phpunit/coverage.xml \
   --log-junit reports/phpunit/junit.xml
 vendor/bin/coverage-check reports/phpunit/coverage.xml 100

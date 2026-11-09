@@ -10,7 +10,7 @@ use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Classes\Application\Service\SubjectManager;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class SchoolSubjectControllerTest extends AdminTestCase

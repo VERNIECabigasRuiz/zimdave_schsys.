@@ -109,7 +109,10 @@ final class RoleSmokeTest extends BrowserTestCase
         }
         $href = (string) $links->first()->attr('href');
 
+        // Mark the page, so the wait below needs the new one even when the link is the current page
+        $client->executeScript("document.body.dataset.leaving = '1';");
         $links->first()->click();
+        $client->waitFor('body:not([data-leaving])');
         $client->waitFor(\sprintf('.sidebar__nav a[aria-current="page"][href="%s"]', $href));
     }
 

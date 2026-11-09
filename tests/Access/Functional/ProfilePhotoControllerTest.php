@@ -3,7 +3,7 @@
 namespace App\Tests\Access\Functional;
 
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use App\Tests\Core\Integration\Infrastructure\FileStorage\ImageProcessorTest;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DomCrawler\Field\FileFormField;

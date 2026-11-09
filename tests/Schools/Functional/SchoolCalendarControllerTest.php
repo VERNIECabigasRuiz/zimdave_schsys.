@@ -10,7 +10,7 @@ use App\Schools\Domain\Model\SchoolDayOff;
 use App\Schools\Domain\Model\SchoolYear;
 use App\Classes\Domain\Model\Section;
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class SchoolCalendarControllerTest extends AdminTestCase

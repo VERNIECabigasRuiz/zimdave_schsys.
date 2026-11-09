@@ -23,7 +23,7 @@ use App\Classes\Domain\Model\TeachingLoad;
 use App\Learners\Domain\Model\TransferRequest;
 use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DomCrawler\Crawler;

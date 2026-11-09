@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Dashboards\Functional;
 
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 
 final class HomeTest extends AdminTestCase
 {

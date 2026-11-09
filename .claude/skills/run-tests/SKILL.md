@@ -6,7 +6,7 @@ description: Run this project's tests and static checks in Docker, scoped to the
 Tests and checks run in Docker only; `zimdave_schsys-web-1` must be running (`docker ps`). Run every command below on its own, as a blocking call, never in parallel with another test or check.
 
 1. Find the affected tests: grep `tests/` for the changed classes, routes, templates and JS files. Run only those first. `$ARGUMENTS`, if given, is the filter or path to use.
-   - Database tests (integration, functional, legacy): `make test-feature TEST_TARGET='--filter <Class or method>'`, or a test file path as `TEST_TARGET`.
+   - Database tests (integration, functional): `make test-feature TEST_TARGET='--filter <Class or method>'`, or a test file path as `TEST_TARGET`.
    - Unit tests: `make test phpunit FILTER=<Name>`.
    - JS tests: `make test vitest FILTER=<file name part>`.
    - One static check: `make test phpstan` (or `deptrac`, `phpcs`, `eslint`, `stylelint`, `composer-audit`).

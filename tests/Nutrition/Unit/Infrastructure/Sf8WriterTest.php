@@ -142,7 +142,7 @@ class Sf8WriterTest extends TestCase
 
     private function writer(): Sf8Writer
     {
-        return new Sf8Writer(\dirname(__DIR__, 4));
+        return new Sf8Writer();
     }
 
     private function saved(Sf8Report $report): Spreadsheet

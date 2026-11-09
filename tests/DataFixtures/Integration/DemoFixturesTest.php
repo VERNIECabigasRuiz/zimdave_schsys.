@@ -102,6 +102,39 @@ final class DemoFixturesTest extends KernelTestCase
         $this->loadDemo();
     }
 
+    public function testUsesTheCurrentSchoolYearAlreadyThere(): void
+    {
+        // Initialize
+        $today = new \DateTimeImmutable('today');
+        $existing = $this->schoolYear((int) $today->format('Y'), true)
+            ->setStartDate($today->modify('-2 days'))
+            ->setEndDate($today->modify('+300 days'));
+        $this->em->flush();
+
+        // Execute
+        $this->loadDemo();
+
+        // Assert
+        self::assertSame($existing->getId(), $this->currentSchoolYear()->getId());
+        self::assertSame(1, $this->em->getRepository(SchoolYear::class)->count(['current' => true]));
+        // the year has no grading periods, so nothing is graded
+        self::assertSame(0, $this->em->getRepository(Grade::class)->count([]));
+        // roll calls stop at the first day of the year
+        $rollCalls = $this->em->getRepository(RollCall::class)->findAll();
+        foreach ($rollCalls as $rollCall) {
+            self::assertGreaterThanOrEqual($existing->getStartDate(), $rollCall->getDate());
+        }
+    }
+
+    public function testBelongsToTheDemoGroup(): void
+    {
+        // Execute
+        $groups = DemoFixtures::getGroups();
+
+        // Assert
+        self::assertSame(['demo'], $groups);
+    }
+
     private function loadDemo(): void
     {
         $fixture = static::getContainer()->get(DemoFixtures::class);

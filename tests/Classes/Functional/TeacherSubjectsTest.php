@@ -10,7 +10,7 @@ use App\Classes\Domain\Model\Section;
 use App\Classes\Domain\Model\ShsTrack;
 use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 /** On a plan without a principal (Individual) the teacher sets up their own section's subjects. */

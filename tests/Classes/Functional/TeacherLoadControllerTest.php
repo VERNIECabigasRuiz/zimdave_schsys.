@@ -12,7 +12,7 @@ use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class TeacherLoadControllerTest extends AdminTestCase

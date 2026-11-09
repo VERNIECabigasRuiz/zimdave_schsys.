@@ -7,7 +7,7 @@ use App\Staff\Domain\Model\PersonalDataSheet;
 use App\Learners\Domain\Model\SexAtBirth;
 use App\Access\Domain\Model\User;
 use App\Staff\Presentation\Controller\ProfileController;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

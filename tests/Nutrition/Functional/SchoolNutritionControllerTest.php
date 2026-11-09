@@ -14,7 +14,7 @@ use App\Classes\Domain\Model\Section;
 use App\Nutrition\Domain\Model\Sf8Submission;
 use App\Access\Domain\Model\User;
 use App\Nutrition\Domain\Model\NutritionPeriod;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 

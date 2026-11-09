@@ -2,7 +2,7 @@
 
 namespace App\Tests\Access\Functional;
 
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use App\Access\Application\UseCase\Handler\ToggleAccountActiveHandler;
 use App\Access\Application\UseCase\Handler\UpdateAccountHandler;
 use App\Access\Domain\Model\User;

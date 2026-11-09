@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Tests\Repository;
+declare(strict_types=1);
+
+namespace App\Tests\Learners\Integration\Infrastructure;
 
 use App\Learners\Domain\Model\Enrollment;
 use App\Schools\Domain\Model\GradeLevel;
@@ -59,13 +61,28 @@ class EnrollmentRepositoryTest extends KernelTestCase
 
     public function testClassListOrder(): void
     {
-        foreach ([['Abad', SexAtBirth::Female], ['Cruz', SexAtBirth::Male], ['Abad', SexAtBirth::Male], ['Cruz', SexAtBirth::Female]] as [$last, $sex]) {
-            $this->em->persist(new Enrollment($this->learner($last, $sex->label(), $sex), $this->sy, $this->section, $this->admin, new \DateTimeImmutable()));
+        $learners = [
+            ['Abad', SexAtBirth::Female],
+            ['Cruz', SexAtBirth::Male],
+            ['Abad', SexAtBirth::Male],
+            ['Cruz', SexAtBirth::Female],
+        ];
+        foreach ($learners as [$last, $sex]) {
+            $this->em->persist(
+                new Enrollment(
+                    $this->learner($last, $sex->label(), $sex),
+                    $this->sy,
+                    $this->section,
+                    $this->admin,
+                    new \DateTimeImmutable(),
+                ),
+            );
         }
         $this->em->flush();
 
         $order = array_map(
-            static fn (Enrollment $e) => $e->getLearner()->getSex()->label()[0].' '.$e->getLearner()->getLastName(),
+            static fn (Enrollment $e) => ((string) $e->getLearner()->getSex()?->label())[0] . ' '
+                . $e->getLearner()->getLastName(),
             $this->enrollments->findClassList($this->section),
         );
         self::assertSame(['M Abad', 'M Cruz', 'F Abad', 'F Cruz'], $order);
@@ -75,11 +92,16 @@ class EnrollmentRepositoryTest extends KernelTestCase
     {
         foreach (['Zosa', 'Abella'] as $middle) {
             $learner = $this->learner('Cruz', 'Juan', SexAtBirth::Male)->setMiddleName($middle);
-            $this->em->persist(new Enrollment($learner, $this->sy, $this->section, $this->admin, new \DateTimeImmutable()));
+            $this->em->persist(
+                new Enrollment($learner, $this->sy, $this->section, $this->admin, new \DateTimeImmutable()),
+            );
             $this->em->flush();
         }
 
-        $middles = array_map(static fn (Enrollment $e) => $e->getLearner()->getMiddleName(), $this->enrollments->findClassList($this->section));
+        $middles = array_map(
+            static fn (Enrollment $e) => $e->getLearner()->getMiddleName(),
+            $this->enrollments->findClassList($this->section),
+        );
         self::assertSame(['Abella', 'Zosa'], $middles);
     }
 

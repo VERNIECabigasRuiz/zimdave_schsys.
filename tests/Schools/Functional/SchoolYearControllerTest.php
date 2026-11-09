@@ -2,7 +2,7 @@
 
 namespace App\Tests\Schools\Functional;
 
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use App\Grading\Domain\Model\Grade;
 use App\Schools\Domain\Model\GradeLevel;
 use App\Grading\Domain\Model\GradeLock;

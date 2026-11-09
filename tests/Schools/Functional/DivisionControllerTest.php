@@ -2,7 +2,7 @@
 
 namespace App\Tests\Schools\Functional;
 
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use App\Schools\Domain\Model\Division;
 use App\Access\Domain\Model\User;
 use App\Schools\Domain\Model\Repository\DivisionRepositoryInterface;

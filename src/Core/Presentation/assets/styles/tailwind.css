@@ -5,7 +5,7 @@
 @layer theme, base, components, utilities;
 
 @import "tailwindcss/theme.css" layer(theme) prefix(tw);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
 
-@source "../../../../../templates";
 @source "../../../..";
+@source "../../../../../assets";

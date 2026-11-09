@@ -15,15 +15,14 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
- * Fills DepEd's SF2 template (templates/forms/sf2-template.xlsx) with a report. Rows are added
+ * Fills DepEd's SF2 template (sf2-template.xlsx, beside this class) with a report. Rows are added
  * when a class has more learners than the template's 21 male and 25 female rows.
  */
 class Sf2Writer implements Sf2SpreadsheetInterface
 {
-    private const TEMPLATE = '/templates/forms/sf2-template.xlsx';
+    private const TEMPLATE = __DIR__ . '/sf2-template.xlsx';
     private const FIRST_ROW = 14;
     private const MALE_ROWS = 21;
     private const FEMALE_ROWS = 25;
@@ -46,12 +45,6 @@ class Sf2Writer implements Sf2SpreadsheetInterface
     /** The angle of the half fills: the colour changes along the cell's "/" diagonal. */
     private const DEGREE = 45;
 
-    public function __construct(
-        #[Autowire('%kernel.project_dir%')]
-        private readonly string $projectDir,
-    ) {
-    }
-
     public function xlsx(Sf2Report $report): string
     {
         $file = tempnam(sys_get_temp_dir(), 'sf2');
@@ -66,7 +59,7 @@ class Sf2Writer implements Sf2SpreadsheetInterface
 
     public function write(Sf2Report $report): Spreadsheet
     {
-        $book = IOFactory::load($this->projectDir . self::TEMPLATE);
+        $book = IOFactory::load(self::TEMPLATE);
         $sheet = $book->getActiveSheet();
 
         $extraMale = max(0, \count($report->male) - self::MALE_ROWS);

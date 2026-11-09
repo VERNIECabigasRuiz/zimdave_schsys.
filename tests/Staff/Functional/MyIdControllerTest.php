@@ -10,7 +10,7 @@ use App\Schools\Domain\Model\SchoolYear;
 use App\Staff\Domain\Model\ServiceRecordEntry;
 use App\Staff\Domain\Model\StaffIdDetails;
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class MyIdControllerTest extends AdminTestCase

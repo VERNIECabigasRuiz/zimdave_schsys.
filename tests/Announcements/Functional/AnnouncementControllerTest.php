@@ -6,7 +6,7 @@ namespace App\Tests\Announcements\Functional;
 
 use App\Access\Domain\Model\User;
 use App\Announcements\Domain\Model\Announcement;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 
 class AnnouncementControllerTest extends AdminTestCase
 {

@@ -113,7 +113,7 @@ class Sf2WriterTest extends TestCase
 
     private function written(Sf2Report $report): Worksheet
     {
-        (new Sf2Writer(\dirname(__DIR__, 4)))->save($report, $this->file);
+        (new Sf2Writer())->save($report, $this->file);
 
         return IOFactory::load($this->file)->getActiveSheet();
     }
@@ -157,7 +157,7 @@ class Sf2WriterTest extends TestCase
 
     public function testHalfShadesAreSharp(): void
     {
-        (new Sf2Writer(\dirname(__DIR__, 4)))->save($this->report(), $this->file);
+        (new Sf2Writer())->save($this->report(), $this->file);
         $zip = new \ZipArchive();
         $zip->open($this->file);
         $styles = (string) $zip->getFromName('xl/styles.xml');

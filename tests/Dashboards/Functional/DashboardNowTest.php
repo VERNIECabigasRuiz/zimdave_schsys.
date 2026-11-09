@@ -12,7 +12,7 @@ use App\Classes\Domain\Model\Subject;
 use App\Access\Domain\Model\User;
 use App\Classes\Domain\Model\Weekday;
 use App\Classes\Application\Service\Timetable\TimetableManager;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class DashboardNowTest extends AdminTestCase

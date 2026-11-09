@@ -4,7 +4,7 @@ namespace App\Tests\Billing\Functional;
 
 use App\Access\Domain\Model\User;
 use App\Billing\Domain\Model\Plan;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 
 class PlanControllerTest extends AdminTestCase

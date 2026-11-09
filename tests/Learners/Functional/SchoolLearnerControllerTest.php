@@ -16,7 +16,7 @@ use App\Classes\Domain\Model\Subject;
 use App\Learners\Domain\Model\TransferRequest;
 use App\Learners\Domain\Model\TransferStatus;
 use App\Access\Domain\Model\User;
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use App\Tests\Learners\Integration\Application\UsernameTakenOnFlush;
 use Doctrine\Bundle\DoctrineBundle\DataCollector\DoctrineDataCollector;
 use Doctrine\ORM\Events;

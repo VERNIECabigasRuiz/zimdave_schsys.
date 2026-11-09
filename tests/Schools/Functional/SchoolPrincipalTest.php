@@ -2,7 +2,7 @@
 
 namespace App\Tests\Schools\Functional;
 
-use App\Tests\Controller\Admin\AdminTestCase;
+use App\Tests\Support\AdminTestCase;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolAssignment;
 use App\Schools\Domain\Model\SchoolYear;

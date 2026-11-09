@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Tests\Controller\Admin;
+declare(strict_types=1);
+
+namespace App\Tests\Support;
 
 use App\Core\Domain\Model\ActivityLog;
 use App\Access\Domain\Model\User;
@@ -34,7 +36,7 @@ abstract class AdminTestCase extends WebTestCase
 
         $user = (new User())
             ->setUsername($username)
-            ->setFullName($fullName ?? ucfirst($username).' Tester')
+            ->setFullName($fullName ?? ucfirst($username) . ' Tester')
             ->setRole($role)
             ->setMustChangePassword(false)
             ->setActive($active);
