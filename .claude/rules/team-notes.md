@@ -78,6 +78,10 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Use `git -C <path>` for other worktrees; never `cd` into them.
 - After restoring a stash, check line endings and staged renames before running checks.
 - Sample a stuck process at least twice before deciding what it is waiting on.
+- Run checkers on every file a scripted rewrite touched, not a hand-picked list.
+- Check what a framework call really does (read it in vendor) before writing that behaviour into a plan.
+- When moving code, keep each input read inside the same condition it was in.
+- Before moving a template, grep everything that renders or extends it.
 
 ## Plans / Specs
 
