@@ -82,6 +82,10 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Check what a framework call really does (read it in vendor) before writing that behaviour into a plan.
 - When moving code, keep each input read inside the same condition it was in.
 - Before moving a template, grep everything that renders or extends it.
+- Never end a shell command with something that reads input (`python3 -`, `cat >`).
+- Check a search pattern against a known match before trusting a zero.
+- Remove a folder only together with the config that points at it.
+- When removing a folder, grep docs and config comments for its bare name too.
 
 ## Plans / Specs
 
