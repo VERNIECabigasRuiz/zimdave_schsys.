@@ -60,6 +60,7 @@
             <directory>src/LessonPlans</directory>
             <directory>src/Staff</directory>
             <directory>src/Announcements</directory>
+            <directory>src/Dashboards</directory>
         </include>
 
         <deprecationTrigger>

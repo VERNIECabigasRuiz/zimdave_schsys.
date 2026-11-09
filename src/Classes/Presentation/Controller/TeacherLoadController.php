@@ -43,7 +43,7 @@ class TeacherLoadController extends BusController
 
         return $this->page(
             $result,
-            $this->isGranted('ROLE_ADMIN') ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig',
+            $this->isGranted('ROLE_ADMIN') ? '@Core/admin/_layout.html.twig' : '@Core/principal/_layout.html.twig',
             $teacher === $user->getId(),
         );
     }
@@ -57,7 +57,7 @@ class TeacherLoadController extends BusController
         );
         $this->domainFailure($result);
 
-        return $this->page($result, 'teacher/_layout.html.twig', true);
+        return $this->page($result, '@Core/teacher/_layout.html.twig', true);
     }
 
     /** The ?term= asked for, or null when it is missing or not a number. */

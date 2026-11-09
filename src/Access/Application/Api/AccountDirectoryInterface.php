@@ -28,4 +28,11 @@ interface AccountDirectoryInterface
 
     /** Whether another account than $exceptAccountId already has this username. */
     public function isUsernameTaken(string $username, ?int $exceptAccountId = null): bool;
+
+    /**
+     * How many accounts there are: all, per school role, and inactive.
+     *
+     * @return array{accounts: int, principals: int, teachers: int, students: int, inactive: int}
+     */
+    public function accountCounts(): array;
 }

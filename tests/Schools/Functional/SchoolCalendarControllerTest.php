@@ -169,4 +169,18 @@ class SchoolCalendarControllerTest extends AdminTestCase
         // Assert
         self::assertResponseStatusCodeSame(404);
     }
+
+    public function testAdminSeesTheCalendarInTheAdminLayout(): void
+    {
+        // Initialize
+        $this->client->loginUser($this->admin);
+
+        // Execute
+        $crawler = $this->client->request('GET', $this->url('/calendar'));
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertCount(1, $crawler->filter('.sidebar a[href="/admin/announcements"]'));
+        self::assertCount(0, $crawler->filter('.sidebar a[href="/principal"]'));
+    }
 }

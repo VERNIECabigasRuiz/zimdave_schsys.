@@ -283,6 +283,21 @@ deptrac:
         - type: classLike
           value: ^App\\Announcements\\Presentation\\.*
 
+    - name: Dashboards_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Dashboards\\Application\\.*
+
+    - name: Dashboards_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Dashboards\\Infrastructure\\.*
+
+    - name: Dashboards_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Dashboards\\Presentation\\.*
+
     # Code not yet moved into a module
     - name: Nutrition_Domain
       collectors:
@@ -307,7 +322,7 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Nutrition\\|LessonPlans\\|Staff\\|Announcements\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Nutrition\\|LessonPlans\\|Staff\\|Announcements\\|Dashboards\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -482,6 +497,7 @@ deptrac:
       - ValidatorConstraints
     Classes_Api:
       - Classes_Domain
+      - Classes_Application
       - Core_Domain
       - Access_Domain
       - Schools_Domain
@@ -856,6 +872,38 @@ deptrac:
       - Core_Domain
       - Core_Presentation
       - Access_Domain
+      - Framework
+    Dashboards_Application:
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - Attendance_Domain
+      - Attendance_Api
+      - Grading_Domain
+      - Grading_Api
+    Dashboards_Infrastructure:
+      - Core_Domain
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+    Dashboards_Presentation:
+      - Dashboards_Application
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Schools_Domain
       - Framework
     Legacy:
       - Core_Domain

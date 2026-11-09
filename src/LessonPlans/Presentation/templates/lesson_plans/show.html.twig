@@ -1,4 +1,4 @@
-{% extends is_granted('ROLE_TEACHER') ? 'teacher/_layout.html.twig' : 'principal/_layout.html.twig' %}
+{% extends is_granted('ROLE_TEACHER') ? '@Core/teacher/_layout.html.twig' : '@Core/principal/_layout.html.twig' %}
 
 {# A lesson plan, read-only. Needs plan. #}
 

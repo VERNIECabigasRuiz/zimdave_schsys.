@@ -1,4 +1,4 @@
-{% extends is_granted('ROLE_TEACHER') ? 'teacher/_layout.html.twig' : 'principal/_layout.html.twig' %}
+{% extends is_granted('ROLE_TEACHER') ? '@Core/teacher/_layout.html.twig' : '@Core/principal/_layout.html.twig' %}
 
 {#
  # My Profile shell: photo card on the left, PDS section tabs on the right.

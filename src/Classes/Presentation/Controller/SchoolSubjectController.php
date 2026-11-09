@@ -94,6 +94,6 @@ class SchoolSubjectController extends AbstractSubjectController
 
     protected function layout(): string
     {
-        return $this->isGranted('ROLE_ADMIN') ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig';
+        return $this->isGranted('ROLE_ADMIN') ? '@Core/admin/_layout.html.twig' : '@Core/principal/_layout.html.twig';
     }
 }

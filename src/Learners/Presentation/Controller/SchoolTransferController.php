@@ -200,9 +200,9 @@ class SchoolTransferController extends AbstractLearnerController
     private function layout(): string
     {
         return match (true) {
-            $this->isGranted(User::ROLE_ADMIN) => 'admin/_layout.html.twig',
-            $this->isGranted(User::ROLE_PRINCIPAL) => 'principal/_layout.html.twig',
-            default => 'teacher/_layout.html.twig',
+            $this->isGranted(User::ROLE_ADMIN) => '@Core/admin/_layout.html.twig',
+            $this->isGranted(User::ROLE_PRINCIPAL) => '@Core/principal/_layout.html.twig',
+            default => '@Core/teacher/_layout.html.twig',
         };
     }
 }

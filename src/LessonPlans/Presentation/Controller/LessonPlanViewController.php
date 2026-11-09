@@ -26,7 +26,7 @@ class LessonPlanViewController extends AbstractLessonPlanController
     {
         $page = $this->ask(new GetSchoolLessonPlansCommand((int) $user->getId()));
         if (null === $page['school']) {
-            return $this->render('principal/not_assigned.html.twig', [
+            return $this->render('@Core/principal/not_assigned.html.twig', [
                 'school_year' => $page['schoolYear'],
                 'not_assigned' => true,
             ]);

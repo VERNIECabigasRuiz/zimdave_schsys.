@@ -91,4 +91,23 @@ final class AccountDirectoryTest extends KernelTestCase
         self::assertFalse($freeName);
         self::assertFalse($blank);
     }
+
+    public function testCountsAccountsByRoleAndInactive(): void
+    {
+        // Initialize
+        $this->plainUser('count.admin', User::ROLE_ADMIN);
+        $this->plainUser('count.principal', User::ROLE_PRINCIPAL);
+        $this->plainUser('count.teacher1', User::ROLE_TEACHER);
+        $this->plainUser('count.teacher2', User::ROLE_TEACHER, false);
+        $this->plainUser('count.student', User::ROLE_STUDENT);
+
+        // Execute
+        $counts = $this->accounts->accountCounts();
+
+        // Assert
+        self::assertSame(
+            ['accounts' => 5, 'principals' => 1, 'teachers' => 2, 'students' => 1, 'inactive' => 1],
+            $counts,
+        );
+    }
 }

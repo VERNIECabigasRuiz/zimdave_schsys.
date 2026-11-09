@@ -7,6 +7,7 @@ namespace App\Tests\Schools\Integration\Api;
 use App\Access\Domain\Model\User;
 use App\Schools\Application\Api\SchoolDirectoryInterface;
 use App\Schools\Domain\Model\Division;
+use App\Schools\Domain\Model\GradeLevel;
 use App\Schools\Domain\Model\SchoolDayOff;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -215,5 +216,46 @@ final class SchoolDirectoryTest extends KernelTestCase
         // Assert
         self::assertNull($openReason);
         self::assertSame('This school is inactive.', $closedReason);
+    }
+
+    public function testCountsForTheAdminOverview(): void
+    {
+        // Initialize
+        $sy = $this->schoolYear(2026, true);
+        $headed = $this->school('300001', 'Alpha NHS', planValidUntil: new \DateTimeImmutable('2026-11-20'));
+        $this->school('300002', 'Beta NHS', planValidUntil: new \DateTimeImmutable('2027-03-31'));
+        $this->school('300003', 'Gamma NHS', false, planValidUntil: new \DateTimeImmutable('2026-11-15'));
+        $this->assign($headed, $sy, $this->plainUser('maria', User::ROLE_PRINCIPAL));
+        $this->plainUser('jose', User::ROLE_PRINCIPAL);
+        $directory = static::getContainer()->get(SchoolDirectoryInterface::class);
+
+        // Execute
+        $expiring = $directory->expiringPlansBy(new \DateTimeImmutable('2026-12-09'));
+        $overview = $directory->yearOverview($sy);
+
+        // Assert
+        self::assertSame(1, $expiring);
+        self::assertSame(['schools' => 2, 'assigned' => 1, 'unassigned' => 1, 'without_principal' => 1], $overview);
+    }
+
+    public function testCountsTheTeachersAndLearnersOfASchool(): void
+    {
+        // Initialize
+        $sy = $this->schoolYear(2026, true);
+        $school = $this->school('300001', 'Alpha NHS');
+        $teacher = $this->plainUser('ana', User::ROLE_TEACHER);
+        $this->assign($school, $sy, $teacher, User::ROLE_TEACHER);
+        $this->assign($school, $sy, $this->plainUser('ben', User::ROLE_TEACHER), User::ROLE_TEACHER);
+        $section = $this->newSection($school, $sy, GradeLevel::Grade7, 'Rizal');
+        $this->enroll($this->learner('100000000001', 'Cruz', 'Lea'), $sy, $section, $teacher);
+        $directory = static::getContainer()->get(SchoolDirectoryInterface::class);
+
+        // Execute
+        $teachers = $directory->teacherCount($school, $sy);
+        $students = $directory->studentCount($school, $sy);
+
+        // Assert
+        self::assertSame(2, $teachers);
+        self::assertSame(1, $students);
     }
 }

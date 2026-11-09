@@ -13,6 +13,7 @@ twig:
         '%kernel.project_dir%/src/LessonPlans/Presentation/templates': LessonPlans
         '%kernel.project_dir%/src/Staff/Presentation/templates': Staff
         '%kernel.project_dir%/src/Announcements/Presentation/templates': Announcements
+        '%kernel.project_dir%/src/Dashboards/Presentation/templates': Dashboards
 
 when@test:
     twig:

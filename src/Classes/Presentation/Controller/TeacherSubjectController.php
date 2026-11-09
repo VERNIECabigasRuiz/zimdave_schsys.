@@ -93,7 +93,7 @@ class TeacherSubjectController extends AbstractSubjectController
 
     protected function layout(): string
     {
-        return 'teacher/_layout.html.twig';
+        return '@Core/teacher/_layout.html.twig';
     }
 
     /**

@@ -48,4 +48,15 @@ final class AccountDirectory implements AccountDirectoryInterface
 
         return null !== $owner && $owner->getId() !== $exceptAccountId;
     }
+
+    public function accountCounts(): array
+    {
+        return [
+            'accounts' => $this->users->countAll(),
+            'principals' => $this->users->countByRole(User::ROLE_PRINCIPAL),
+            'teachers' => $this->users->countByRole(User::ROLE_TEACHER),
+            'students' => $this->users->countByRole(User::ROLE_STUDENT),
+            'inactive' => $this->users->countInactive(),
+        ];
+    }
 }

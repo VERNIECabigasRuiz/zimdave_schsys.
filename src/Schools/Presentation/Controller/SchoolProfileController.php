@@ -42,7 +42,7 @@ class SchoolProfileController extends BusController
         $profile = $result->data();
         $school = $profile['school'];
         if (null === $school) {
-            return $this->render('principal/not_assigned.html.twig', [
+            return $this->render('@Core/principal/not_assigned.html.twig', [
                 'school_year' => $profile['schoolYear'],
                 'not_assigned' => true,
             ]);

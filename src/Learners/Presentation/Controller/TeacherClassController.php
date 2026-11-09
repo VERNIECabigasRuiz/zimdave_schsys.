@@ -139,7 +139,7 @@ class TeacherClassController extends AbstractLearnerController
             $advisory['sectionId'],
             'teacher_class',
             [],
-            'teacher/_layout.html.twig',
+            '@Core/teacher/_layout.html.twig',
         );
     }
 }

@@ -1,4 +1,4 @@
-{% extends is_granted('ROLE_TEACHER') ? 'teacher/_layout.html.twig' : 'principal/_layout.html.twig' %}
+{% extends is_granted('ROLE_TEACHER') ? '@Core/teacher/_layout.html.twig' : '@Core/principal/_layout.html.twig' %}
 
 {# The signed-in teacher's or principal's own ID. Needs card (StaffIdCard), form, missing (photo/position),
    can_print, is_principal, division (principals: the Divisions entry or null) and school. #}

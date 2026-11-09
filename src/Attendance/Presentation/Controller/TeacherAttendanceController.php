@@ -70,7 +70,7 @@ class TeacherAttendanceController extends AbstractAttendanceController
         }
 
         return $this->render('@Attendance/attendance/roll_call.html.twig', [
-            'layout' => 'teacher/_layout.html.twig',
+            'layout' => '@Core/teacher/_layout.html.twig',
             'section' => $page['section'],
             'day' => $day,
             'today' => $page['today'],
@@ -161,7 +161,7 @@ class TeacherAttendanceController extends AbstractAttendanceController
     private function routes(): array
     {
         return [
-            'layout' => 'teacher/_layout.html.twig',
+            'layout' => '@Core/teacher/_layout.html.twig',
             'month_route' => 'teacher_class_attendance_month',
             'route_params' => [],
             'sf2_route' => 'teacher_class_sf2',

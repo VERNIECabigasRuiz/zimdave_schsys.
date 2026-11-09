@@ -161,7 +161,7 @@ class SchoolLearnerController extends AbstractLearnerController
             null,
             'school_learners',
             ['id' => $school->getId()],
-            $this->isGranted(User::ROLE_ADMIN) ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig',
+            $this->isGranted(User::ROLE_ADMIN) ? '@Core/admin/_layout.html.twig' : '@Core/principal/_layout.html.twig',
         );
     }
 }

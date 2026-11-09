@@ -150,7 +150,7 @@ class TeacherNutritionController extends AbstractNutritionController
     private function routes(): array
     {
         return [
-            'layout' => 'teacher/_layout.html.twig',
+            'layout' => '@Core/teacher/_layout.html.twig',
             'period_route' => 'teacher_class_nutrition_period',
             'sf8_route' => 'teacher_class_sf8',
             'route_params' => [],

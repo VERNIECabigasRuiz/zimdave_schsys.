@@ -94,4 +94,21 @@ interface SchoolDirectoryInterface
      * @return list<School>
      */
     public function allSchools(): array;
+
+    /** How many active schools have a plan that ends on or before $limitDate. */
+    public function expiringPlansBy(\DateTimeImmutable $limitDate): int;
+
+    /**
+     * The year's figures: active schools, principals assigned, principals free to assign,
+     * and active schools without a principal.
+     *
+     * @return array{schools: int, assigned: int, unassigned: int, without_principal: int}
+     */
+    public function yearOverview(SchoolYear $schoolYear): array;
+
+    /** The teachers counted against the school's plan in $schoolYear. */
+    public function teacherCount(School $school, SchoolYear $schoolYear): int;
+
+    /** The learners counted against the school's plan in $schoolYear. */
+    public function studentCount(School $school, SchoolYear $schoolYear): int;
 }

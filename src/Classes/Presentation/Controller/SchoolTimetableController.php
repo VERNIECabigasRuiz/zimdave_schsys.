@@ -58,7 +58,9 @@ class SchoolTimetableController extends BusController
             'school' => $school,
             'section' => $timetable['section'],
             'state' => $timetable['state'],
-            'layout' => $this->isGranted('ROLE_ADMIN') ? 'admin/_layout.html.twig' : 'principal/_layout.html.twig',
+            'layout' => $this->isGranted('ROLE_ADMIN')
+                ? '@Core/admin/_layout.html.twig'
+                : '@Core/principal/_layout.html.twig',
         ]);
     }
 

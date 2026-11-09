@@ -136,4 +136,29 @@ final class SchoolDirectory implements SchoolDirectoryInterface
     {
         return $this->schools->findAllOrdered();
     }
+
+    public function expiringPlansBy(\DateTimeImmutable $limitDate): int
+    {
+        return $this->schools->countExpiringBy($limitDate);
+    }
+
+    public function yearOverview(SchoolYear $schoolYear): array
+    {
+        return [
+            'schools' => $this->schools->countActive(),
+            'assigned' => $this->assignments->countPrincipals($schoolYear),
+            'unassigned' => \count($this->assignments->findAssignablePrincipals($schoolYear)),
+            'without_principal' => $this->schools->countActiveWithoutPrincipal($schoolYear),
+        ];
+    }
+
+    public function teacherCount(School $school, SchoolYear $schoolYear): int
+    {
+        return $this->planLimits->countTeachers($school, $schoolYear);
+    }
+
+    public function studentCount(School $school, SchoolYear $schoolYear): int
+    {
+        return $this->planLimits->countStudents($school, $schoolYear);
+    }
 }
