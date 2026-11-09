@@ -36,6 +36,19 @@ class DivisionControllerTest extends AdminTestCase
         return $this->em->getRepository(Division::class)->findAll();
     }
 
+    public function testNewDivisionFormStartsWithTheSdsPosition(): void
+    {
+        // Execute
+        $crawler = $this->client->request('GET', '/admin/divisions/new');
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertSame(
+            'Schools Division Superintendent',
+            $crawler->filter('#division_form_sdsPosition')->attr('value'),
+        );
+    }
+
     public function testAdminAddsADivision(): void
     {
         $crawler = $this->client->request('GET', '/admin/divisions/new');
