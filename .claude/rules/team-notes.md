@@ -74,6 +74,10 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Note the start time before the first step of any task, including deploys.
 - When swapping one lookup for another, compare their filters, not just their names.
 - After a scripted code rewrite, compare its string literals with the original.
+- Run helper scripts with `python3`; `python` is 2.7 on this machine.
+- Use `git -C <path>` for other worktrees; never `cd` into them.
+- After restoring a stash, check line endings and staged renames before running checks.
+- Sample a stuck process at least twice before deciding what it is waiting on.
 
 ## Plans / Specs
 
