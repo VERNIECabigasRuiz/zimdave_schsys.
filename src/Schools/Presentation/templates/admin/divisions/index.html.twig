@@ -1,0 +1,44 @@
+{% extends '@Core/admin/_layout.html.twig' %}
+
+{% block title %}Divisions · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Divisions</h1>
+            <p>Each division's Superintendent signs the IDs of that division's principals. A school uses the entry with its region and division.</p>
+        </div>
+        <a class="btn btn--primary" href="{{ path('admin_divisions_new') }}">+ Add division</a>
+    </div>
+
+    <div class="card table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Division</th>
+                    <th>Superintendent</th>
+                    <th>Signature</th>
+                    <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for division in divisions %}
+                    <tr>
+                        <td>{{ division.region }}</td>
+                        <td><strong>{{ division.name }}</strong></td>
+                        <td>{{ division.sdsName }}<br><small class="muted">{{ division.sdsPosition }}</small></td>
+                        <td>{% if division.signaturePath %}<img src="{{ asset(division.signaturePath) }}" alt="Signature" style="max-height: 32px">{% else %}<span class="muted">None yet</span>{% endif %}</td>
+                        <td class="table__actions">
+                            <a class="btn btn--ghost btn--sm" href="{{ path('admin_divisions_edit', {id: division.id}) }}">Edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="empty">No divisions yet. <a href="{{ path('admin_divisions_new') }}">Add one</a>.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

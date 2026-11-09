@@ -1,0 +1,44 @@
+{% extends '@Core/principal/_layout.html.twig' %}
+
+{# Every teacher's lesson plans in the principal's school this S.Y. Needs school and plans (newest week first). #}
+
+{% block title %}Lesson Plans · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Lesson Plans</h1>
+            <p>{{ school.name }} · ILAW lesson plans of your teachers, newest week first. Read-only.</p>
+        </div>
+    </div>
+
+    <div class="card table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Week of</th>
+                    <th>Teacher</th>
+                    <th>Class</th>
+                    <th>Topic</th>
+                    <th class="table__actions"><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                    <tr>
+                        <td>{{ plan.weekStart|date('M j, Y') }}</td>
+                        <td>{{ plan.load.teacher.fullName }}</td>
+                        <td>{{ plan.load.subject.name }} · {{ plan.load.section.gradeLevel ? plan.load.section.gradeLevel.label }} {{ plan.load.section.name }}</td>
+                        <td>{{ plan.topic ?: '—' }}</td>
+                        <td class="table__actions">
+                            <a class="btn btn--ghost btn--sm" href="{{ path('lesson_plan_show', {id: plan.id}) }}">View</a>
+                            <a class="btn btn--ghost btn--sm" href="{{ path('lesson_plan_pdf', {id: plan.id}) }}" data-turbo="false">PDF</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">No lesson plans yet this school year.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

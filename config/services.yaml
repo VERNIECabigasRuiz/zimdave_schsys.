@@ -27,6 +27,36 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    # Access hooks: every module's account rules, tagged by AccessHookAutoconfiguration (Kernel::build)
+    App\Access\Application\UseCase\Handler\UpdateAccountHandler:
+        arguments:
+            $roleGuards: !tagged_iterator access.role_change_guard
+
+    App\Access\Application\UseCase\Handler\ToggleAccountActiveHandler:
+        arguments:
+            $reactivationGuards: !tagged_iterator access.reactivation_guard
+
 when@test:
     parameters:
         app.upload_root: '%kernel.project_dir%/var/test_public'
+
+    services:
+        _defaults:
+            autowire: true
+            autoconfigure: true
+
+        # Handlers the bus integration test dispatches to
+        App\Tests\Core\Integration\Bus\Fixture\:
+            resource: '../tests/Core/Integration/Bus/Fixture/'
+
+        # Loaded directly by its test
+        App\DataFixtures\DemoFixtures:
+            public: true
+
+        # Public so tests can fetch the buses from the container
+        App\Core\Application\Bus\UseCaseBusInterface:
+            alias: App\Core\Infrastructure\Bus\MessengerUseCaseBus
+            public: true
+        App\Core\Application\Bus\QueryBusInterface:
+            alias: App\Core\Infrastructure\Bus\MessengerQueryBus
+            public: true

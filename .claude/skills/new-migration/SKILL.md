@@ -1,6 +1,6 @@
 ---
 name: new-migration
-description: Create and apply a Doctrine migration after changing entities in src/Entity. Use whenever the database schema needs to change.
+description: Create and apply a Doctrine migration after changing entities in a module's Domain/Model. Use whenever the database schema needs to change.
 ---
 
 Never use `doctrine:schema:update` or hand-written SQL for schema changes.

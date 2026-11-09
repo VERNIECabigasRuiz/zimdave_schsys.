@@ -1,0 +1,947 @@
+# Layers per module follow the same pattern as Core: <Module>_Domain,
+# <Module>_Application, <Module>_Infrastructure, <Module>_Presentation.
+# A module's Domain may use the Domain of modules above it; anything else
+# goes through <Module>/Application/Api.
+deptrac:
+  paths:
+    - ../src
+
+  layers:
+    - name: Core_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Domain\\.*
+
+    - name: Core_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Application\\.*
+
+    - name: Core_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Infrastructure\\(?!Bus\\Attributes\\).*
+
+    # Handler and caching attributes: declared on Application classes, read by Infrastructure
+    - name: Core_BusAttributes
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Infrastructure\\Bus\\Attributes\\.*
+
+    - name: Core_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Core\\Presentation\\.*
+
+    - name: Access_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Domain\\.*
+
+    - name: Access_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Application\\(?!Api\\).*
+
+    # What other modules may use from Access
+    - name: Access_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Application\\Api\\.*
+
+    - name: Access_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Infrastructure\\.*
+
+    - name: Access_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Access\\Presentation\\.*
+
+    - name: Billing_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Domain\\.*
+
+    - name: Billing_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Application\\(?!Api\\).*
+
+    # What other modules may use from Billing
+    - name: Billing_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Application\\Api\\.*
+
+    - name: Billing_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Infrastructure\\.*
+
+    - name: Billing_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Billing\\Presentation\\.*
+
+    - name: Schools_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Schools\\Domain\\.*
+
+    - name: Schools_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Schools\\Application\\(?!Api\\).*
+
+    # What other modules may use from Schools
+    - name: Schools_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Schools\\Application\\Api\\.*
+
+    - name: Schools_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Schools\\Infrastructure\\.*
+
+    - name: Schools_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Schools\\Presentation\\.*
+
+    - name: Classes_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Classes\\Domain\\.*
+
+    - name: Classes_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Classes\\Application\\(?!Api\\).*
+
+    # What other modules may use from Classes
+    - name: Classes_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Classes\\Application\\Api\\.*
+
+    - name: Classes_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Classes\\Infrastructure\\.*
+
+    - name: Classes_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Classes\\Presentation\\.*
+
+    - name: Learners_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Domain\\.*
+
+    - name: Learners_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Application\\(?!Api\\).*
+
+    # What other modules may use from Learners
+    - name: Learners_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Application\\Api\\.*
+
+    - name: Learners_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Infrastructure\\.*
+
+    - name: Learners_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Learners\\Presentation\\.*
+
+    - name: Attendance_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Domain\\.*
+
+    - name: Attendance_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Application\\(?!Api\\).*
+
+    # What other modules may use from Attendance
+    - name: Attendance_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Application\\Api\\.*
+
+    - name: Attendance_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Infrastructure\\.*
+
+    - name: Attendance_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Attendance\\Presentation\\.*
+
+    - name: Grading_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Domain\\.*
+
+    - name: Grading_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Application\\(?!Api\\).*
+
+    # What other modules may use from Grading
+    - name: Grading_Api
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Application\\Api\\.*
+
+    - name: Grading_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Infrastructure\\.*
+
+    - name: Grading_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Grading\\Presentation\\.*
+
+    - name: Kernel
+      collectors:
+        - type: classLike
+          value: ^App\\Kernel$
+
+    - name: LessonPlans_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\LessonPlans\\Domain\\.*
+
+    - name: LessonPlans_Application
+      collectors:
+        - type: classLike
+          value: ^App\\LessonPlans\\Application\\.*
+
+    - name: LessonPlans_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\LessonPlans\\Infrastructure\\.*
+
+    - name: LessonPlans_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\LessonPlans\\Presentation\\.*
+
+    - name: Staff_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Staff\\Domain\\.*
+
+    - name: Staff_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Staff\\Application\\.*
+
+    - name: Staff_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Staff\\Infrastructure\\.*
+
+    - name: Staff_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Staff\\Presentation\\.*
+
+    - name: Announcements_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Announcements\\Domain\\.*
+
+    - name: Announcements_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Announcements\\Application\\.*
+
+    - name: Announcements_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Announcements\\Infrastructure\\.*
+
+    - name: Announcements_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Announcements\\Presentation\\.*
+
+    - name: Dashboards_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Dashboards\\Application\\.*
+
+    - name: Dashboards_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Dashboards\\Infrastructure\\.*
+
+    - name: Dashboards_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Dashboards\\Presentation\\.*
+
+    # Code not yet moved into a module
+    - name: Nutrition_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Nutrition\\Domain\\.*
+
+    - name: Nutrition_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Nutrition\\Application\\.*
+
+    - name: Nutrition_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Nutrition\\Infrastructure\\.*
+
+    - name: Nutrition_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Nutrition\\Presentation\\.*
+
+    # Demo data for dev and test (the fixtures bundle is not loaded in prod)
+    - name: DevFixtures
+      collectors:
+        - type: classLike
+          value: ^App\\DataFixtures\\.*
+
+    # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
+    - name: SecurityUserContract
+      collectors:
+        - type: classLike
+          value: ^Symfony\\Component\\Security\\Core\\User\\(UserInterface|PasswordAuthenticatedUserInterface)$
+
+    - name: DoctrineMapping
+      collectors:
+        - type: classLike
+          value: ^Doctrine\\(ORM\\Mapping|Common\\Collections)\\.*
+
+    - name: ValidatorConstraints
+      collectors:
+        - type: classLike
+          value: ^Symfony\\Component\\Validator\\Constraints\\.*
+
+    - name: Framework
+      collectors:
+        - type: classLike
+          value: ^(Symfony\\(?!Component\\Validator\\Constraints\\|Component\\Security\\Core\\User\\(UserInterface|PasswordAuthenticatedUserInterface)$)|Doctrine\\(?!ORM\\Mapping\\|Common\\Collections\\)|Psr\\|Twig\\|Monolog\\).*
+
+    - name: Vendor
+      collectors:
+        - type: classLike
+          value: ^(Dompdf|PhpOffice|chillerlan|Faker)\\.*
+
+  ruleset:
+    Core_Domain:
+      - DoctrineMapping
+    Core_Application:
+      - Core_Domain
+      - Core_BusAttributes
+      - ValidatorConstraints
+    Core_Infrastructure:
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+      - Vendor
+    Core_Presentation:
+      - Core_Application
+      - Core_Domain
+      - ValidatorConstraints
+      - Framework
+    Core_BusAttributes: ~
+    Access_Domain:
+      - Core_Domain
+      - DoctrineMapping
+      - SecurityUserContract
+    Access_Application:
+      - Access_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - ValidatorConstraints
+    Access_Infrastructure:
+      - Access_Domain
+      - Access_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - DoctrineMapping
+      - SecurityUserContract
+      - ValidatorConstraints
+      - Framework
+    Access_Presentation:
+      - Access_Application
+      - Access_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - SecurityUserContract
+      - ValidatorConstraints
+      - Framework
+    Billing_Domain:
+      - Core_Domain
+      - DoctrineMapping
+    Billing_Application:
+      - Billing_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - ValidatorConstraints
+    Billing_Infrastructure:
+      - Billing_Domain
+      - Billing_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+    Billing_Presentation:
+      - Billing_Application
+      - Billing_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - ValidatorConstraints
+      - Framework
+    Billing_Api:
+      - Billing_Domain
+      - Core_Domain
+    Access_Api:
+      - Access_Domain
+      - Core_Domain
+    Schools_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - DoctrineMapping
+    Schools_Application:
+      - Schools_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Billing_Api
+      - ValidatorConstraints
+    Schools_Infrastructure:
+      - Schools_Domain
+      - Schools_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Billing_Domain
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+    Schools_Presentation:
+      - Schools_Application
+      - Schools_Api
+      - Schools_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Billing_Api
+      - ValidatorConstraints
+      - Framework
+    Schools_Api:
+      - Schools_Domain
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+    Classes_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - DoctrineMapping
+    Classes_Application:
+      - Classes_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Billing_Api
+      - Schools_Domain
+      - Schools_Api
+      - ValidatorConstraints
+    Classes_Api:
+      - Classes_Domain
+      - Classes_Application
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+    Classes_Infrastructure:
+      - Classes_Domain
+      - Classes_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+    Classes_Presentation:
+      - Classes_Application
+      - Classes_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Billing_Api
+      - Schools_Domain
+      - Schools_Api
+      - ValidatorConstraints
+      - Framework
+    Learners_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - DoctrineMapping
+    Learners_Application:
+      - Learners_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Billing_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - ValidatorConstraints
+    Learners_Api:
+      - Learners_Domain
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+    Learners_Infrastructure:
+      - Learners_Domain
+      - Learners_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+      - Vendor
+    Learners_Presentation:
+      - Learners_Application
+      - Learners_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Billing_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - ValidatorConstraints
+      - Framework
+    Attendance_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+    Attendance_Application:
+      - Attendance_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+    Attendance_Api:
+      - Attendance_Domain
+      - Attendance_Application
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Learners_Domain
+      - Learners_Api
+    Attendance_Infrastructure:
+      - Attendance_Domain
+      - Attendance_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+      - Framework
+      - Vendor
+    Attendance_Presentation:
+      - Attendance_Application
+      - Attendance_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+      - Framework
+    Grading_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+    Grading_Application:
+      - Grading_Domain
+      - Attendance_Api
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+    Grading_Api:
+      - Grading_Domain
+      - Grading_Application
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Learners_Domain
+      - Learners_Api
+    Grading_Infrastructure:
+      - Grading_Domain
+      - Grading_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+      - Framework
+      - Vendor
+    Grading_Presentation:
+      - Grading_Application
+      - Grading_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+      - Framework
+    DevFixtures:
+      - Core_Domain
+      - Core_Application
+      - Core_Infrastructure
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Application
+      - Access_Api
+      - Billing_Domain
+      - Billing_Application
+      - Billing_Api
+      - Schools_Domain
+      - Schools_Application
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Application
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Application
+      - Learners_Api
+      - Attendance_Domain
+      - Attendance_Application
+      - Attendance_Api
+      - Grading_Domain
+      - Grading_Application
+      - Grading_Api
+      - Nutrition_Domain
+      - Nutrition_Application
+      - LessonPlans_Domain
+      - LessonPlans_Application
+      - Staff_Domain
+      - Staff_Application
+      - Announcements_Domain
+      - Announcements_Application
+      - Dashboards_Application
+      - DoctrineMapping
+      - Framework
+      - Vendor
+    Kernel:
+      - Core_Domain
+      - Core_Application
+      - Core_Infrastructure
+      - Core_BusAttributes
+      - Core_Presentation
+      - Access_Domain
+      - Access_Infrastructure
+      - DoctrineMapping
+      - ValidatorConstraints
+      - Framework
+      - Vendor
+    Nutrition_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Billing_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+    Nutrition_Application:
+      - Nutrition_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Billing_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+    Nutrition_Infrastructure:
+      - Nutrition_Domain
+      - Nutrition_Application
+      - Core_Domain
+      - Core_Application
+      - Core_BusAttributes
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - Learners_Domain
+      - DoctrineMapping
+      - Framework
+      - Vendor
+    Nutrition_Presentation:
+      - Nutrition_Application
+      - Nutrition_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - ValidatorConstraints
+      - Framework
+    LessonPlans_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - DoctrineMapping
+    LessonPlans_Application:
+      - LessonPlans_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+    LessonPlans_Infrastructure:
+      - LessonPlans_Domain
+      - LessonPlans_Application
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - DoctrineMapping
+      - Framework
+    LessonPlans_Presentation:
+      - LessonPlans_Application
+      - LessonPlans_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Schools_Domain
+      - Classes_Domain
+      - ValidatorConstraints
+      - Framework
+    Staff_Domain:
+      - Core_Domain
+      - Access_Domain
+      - Schools_Domain
+      - Learners_Domain
+      - DoctrineMapping
+    Staff_Application:
+      - Staff_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Learners_Domain
+      - ValidatorConstraints
+    Staff_Infrastructure:
+      - Staff_Domain
+      - Staff_Application
+      - Core_Domain
+      - Access_Domain
+      - Learners_Domain
+      - LessonPlans_Domain
+      - DoctrineMapping
+      - Framework
+    Staff_Presentation:
+      - Staff_Application
+      - Staff_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Schools_Domain
+      - Schools_Api
+      - Learners_Domain
+      - ValidatorConstraints
+      - Framework
+    Announcements_Domain:
+      - Core_Domain
+      - Access_Domain
+      - DoctrineMapping
+    Announcements_Application:
+      - Announcements_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - ValidatorConstraints
+    Announcements_Infrastructure:
+      - Announcements_Domain
+      - DoctrineMapping
+      - Framework
+    Announcements_Presentation:
+      - Announcements_Application
+      - Announcements_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Framework
+    Dashboards_Application:
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+      - Learners_Domain
+      - Learners_Api
+      - Attendance_Domain
+      - Attendance_Api
+      - Grading_Domain
+      - Grading_Api
+    Dashboards_Infrastructure:
+      - Core_Domain
+      - Access_Domain
+      - Access_Api
+      - Schools_Domain
+      - Schools_Api
+      - Classes_Domain
+      - Classes_Api
+    Dashboards_Presentation:
+      - Dashboards_Application
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
+      - Schools_Domain
+      - Framework
+    SecurityUserContract: ~
+    DoctrineMapping: ~
+    ValidatorConstraints: ~
+    Framework: ~
+    Vendor: ~

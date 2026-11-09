@@ -2,7 +2,10 @@
 
 namespace App;
 
+use App\Access\Infrastructure\AccessHookAutoconfiguration;
+use App\Core\Infrastructure\Bus\BusHandlerAutoconfiguration;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
 class Kernel extends BaseKernel
@@ -17,6 +20,12 @@ class Kernel extends BaseKernel
     {
         parent::boot();
         date_default_timezone_set($this->getContainer()->getParameter('app.timezone'));
+    }
+
+    protected function build(ContainerBuilder $container): void
+    {
+        BusHandlerAutoconfiguration::register($container);
+        AccessHookAutoconfiguration::register($container);
     }
 
     /**

@@ -14,12 +14,78 @@ doctrine:
             Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
         auto_mapping: true
         mappings:
-            App:
+            Core:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
+                dir: '%kernel.project_dir%/src/Core/Domain'
+                prefix: 'App\Core\Domain'
+                alias: Core
+            Access:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Access/Domain'
+                prefix: 'App\Access\Domain'
+                alias: Access
+            Billing:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Billing/Domain'
+                prefix: 'App\Billing\Domain'
+                alias: Billing
+            Schools:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Schools/Domain'
+                prefix: 'App\Schools\Domain'
+                alias: Schools
+            Classes:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Classes/Domain'
+                prefix: 'App\Classes\Domain'
+                alias: Classes
+            Learners:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Learners/Domain'
+                prefix: 'App\Learners\Domain'
+                alias: Learners
+            Attendance:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Attendance/Domain'
+                prefix: 'App\Attendance\Domain'
+                alias: Attendance
+            Nutrition:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Nutrition/Domain'
+                prefix: 'App\Nutrition\Domain'
+                alias: Nutrition
+            LessonPlans:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/LessonPlans/Domain'
+                prefix: 'App\LessonPlans\Domain'
+                alias: LessonPlans
+            Staff:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Staff/Domain'
+                prefix: 'App\Staff\Domain'
+                alias: Staff
+            Announcements:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Announcements/Domain'
+                prefix: 'App\Announcements\Domain'
+                alias: Announcements
+            Grading:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Grading/Domain'
+                prefix: 'App\Grading\Domain'
+                alias: Grading
 
 when@test:
     doctrine:

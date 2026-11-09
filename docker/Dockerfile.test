@@ -1,0 +1,8 @@
+FROM vernie/zimdave-schsys:1.1
+
+WORKDIR /app
+
+COPY docker/entrypoint_test.sh /entrypoint_test.sh
+RUN chmod +x /entrypoint_test.sh
+
+ENTRYPOINT ["/entrypoint_test.sh"]

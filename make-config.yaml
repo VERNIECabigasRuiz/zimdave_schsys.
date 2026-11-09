@@ -8,7 +8,7 @@ docker:
   base:
     image:
       run:
-        name: vernie/zimdave-schsys:1.0
+        name: vernie/zimdave-schsys:1.1
         path: docker/Dockerfile.base
   db:
     name: zimdave-schsys-db
@@ -22,16 +22,16 @@ cert:
   path: docker/config/ssl
 
 assets:
-  watch: php bin/console importmap:install
-  build: php bin/console importmap:install
+  watch: pnpm exec vite build --watch
+  build: pnpm build
 
 tests:
   phpunit:
-    from:
-    path:
-    image:
-    test_suite:
-    test_options:
+    from: vernie/zimdave-schsys:1.1
+    path: docker/Dockerfile.test
+    image: vernie/local-test:zimdave-schsys
+    test_suite: unit
+    test_options: '--testdox --colors=always'
     test_target:
 
   metrics:
@@ -41,18 +41,19 @@ tests:
 
   feature:
     test_suite:
-    test_options: '--testdox --colors=always'
+    test_options:
     test_target:
     test:
-      - make bash-exec CMD='php bin/phpunit $(TEST_OPTIONS) $(TEST_TARGET)'
+      - make bash-exec CMD='bash docker/test/run-feature-tests.sh $(TEST_OPTIONS) $(TEST_TARGET)'
 
   regression:
-    test_suite:
-    test_options:
+    test_suite: browser
+    test_options: '--testdox --colors=always'
     test_target:
     run:
     rebuild:
     test:
+      - make bash-exec CMD='bash docker/test/run-regression-tests.sh $(TEST_OPTIONS) $(TEST_TARGET)'
 
 clear:
   vars:
@@ -89,5 +90,6 @@ fixtures:
     - make bash-exec CMD='php bin/console doctrine:database:create --if-not-exists'
     - make bash-exec CMD='php bin/console doctrine:migrations:migrate -n'
   seed:
-    default:
-    scripts: []
+    default: demo
+    scripts:
+      - make bash-exec CMD='php bin/console doctrine:fixtures:load --group=$(FIXTURE_SEED) --append -n'

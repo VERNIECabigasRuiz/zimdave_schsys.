@@ -1,5 +1,19 @@
 twig:
     file_name_pattern: '*.twig'
+    paths:
+        '%kernel.project_dir%/src/Core/Presentation/templates': Core
+        '%kernel.project_dir%/src/Access/Presentation/templates': Access
+        '%kernel.project_dir%/src/Billing/Presentation/templates': Billing
+        '%kernel.project_dir%/src/Schools/Presentation/templates': Schools
+        '%kernel.project_dir%/src/Classes/Presentation/templates': Classes
+        '%kernel.project_dir%/src/Learners/Presentation/templates': Learners
+        '%kernel.project_dir%/src/Attendance/Presentation/templates': Attendance
+        '%kernel.project_dir%/src/Grading/Presentation/templates': Grading
+        '%kernel.project_dir%/src/Nutrition/Presentation/templates': Nutrition
+        '%kernel.project_dir%/src/LessonPlans/Presentation/templates': LessonPlans
+        '%kernel.project_dir%/src/Staff/Presentation/templates': Staff
+        '%kernel.project_dir%/src/Announcements/Presentation/templates': Announcements
+        '%kernel.project_dir%/src/Dashboards/Presentation/templates': Dashboards
 
 when@test:
     twig:

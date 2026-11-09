@@ -1,0 +1,173 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Grading\Application\Service;
+
+use App\Classes\Application\Api\SectionDirectoryInterface;
+use App\Classes\Application\Api\TeachingLoadDirectoryInterface;
+use App\Schools\Domain\Model\GradingPeriod;
+use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolYear;
+use App\Classes\Domain\Model\Section;
+use App\Classes\Domain\Model\Subject;
+use App\Grading\Domain\Model\Repository\GradeOpeningRepositoryInterface;
+use App\Grading\Domain\Model\Repository\GradeRepositoryInterface;
+use App\Core\Domain\Service\Clock\SchoolClockInterface;
+
+/**
+ * Every subject's grades of one section for one period: a column per gradable subject, and after
+ * a parent's components a column for the parent's average. Learners who can't be edited are
+ * listed with whatever grades they have but don't count toward a column's totals.
+ */
+class SectionGradeGrid
+{
+    public function __construct(
+        private readonly SectionDirectoryInterface $sections,
+        private readonly TeachingLoadDirectoryInterface $loads,
+        private readonly GradeRepositoryInterface $grades,
+        private readonly GradeRules $rules,
+        private readonly GradeOpeningRepositoryInterface $openings,
+        private readonly SchoolClockInterface $clock,
+    ) {
+    }
+
+    /**
+     * The period a grid opens on: the one the school has open for grading (the earliest if several), else the one
+     * today falls in, else the latest one already started (between periods, or after the year), else the first.
+     */
+    public function defaultPeriod(School $school, SchoolYear $schoolYear): ?GradingPeriod
+    {
+        $periods = $schoolYear->getGradingPeriods()->getValues();
+        $openIds = $this->openings->findOpenPeriodIds($school, $schoolYear);
+        foreach ($periods as $period) {
+            if (\in_array($period->getId(), $openIds, true)) {
+                return $period;
+            }
+        }
+
+        $today = $this->clock->now()->format('Y-m-d');
+        $started = null;
+        foreach ($periods as $period) {
+            $start = $period->getStartDate()?->format('Y-m-d');
+            if (null === $start || $start > $today) {
+                continue;
+            }
+            $end = $period->getEndDate()?->format('Y-m-d');
+            if (null !== $end && $today <= $end) {
+                return $period;
+            }
+            $started = $period;
+        }
+
+        return $started ?? ($periods[0] ?? null);
+    }
+
+    /**
+     * @return array{columns: list<GridColumn>, rows: list<array{learner: SheetLearner, cells: array<string, ?int>}>}
+     */
+    public function build(Section $section, GradingPeriod $period): array
+    {
+        $subjects = $this->sections->subjectsOf($section);
+        $learners = $this->rules->sheet($section);
+        // by enrollment: a learner who transferred out has moved section but keeps the grades given here
+        $saved = $this->grades->findForEnrollmentsByPeriod(GradeRules::enrollmentIds($learners), $period);
+
+        $teachers = [];
+        foreach ($this->loads->loadsOf($section) as $load) {
+            $teachers[$load->getSubject()->getId()] = $load->getTeacher()->getFullName();
+        }
+
+        $componentsOf = [];
+        foreach ($subjects as $subject) {
+            if (null !== $subject->getParent()) {
+                $componentsOf[$subject->getParent()->getId()][] = $subject;
+            }
+        }
+
+        $rows = [];
+        foreach ($learners as $learner) {
+            $rows[] = ['learner' => $learner, 'cells' => []];
+        }
+
+        $columns = [];
+        foreach ($subjects as $subject) {
+            if (null !== $subject->getParent()) {
+                continue;
+            }
+            $components = $componentsOf[$subject->getId()] ?? [];
+            if ([] === $components) {
+                $columns[] = $this->column(
+                    $subject,
+                    's' . $subject->getId(),
+                    $subject->getName(),
+                    $teachers[$subject->getId()] ?? null,
+                    false,
+                    $rows,
+                    $saved,
+                );
+                continue;
+            }
+            foreach ($components as $component) {
+                $columns[] = $this->column(
+                    $component,
+                    's' . $component->getId(),
+                    $component->getName(),
+                    $teachers[$component->getId()] ?? null,
+                    false,
+                    $rows,
+                    $saved,
+                );
+            }
+            $columns[] = $this->column(
+                $subject,
+                'avg' . $subject->getId(),
+                $subject->getName(),
+                null,
+                true,
+                $rows,
+                $saved,
+            );
+        }
+
+        return ['columns' => $columns, 'rows' => $rows];
+    }
+
+    /**
+     * Fills the column's cell in every row and counts it.
+     *
+     * @param list<array{learner: SheetLearner, cells: array<string, ?int>}> $rows
+     * @param array<int, array<int, \App\Grading\Domain\Model\Grade>>                      $saved
+     */
+    private function column(
+        Subject $subject,
+        string $key,
+        string $label,
+        ?string $teacher,
+        bool $average,
+        array &$rows,
+        array $saved,
+    ): GridColumn {
+        $graded = 0;
+        $listed = 0;
+        foreach ($rows as $i => $row) {
+            $enrollmentId = $row['learner']->enrollment->getId();
+            $bySubject = $saved[$enrollmentId] ?? [];
+            if ($average) {
+                $values = array_map(static fn ($grade) => $grade->getValue(), $bySubject);
+                $value = $this->rules->parentGrade($subject, $values);
+            } else {
+                $value = isset($bySubject[$subject->getId()]) ? $bySubject[$subject->getId()]->getValue() : null;
+            }
+            $rows[$i]['cells'][$key] = $value;
+            if ($row['learner']->editable) {
+                ++$listed;
+                if (null !== $value) {
+                    ++$graded;
+                }
+            }
+        }
+
+        return new GridColumn($key, $label, $teacher, $average, $graded, $listed);
+    }
+}

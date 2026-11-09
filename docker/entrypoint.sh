@@ -9,6 +9,12 @@ echo "Installing PHP dependencies..."
 composer config --global process-timeout 2000
 composer install --no-interaction
 
+echo "Installing JS dependencies..."
+pnpm install --frozen-lockfile
+
+echo "Building assets..."
+pnpm build
+
 echo "Preparing dev and test databases..."
 php bin/console doctrine:database:create --if-not-exists --no-interaction
 php bin/console doctrine:database:create --if-not-exists --no-interaction --env=test
