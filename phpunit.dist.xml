@@ -59,6 +59,7 @@
             <directory>src/Nutrition</directory>
             <directory>src/LessonPlans</directory>
             <directory>src/Staff</directory>
+            <directory>src/Announcements</directory>
         </include>
 
         <deprecationTrigger>

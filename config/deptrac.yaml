@@ -263,6 +263,26 @@ deptrac:
         - type: classLike
           value: ^App\\Staff\\Presentation\\.*
 
+    - name: Announcements_Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Announcements\\Domain\\.*
+
+    - name: Announcements_Application
+      collectors:
+        - type: classLike
+          value: ^App\\Announcements\\Application\\.*
+
+    - name: Announcements_Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Announcements\\Infrastructure\\.*
+
+    - name: Announcements_Presentation
+      collectors:
+        - type: classLike
+          value: ^App\\Announcements\\Presentation\\.*
+
     # Code not yet moved into a module
     - name: Nutrition_Domain
       collectors:
@@ -287,7 +307,7 @@ deptrac:
     - name: Legacy
       collectors:
         - type: classLike
-          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Nutrition\\|LessonPlans\\|Staff\\|Kernel$).*
+          value: ^App\\(?!Core\\|Access\\|Billing\\|Schools\\|Classes\\|Learners\\|Attendance\\|Grading\\|Nutrition\\|LessonPlans\\|Staff\\|Announcements\\|Kernel$).*
 
     # The two Symfony interfaces the Access User implements so it can sign in (owner's decision)
     - name: SecurityUserContract
@@ -812,6 +832,30 @@ deptrac:
       - Schools_Api
       - Learners_Domain
       - ValidatorConstraints
+      - Framework
+    Announcements_Domain:
+      - Core_Domain
+      - Access_Domain
+      - DoctrineMapping
+    Announcements_Application:
+      - Announcements_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_BusAttributes
+      - Access_Domain
+      - Access_Api
+      - ValidatorConstraints
+    Announcements_Infrastructure:
+      - Announcements_Domain
+      - DoctrineMapping
+      - Framework
+    Announcements_Presentation:
+      - Announcements_Application
+      - Announcements_Domain
+      - Core_Application
+      - Core_Domain
+      - Core_Presentation
+      - Access_Domain
       - Framework
     Legacy:
       - Core_Domain

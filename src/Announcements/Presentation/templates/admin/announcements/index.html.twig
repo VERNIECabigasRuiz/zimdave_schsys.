@@ -18,7 +18,7 @@
                     <h2>{{ a.title }}</h2>
                     <p class="muted">
                         <span class="badge">{{ a.audienceLabel }}</span>
-                        {{ a.createdAt|date('M j, Y g:i A') }}{% if a.author %} · {{ a.author.fullName }}{% endif %}
+                        {{ a.createdAt|date('M j, Y g:i A') }}{% if a.authorName is not null %} · {{ a.authorName }}{% endif %}
                     </p>
                 </div>
                 <div class="sy-card__actions">

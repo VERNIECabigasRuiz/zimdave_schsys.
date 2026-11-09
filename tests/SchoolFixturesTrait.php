@@ -4,7 +4,7 @@ namespace App\Tests;
 
 use App\Core\Domain\Model\ActivityLog;
 use App\LessonPlans\Domain\Model\LessonPlan;
-use App\Entity\Announcement;
+use App\Announcements\Domain\Model\Announcement;
 use App\Attendance\Domain\Model\AttendanceMark;
 use App\Grading\Domain\Model\CardSlipComment;
 use App\Classes\Domain\Model\ClassPeriod;

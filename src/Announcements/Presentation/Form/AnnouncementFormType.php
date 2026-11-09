@@ -1,15 +1,23 @@
 <?php
 
-namespace App\Form;
+declare(strict_types=1);
 
-use App\Entity\Announcement;
+namespace App\Announcements\Presentation\Form;
+
+use App\Announcements\Application\UseCase\Command\PostAnnouncementCommand;
+use App\Announcements\Application\UseCase\Command\UpdateAnnouncementCommand;
+use App\Announcements\Domain\Model\Announcement;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Posts an announcement (bound to PostAnnouncementCommand) or edits one (bound to UpdateAnnouncementCommand).
+ *
+ * @extends AbstractType<PostAnnouncementCommand|UpdateAnnouncementCommand>
+ */
 class AnnouncementFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -25,10 +33,5 @@ class AnnouncementFormType extends AbstractType
                 'empty_data' => '',
                 'attr' => ['rows' => 8],
             ]);
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults(['data_class' => Announcement::class]);
     }
 }

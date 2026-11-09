@@ -49,12 +49,6 @@ parameters:
 			path: ../src/Controller/Principal/DashboardController.php
 
 		-
-			message: '#^Class App\\Form\\AnnouncementFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/AnnouncementFormType.php
-
-		-
 			message: '#^Method App\\Tests\\Controller\\Admin\\DashboardControllerTest\:\:adminPages\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1

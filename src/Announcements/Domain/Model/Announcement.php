@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Entity;
+declare(strict_types=1);
+
+namespace App\Announcements\Domain\Model;
 
 use App\Access\Domain\Model\User;
-use App\Repository\AnnouncementRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: AnnouncementRepository::class)]
+#[ORM\Entity]
 class Announcement
 {
     public const AUDIENCE_ALL = 'all';
@@ -27,16 +26,12 @@ class Announcement
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 150)]
     private string $title = '';
 
-    #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
+    #[ORM\Column(type: 'text')]
     private string $body = '';
 
     #[ORM\Column(length: 20)]
-    #[Assert\Choice(choices: ['all', User::ROLE_PRINCIPAL, User::ROLE_TEACHER, User::ROLE_STUDENT])]
     private string $audience = self::AUDIENCE_ALL;
 
     #[ORM\ManyToOne]
