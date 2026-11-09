@@ -73,6 +73,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Change IDE settings through the IDE, not by editing its files.
 - Note the start time before the first step of any task, including deploys.
 - When swapping one lookup for another, compare their filters, not just their names.
+- After a scripted code rewrite, compare its string literals with the original.
 
 ## Plans / Specs
 
@@ -126,6 +127,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Before finishing a test, check every setup line sits under `// Initialize`.
 - Check each test's `// Execute` section actually runs the code under test.
 - For a test meant to guard a fix, break the fix once and watch the test fail.
+- When a test pins old behaviour, check the old code for each starting state, not just one.
 - After fixing one checker's findings, rerun the other checkers on the same files before a full run.
 
 ## Subagents / Long-Running Tasks
