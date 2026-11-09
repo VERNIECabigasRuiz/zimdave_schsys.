@@ -35,6 +35,20 @@ services:
       retries: 12
       start_period: 600s
 
+  # Browse the database at http://docker.vernie.com:8096 (local machine only, logs in as root)
+  phpmyadmin:
+    image: phpmyadmin:5
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: password
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "127.0.0.1:8096:80"
+
 volumes:
   zimdave-schsys-db:
     name: zimdave-schsys-db

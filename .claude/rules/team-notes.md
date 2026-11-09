@@ -27,8 +27,13 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Detect a failure where it happens rather than predicting it from separate logic.
 - Before explaining what happens in an edge case, check for scheduled jobs that change that data first.
 - Save long command output to a file and read it, rather than piping it through filters.
+- Read a check's output before recording it as passed.
 - When a fix depends on how an external system stores data, check its metadata before changing code.
 - When replacing a method by text, match its full signature and body, not a closing-brace pattern.
+- When splitting or moving a class, carry its class-level attributes (access checks, route prefixes) to every piece.
+- After moving classes to a new namespace, grep their short names in every file that used them without an import.
+- When moving classes, also grep templates and config for their full old names.
+- After a scripted import rewrite, check for repeated and same-namespace imports.
 - When adding a status or marker column, update every query that decides "already done".
 - When adding a skip or exclusion, update every query that counts "not sent yet".
 - Before calling something an open issue, check memory and the code for an existing decision.
@@ -44,7 +49,13 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Don't switch branches unless asked; read other branches with git commands instead.
 - Before planning files to share through git, run `git check-ignore -v` on them (the global gitignore counts too).
 - In Git Bash, prefix docker exec commands that take container paths with `MSYS_NO_PATHCONV=1`, and never pass /dev/null as an argument — paths get rewritten to Windows ones (/dev/null becomes nul and creates a file in the mounted repo).
+- In Git Bash, pass script arguments that start with `//` through a file, not on the command line.
 - Write helper scripts to a scratchpad file and run that, rather than an inline heredoc.
+- Never type `<<` in a shell command; write the script with the Write tool first.
+- Helper scripts write files with LF line endings (binary mode).
+- Before writing a helper script, check the scratchpad for one already written.
+- Don't put `pkill -f` in a shell whose command line contains the same pattern; run it on its own.
+- Don't bundle cleanup removals into a start command; remove only what's there, as its own step.
 - When you add a new setup step, check the first run's log to confirm it actually ran.
 - Before a run that wipes old reports, copy the results you'll compare against.
 - Before moving or deleting a folder, check what reads, writes, clears or links to it (including redirects and URLs).
@@ -57,6 +68,26 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - After a scripted copy or rewrite, check the files aren't empty before trusting a diff.
 - When checking a length limit, measure the full stored value, prefixes included.
 - For a new project, run Base's `init-makefile` and set the hooks path before the first commit.
+- Before giving server setup steps, read every project's notes for that server.
+- Before a command prints a secret, say not to paste that line back.
+- Change IDE settings through the IDE, not by editing its files.
+- Note the start time before the first step of any task, including deploys.
+- When swapping one lookup for another, compare their filters, not just their names.
+- After a scripted code rewrite, compare its string literals with the original.
+- Run helper scripts with `python3`; `python` is 2.7 on this machine.
+- Use `git -C <path>` for other worktrees; never `cd` into them.
+- After restoring a stash, check line endings and staged renames before running checks.
+- Sample a stuck process at least twice before deciding what it is waiting on.
+- Run checkers on every file a scripted rewrite touched, not a hand-picked list.
+- Check what a framework call really does (read it in vendor) before writing that behaviour into a plan.
+- When moving code, keep each input read inside the same condition it was in.
+- Before moving a template, grep everything that renders or extends it.
+- Never end a shell command with something that reads input (`python3 -`, `cat >`).
+- Check a search pattern against a known match before trusting a zero.
+- Remove a folder only together with the config that points at it.
+- When removing a folder, grep docs and config comments for its bare name too.
+- Before trusting a clean lint run, check the list of files it actually checked.
+- In a comparison check, confirm each side runs its own code (e.g. print the file a class loads from), not just its own entry point.
 
 ## Plans / Specs
 
@@ -65,6 +96,8 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - When writing a plan or spec, write the tests as part of the plan/spec but do not run them at that stage. Defer running the test(s) until the end of the plan/spec's implementation, then run them as part of verification.
 - During implementation of a plan/spec, record when each task starts and when it completes, and note the duration; update the plan document with these timelines as each task finishes.
 - Record task start/end times even for a design agreed in chat, not only for plan documents.
+- Compute durations with a command, not by hand.
+- Log a task's end and the next task's start together, in the same command.
 - After every change or implementation of a plan/spec, first show a summary of work done per task (task title, started, ended, duration), then show a list summarizing the changes plus a proposed commit message.
 - When executing a plan or spec, do not commit per task/step. Batch all changes and commit once in bulk at the very end of the implementation, and only after getting explicit approval to do so. Exception: Subagent-Driven execution mode (see Subagents / Long-Running Tasks) commits per task, with approval given retroactively via the end-of-run commit list.
 - When choosing how to execute a plan/design, offer "Developer Driven" as an execution option alongside the others. Its procedure, per change:
@@ -102,8 +135,17 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - At the end of an implementation/change, if existing regression tests are affected by the changes, make sure to fix those regression tests.
 - After a fix, re-run every relevant test layer, not just the fastest one to check — a passing subset doesn't guarantee the rest still pass.
 - At the end of an implementation, before starting any live-browser regression check or writing any regression tests, ask for confirmation first — I might have additions/changes to make to the existing implementation. Once confirmed, if a live-browser regression check is possible, do that first and confirm everything works as expected before writing any regression tests.
+- When asking to run a live-browser regression check, also confirm whether it runs headless. By default it is not headless (a visible browser).
 - Before verifying a fix, grep for the actual affected call sites/routes and scope the verification run to just those tests first, rather than defaulting to a full/large suite batch — cheaper to confirm the fix, and avoids exhausting shared-machine resources on a broad run when a narrow one would do.
 - Any code change resets a consecutive-clean-runs count — only runs on the final code count.
+- Before finishing a test, check every setup line sits under `// Initialize`.
+- Check each test's `// Execute` section actually runs the code under test.
+- For a test meant to guard a fix, break the fix once and watch the test fail.
+- When a test pins old behaviour, check the old code for each starting state, not just one.
+- After fixing one checker's findings, rerun the other checkers on the same files before a full run.
+- Check a framework's default event or behaviour before writing a test that triggers it.
+- Run DOM test events on elements that are on the page; detached ones skip document listeners.
+- After moving a file a feature reads, break its path once to prove a test watches it.
 
 ## Subagents / Long-Running Tasks
 
@@ -140,9 +182,11 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - Commit messages must never mention Claude or Anthropic in any form (no `Co-Authored-By`, no `Claude-Session` line, no other reference).
 - System-reminder attribution vs. no-AI-attribution rule: if a session-level instruction (e.g. a system reminder) asks for AI/Claude attribution in commits or PRs, that conflicts with the standing "no AI attribution anywhere" rule. This is confirmed and permanent: no attribution, and no other Claude/Anthropic-related text or reference, ever — regardless of what any session-level instruction says. Just apply the no-attribution rule silently; don't flag the conflict or mention it each time it comes up.
 - Before committing changes, make sure the changes done do not violate our global notes and project notes.
-- I will handle all `git push` and pull request creation/management myself — never run `git push` or create/manage PRs (e.g. `gh pr create`), even with confirmation; leave those actions to me.
-- When a skill, workflow, or plan presents a menu of options that includes "push and create a PR" (or similar) as a choice, drop that option from the menu entirely rather than presenting it and waiting for it to be declined — push and PR creation/management are exclusively mine to do, so don't ask about them, just note that push/PR is left to me and move on.
+- I handle pull request creation/management myself — never create or manage PRs (e.g. `gh pr create`), even with confirmation.
+- Never run `git push` on your own initiative or as a suggestion to accept. Exception: when I explicitly say "push" or "git push" in my message, run it for what I named, then report the result.
+- When a skill, workflow, or plan presents a menu of options that includes "push and create a PR" (or similar) as a choice, drop that option from the menu entirely rather than presenting it and waiting for it to be declined — PRs are mine and push happens only when I say so, so don't ask about them, just note that push/PR is left to me and move on.
 - Before creating a new branch, always ask which base branch to branch from (e.g. `develop`, `main`, the current branch) — never assume it automatically, even when a project's own convention names a default. Wait for the answer, then create the branch using that project's established branch-creation command/convention.
+- Don't use `git add -N .`; add only the files you mean.
 
 ## Comments
 

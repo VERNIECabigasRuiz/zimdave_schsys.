@@ -1,0 +1,26 @@
+includes:
+    - ../vendor/phpstan/phpstan-symfony/extension.neon
+    - ../vendor/phpstan/phpstan-symfony/rules.neon
+    - ../vendor/phpstan/phpstan-doctrine/extension.neon
+    - ../vendor/phpstan/phpstan-doctrine/rules.neon
+    - ../vendor/phpstan/phpstan-phpunit/extension.neon
+    - ../vendor/phpstan/phpstan-phpunit/rules.neon
+    - ../vendor/phpstan/phpstan-deprecation-rules/rules.neon
+
+parameters:
+    level: 9
+    tmpDir: ../reports/phpstan/.cache
+    # More workers fill Docker's memory on this shared machine
+    parallel:
+        maximumNumberOfProcesses: 4
+    paths:
+        - ../src
+        - ../tests
+    excludePaths:
+        - ../tests/bootstrap.php
+    symfony:
+        containerXmlPath: ../var/cache/dev/App_KernelDevDebugContainer.xml
+    doctrine:
+        objectManagerLoader: ../tests/object-manager.php
+        # Entities are created empty and filled by setters, so required columns start out null
+        allowNullablePropertyForRequiredField: true

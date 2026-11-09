@@ -15,5 +15,15 @@ framework:
         #app: cache.adapter.apcu
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
-            #my.dedicated.cache: null
+        pools:
+            # Cached query results, invalidated by tag
+            cache.bus:
+                adapter: cache.app
+                tags: true
+
+when@test:
+    framework:
+        cache:
+            pools:
+                cache.bus:
+                    adapter: cache.adapter.array

@@ -1,0 +1,55 @@
+{% extends '@Core/principal/_layout.html.twig' %}
+
+{# Add or edit one service record row. Needs form, school, employee, entry_id (null when adding) and statuses
+   (suggested statuses). #}
+
+{% block title %}{{ entry_id ? 'Edit' : 'Add' }} service record row · {{ employee.fullName }} · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ entry_id ? 'Edit row' : 'Add row' }} · {{ employee.fullName }}</h1>
+            <p>Service record · {{ school.name }}</p>
+        </div>
+        <a class="btn btn--ghost" href="{{ path('service_record_show', {id: school.id, employee: employee.id}) }}">Back to the record</a>
+    </div>
+
+    <div class="card form-card">
+        {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+            <div class="form-grid">
+                {{ form_row(form.fromDate) }}
+                {{ form_row(form.toDate) }}
+            </div>
+            {% if form.closeOpen is defined %}
+                {{ form_row(form.closeOpen) }}
+            {% endif %}
+            <div class="form-grid">
+                {{ form_row(form.designation) }}
+                {{ form_row(form.status) }}
+            </div>
+            <datalist id="sr-statuses">
+                {% for status in statuses %}<option value="{{ status }}"></option>{% endfor %}
+            </datalist>
+            <div class="form-grid">
+                {{ form_row(form.annualSalary) }}
+                {{ form_row(form.remarks) }}
+            </div>
+            <div class="form-grid">
+                {{ form_row(form.station) }}
+                {{ form_row(form.branch) }}
+            </div>
+            <div class="form-grid">
+                {{ form_row(form.lwopFrom) }}
+                {{ form_row(form.lwopTo) }}
+            </div>
+            <div class="form-grid">
+                {{ form_row(form.separationDate) }}
+                {{ form_row(form.separationCause) }}
+            </div>
+            <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save row</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

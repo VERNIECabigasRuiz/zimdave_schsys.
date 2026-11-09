@@ -1,0 +1,125 @@
+{% extends '@Core/teacher/_layout.html.twig' %}
+
+{# A class's grade sheet for a period. Needs load, period, periods, learners (SheetLearner list), saved
+   (Grade by enrollment id), previous_period (nullable) and previous (its Grade by enrollment id), other_columns
+   (the other subjects' GridColumns) and other_cells (their values by enrollment id, then column key), status (nullable ClassGradeStatus), refusal (nullable), form (nullable), editable,
+   change_requests (this class's, newest first), pending (one of them waits), own_pending (the waiting one is the
+   current user's) and can_request. #}
+
+{% block title %}{{ period.label }} grades · {{ load.subject.name }} · {{ load.section.label }} · ZIM School{% endblock %}
+
+{% block content %}
+    {% set section = load.section %}
+    <div class="page-head">
+        <div>
+            <h1>{{ load.subject.name }} · {{ section.label }}</h1>
+            <p>{{ period.label }} grades · {{ section.school.name }} · S.Y. {{ section.schoolYear.name }}</p>
+        </div>
+        <div class="row-actions">
+            {% if can_request %}
+                <a class="btn btn--primary" href="{{ path('teacher_grades_change', {load: load.id, period: period.id}) }}">Request grade change</a>
+            {% endif %}
+            <a class="btn btn--ghost" href="{{ path('teacher_grades') }}">All my classes</a>
+        </div>
+    </div>
+
+    <nav class="filters grade-tabs" aria-label="Grading period">
+        {% for other in periods %}
+            <a class="btn btn--sm {{ other == period ? 'btn--primary' : 'btn--ghost' }}"
+               href="{{ path('teacher_grades_sheet', {load: load.id, period: other.id}) }}"{{ other == period ? ' aria-current="page"' }}>{{ other.label }}</a>
+        {% endfor %}
+    </nav>
+
+    <p class="grade-status">
+        {% if status %}
+            {% set tone = {open: 'badge--green', locked: 'badge--rose', unlocked: 'badge--amber'}[status.value] ?? '' %}
+            <span class="badge {{ tone }}">{{ status.label }}</span>
+        {% endif %}
+        {% if refusal %}<span class="muted">{{ refusal }}</span>{% elseif editable %}<span class="muted">Whole numbers from 60 to 100. Leave a box empty for a learner not graded yet.</span>{% endif %}
+        {% if own_pending %}<span class="muted">Your change request is waiting for the principal.</span>{% elseif pending %}<span class="muted">A change request for this class is waiting for the principal.</span>{% endif %}
+    </p>
+
+    <div class="card table-card grade-sheet">
+        {% if form %}
+            {{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+            {{ form_errors(form) }}
+        {% endif %}
+        {% set colspan = 5 + (previous_period ? 2 : 0) + other_columns|length %}
+        <div class="grade-sheet__scroll">
+        <table class="table roll-call__table">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>LRN</th>
+                    <th class="grade-sheet__name">Learner</th>
+                    <th>Grade</th>
+                    {% if previous_period %}
+                        <th class="grade-sheet__compare">{{ previous_period.label }}</th>
+                        <th class="grade-sheet__compare">Change</th>
+                    {% endif %}
+                    <th>Remarks</th>
+                    {% for column in other_columns %}
+                        <th class="grade-sheet__other" title="{{ column.label }}{{ column.average ? ' (average)' }}{{ column.teacherName ? ' · ' ~ column.teacherName }}">{{ column.label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for learner in learners %}
+                    {% if loop.first or learner.male != learners[loop.index0 - 1].male %}
+                        <tr class="roll-call__group"><th colspan="{{ colspan }}">{{ learner.male ? 'Male' : 'Female' }}</th></tr>
+                    {% endif %}
+                    {% set id = learner.enrollment.id %}
+                    {% set field = editable and learner.editable ? (form.grades[id] ?? null) : null %}
+                    {% set grade = saved[id] ?? null %}
+                    <tr data-learner="{{ id }}"{% if not learner.editable %} class="roll-call__out"{% endif %}>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ learner.lrn ?? '—' }}</td>
+                        <td class="grade-sheet__name">{{ learner.name }}</td>
+                        <td>
+                            {% if field %}
+                                {{ form_widget(field, {attr: {'aria-label': 'Grade of ' ~ learner.name, inputmode: 'numeric', min: 60, max: 100}}) }}
+                                {{ form_errors(field) }}
+                            {% else %}
+                                {{ grade ? grade.value : '—' }}
+                            {% endif %}
+                        </td>
+                        {% if previous_period %}
+                            {% set before = previous[id] ?? null %}
+                            <td class="grade-sheet__prev">{{ before ? before.value : '—' }}</td>
+                            {% if grade and before %}
+                                {% set change = grade.value - before.value %}
+                                {% if change > 0 %}
+                                    <td class="grade-sheet__change grade-change--up">▲ +{{ change }}</td>
+                                {% elseif change < 0 %}
+                                    <td class="grade-sheet__change grade-change--down">▼ −{{ -change }}</td>
+                                {% else %}
+                                    <td class="grade-sheet__change grade-change--same">=</td>
+                                {% endif %}
+                            {% else %}
+                                <td class="grade-sheet__change">—</td>
+                            {% endif %}
+                        {% endif %}
+                        <td>{{ learner.status }}</td>
+                        {% for column in other_columns %}
+                            {% set value = other_cells[id][column.key] ?? null %}
+                            <td class="grade-sheet__other">{{ value ?? '—' }}</td>
+                        {% endfor %}
+                    </tr>
+                {% else %}
+                    <tr><td colspan="{{ colspan }}" class="empty">No learners in this section.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% if form %}
+            {% if editable %}
+                <div class="form-actions">
+                    <button class="btn btn--primary" type="submit">Save grades</button>
+                </div>
+            {% endif %}
+            {{ form_end(form, {render_rest: editable}) }}
+        {% endif %}
+    </div>
+
+    {{ include('@Grading/grades/_change_requests.html.twig', {requests: change_requests, can_withdraw: true}) }}
+{% endblock %}

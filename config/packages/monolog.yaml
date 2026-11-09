@@ -1,6 +1,7 @@
 monolog:
     channels: # To see all channels, run bin/console debug:autowiring logger
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        - bus # Use cases and queries handled through the Core bus
 
 when@dev:
     monolog:

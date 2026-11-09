@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Classes\Application\UseCase\Handler;
+
+use App\Classes\Application\Service\ClassPeriodManager;
+use App\Classes\Application\Service\Timetable\TimetableManager;
+use App\Classes\Application\Service\Timetable\TimetableScope;
+use App\Classes\Application\UseCase\Command\PlotClassCommand;
+use App\Classes\Domain\Model\Weekday;
+use App\Core\Application\Bus\Result;
+use App\Core\Application\Bus\UseCase;
+use App\Core\Application\Bus\UseCaseHandlerInterface;
+use App\Core\Domain\Service\Lock\TransactionLockInterface;
+use App\Core\Infrastructure\Bus\Attributes\AsUseCaseHandler;
+
+/** @implements UseCaseHandlerInterface<PlotClassCommand> */
+#[AsUseCaseHandler(PlotClassCommand::class)]
+final class PlotClassHandler implements UseCaseHandlerInterface
+{
+    public function __construct(
+        private readonly TransactionLockInterface $locks,
+        private readonly TimetableScope $scope,
+        private readonly TimetableManager $manager,
+    ) {
+    }
+
+    /** @param PlotClassCommand $command */
+    public function __invoke(UseCase $command): Result
+    {
+        $this->locks->acquire(ClassPeriodManager::LOCK_PREFIX . $command->schoolId, ClassPeriodManager::BUSY);
+        $section = $this->scope->section($command->schoolId, $command->sectionId);
+        $subject = $this->scope->subject($section, $command->subjectId);
+        $period = $this->scope->period($section, $command->periodId);
+        $this->manager->plot($section, $subject, Weekday::from($command->day), $period);
+
+        return Result::success();
+    }
+}

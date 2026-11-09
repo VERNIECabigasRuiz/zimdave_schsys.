@@ -16,6 +16,24 @@ framework:
 
         buses:
             messenger.bus.default: []
+            usecase.bus:
+                middleware:
+                    - App\Core\Infrastructure\Bus\Middleware\LoggingMiddleware
+                    - App\Core\Infrastructure\Bus\Middleware\ExceptionHandlingMiddleware
+                    # Releases transaction locks only after doctrine_transaction has committed or rolled back
+                    - App\Core\Infrastructure\Bus\Middleware\ReleaseLocksMiddleware
+                    - doctrine_transaction
+                    - validation
+            query.bus:
+                middleware:
+                    - App\Core\Infrastructure\Bus\Middleware\LoggingMiddleware
+                    - App\Core\Infrastructure\Bus\Middleware\ExceptionHandlingMiddleware
+                    - validation
+                    - App\Core\Infrastructure\Bus\Middleware\CachingMiddleware
+            event.bus:
+                default_middleware:
+                    enabled: true
+                    allow_no_handlers: true
 
         routing:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async

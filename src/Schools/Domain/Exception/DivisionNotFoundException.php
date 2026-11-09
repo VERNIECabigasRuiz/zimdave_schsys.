@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Schools\Domain\Exception;
+
+use App\Core\Domain\Exception\DomainException;
+
+/** No division has the given id. */
+final class DivisionNotFoundException extends DomainException
+{
+    public const ERROR_CODE = 'DIVISION_NOT_FOUND';
+
+    public function __construct(string $message = 'The division was not found.')
+    {
+        parent::__construct($message, self::ERROR_CODE);
+    }
+}

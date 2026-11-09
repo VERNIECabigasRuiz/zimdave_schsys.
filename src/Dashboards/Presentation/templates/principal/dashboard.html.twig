@@ -1,0 +1,73 @@
+{% extends '@Core/principal/_layout.html.twig' %}
+
+{% block title %}Dashboard · ZIM School{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>{{ school.name }}</h1>
+            <p>
+                S.Y. {{ school_year.name }} · {{ school.planLabel }} plan
+                {% if school.planValidUntil %}· valid until {{ school.planValidUntil|date('M j, Y') }}{% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if blocked_reason %}
+        <div class="alert alert--error" role="alert">{{ blocked_reason }}</div>
+    {% endif %}
+
+    <section class="stats" aria-label="Plan usage">
+        <a class="stat card" href="{{ path('principal_teachers') }}">
+            <span class="avatar avatar--green">T</span>
+            <span>
+                <strong>{{ teachers|number_format }} / {{ school.teacherLimit|number_format }}</strong>
+                <small>Teachers</small>
+            </span>
+        </a>
+        <div class="stat card">
+            <span class="avatar avatar--amber">S</span>
+            <span>
+                <strong>{{ students|number_format }} / {{ school.studentLimit|number_format }}</strong>
+                <small>Students</small>
+            </span>
+        </div>
+        {% if transfers_waiting > 0 %}
+            {% include '@Learners/transfers/_waiting_card.html.twig' with {count: transfers_waiting, school: school} only %}
+        {% endif %}
+        {% if grade_changes_waiting > 0 %}
+            {% include '@Grading/grades/_changes_waiting_card.html.twig' with {count: grade_changes_waiting, school: school} only %}
+        {% endif %}
+        <a class="stat card" href="{{ path('school_attendance', {id: school.id}) }}">
+            <span class="avatar avatar--blue">✓</span>
+            <span>
+                {% if attendance_today.schoolDay %}
+                    {% set taken = attendance_today.sections|filter(s => s.taken) %}
+                    {% set not_taken = attendance_today.sections|length - taken|length %}
+                    {# a section that hasn't taken attendance counts no one present yet #}
+                    <strong>{{ taken|reduce((sum, s) => sum + s.present, 0)|number_format }} / {{ attendance_today.sections|reduce((sum, s) => sum + s.enrolled, 0)|number_format }}</strong>
+                    <small>Students present today · {{ taken|reduce((sum, s) => sum + s.absent, 0)|number_format }} absent</small>
+                    {% if not_taken > 0 %}
+                        <small class="stat__note">{{ not_taken }} {{ not_taken == 1 ? 'section' : 'sections' }} not taken yet</small>
+                    {% endif %}
+                {% else %}
+                    <strong>No classes</strong>
+                    <small>Attendance today · {{ attendance_today.reason }}</small>
+                {% endif %}
+            </span>
+        </a>
+        {% if grading_period %}
+            <a class="stat card" href="{{ path('school_grades_failing', {id: school.id}) }}">
+                <span class="avatar {{ failing > 0 ? 'avatar--rose' : 'avatar--green' }}">F</span>
+                <span>
+                    <strong>{{ failing|number_format }}</strong>
+                    <small>Failed general average · {{ grading_period.label }}</small>
+                </span>
+            </a>
+        {% endif %}
+    </section>
+
+    <turbo-frame id="now" src="{{ path('principal_now') }}" data-controller="refresh">
+        <div class="card now-card"><p class="muted">Loading classes…</p></div>
+    </turbo-frame>
+{% endblock %}
