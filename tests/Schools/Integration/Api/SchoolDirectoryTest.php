@@ -6,6 +6,7 @@ namespace App\Tests\Schools\Integration\Api;
 
 use App\Access\Domain\Model\User;
 use App\Schools\Application\Api\SchoolDirectoryInterface;
+use App\Schools\Domain\Model\Division;
 use App\Schools\Domain\Model\SchoolDayOff;
 use App\Tests\SchoolFixturesTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,6 +68,48 @@ final class SchoolDirectoryTest extends KernelTestCase
         self::assertSame($school, $schoolOfAna);
         self::assertNull($asPrincipal);
         self::assertSame([$ana, $zed], $teachers);
+    }
+
+    public function testFindsTheAssignmentOfAUserInAnyRole(): void
+    {
+        // Initialize
+        $sy = $this->schoolYear(2026, true);
+        $school = $this->school('300001', 'Alpha NHS');
+        $teacher = $this->plainUser('rt-teacher', User::ROLE_TEACHER);
+        $principal = $this->plainUser('rt-principal', User::ROLE_PRINCIPAL);
+        $unassigned = $this->plainUser('rt-unassigned', User::ROLE_TEACHER);
+        $this->assign($school, $sy, $teacher, User::ROLE_TEACHER);
+        $this->assign($school, $sy, $principal);
+        $directory = static::getContainer()->get(SchoolDirectoryInterface::class);
+
+        // Execute
+        $teaching = $directory->assignmentOf($teacher, $sy);
+        $heading = $directory->assignmentOf($principal, $sy);
+        $nowhere = $directory->assignmentOf($unassigned, $sy);
+
+        // Assert
+        self::assertSame([$school, User::ROLE_TEACHER], [$teaching?->getSchool(), $teaching?->getRole()]);
+        self::assertSame([$school, User::ROLE_PRINCIPAL], [$heading?->getSchool(), $heading?->getRole()]);
+        self::assertNull($nowhere);
+    }
+
+    public function testFindsTheDivisionOfASchool(): void
+    {
+        // Initialize
+        $school = $this->school('300001', 'Alpha NHS');
+        $other = $this->school('300002', 'Beta NHS')->setDivision('Cebu City');
+        $division = (new Division())->setRegion('Region VII')->setName('Mandaue City');
+        $this->em->persist($division);
+        $this->em->flush();
+        $directory = static::getContainer()->get(SchoolDirectoryInterface::class);
+
+        // Execute
+        $found = $directory->divisionOf($school);
+        $missing = $directory->divisionOf($other);
+
+        // Assert
+        self::assertSame($division, $found);
+        self::assertNull($missing);
     }
 
     public function testCurrentTeachersLeaveOutAccountsNoLongerTeachers(): void

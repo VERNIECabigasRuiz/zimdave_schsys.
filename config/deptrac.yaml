@@ -778,6 +778,7 @@ deptrac:
     Staff_Domain:
       - Core_Domain
       - Access_Domain
+      - Schools_Domain
       - Learners_Domain
       - DoctrineMapping
     Staff_Application:
@@ -797,6 +798,7 @@ deptrac:
       - Core_Domain
       - Access_Domain
       - Learners_Domain
+      - LessonPlans_Domain
       - DoctrineMapping
       - Framework
     Staff_Presentation:

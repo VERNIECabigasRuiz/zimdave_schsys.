@@ -55,52 +55,10 @@ parameters:
 			path: ../src/Form/AnnouncementFormType.php
 
 		-
-			message: '#^Class App\\Form\\ServiceRecordEntryFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/ServiceRecordEntryFormType.php
-
-		-
-			message: '#^Class App\\Form\\StaffIdDetailsFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: ../src/Form/StaffIdDetailsFormType.php
-
-		-
-			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Validator/ValidServiceRowValidator.php
-
-		-
 			message: '#^Method App\\Tests\\Controller\\Admin\\DashboardControllerTest\:\:adminPages\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: ../tests/Controller/Admin/DashboardControllerTest.php
-
-		-
-			message: '#^Cannot call method getCallName\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/MyIdControllerTest.php
-
-		-
-			message: '#^Cannot call method getEmergencyContact\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/MyIdControllerTest.php
-
-		-
-			message: '#^Cannot call method getEmergencyName\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/MyIdControllerTest.php
-
-		-
-			message: '#^Cannot call method getGsisPolicyNo\(\) on App\\Entity\\StaffIdDetails\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/MyIdControllerTest.php
 
 		-
 			message: '#^Cannot call method setCurrent\(\) on App\\Schools\\Domain\\Model\\SchoolYear\|null\.$#'
@@ -121,67 +79,8 @@ parameters:
 			path: ../tests/Controller/Principal/PrincipalAreaTest.php
 
 		-
-			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
-			message: '#^Cannot call method getUpdatedBy\(\) on App\\Entity\\ServiceRecordEntry\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
-			message: '#^Cannot call method getValue\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
-			identifier: method.nonObject
-			count: 8
-			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
-			message: '#^Cannot call method touch\(\) on App\\Entity\\ServiceRecordEntry\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
-			message: '#^Cannot call method untick\(\) on array\<array\<Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\>\|Symfony\\Component\\DomCrawler\\Field\\FormField\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
-			message: '#^Method App\\Tests\\Controller\\ServiceRecordControllerTest\:\:rows\(\) should return list\<array\{string, string\|null, string\}\> but returns list\<array\{non\-falsy\-string, non\-falsy\-string\|null, string\|null\}\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$object of method Doctrine\\Persistence\\ObjectManager\:\:remove\(\) expects object, App\\Schools\\Domain\\Model\\SchoolAssignment\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/Controller/ServiceRecordControllerTest.php
-
-		-
 			message: '#^Cannot call method label\(\) on App\\Learners\\Domain\\Model\\SexAtBirth\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../tests/Repository/EnrollmentRepositoryTest.php
 
-		-
-			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
-
-		-
-			message: '#^Parameter \#1 \$toDate of method App\\Entity\\ServiceRecordEntry\:\:setToDate\(\) expects DateTimeImmutable\|null, DateTimeImmutable\|false\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php
-
-		-
-			message: '#^Parameter \#2 \$fromDate of class App\\Entity\\ServiceRecordEntry constructor expects DateTimeImmutable\|null, DateTimeImmutable\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../tests/ServiceRecord/ServiceRecordEntryTest.php

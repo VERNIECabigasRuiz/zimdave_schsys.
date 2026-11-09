@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Schools\Application\Api;
 
 use App\Access\Domain\Model\User;
+use App\Schools\Domain\Model\Division;
+use App\Schools\Domain\Model\Repository\DivisionRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolAssignmentRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolDayOffRepositoryInterface;
 use App\Schools\Domain\Model\Repository\SchoolRepositoryInterface;
@@ -25,6 +27,7 @@ final class SchoolDirectory implements SchoolDirectoryInterface
         private readonly PlanLimits $planLimits,
         private readonly SchoolCalendar $calendar,
         private readonly SchoolDayOffRepositoryInterface $daysOff,
+        private readonly DivisionRepositoryInterface $divisions,
     ) {
     }
 
@@ -51,6 +54,16 @@ final class SchoolDirectory implements SchoolDirectoryInterface
     public function principalOf(School $school, SchoolYear $schoolYear): ?User
     {
         return $this->assignments->findPrincipal($school, $schoolYear)?->getUser();
+    }
+
+    public function assignmentOf(User $user, SchoolYear $schoolYear): ?SchoolAssignment
+    {
+        return $this->assignments->findForUser($user, $schoolYear);
+    }
+
+    public function divisionOf(School $school): ?Division
+    {
+        return $this->divisions->findForSchool($school);
     }
 
     public function schoolDays(

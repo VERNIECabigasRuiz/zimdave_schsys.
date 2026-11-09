@@ -38,8 +38,6 @@
         <testsuite name="legacy">
             <directory>tests/Controller</directory>
             <directory>tests/Repository</directory>
-            <directory>tests/ServiceRecord</directory>
-            <directory>tests/StaffId</directory>
             <file>tests/KernelTimezoneTest.php</file>
         </testsuite>
     </testsuites>

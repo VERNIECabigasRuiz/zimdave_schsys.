@@ -11,7 +11,7 @@ use App\Schools\Domain\Model\GradeLevel;
 use App\LessonPlans\Domain\Model\LessonPlan;
 use App\Schools\Domain\Model\School;
 use App\Schools\Domain\Model\SchoolYear;
-use App\Entity\ServiceRecordEntry;
+use App\Staff\Domain\Model\ServiceRecordEntry;
 use App\Classes\Domain\Model\Subject;
 use App\Classes\Domain\Model\TeachingLoad;
 use App\Access\Domain\Model\User;

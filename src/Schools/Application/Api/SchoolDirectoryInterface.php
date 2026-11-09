@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Schools\Application\Api;
 
 use App\Access\Domain\Model\User;
+use App\Schools\Domain\Model\Division;
 use App\Schools\Domain\Model\School;
+use App\Schools\Domain\Model\SchoolAssignment;
 use App\Schools\Domain\Model\SchoolDayOff;
 use App\Schools\Domain\Model\SchoolYear;
 
@@ -29,6 +31,12 @@ interface SchoolDirectoryInterface
 
     /** The account heading $school in $schoolYear, if any. */
     public function principalOf(School $school, SchoolYear $schoolYear): ?User;
+
+    /** Where $user works in $schoolYear and in which role, if anywhere. */
+    public function assignmentOf(User $user, SchoolYear $schoolYear): ?SchoolAssignment;
+
+    /** The Divisions entry of $school's region and division, if the administrator added one. */
+    public function divisionOf(School $school): ?Division;
 
     /** @return list<\DateTimeImmutable> the school days from $from to $to, both included */
     public function schoolDays(
