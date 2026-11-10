@@ -84,6 +84,10 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 
 `make fixture-load` (fresh database with the migrations' plans and `zim`), then `make fixture-seed`. It adds schools `999001` (Basic: principal, six teachers, three sections with timetables, learners, attendance, first grading period grades, a lesson plan) and `999002` (Individual: one teacher, one section). Sign in as `demo.principal`, `demo.teacher1` … `demo.teacher6` or `demo.solo`, password `demo1234`. A second `make fixture-seed` refuses; run `make fixture-load` first. The seeder (`src/DataFixtures`) is dev tooling with its own deptrac layer (`DevFixtures`, which may use Core and every module's Domain, Application and Api; nothing uses it); the fixtures bundle loads only in `dev` and `test`.
 
+## ERD and use case docs
+
+`docs/dev/erd-and-use-cases/` holds the ERD and the use case PDFs. Update them with every change to entities, use cases, routes, rules or messages: the generator and its steps are in `generator/README.md` there (tables come from the entities; the chapter texts and use case cards in `uc_*.py` are written by hand).
+
 ## Tests
 
 - Use `/run-tests`. `phpunit.dist.xml` fails on any deprecation, notice or warning; fix those, don't silence them.
