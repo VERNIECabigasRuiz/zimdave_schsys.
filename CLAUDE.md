@@ -106,6 +106,7 @@ Browser checks: Claude in Chrome needs the Chrome extension installed and enable
 - `TEST_TARGET` takes one class, method or path; a `|` in it breaks the Makefile. Run several one at a time.
 - Run deptrac through `make test deptrac`; run directly, it leaves `.deptrac.cache` in the repo root.
 - Copy a new module's deptrac rules from an existing module, then trim them.
+- For module dependency diagrams, take the arrows from `config/deptrac.yaml`.
 - Splitting a one-line ternary over several lines lets the coverage gate see each branch; test both first.
 - `Kernel::build()` runs only on a container compile; `KernelBuildTest` keeps it in the coverage gate.
 - In a stale-read test, take the old value before the fresh read; both return the same object.
