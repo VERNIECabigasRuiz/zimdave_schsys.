@@ -90,6 +90,7 @@ Shared rules for everyone working on this repo with Claude Code, copied from the
 - In a comparison check, confirm each side runs its own code (e.g. print the file a class loads from), not just its own entry point.
 - Before running old scripts in a batch, read each one's usage line for required arguments and helper files.
 - When a form moves to a new object, give that object the starting values the old one had.
+- In written docs about the code, check each behaviour claim in the source before writing it.
 
 ## Plans / Specs
 
